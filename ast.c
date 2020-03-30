@@ -323,7 +323,7 @@ void inorderAST (astNode *node, int space)
 
 	for (int i = 0 ; i < 2*space ; i++)
 		printf (" ") ;
-	printf ("|(%s,%s)\n", tokenIDToString(node->id), (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+	printf ("|(%s,%s)\n", (node->tok==NULL)?tokenIDToString(node->id):node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
 }
 
 /*
@@ -400,6 +400,11 @@ astNode* applyASTRule (treeNode *PTNode)
 			children[0] = createASTNode (leftChild) ; 
 			applyASTRule (leftChild) ;	// 1, 2
 			children[0]->child = leftChild->syn ;
+			while (leftChild->syn != NULL)
+			{
+				leftChild->syn->parent = children[0] ;
+				leftChild->syn = leftChild->syn->next ;
+			}
 
 			// <otherModules>
 			sibling = leftChild->next ;
@@ -442,6 +447,7 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			applyASTRule (sibling) ;		// Recurse on 1 until case 2
 			PTNode->syn = sibling->syn ;
+
 			break ;
 
 

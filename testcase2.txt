@@ -1,0 +1,13 @@
+declare module someone ;
+declare module please ;
+declare module save ;
+declare module me ;
+
+<<<driver program>>>
+start
+	**There is nothing here**
+end
+
+**
+End of the file!
+**
