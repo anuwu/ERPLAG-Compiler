@@ -21,7 +21,7 @@ typedef struct treeNode
 	nodeTag tag ;
 	TNT tnt ;
 
-	astNode *node, *syn, *inh ;
+	astNode *syn, *inh ;
 	int gcode ; // which rule was used 
 
 	// astNode *anode, *inh; 

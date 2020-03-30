@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "parser.h"
 
+/*
 typedef enum _astTagsID
 {
 	ast_idList, ast_stmtList
@@ -41,23 +42,20 @@ typedef union _astDataUnion 		// Smash together everything that the AST can cont
 	stmtListNode* stmtListHead ; 
 	moduleInfoNode* moduleInfoHead ;
 } astDataUnion ;
+*/
 
 typedef struct _astNode {
-	nodeTag PTTag ;		// Whether terminal or non-terminal
-	TNT tnt ;			// Union of terminal or non-terminal
+	tokenID id ;
+	token *tok ;
 
-	astTagsID astTag ;		// Describes one of the many things a node in the AST can contain
-	astDataUnion data ;	// Synthesized and inherited attributes
-
-	struct _astnode *parent , *child , *next ;
+	struct _astNode *parent , *child , *next ;
 } astNode ;
 
-astNode* newASTnonLeaf (tokenID tkID , astNode * child) ;
-astNode* newASTLeaf (tokenID tkID , token tkn) ;
+
 astNode* generateASTtree (treeNode* root) ;
 
 void astTest () ;
-astNode* applyASTRule (treeNode *PTNode) ;
+void applyASTRule (treeNode *PTNode) ;
 
 
 #endif

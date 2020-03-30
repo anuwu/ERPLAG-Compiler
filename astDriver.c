@@ -36,11 +36,8 @@ int main(int argc, char *argv[])
 	inorderTraversal(root, outfile) ;
 	fclose (outfile) ;
 
-	printf ("ID of root = %d\n", root->tnt.nonTerm) ;
+	//printf ("astDriver : gcode of parse tree root = %d\n", root->gcode) ;
 	applyASTRule (root) ;
-
-
-	
 
 	return 0;
 }
