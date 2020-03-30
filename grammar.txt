@@ -1,0 +1,103 @@
+program moduleDeclarations otherModules driverModule otherModules
+moduleDeclarations moduleDeclaration moduleDeclarations
+moduleDeclarations EPS
+moduleDeclaration DECLARE MODULE ID SEMICOL
+otherModules module otherModules
+otherModules EPS
+driverModule DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
+module DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
+moduleDef START statements END
+ret RETURNS SQBO output_plist SQBC SEMICOL
+ret EPS
+input_plist ID COLON dataType IPL
+IPL COMMA ID COLON dataType IPL
+IPL EPS
+output_plist ID COLON type OPL
+OPL COMMA ID COLON type OPL
+OPL EPS
+statements statement statements
+statements EPS
+statement ioStmt
+statement simpleStmt
+statement conditionalStmt
+statement declareStmt
+statement iterativeStmt
+ioStmt GET_VALUE BO ID BC SEMICOL
+ioStmt PRINT BO print_var BC SEMICOL
+print_var var
+print_var TRUE
+print_var FALSE
+simpleStmt assignmentStmt
+assignmentStmt ID whichStmt
+whichStmt lvalueIDStmt
+whichStmt lvalueARRStmt
+lvalueIDStmt ASSIGNOP expression_new SEMICOL
+lvalueARRStmt SQBO index_new SQBC ASSIGNOP expression_new SEMICOL
+simpleStmt moduleReuseStmt
+moduleReuseStmt optional USE MODULE ID WITH PARAMETERS idList SEMICOL
+optional SQBO idList SQBC ASSIGNOP
+optional EPS
+declareStmt DECLARE idList COLON dataType SEMICOL
+iterativeStmt FOR BO ID IN range_new BC START statements END
+iterativeStmt WHILE BO expression BC START statements END
+conditionalStmt SWITCH BO ID BC START CASE value COLON statements BREAK SEMICOL caseStmt default_new END
+caseStmt CASE value COLON statements BREAK SEMICOL caseStmt
+caseStmt EPS
+default_new DEFAULT COLON statements BREAK SEMICOL
+default_new EPS
+expression_new expression
+expression_new U
+expression boolTerm bT
+bT logicalOp boolTerm bT
+bT EPS
+boolTerm arithmeticExpr aE
+boolTerm TRUE
+boolTerm FALSE
+aE relationalOp arithmeticExpr
+aE EPS
+arithmeticExpr term aT
+aT pmop term aT
+aT EPS
+term factor aF
+aF mdop factor aF
+aF EPS
+U PLUS factor_new
+U MINUS factor_new
+factor_new BO arithmeticExpr BC
+factor_new var
+factor BO expression BC
+factor var
+logicalOp AND
+logicalOp OR
+relationalOp LT
+relationalOp LE
+relationalOp GT
+relationalOp GE
+relationalOp EQ
+relationalOp NE
+pmop PLUS
+pmop MINUS
+mdop MUL
+mdop DIV
+dataType INTEGER
+dataType REAL
+dataType BOOLEAN
+dataType ARRAY SQBO range SQBC OF type
+type INTEGER
+type REAL
+type BOOLEAN
+var ID whichID
+var NUM
+var RNUM
+whichID SQBO index_new SQBC
+whichID EPS
+index_new NUM
+index_new ID
+value NUM
+value TRUE
+value FALSE
+range index_new RANGEOP index_new
+idList ID idL
+idL COMMA ID idL
+idL EPS
+range_new NUM RANGEOP NUM
