@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	//printf ("Before parseTree\n") ;
 	treeNode *root = parseTree (argv[1]) ;
 	//printf ("After parseTree\n") ;
-	//inorderTraversal(root, outfile) ;
+	inorderTraversal(root, outfile) ;
 	fclose (outfile) ;
 
 	//printf ("astDriver : gcode of parse tree root = %d\n", root->gcode) ;

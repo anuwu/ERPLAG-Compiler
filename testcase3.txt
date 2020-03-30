@@ -1,0 +1,40 @@
+declare module someone ;
+declare module please ;
+declare module save ;
+declare module me ;
+
+<<module someone>>
+takes input [a,b,c,d] ;
+returns [x,y,z] ;
+start
+	** Nothing here **
+end
+
+<<module please>>
+takes input [a,b,c,d] ;
+start
+	** Nothing here **
+end
+
+<<<driver program>>>
+start
+	** Nothing here **
+end
+
+<<module save>>
+takes input [x] ;
+return [y]
+start
+	** Nothing here **
+end
+
+<<module me>>
+takes input [x] ;
+return [F,FF,FFF,FFFF,FFFFF,FFFFFF]
+start
+	** Nothing here **
+end
+
+
+
+** ------------------------- End of the file! ------------------------- **
