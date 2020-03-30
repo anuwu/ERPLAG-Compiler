@@ -68,8 +68,7 @@ void test_tree () ;
 void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
-void parseTree (char *inFile, char *outfile, int print_enable) ;
-void parseTree1(char *inFile) ;
+treeNode* parseTree (char *inFile) ;
 
 /*
 typedef struct _token

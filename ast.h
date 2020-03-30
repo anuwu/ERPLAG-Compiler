@@ -7,16 +7,17 @@
 
 typedef struct _astnode {
 	tokenID tkID ;
-	TNT tag ;
-
-	char *lexeme ;
+	nodeTag tag ;
+	TNT tnt ;
 
 	struct _astnode *parent , *child , *next ;
 } astNode ;
 
-astNode* newASTnonLeaf ( tokenID tkID , astNode * child ) ;
-astNode* newASTLeaf ( tokenID tkID , token tkn , ) ;
+astNode* newASTnonLeaf (tokenID tkID , astNode * child) ;
+astNode* newASTLeaf (tokenID tkID , token tkn) ;
+astNode* generateASTtree (treeNode* root) ;
 
-astNode* generateASTtree ( treeNode* root ) ;
+void astTest () ;
+
 
 #endif
