@@ -4,6 +4,8 @@
 #include "ast.h"
 #include "parser.h"
 
+#define SPANOUT 10
+
 char* tokenIDToString (tokenID id)
 {
 	switch (id)
@@ -269,25 +271,27 @@ astNode* newASTLeaf ( tokenID tkID , token tkn ) {
 }
 */
 
-char* PTNodeToString (treeNode *PTNode)
+astNode* createASTNode (treeNode *PTNode)
 {
-	//printf ("Inside PTNodeToString\n") ;
-	if (PTNode->tag == TERMINAL)
-	{
-		//printf ((PTNode->tnt.term->lexeme == NULL)?"epsilon":PTNode->tnt.term->lexeme) ;
+	astNode *node = (astNode *) malloc (sizeof(astNode)) ;
+ 
+	node->PTTag = PTNode->tag ;
+	node->tnt = PTNode->tnt ;
 
-		return (PTNode->tnt.term->lexeme == NULL)?"epsilon":PTNode->tnt.term->lexeme ;
-	}
-	else if (PTNode->tag == NON_TERMINAL)
-	{
-		//printf ("Root is a non-terminal\n") ;
-		//printf (tokenIDToString(PTNode->tnt.nonTerm)) ;
-		//printf ("%d\n", PTNode->tnt.nonTerm) ;
-		//printf ("After printing root\n") ;
-		return tokenIDToString(PTNode->tnt.nonTerm) ;
-	}
+	// if (tag == NON_TERMINAL)
+	// 	node->tag = NON_TERMINAL ;
+	// else if (tag == TERMINAL)
+	// 	node->tag = TERMINAL ;
+ 
+	node->tnt = tnt ;
+	node->child = NULL ;
+	node->next = NULL ;
+	node->parent = NULL ;
 
-	return NULL ;
+
+	node->gcode = -5 ; // default value ( should be replaced )
+	node->syn = NULL ;
+	node->inh = NULL ;
 }
 
 astNode* applyASTRule (treeNode *PTNode)
@@ -295,6 +299,8 @@ astNode* applyASTRule (treeNode *PTNode)
 	if (PTNode == NULL)
 		return ;
 
+	
+	/*
 	treeNode *childSibling ;
 	applyASTRule (PTNode->child) ;
 
@@ -312,6 +318,36 @@ astNode* applyASTRule (treeNode *PTNode)
 		printf ("%s\n", PTNodeToString(PTNode)) ;
 	else if (PTNode->tag == NON_TERMINAL)
 		printf ("%s\n", PTNodeToString(PTNode)) ;
+	*/
+
+	
+
+	astNode* children[SPANOUT] ;
+	for (int i = 0 ; i < SPANOUT ; i++)
+		astNode[i] = NULL ;
+	treeNode *leftChild , *sibling ;
+
+	switch (PTNode->gcode)
+	{
+		case 0 :
+			leftChild = PTNode->child ;
+			children[0] = applyASTRule (leftChild) ;	//moduleDeclarations
+
+			sibling = leftChild->next ;
+			children[1] = applyASTRule (sibling) ;		//otherModules
+
+			sibling = sibling->next ;
+			children[2] = applyASTRule (sibling) ;		//driverModule
+
+			sibling = sibling->next ;
+			children[3] = applyASTRule (sibling) ; 		//otherModules
+			break ;
+
+		case 2 :
+
+			break ;
+
+	}
 }
 
 void astTest ()

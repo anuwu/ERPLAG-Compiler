@@ -13,11 +13,15 @@ typedef union _TNT {
 	tokenID nonTerm ;
 } TNT ;
 
+struct _astNode ;
+typedef struct _astNode astNode;
+
 typedef struct treeNode
 {
 	nodeTag tag ;
 	TNT tnt ;
 
+	astNode *node, *syn, *inh ;
 	int gcode ; // which rule was used 
 
 	// astNode *anode, *inh; 
