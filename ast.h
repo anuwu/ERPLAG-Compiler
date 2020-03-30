@@ -18,6 +18,7 @@ astNode* newASTLeaf (tokenID tkID , token tkn) ;
 astNode* generateASTtree (treeNode* root) ;
 
 void astTest () ;
+void applyASTRule (treeNode *PTNode) ;
 
 
 #endif

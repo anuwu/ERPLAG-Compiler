@@ -1062,12 +1062,12 @@ void inorderTraversal(treeNode * root,FILE* ptr)
 		//print this node
 		
 		if(root->tag == NON_TERMINAL){
-			fprintf (ptr,"--%d-- \t\t\t\t\t\t%s\t\t%s\t\t%s\n" , root->gcode , nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
+			fprintf (ptr,"||%d|| \t\t\t\t\t\t%s\t\t%s\t\t%s\n" , root->gcode , nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
 		}
 		else{
 			// terminal
 			token * tk = root->tnt.term;
-			fprintf (ptr,"%d\t%s\t%d\t%s\t%s\t%s\t%s\t%s\n", root->gcode,(tk->lexeme)==NULL?"EPS":tk->lexeme, tk->lineNumber, utility_array[tk->id], (tk->lexeme)==NULL?"EPS":tk->lexeme, nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
+			fprintf (ptr,"||%d||\t%s\t%d\t%s\t%s\t%s\t%s\t%s\n", root->gcode,(tk->lexeme)==NULL?"EPS":tk->lexeme, tk->lineNumber, utility_array[tk->id], (tk->lexeme)==NULL?"EPS":tk->lexeme, nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
 		}
  
  
