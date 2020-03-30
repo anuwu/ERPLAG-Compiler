@@ -291,10 +291,39 @@ astNode* createASTNode (treeNode *PTNode)
  	node->parent = NULL ;
  	node->child = NULL ;
  	node->next = NULL ;
+ 	node->prev = NULL ;
 
  	PTNode->syn = node ;
 
  	return node ;
+}
+
+void inorderAST (astNode *node, int space)
+{	
+	if (node == NULL)
+		return ;
+
+	astNode *sib = node->child ;
+
+	if (sib != NULL)
+	{
+		while (sib->next != NULL)
+		{
+			//inorderAST (sib, space + 1) ;
+			sib = sib->next ;
+		}
+
+		
+		while (sib != NULL)
+		{
+			inorderAST (sib, space+1) ;
+			sib = sib->prev ;
+		}
+	}
+
+	for (int i = 0 ; i < 2*space ; i++)
+		printf (" ") ;
+	printf ("|(%s,%s)\n", tokenIDToString(node->id), (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
 }
 
 /*
@@ -324,6 +353,8 @@ void connectChildren (astNode *parent, astNode **siblings, int num)
 	}
 
 	siblings[num-1]->parent = parent ;
+	for (int i = num-1 ; i > 0 ; i--)
+		siblings[i]->prev = siblings[i-1] ;
 }
 
 void testroot (astNode *root)
@@ -348,67 +379,45 @@ void testroot (astNode *root)
 	}
 }
 
-void applyASTRule (treeNode *PTNode)
+astNode* applyASTRule (treeNode *PTNode)
 {
 	if (PTNode == NULL)
-		return ;
-
+		return NULL ;
 	
-	/*
-	treeNode *childSibling ;
-	applyASTRule (PTNode->child) ;
-
-	if (PTNode->child != NULL)
-	{
-		childSibling = PTNode->child->next ;
-		while (childSibling != NULL)
-		{
-			applyASTRule (childSibling) ;
-			childSibling = childSibling->next ;
-		}
-	}
-
-	if (PTNode->tag == TERMINAL)
-		printf ("%s\n", PTNodeToString(PTNode)) ;
-	else if (PTNode->tag == NON_TERMINAL)
-		printf ("%s\n", PTNodeToString(PTNode)) ;
-	
-	*/
-	
-	astNode *node, *children[SPANOUT] ;
+	astNode *node = NULL , *children[SPANOUT] ;
 	treeNode *leftChild , *sibling ;
 
 	//printf ("applyASTRule : Before any switch %d and %s\n", PTNode->gcode, tokenIDToString(PTNode->tnt.nonTerm)) ;
+	//printf ("%d\n", PTNode->gcode) ;
 	switch (PTNode->gcode)
 	{
 		case 0 :								// <program> --> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
 			node = createASTNode (PTNode) ;
 			//node->id = PTNode->tnt.nonTerm ;
-			//printf ("switch : (%d,%s) , (%d,%s)\n", node->id, tokenIDToString(node->id), PTNode->tnt.nonTerm, tokenIDToString(PTNode->tnt.nonTerm)) ;
 
 			// <moduleDeclarations>
 			leftChild = PTNode->child ;		
 			children[0] = createASTNode (leftChild) ; 
-			applyASTRule (leftChild) ;	// <moduleDeclarations>
+			applyASTRule (leftChild) ;	// 1, 2
 			children[0]->child = leftChild->syn ;
 
 			// <otherModules>
 			sibling = leftChild->next ;
 			children[1] = createASTNode (sibling) ; 
-			applyASTRule (sibling) ;	// <otherModules>
+			applyASTRule (sibling) ;	// 5
 			children[1]->child = sibling->syn ;
 
 			// <driverModule>
 			sibling = sibling->next ;		
 			children[2] = createASTNode (sibling) ; 
-			applyASTRule (sibling) ;	// <driverModule>
+			applyASTRule (sibling) ;	// 6
 			children[2]->child = sibling->syn ;
-			sibling->syn->parent = children[2] ;		//
+			sibling->syn->parent = children[2] ;
 
 			// <otherModules>
 			sibling = sibling->next ;		
 			children[3] = createASTNode (sibling) ; 
-			applyASTRule (sibling) ;	// <otherModules>
+			applyASTRule (sibling) ;	// 5
 			children[3]->child = sibling->syn ;
 
 			// Connect the children at the program level.
@@ -416,12 +425,40 @@ void applyASTRule (treeNode *PTNode)
 			connectChildren (node, children, 4) ;
 
 			//printf ("End of root %d\n", node->id) ;
-			testroot (node) ;
 
 			break ;
 
+		case 1 :								// <moduleDeclarations> --> <moduleDeclaration> <moduleDeclarations>
+			leftChild = PTNode->child ;
+			sibling = leftChild->next ;
+
+			applyASTRule (leftChild) ;		// 3
+			sibling->inh = leftChild->syn ;
+			if (PTNode->inh != NULL)
+			{
+				PTNode->inh->next = sibling->inh ;
+				sibling->inh->prev = PTNode->inh ;
+			}
+
+			applyASTRule (sibling) ;		// Recurse on 1 until case 2
+			PTNode->syn = sibling->syn ;
+			break ;
+
+
 		case 2 :								// <moduleDeclarations> --> EPS
 			PTNode->syn = PTNode->inh ;
+			if (PTNode->syn != NULL)
+			{
+				while (PTNode->syn->prev != NULL)
+					PTNode->syn = PTNode->syn->prev ;
+			}
+			break ;
+
+		case 3 :								// <moduleDeclaration> ---> DECLARE MODULE ID SEMICOL
+			leftChild = PTNode->child ;
+			sibling = leftChild->next->next ;
+
+			PTNode->syn = createASTNode (sibling) ;
 			break ;
 
 		case 5 :								// <otherModules> --> EPS
@@ -436,7 +473,7 @@ void applyASTRule (treeNode *PTNode)
 				sibling = sibling->next ;
 
 			// <moduleDef>
-			applyASTRule (sibling) ;
+			applyASTRule (sibling) ;	// 8
 			PTNode->syn = sibling->syn ;
 
 			break ;
@@ -447,7 +484,7 @@ void applyASTRule (treeNode *PTNode)
 
 			// <statements>
 			PTNode->syn = createASTNode (sibling) ;
-			applyASTRule (sibling) ;
+			applyASTRule (sibling) ;	// 18
 			PTNode->syn->child = sibling->syn ;
 
 			break ;
@@ -457,6 +494,8 @@ void applyASTRule (treeNode *PTNode)
 			break ;
 
 	}
+
+	return node ;
 }
 
 void astTest ()

@@ -32,12 +32,18 @@ int main(int argc, char *argv[])
 	outfile = fopen (argv[2] , "w") ;
 
 	//astTest () ;
+	//printf ("Before parseTree\n") ;
 	treeNode *root = parseTree (argv[1]) ;
-	inorderTraversal(root, outfile) ;
+	//printf ("After parseTree\n") ;
+	//inorderTraversal(root, outfile) ;
 	fclose (outfile) ;
 
 	//printf ("astDriver : gcode of parse tree root = %d\n", root->gcode) ;
-	applyASTRule (root) ;
+	astNode *astRoot ;
+	//printf ("Before applying astRule\n") ;
+	astRoot = applyASTRule (root) ;
+	//testroot (astRoot) ;
+	inorderAST (astRoot, 0) ;
 
 	return 0;
 }

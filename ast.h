@@ -44,18 +44,21 @@ typedef union _astDataUnion 		// Smash together everything that the AST can cont
 } astDataUnion ;
 */
 
-typedef struct _astNode {
+typedef struct _astNode 
+{
 	tokenID id ;
 	token *tok ;
 
-	struct _astNode *parent , *child , *next ;
+	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;
 
 
 astNode* generateASTtree (treeNode* root) ;
 
 void astTest () ;
-void applyASTRule (treeNode *PTNode) ;
+astNode* applyASTRule (treeNode *PTNode) ;
+void inorderAST (astNode *node, int space) ;
+void testroot (astNode *root) ;
 
 
 #endif
