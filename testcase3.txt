@@ -1,13 +1,21 @@
 declare module foo ;
+declare module kela ;
+declare module unused ;
 
 <<module foo>>
-takes input [a:array[1..4] of real,b:array[a0..b] of boolean, c:array[x..y]of integer] ;
-returns [x:boolean,y:boolean,z:boolean,k:boolean] ;
+takes input [a:array[1..4] of real, PATILWADHI:boolean, b:array[a0..b] of boolean, c:array[x..y]of integer, d:real] ;
+returns [x:boolean,y:boolean,z:boolean,k:integer] ;
 start
 	** Nothing here **
 end
 
 <<<driver program>>>
+start
+	** Nothing here **
+end
+
+<<module kela>>
+takes input [amol:boolean, mohit_vyas:array[kunal .. yembarwar] of real] ;
 start
 	** Nothing here **
 end

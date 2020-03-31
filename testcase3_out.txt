@@ -4,118 +4,184 @@
 ||-5||	foo	1	TK_ID	foo	moduleDeclaration	YES	TK_ID
 ||-5||	;	1	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
 ||1|| 						program		NO		moduleDeclarations
-||-5||	EPS	3	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||-5||	declare	2	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	2	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	kela	2	TK_ID	kela	moduleDeclaration	YES	TK_ID
+||-5||	;	2	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	declare	3	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	3	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	unused	3	TK_ID	unused	moduleDeclaration	YES	TK_ID
+||-5||	;	3	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	EPS	5	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
 ||2|| 						moduleDeclarations		NO		moduleDeclarations
 ||0|| 						ROOT		NO		program
-||-5||	<<	3	TK_DEF	<<	module	YES	TK_DEF
+||-5||	<<	5	TK_DEF	<<	module	YES	TK_DEF
 ||7|| 						otherModules		NO		module
-||-5||	module	3	TK_MODULE	module	module	YES	TK_MODULE
-||-5||	foo	3	TK_ID	foo	module	YES	TK_ID
-||-5||	>>	3	TK_ENDDEF	>>	module	YES	TK_ENDDEF
-||-5||	takes	4	TK_TAKES	takes	module	YES	TK_TAKES
-||-5||	input	4	TK_INPUT	input	module	YES	TK_INPUT
-||-5||	[	4	TK_SQBO	[	module	YES	TK_SQBO
-||-5||	a	4	TK_ID	a	input_plist	YES	TK_ID
+||-5||	module	5	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	foo	5	TK_ID	foo	module	YES	TK_ID
+||-5||	>>	5	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	6	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	6	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	6	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	6	TK_ID	a	input_plist	YES	TK_ID
 ||11|| 						module		NO		input_plist
-||-5||	:	4	TK_COLON	:	input_plist	YES	TK_COLON
-||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||-5||	:	6	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	array	6	TK_ARRAY	array	dataType	YES	TK_ARRAY
 ||84|| 						input_plist		NO		dataType
-||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	1	4	TK_NUM	1	index_new	YES	TK_NUM
+||-5||	[	6	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	1	6	TK_NUM	1	index_new	YES	TK_NUM
 ||93|| 						range		NO		index_new
 ||98|| 						dataType		NO		range
-||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	4	4	TK_NUM	4	index_new	YES	TK_NUM
+||-5||	..	6	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	4	6	TK_NUM	4	index_new	YES	TK_NUM
 ||93|| 						range		NO		index_new
-||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
-||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
-||-5||	real	4	TK_REAL	real	type	YES	TK_REAL
+||-5||	]	6	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	6	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	6	TK_REAL	real	type	YES	TK_REAL
 ||86|| 						dataType		NO		type
-||-5||	,	4	TK_COMMA	,	IPL	YES	TK_COMMA
+||-5||	,	6	TK_COMMA	,	IPL	YES	TK_COMMA
 ||12|| 						input_plist		NO		IPL
-||-5||	b	4	TK_ID	b	IPL	YES	TK_ID
-||-5||	:	4	TK_COLON	:	IPL	YES	TK_COLON
-||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
-||84|| 						IPL		NO		dataType
-||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	a0	4	TK_ID	a0	index_new	YES	TK_ID
-||94|| 						range		NO		index_new
-||98|| 						dataType		NO		range
-||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	b	4	TK_ID	b	index_new	YES	TK_ID
-||94|| 						range		NO		index_new
-||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
-||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
-||-5||	boolean	4	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
-||87|| 						dataType		NO		type
-||-5||	,	4	TK_COMMA	,	IPL	YES	TK_COMMA
+||-5||	PATILWADHI	6	TK_ID	PATILWADHI	IPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	6	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	6	TK_COMMA	,	IPL	YES	TK_COMMA
 ||12|| 						IPL		NO		IPL
-||-5||	c	4	TK_ID	c	IPL	YES	TK_ID
-||-5||	:	4	TK_COLON	:	IPL	YES	TK_COLON
-||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||-5||	b	6	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	6	TK_ARRAY	array	dataType	YES	TK_ARRAY
 ||84|| 						IPL		NO		dataType
-||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	x	4	TK_ID	x	index_new	YES	TK_ID
+||-5||	[	6	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	a0	6	TK_ID	a0	index_new	YES	TK_ID
 ||94|| 						range		NO		index_new
 ||98|| 						dataType		NO		range
-||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	y	4	TK_ID	y	index_new	YES	TK_ID
+||-5||	..	6	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	b	6	TK_ID	b	index_new	YES	TK_ID
 ||94|| 						range		NO		index_new
-||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
-||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
-||-5||	integer	4	TK_INTEGER	integer	type	YES	TK_INTEGER
+||-5||	]	6	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	6	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	6	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	,	6	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	6	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	6	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	6	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	x	6	TK_ID	x	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	6	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	y	6	TK_ID	y	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||-5||	]	6	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	6	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	6	TK_INTEGER	integer	type	YES	TK_INTEGER
 ||85|| 						dataType		NO		type
-||-5||	EPS	4	TK_EPS	EPS	IPL	YES	TK_EPS
+||-5||	,	6	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	d	6	TK_ID	d	IPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	6	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	EPS	6	TK_EPS	EPS	IPL	YES	TK_EPS
 ||13|| 						IPL		NO		IPL
-||-5||	]	4	TK_SQBC	]	module	YES	TK_SQBC
-||-5||	;	4	TK_SEMICOL	;	module	YES	TK_SEMICOL
-||-5||	returns	5	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||-5||	]	6	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	6	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	7	TK_RETURNS	returns	ret	YES	TK_RETURNS
 ||9|| 						module		NO		ret
-||-5||	[	5	TK_SQBO	[	ret	YES	TK_SQBO
-||-5||	x	5	TK_ID	x	output_plist	YES	TK_ID
+||-5||	[	7	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	x	7	TK_ID	x	output_plist	YES	TK_ID
 ||14|| 						ret		NO		output_plist
-||-5||	:	5	TK_COLON	:	output_plist	YES	TK_COLON
-||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||-5||	:	7	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	boolean	7	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
 ||87|| 						output_plist		NO		type
-||-5||	,	5	TK_COMMA	,	OPL	YES	TK_COMMA
+||-5||	,	7	TK_COMMA	,	OPL	YES	TK_COMMA
 ||15|| 						output_plist		NO		OPL
-||-5||	y	5	TK_ID	y	OPL	YES	TK_ID
-||-5||	:	5	TK_COLON	:	OPL	YES	TK_COLON
-||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||-5||	y	7	TK_ID	y	OPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	7	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
 ||87|| 						OPL		NO		type
-||-5||	,	5	TK_COMMA	,	OPL	YES	TK_COMMA
+||-5||	,	7	TK_COMMA	,	OPL	YES	TK_COMMA
 ||15|| 						OPL		NO		OPL
-||-5||	z	5	TK_ID	z	OPL	YES	TK_ID
-||-5||	:	5	TK_COLON	:	OPL	YES	TK_COLON
-||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||-5||	z	7	TK_ID	z	OPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	7	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
 ||87|| 						OPL		NO		type
-||-5||	,	5	TK_COMMA	,	OPL	YES	TK_COMMA
+||-5||	,	7	TK_COMMA	,	OPL	YES	TK_COMMA
 ||15|| 						OPL		NO		OPL
-||-5||	k	5	TK_ID	k	OPL	YES	TK_ID
-||-5||	:	5	TK_COLON	:	OPL	YES	TK_COLON
-||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
-||87|| 						OPL		NO		type
-||-5||	EPS	5	TK_EPS	EPS	OPL	YES	TK_EPS
+||-5||	k	7	TK_ID	k	OPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	7	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	7	TK_EPS	EPS	OPL	YES	TK_EPS
 ||16|| 						OPL		NO		OPL
-||-5||	]	5	TK_SQBC	]	ret	YES	TK_SQBC
-||-5||	;	5	TK_SEMICOL	;	ret	YES	TK_SEMICOL
-||-5||	start	6	TK_START	start	moduleDef	YES	TK_START
+||-5||	]	7	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	7	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	8	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						module		NO		moduleDef
-||-5||	EPS	8	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	10	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						moduleDef		NO		statements
-||-5||	end	8	TK_END	end	moduleDef	YES	TK_END
+||-5||	end	10	TK_END	end	moduleDef	YES	TK_END
 ||4|| 						program		NO		otherModules
-||-5||	EPS	10	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	EPS	12	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						otherModules		NO		otherModules
-||-5||	<<<	10	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||-5||	<<<	12	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
 ||6|| 						program		NO		driverModule
-||-5||	driver	10	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
-||-5||	program	10	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
-||-5||	>>>	10	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
-||-5||	start	11	TK_START	start	moduleDef	YES	TK_START
+||-5||	driver	12	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	12	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	12	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	13	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	EPS	13	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	15	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						moduleDef		NO		statements
-||-5||	end	13	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	14	TK_EPS	EPS	otherModules	YES	TK_EPS
-||5|| 						program		NO		otherModules
+||-5||	end	15	TK_END	end	moduleDef	YES	TK_END
+||-5||	<<	17	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	17	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	kela	17	TK_ID	kela	module	YES	TK_ID
+||-5||	>>	17	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	18	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	18	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	18	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	amol	18	TK_ID	amol	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	18	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	boolean	18	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						input_plist		NO		dataType
+||-5||	,	18	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	mohit_vyas	18	TK_ID	mohit_vyas	IPL	YES	TK_ID
+||-5||	:	18	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	18	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	18	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	kunal	18	TK_ID	kunal	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	18	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	yembarwar	18	TK_ID	yembarwar	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||-5||	]	18	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	18	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	18	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	EPS	18	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	18	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	18	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	19	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	19	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	21	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	21	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	EPS	22	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules

@@ -327,24 +327,6 @@ void inorderAST (astNode *node, int space)
 	printf ("|(%s,%s)\n", (node->tok==NULL)?tokenIDToString(node->id):node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
 }
 
-/*
-void pushASTChild (astNode *node, astNode *sib)
-{
-	sib->parent = node ;
-
-	if (node->child == NULL)
-		node->child = sib ;
-	else
-	{
-		node = node->child ;
-		while (node->next != NULL)
-			node = node->next ;
-
-		node->next = sib ;
-	}
-}
-*/
-
 void connectChildren (astNode *parent, astNode **siblings, int num)
 {
 	for (int i = 0 ; i < num - 1; i++)
@@ -358,28 +340,6 @@ void connectChildren (astNode *parent, astNode **siblings, int num)
 		siblings[i]->prev = siblings[i-1] ;
 }
 
-void testroot (astNode *root)
-{
-	astNode *mds , *stmt ;
-	mds = root->child ;
-	printf ("%s\n", tokenIDToString(root->id)) ;
-
-	while (mds != NULL)
-	{
-		printf ("\t%s, parent = %s\n" , tokenIDToString(mds->id), tokenIDToString((mds->parent)->id)) ;
-		if (mds->child == NULL)
-			printf ("\t\tIts child is null\n") ;
-		if (mds->id == driverModule)
-		{
-			stmt = mds->child ;
-			printf ("\t\t%s, parent = %s\n", tokenIDToString(stmt->id) , tokenIDToString(stmt->parent->id)) ;
-			if (stmt->child == NULL)
-				printf ("\t\t\t Its child is null\n") ;
-		}
-		mds = mds->next ;
-	}
-}
-
 astNode* applyASTRule (treeNode *PTNode)
 {
 	if (PTNode == NULL)
@@ -389,13 +349,11 @@ astNode* applyASTRule (treeNode *PTNode)
 	treeNode *leftChild , *sibling ;
 	datType *astDatType ;
 
-	//printf ("applyASTRule : Before any switch %d and %s\n", PTNode->gcode, tokenIDToString(PTNode->tnt.nonTerm)) ;
-	printf ("%d\n", PTNode->gcode) ;
 	switch (PTNode->gcode)
 	{
 		case 0 :								// <program> --> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
 			node = createASTNode (PTNode) ;
-			//node->id = PTNode->tnt.nonTerm ;
+
 
 			// <moduleDeclarations>
 			leftChild = PTNode->child ;		
@@ -440,9 +398,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			// Connect the children at the program level.
 			node->child = children[0] ;
 			connectChildren (node, children, 4) ;
-
-			//printf ("End of root %d\n", node->id) ;
-
 			break ;
 
 		case 1 :								// <moduleDeclarations> --> <moduleDeclaration> <moduleDeclarations>
@@ -514,14 +469,7 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// <moduleDef>
 			applyASTRule (sibling) ;	// 8
-			PTNode->syn = sibling->syn ;		// <driverModule>.syn = <moduleDef>.syn = 
-			/*
-			while (sibling->syn != NULL)	//Ensuring 
-			{
-				sibling->syn->parent = PTNode->syn ;
-				sibling->syn = sibling->syn->next ;
-			}
-			*/
+			PTNode->syn = sibling->syn ;		// <driverModule>.syn = <moduleDef>.syn 
 
 			break ;
 
@@ -531,34 +479,18 @@ astNode* applyASTRule (treeNode *PTNode)
 			// ID
 			sibling = leftChild->next->next ;
 			children[0] = createASTNode (sibling) ;
-			printf ("\tmodule %s", children[0]->tok->lexeme) ;
 
 			// <input_plist>
 			while (sibling->tag != NON_TERMINAL)
 				sibling = sibling->next ;
 
 			children[1] = createASTNode (sibling) ;
-			printf (" going into the hole of input_plist\n") ;
 			applyASTRule (sibling) ;	// 11
-			printf ("\tIn 7, emerged fom the hole of input_plist\n") ;
-			//children[1]->child = sibling->syn ;			// children[] is the WRAPPERHEAD to sibling->syn = HEAD of IPLs
-			//printf ("\tIn 7 after processing %s " , tokenIDToString(sibling->syn->id)) ;
 			node = sibling->syn->child ;
-			printf ("\tIn 7, ") ;
-			while (node != NULL)
-			{
-				//printf ("(%s,%s) , " , node->child->tok->lexeme,  tokenIDToString(node->child->next->dt->pType) ) ;
-				//printf ("%s ",tokenIDToString(sibling->syn->id)) ;
-				printf ("(%s, %s, %s, %s) ", node->child->tok->lexeme, node->child->next->dt->arrType->lex1,node->child->next->dt->arrType->lex2,tokenIDToString(node->child->next->dt->arrType->type)) ;
-				//printf ("ABBA %s ||| " , tokenIDToString(children[1]->id)) ;
-				//node->parent = children[1] ;
-				node = node->next ;
-			}
-			printf ("\n\tIn 7, IPL nodes linked and truth = %s\n" , (children[1]->child == sibling->syn->child)?"YWA":"NO") ;
+
 
 			// <ret>
 			sibling = sibling->next->next->next ;
-			printf ("\tIn 7, going into the hole of ret\n") ;
 			children[2] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;		// 9, 10
 			children[2]->child = sibling->syn ;			// children [] is the WRAPPERHEAD to sibling->syn = HEAD of OPLs
@@ -601,22 +533,19 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn = sibling->syn ;
 			break ;
 
-		case 10 :
-			PTNode->syn = NULL ;
+		case 10 :								// <ret> --> EPS
+			PTNode->syn = PTNode->inh ;
 			break ;
 
 		case 11 : 								// <input_plist> --> ID COLON <dataType> <IPL>
 			// ID
 			leftChild = PTNode->child ;
 			children[0] = createASTNode (leftChild) ;
-			//printf ("\t%s\n", children[0]->tok->lexeme) ;
 
 			// <dataType>
 			sibling = leftChild->next->next ;		
 			children[1] = createASTNode (sibling) ;
-			printf ("\tGoing into datatype\n") ;
 			applyASTRule (sibling) ;		// 81, 82, 83, 84
-			//printf ("\tIn 12 %s\n", tokenIDToString(sibling->syn->dt->type)) ;
 			
 
 			// <IPL> ---> Creating the first IPL list node
@@ -626,22 +555,16 @@ astNode* applyASTRule (treeNode *PTNode)
 			connectChildren (node, children, 2) ;
 			sibling->inh = sibling->syn ;
 			sibling->syn = NULL ;
-			//printf ("\tIn 11 (%s, %s) and %s\n", node->child->tok->lexeme, tokenIDToString(node->child->next->dt->type), (children[1]->parent == node)?"SAME":"NO") ;
 
 
 			// Will recurse to 12 repeatedly until 13
-			printf ("\tIn 11, going into sibling (%s, %s, %s, %s)\n", node->child->tok->lexeme, node->child->next->dt->arrType->lex1,node->child->next->dt->arrType->lex2,tokenIDToString(node->child->next->dt->arrType->type)) ;
 			applyASTRule (sibling) ;		// 12, 13
-			//printf ("\tIn 11 back here ----> ") ;
 			PTNode->syn->child = sibling->syn ;		// <input_plist> is the WRAPPEDHEAD to the list of IPLs.
-			printf ("\tIn 11, ") ;
 			while (sibling->syn != NULL)
 			{
-				//printf ("ABBA %s ||| ", tokenIDToString(PTNode->syn->id)) ;
 				sibling->syn->parent = PTNode->syn ;
 				sibling->syn = sibling->syn->next ;
 			}
-			printf ("\n\tIn 11 Parent linking done\n") ;
 			break ;
 
 		case 12 :								// <IPL> --> COMMA ID COLON <dataType> <IPL>
@@ -650,7 +573,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			// ID
 			sibling = leftChild->next ;
 			children[0] = createASTNode (sibling) ;
-			//printf ("\t%s\n", children[0]->tok->lexeme) ;
 
 			// <dataType>
 			sibling = sibling->next->next ;		
@@ -665,7 +587,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			connectChildren (node, children, 2) ;
 			sibling->inh = sibling->syn ;
 			sibling->syn = NULL ;
-			//printf ("\tIn 13 (%s, %s) and %s\n", node->child->tok->lexeme, tokenIDToString(node->child->next->dt->type), (children[0]->parent == node)?"SAME":"NO") ;
 
 			// Linking the list
 			PTNode->inh->next = sibling->inh ;
@@ -674,24 +595,15 @@ astNode* applyASTRule (treeNode *PTNode)
 			
 
 			PTNode->syn = sibling->syn ;			// sibling->syn = <IPL>.syn while the linked list is passed up
-			//printf ("\tIn 13 Epislon case done %s %s\n", tokenIDToString(PTNode->syn->child->id) , tokenIDToString(PTNode->syn->next->child->id)) ;
-			//printf ("\tIn 13 Epislon case done %s %s\n", PTNode->syn->child->tok->lexeme , PTNode->syn->next->child->tok->lexeme);
-
 			break ;
 
 		case 13 :								// <IPL> --> EPS
-			//printf ("\tReached epsilon production of IPL ---> ") ;
 			PTNode->syn = PTNode->inh ;
 			if (PTNode->syn != NULL)
 			{
-				printf ("\t") ;
 				while (PTNode->syn->prev != NULL)
-				{
-					printf ("(%s,%s) ", PTNode->syn->child->tok->lexeme, tokenIDToString(PTNode->syn->child->next->dt->arrType>-type)) ;
 					PTNode->syn = PTNode->syn->prev ;
-				}
 			}
-			printf ("(%s,%s) After pushfront loop at epsilon production\n", PTNode->syn->child->tok->lexeme, tokenIDToString(PTNode->syn->child->next->dt->arrType->type)) ;
 			break ;
 
 		case 14 :								// <output_plist> --> ID COLON <type> <OPL>
@@ -727,9 +639,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			// <type>
 			sibling = sibling->next->next ;		
 			children[1] = createASTNode (sibling) ;
-			//printf ("\tCreating type\n") ;
 			applyASTRule (sibling) ;		// 85, 86, 87
-			//printf ("\tIn 15, Exiting type\n") ;
 
 			// <OPL> ---> Creating the first OPL list node
 			sibling = sibling->next ;
@@ -776,25 +686,21 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = PRIMITIVE ;
 			PTNode->syn->dt->pType = PTNode->child->tnt.term->id ;
-			//printf ("\t%s\n", tokenIDToString(PTNode->syn->dt->type)) ;
 			break ;
 
 		case 82 : 								// <dataType> --> REAL
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = PRIMITIVE ;
 			PTNode->syn->dt->pType = PTNode->child->tnt.term->id ;
-			//printf ("\t%s\n", tokenIDToString(PTNode->syn->dt->type)) ;
 			break ;
 
 		case 83 :								// <dataType> --> BOOLEAN
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = PRIMITIVE ;
 			PTNode->syn->dt->pType = PTNode->child->tnt.term->id ;
-			//printf ("\t%s\n", tokenIDToString(PTNode->syn->dt->type)) ;
 			break ;
 
 		case 84 :								// <dataType> --> ARRAY SQBO <range> SQBC OF <type>
-			printf ("\tInside array data type\n") ;
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = ARRAY ;
 
@@ -809,33 +715,22 @@ astNode* applyASTRule (treeNode *PTNode)
 			sibling->inh = PTNode->syn ;
 			applyASTRule (sibling) ;	//85-87
 
-			//printf ("\tIn 84, %s %s %s\n", PTNode->syn->dt->arrType->lex1, PTNode->syn->dt->arrType->lex2, tokenIDToString(PTNode->syn->dt->arrType->type)) ;
 			break ;
 
 		case 85 :								// <type> --> INTEGER
 			if (PTNode->parent->tnt.nonTerm == dataType)		// Array type
-			{
 				PTNode->inh->dt->arrType->type = PTNode->child->tnt.term->id ;
-				printf ("\t%s\n", tokenIDToString(PTNode->inh->dt->arrType->type)) ;
-			}
 			else if (PTNode->parent->tnt.nonTerm == output_plist || PTNode->parent->tnt.nonTerm == OPL)
-			{
 				PTNode->syn->id = PTNode->child->tnt.term->id ;
-			}
 			else
 				printf ("<type> error!\n") ;
 			break ;
 
 		case 86 :								// <type> --> REAL
 			if (PTNode->parent->tnt.nonTerm == dataType)		// Array type
-			{
 				PTNode->inh->dt->arrType->type = PTNode->child->tnt.term->id ;
-				printf ("\t%s\n", tokenIDToString(PTNode->inh->dt->arrType->type)) ;
-			}
 			else if (PTNode->parent->tnt.nonTerm == output_plist || PTNode->parent->tnt.nonTerm == OPL)
-			{
 				PTNode->syn->id = PTNode->child->tnt.term->id ;
-			}
 			else
 				printf ("<type> error\n") ;
 
@@ -843,17 +738,9 @@ astNode* applyASTRule (treeNode *PTNode)
 
 		case 87 :								// <type> --> BOOLEAN
 			if (PTNode->parent->tnt.nonTerm == dataType)		// Array type
-			{
 				PTNode->inh->dt->arrType->type = PTNode->child->tnt.term->id ;
-				printf ("\t%s\n", tokenIDToString(PTNode->inh->dt->arrType->type)) ;
-			}
 			else if (PTNode->parent->tnt.nonTerm == output_plist || PTNode->parent->tnt.nonTerm == OPL)
-			{
-				printf ("\tHere lol\n");
 				PTNode->syn->id = PTNode->child->tnt.term->id ;
-				//printf ("\tHere lol\n");
-				printf ("\t%s\n", tokenIDToString(PTNode->syn->id)) ;
-			}
 			else
 				printf ("<type> error\n") ;
 
