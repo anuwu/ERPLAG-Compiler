@@ -31,8 +31,42 @@
 ||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
 ||-5||	real	4	TK_REAL	real	type	YES	TK_REAL
 ||86|| 						dataType		NO		type
+||-5||	,	4	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	4	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	4	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	a0	4	TK_ID	a0	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	b	4	TK_ID	b	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	4	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	,	4	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	4	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	4	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	x	4	TK_ID	x	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	y	4	TK_ID	y	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	4	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
 ||-5||	EPS	4	TK_EPS	EPS	IPL	YES	TK_EPS
-||13|| 						input_plist		NO		IPL
+||13|| 						IPL		NO		IPL
 ||-5||	]	4	TK_SQBC	]	module	YES	TK_SQBC
 ||-5||	;	4	TK_SEMICOL	;	module	YES	TK_SEMICOL
 ||-5||	returns	5	TK_RETURNS	returns	ret	YES	TK_RETURNS
@@ -53,8 +87,14 @@
 ||15|| 						OPL		NO		OPL
 ||-5||	z	5	TK_ID	z	OPL	YES	TK_ID
 ||-5||	:	5	TK_COLON	:	OPL	YES	TK_COLON
-||-5||	real	5	TK_REAL	real	type	YES	TK_REAL
-||86|| 						OPL		NO		type
+||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						OPL		NO		type
+||-5||	,	5	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						OPL		NO		OPL
+||-5||	k	5	TK_ID	k	OPL	YES	TK_ID
+||-5||	:	5	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	5	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						OPL		NO		type
 ||-5||	EPS	5	TK_EPS	EPS	OPL	YES	TK_EPS
 ||16|| 						OPL		NO		OPL
 ||-5||	]	5	TK_SQBC	]	ret	YES	TK_SQBC

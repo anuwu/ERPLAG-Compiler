@@ -1,8 +1,8 @@
 declare module foo ;
 
 <<module foo>>
-takes input [a:array[1..4] of real] ;
-returns [x:boolean,y:boolean,z:real] ;
+takes input [a:array[1..4] of real,b:array[a0..b] of boolean, c:array[x..y]of integer] ;
+returns [x:boolean,y:boolean,z:boolean,k:boolean] ;
 start
 	** Nothing here **
 end
