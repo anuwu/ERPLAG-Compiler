@@ -1,17 +1,8 @@
-declare module someone ;
-declare module please ;
-declare module save ;
-declare module me ;
+declare module foo ;
 
-<<module someone>>
-takes input [a:integer,b:real,c:boolean,d:integer] ;
-**returns [x:boolean,y:boolean,z:real] ;**
-start
-	** Nothing here **
-end
-
-<<module please>>
-takes input [a:real,b:boolean,c:boolean,d:integer] ;
+<<module foo>>
+takes input [a:array[1..4] of real] ;
+returns [x:boolean,y:boolean,z:real] ;
 start
 	** Nothing here **
 end
@@ -20,21 +11,3 @@ end
 start
 	** Nothing here **
 end
-
-<<module save>>
-takes input [x:integer] ;
-**return [y:real] ;**
-start
-	** Nothing here **
-end
-
-<<module me>>
-takes input [x:boolean] ;
-**return [F:real,FF:real,FFF:integer,FFFF:integer,FFFFF:boolean,FFFFFF:boolean] ;**
-start
-	** Nothing here **
-end
-
-
-
-** ------------------------- End of the file! ------------------------- **

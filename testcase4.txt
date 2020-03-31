@@ -1,0 +1,40 @@
+declare module someone ;
+declare module please ;
+declare module save ;
+declare module me ;
+
+<<module someone>>
+takes input [a:integer,b:real,c:boolean,d:integer] ;
+**returns [x:boolean,y:boolean,z:real] ;**
+start
+	** Nothing here **
+end
+
+<<module please>>
+takes input [a:real,b:boolean,c:boolean,d:integer] ;
+start
+	** Nothing here **
+end
+
+<<<driver program>>>
+start
+	** Nothing here **
+end
+
+<<module save>>
+takes input [x:integer] ;
+**return [y:real] ;**
+start
+	** Nothing here **
+end
+
+<<module me>>
+takes input [x:boolean] ;
+**return [F:real,FF:real,FFF:integer,FFFF:integer,FFFFF:boolean,FFFFFF:boolean] ;**
+start
+	** Nothing here **
+end
+
+
+
+** ------------------------- End of the file! ------------------------- **

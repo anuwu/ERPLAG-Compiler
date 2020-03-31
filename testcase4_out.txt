@@ -1,0 +1,177 @@
+||-5||	declare	1	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	1	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	someone	1	TK_ID	someone	moduleDeclaration	YES	TK_ID
+||-5||	;	1	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						program		NO		moduleDeclarations
+||-5||	declare	2	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	2	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	please	2	TK_ID	please	moduleDeclaration	YES	TK_ID
+||-5||	;	2	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	declare	3	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	3	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	save	3	TK_ID	save	moduleDeclaration	YES	TK_ID
+||-5||	;	3	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	declare	4	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	4	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	me	4	TK_ID	me	moduleDeclaration	YES	TK_ID
+||-5||	;	4	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	EPS	6	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||2|| 						moduleDeclarations		NO		moduleDeclarations
+||0|| 						ROOT		NO		program
+||-5||	<<	6	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	6	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	someone	6	TK_ID	someone	module	YES	TK_ID
+||-5||	>>	6	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	7	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	7	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	7	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	7	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	7	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	7	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	,	7	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	7	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	7	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	,	7	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	7	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	7	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	7	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	d	7	TK_ID	d	IPL	YES	TK_ID
+||-5||	:	7	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	7	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	7	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	7	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	7	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	9	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	9	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	11	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	11	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	<<	13	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	13	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	please	13	TK_ID	please	module	YES	TK_ID
+||-5||	>>	13	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	14	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	14	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	14	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	14	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	14	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	real	14	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						input_plist		NO		dataType
+||-5||	,	14	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	14	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	14	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	14	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	14	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	14	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	14	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	14	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	14	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	d	14	TK_ID	d	IPL	YES	TK_ID
+||-5||	:	14	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	14	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	14	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	14	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	14	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	15	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	15	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	17	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	17	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	EPS	19	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules
+||-5||	<<<	19	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	19	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	19	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	19	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	20	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	EPS	22	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	22	TK_END	end	moduleDef	YES	TK_END
+||-5||	<<	24	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	24	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	save	24	TK_ID	save	module	YES	TK_ID
+||-5||	>>	24	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	25	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	25	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	25	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	x	25	TK_ID	x	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	25	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	25	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	EPS	25	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						input_plist		NO		IPL
+||-5||	]	25	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	25	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	27	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	27	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	29	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	29	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	<<	31	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	31	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	me	31	TK_ID	me	module	YES	TK_ID
+||-5||	>>	31	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	32	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	32	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	32	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	x	32	TK_ID	x	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	32	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	boolean	32	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						input_plist		NO		dataType
+||-5||	EPS	32	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						input_plist		NO		IPL
+||-5||	]	32	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	32	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	34	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	34	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	36	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	36	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	EPS	41	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules
