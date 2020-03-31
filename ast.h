@@ -47,11 +47,27 @@ typedef union _astDataUnion 		// Smash together everything that the AST can cont
 
 */
 
+typedef union _datType
+{
+	tokenID type ;
+	char *lex1 ;
+	char *lex2 ;
+} datType ;
+
+typedef enum _datTag
+{
+	PRIMITIVE, ARRAY
+} datTag ;
+
 typedef struct _astNode 
 {
 	tokenID id ;
+	tokenID type ;
 	token *tok ;
 
+	datTag dtTag ;
+	datType *dt ;
+	
 	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;
 
