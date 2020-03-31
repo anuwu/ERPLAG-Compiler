@@ -239,38 +239,6 @@ char* tokenIDToString (tokenID id)
  	}
 }
 
-/*
-typedef struct _astnode {
-	tokenID tkID ;
-	TNT tag ;
-
-	struct _astnode *parent , *child , *next ;
-} astNode ;
-*/
-
-/*
-astNode* newASTnonLeaf ( tokenID tkID , astNode * child ) {
-	astNode * tmp = ( astNode * ) malloc ( sizeof ( astNode )) ;
-	tmp->tag = NON_TERMINAL ;
-	tmp->tkID = tkID ;
-
-	tmp->child = child ;
-	tmp->parent = tmp->next = NULL ;
-
-	return tmp ;
-}
-
-astNode* newASTLeaf ( tokenID tkID , token tkn ) {
-	astNode * tmp = (astNode * ) malloc ( sizeof ( astNode )) ;
-	tmp->tkID = tkID ;
-	tmp->lexeme = tkn.lexeme ;
-
-	tmp->parent = tmp->child = tmp->next = NULL ;
-
-	return tmp ;
-}
-*/
-
 astNode* createASTNode (treeNode *PTNode)
 {
 	astNode *node = (astNode *) malloc (sizeof(astNode)) ;
@@ -577,7 +545,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			// <dataType>
 			sibling = sibling->next->next ;		
 			children[1] = createASTNode (sibling) ;
-			printf ("\tGoing into dataType from IPL") ;
 			applyASTRule (sibling) ;		// 81, 82, 83, 84
 
 			// <IPL> ---> Creating the nth IPL list node
@@ -802,9 +769,3 @@ astNode* applyASTRule (treeNode *PTNode)
 
 	return node ;
 }
-
-void astTest ()
-{
-	printf ("This is astTest\n") ;
-}
-

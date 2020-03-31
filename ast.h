@@ -78,11 +78,7 @@ typedef struct _astNode
 	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;
 
-
-void astTest () ;
 astNode* applyASTRule (treeNode *PTNode) ;
 void inorderAST (astNode *node, int space) ;
-void testroot (astNode *root) ;
-
 
 #endif
