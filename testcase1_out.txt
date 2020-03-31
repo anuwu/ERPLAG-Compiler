@@ -1,0 +1,17 @@
+||-5||	EPS	1	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||2|| 						program		NO		moduleDeclarations
+||0|| 						ROOT		NO		program
+||-5||	EPS	1	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules
+||-5||	<<<	1	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	1	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	1	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	EPS	3	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	3	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	4	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules

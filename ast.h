@@ -6,9 +6,10 @@
 #include "parser.h"
 
 /*
+
 typedef enum _astTagsID
 {
-	ast_idList, ast_stmtList
+	ast_idList, ast_stmtList, ast_moduleInfo
 } astTagsID ;
 
 typedef enum _stmtTypeID
@@ -36,12 +37,14 @@ typedef struct _moduleInfoNode
 	struct _moduleInfoNode *next ;
 } moduleInfoNode ;
 
+
 typedef union _astDataUnion 		// Smash together everything that the AST can contain
 {
 	idListNode* idListHead ;
 	stmtListNode* stmtListHead ; 
 	moduleInfoNode* moduleInfoHead ;
 } astDataUnion ;
+
 */
 
 typedef struct _astNode 
@@ -52,8 +55,6 @@ typedef struct _astNode
 	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;
 
-
-astNode* generateASTtree (treeNode* root) ;
 
 void astTest () ;
 astNode* applyASTRule (treeNode *PTNode) ;

@@ -4,14 +4,14 @@ declare module save ;
 declare module me ;
 
 <<module someone>>
-takes input [a,b,c,d] ;
-returns [x,y,z] ;
+takes input [a:integer,b:real,c:boolean,d:integer] ;
+**returns [x:boolean,y:boolean,z:real] ;**
 start
 	** Nothing here **
 end
 
 <<module please>>
-takes input [a,b,c,d] ;
+takes input [a:real,b:boolean,c:boolean,d:integer] ;
 start
 	** Nothing here **
 end
@@ -22,15 +22,15 @@ start
 end
 
 <<module save>>
-takes input [x] ;
-return [y]
+takes input [x:integer] ;
+**return [y:real] ;**
 start
 	** Nothing here **
 end
 
 <<module me>>
-takes input [x] ;
-return [F,FF,FFF,FFFF,FFFFF,FFFFFF]
+takes input [x:boolean] ;
+**return [F:real,FF:real,FFF:integer,FFFF:integer,FFFFF:boolean,FFFFFF:boolean] ;**
 start
 	** Nothing here **
 end
