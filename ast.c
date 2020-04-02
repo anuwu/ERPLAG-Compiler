@@ -1255,10 +1255,10 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild->syn->child = sibling->syn;
 			sibling->syn->parent = leftChild->syn;
 			/*
-			leftChild->syn->next = sibling->syn;
-			sibling->syn->prev = leftChild->syn;
+			leftChild->syn->child = sibling->syn;
+			sibling->syn->parent = leftChild->syn;
 			*/
-
+	
 			break;
 
 		case 89:								// <var> --> NUM
