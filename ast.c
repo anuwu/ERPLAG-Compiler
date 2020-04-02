@@ -674,17 +674,21 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn->child = leftChild->syn;
 			leftChild->syn->parent = PTNode->syn;
 			break;
+
+		case 20 :							// <statement> --> <simpleStmt>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 29, 35
+			PTNode->syn->child = leftChild->syn ;
+			while (leftChild->syn != NULL)			// Linking the parents here as it is too deep.
+			{
+				leftChild->syn->parent = PTNode->syn ;
+				leftChild->syn = leftChild->syn->next ;
+			}
+			break ;
 				
 		case 22 :                              	// <statement> --> <declareStmt>
 			leftChild = PTNode->child;
 			applyASTRule(leftChild);			// 39
-			/*
-			if(leftChild->syn ==NULL || PTNode->syn==NULL)
-			{
-				printf("LOL");
-				break;
-			}		
-			*/
 			PTNode->syn->child=leftChild->syn;
 			leftChild->syn->parent = PTNode->syn;						 	    
 			break;
@@ -737,6 +741,50 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild = PTNode->child;
 			PTNode->syn = createASTNode(leftChild);
 			break;
+
+		case 29 :							// <simpleStmt> --> <assignmentStmt>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+			break ;
+
+		case 30 :							// <assignmentStmt> --> ID <whichStmt>
+			// ID
+			leftChild = PTNode->child ;
+			createASTNode (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+
+			// <whichStmt>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 31, 32
+			leftChild->syn->next = sibling->syn ;
+			sibling->syn->prev = leftChild->syn ;
+			break ;
+
+		case 31 :							// <whichStmt> --> <lvalueIDStmt>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 33
+			PTNode->syn = leftChild->syn ;
+
+			break ;
+
+		case 33 :							// <lvalueIDStmt> --> ASSIGNOP <expression_new> SEMICOL
+			// ASSIGNOP
+			leftChild = PTNode->child ;
+			createASTNode (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+
+			// <expression_new>
+			sibling = leftChild->next ;
+			createASTNode (sibling) ;
+			applyASTRule (sibling) ;		// 47, 48
+
+			leftChild->syn->next = sibling->syn ;
+			sibling->syn->prev = leftChild->syn ;
+			break ;
+
+		case 35 :
+			break ;
 		
 		case 39 :							// declareStmt--> DECLARE <idList> COLON <dataType> SEMICOL
 			//declare
@@ -853,6 +901,14 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild->syn->parent = id42_pointer->parent;
 
 			leftChild=leftChild->next->next;
+			break ;
+
+		case 47 :							// <expression_new> --> <expression>
+			// Fill in later
+			break ;
+
+		case 48 :							// <expression_new> --> <U>
+			// Fill in later
 			break ;
 
 

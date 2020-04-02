@@ -1,8 +1,4 @@
 <<<driver program>>>
 start
-	while (true)
-	start
-		print (a[4]) ;
-		print (b) ;
-	end
+	allah := (a > 3) OR FALSE ;
 end
