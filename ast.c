@@ -515,11 +515,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			applyASTRule(sibling);
 			p_pointer->next = sibling->syn;
 			sibling->syn->prev = p_pointer;
-			while (sibling->syn != NULL)
-			{
-				sibling->syn->parent= p_pointer->parent; 
-				sibling->syn = sibling->syn->next ;
-			}
+			sibling->syn->parent= p_pointer->parent; 
 
 			break;
 		
