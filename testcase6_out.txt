@@ -185,13 +185,15 @@
 ||-5||	end	25	TK_END	end	conditionalStmt	YES	TK_END
 ||21|| 						statements		NO		statement
 ||17|| 						statements		NO		statements
-||-5||	EPS	27	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	26	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	EPS	-1	TK_BREAK	EPS	default_new	YES	TK_BREAK
-||-5||	EPS	-1	TK_SEMICOL	EPS	default_new	YES	TK_SEMICOL
-||-5||	EPS	-1	TK_END	EPS	conditionalStmt	YES	TK_END
+||-5||	break	26	TK_BREAK	break	default_new	YES	TK_BREAK
+||-5||	;	26	TK_SEMICOL	;	default_new	YES	TK_SEMICOL
+||-5||	end	27	TK_END	end	conditionalStmt	YES	TK_END
 ||21|| 						statements		NO		statement
 ||17|| 						statements		NO		statements
-||-5|| 						statements		YES		statements
-||-5||	EPS	-1	TK_END	EPS	moduleDef	YES	TK_END
-||-5|| 						program		YES		otherModules
+||-5||	EPS	28	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	28	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	29	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules
