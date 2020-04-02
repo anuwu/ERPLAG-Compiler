@@ -23,11 +23,11 @@ twinBuffer *twinBuf ;
 
 int main(int argc, char *argv[])
 {
-	if (argc != 3)
-	{
-		printf("Incorrect number of arguments\n") ;
-		exit (0) ;
-	}
+	// if (argc != 3)
+	// {
+	// 	printf("Incorrect number of arguments\n") ;
+	// 	exit (0) ;
+	// }
 	FILE* outfile ;
 	outfile = fopen (argv[2] , "w") ;
 

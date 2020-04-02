@@ -1,11 +1,12 @@
-declare module someone ;
-declare module please ;
-declare module save ;
-declare module me ;
-
+declare module mod1;
 <<<driver program>>>
 start
-	**There is nothing here**
+	print(a);
+	print(7.5);
+	print(6);
+	get_value(z);
+	declare a:integer;
+	declare d,e,f:real;
 end
 
 **

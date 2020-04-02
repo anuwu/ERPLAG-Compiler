@@ -486,8 +486,10 @@ astNode* applyASTRule (treeNode *PTNode)
 			// <statements>
 			PTNode->syn = createASTNode (sibling) ;		// <moduleDef>.syn is Statements WRAPPERHEAD
 			applyASTRule (sibling) ;	// 18
+			PTNode->syn->child = sibling->syn;
 			while (sibling->syn != NULL)	//Ensuring that statement list parents point to Statements WRAPPERHEAD
 			{
+				//printf("\t ha ha");
 				sibling->syn->parent = PTNode->syn ;
 				sibling->syn = sibling->syn->next ;
 			}
@@ -634,6 +636,37 @@ astNode* applyASTRule (treeNode *PTNode)
 			}
 			break ;
 
+		case 17:								//	statements statement statements
+			// leftChild =  PTNode->child;//statement
+			// sibling = leftChild->next;//staements
+			// PTNode->syn->child = createASTNode(leftChild); //PTnode= Statements parse tree node
+			// applyASTRule(leftChild);
+			// sibling->inh = PTNode->parent->syn->child;
+			// if(PTNode->inh != NULL)
+			// {
+			// 	PTNode->inh->next = sibling->inh;
+			// 	PTNode->parent->syn->prev = PTNode->inh;
+			// }
+			// applyASTRule(sibling);
+			// // leftChild->syn->next = sibling->syn;
+			// PTNode->syn = sibling->syn;
+			// break;
+			leftChild = PTNode->child ;
+			sibling = leftChild->next ;
+			//printf("    Ha hah");
+			createASTNode (leftChild) ;
+			applyASTRule (leftChild) ;		// 7
+			sibling->inh = leftChild->syn ;
+			if (PTNode-> inh != NULL)
+			{
+				PTNode->inh->next = sibling->inh ;
+				sibling->inh->prev = PTNode->inh ;
+			}
+
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;
+			break ;	
+
 		case 18 :								// <statements> --> EPS
 			PTNode->syn = PTNode->inh ;
 			if (PTNode->syn != NULL)
@@ -642,17 +675,205 @@ astNode* applyASTRule (treeNode *PTNode)
 					PTNode->syn = PTNode->syn->prev ;
 			}
 			break ;
-			PTNode->syn = PTNode->inh ;
-			if (PTNode->syn != NULL)
+			// PTNode->syn = PTNode->inh ;
+			// if (PTNode->syn != NULL)
+			// {
+			// 	while (PTNode->syn->prev != NULL)
+			// 		PTNode->syn = PTNode->syn->prev ;
+			// }
+			// break ;
+			// PTNode->syn = PTNode->inh ;
+			// if (PTNode->syn != NULL)
+			// {
+			// 	while (PTNode->syn->prev != NULL)
+			// 		PTNode->syn = PTNode->syn->prev ;
+			// }
+
+		case 19 :					//statement-->ioStmt
+			leftChild=PTNode->child;
+			applyASTRule(leftChild);	
+			PTNode->syn->child = leftChild->syn;
+			leftChild->syn->parent = PTNode->syn;
+			break;
+				
+		case 22 :                              	//<statement> --> declareStmt
+			//printf("Ha ha h");
+			leftChild = PTNode->child;
+			applyASTRule(leftChild);	//case 39
+			if(leftChild->syn ==NULL || PTNode->syn==NULL)
 			{
-				while (PTNode->syn->prev != NULL)
-					PTNode->syn = PTNode->syn->prev ;
+				printf("LOL");
+				break;
+			}		
+			PTNode->syn->child=leftChild->syn;
+			leftChild->syn->parent = PTNode->syn;						 	    
+			break;
+		
+		case 23:								//statement-->iterativeStmt
+			leftChild = PTNode->child;
+			applyASTRule(leftChild);
+			PTNode->syn->child = leftChild->syn;
+			leftChild->syn->parent = PTNode->syn;
+			break;
+
+		case 24: 							//ioStmt GET_VALUE BO ID BC SEMICOL
+			leftChild = PTNode->child;
+			sibling = leftChild ->next->next;
+			astNode* gv_pointer = createASTNode(leftChild);
+			leftChild->syn->parent = PTNode->parent->syn;
+
+			createASTNode(sibling);
+			leftChild->syn->next = sibling->syn;
+			sibling->syn->parent = leftChild->syn->parent;
+			sibling->syn->prev =leftChild->syn;
+			PTNode->syn = gv_pointer;
+			break; 
+
+		case 25:							//ioStmt PRINT BO print_var BC SEMICOL
+			leftChild = PTNode->child;
+			sibling = leftChild->next->next;
+			astNode* p_pointer = createASTNode(leftChild);
+			p_pointer->parent = PTNode->parent->syn;
+
+			applyASTRule(sibling);
+			p_pointer->next = sibling->syn;
+			sibling->syn->prev = p_pointer;
+			sibling->syn->parent= p_pointer->parent;
+			PTNode->syn = p_pointer;
+			break;
+		
+		case 26:						//print_var var
+			leftChild = PTNode->child;
+			applyASTRule(leftChild);
+			PTNode->syn = leftChild->syn;
+			break;	
+		
+		case 27:
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			break;
+		
+		case 28:
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			break;
+		
+		case 39 :							//declareStmt--> DECLARE idList COLON dataType SEMICOL
+
+			//declare
+			leftChild = PTNode->child;   //declare
+			astNode* declare_pointer = createASTNode(leftChild);   //creating ast node for declare
+			declare_pointer->parent = PTNode->parent->syn; 
+			declare_pointer->prev=NULL;
+
+			//idList
+			 leftChild=leftChild->next;   //idList 
+			declare_pointer->next = createASTNode(leftChild);
+			applyASTRule(leftChild);  //
+			astNode * idList_pointer = declare_pointer->next;  //creating pointer that points to idList ast node
+			idList_pointer->prev = declare_pointer;
+			idList_pointer->parent = declare_pointer->parent;
+			//idList_pointer->child = leftChild->syn;
+
+			 //printf("idList");
+			 //dataType
+			leftChild=leftChild->next->next;  //dataType
+			idList_pointer->next = createASTNode(leftChild);
+			applyASTRule(leftChild);
+			idList_pointer->next = leftChild->syn; 
+			astNode* data_pointer = idList_pointer->next;  //creating pointer that points to dataType ast node
+			data_pointer->prev = idList_pointer;
+			data_pointer->parent = idList_pointer->parent;
+			PTNode->syn = declare_pointer;
+			//printf("%d",leftChild->syn->dt->pType);
+			break;	
+
+		case 40 :							//iterativeStmt--> FOR BO ID IN range_new BC START statements END
+			
+			//for
+			//printf("Ha ha h a");
+			leftChild=PTNode->child;        //left child points to FOR node of Parse Tree  
+			PTNode->syn = createASTNode(leftChild);//AST node for FOR created;
+			PTNode->syn->parent = PTNode->parent->syn; // FOR AST node parent points to statement and not iterative statement
+			PTNode->syn->prev=NULL;   //trivial
+
+			//ID
+			leftChild=leftChild->next->next; // ID
+			PTNode->syn->next = createASTNode(leftChild); // AST node created for ID
+			astNode* id_pointer= PTNode->syn->next;       //pointer to ast node of ID
+			id_pointer->parent = PTNode->syn->parent;     //parent is same as parent of FOR
+			id_pointer->prev = PTNode->syn;               //prev is FOR
+
+
+			//range_new
+			leftChild=leftChild->next->next; //range_new
+			applyASTRule(leftChild);         //<range_new>
+			id_pointer->next = leftChild->syn; //no need to create new AST node for range_new
+			astNode* range_pointer = leftChild->syn; //pointer to ast node of first NUM of the range
+			
+			//lower NUM1 of range
+			range_pointer->prev = id_pointer;
+			range_pointer->parent = id_pointer->parent;
+
+			//upper range NUM2
+			range_pointer->next->prev = range_pointer;
+			range_pointer=range_pointer->next;
+			range_pointer->parent = id_pointer->parent;
+
+			// statements
+			leftChild = leftChild->next->next->next;		//<statements>
+			range_pointer->next = createASTNode(leftChild); //creating AST node for <statements> 
+			applyASTRule(leftChild);   //PTnode in case 17
+			astNode* stat_pointer =  range_pointer->next;
+			stat_pointer->prev = range_pointer;
+			stat_pointer->parent = range_pointer->parent;
+			astNode* temp = leftChild->syn;
+			range_pointer->next->child = leftChild->syn;
+			//leftChild->syn->child = temp; 
+			while(temp!=NULL)
+			{
+				//printf("\t Ha");
+				temp->parent = stat_pointer; //stat_pointer === statements ast node
+				temp=temp->next;
 			}
+			break;	
+
+			/*PTNode->syn = createASTNode (sibling) ;		// <moduleDef>.syn is Statements WRAPPERHEAD
+			applyASTRule (sibling) ;	// 18
+			while (sibling->syn != NULL)	//Ensuring that statement list parents point to Statements WRAPPERHEAD
+			{
+				sibling->syn->parent = PTNode->syn ;
+				sibling->syn = sibling->syn->next ;
+			}
+			break ;*/
+		case 42:								//conditionalStmt SWITCH BO ID BC START CASE value COLON statements BREAK SEMICOL caseStmt default_new END
+			leftChild= PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			leftChild = leftChild->next->next;
+			PTNode->syn->parent = PTNode->parent->syn;
+
+			PTNode->syn->next = createASTNode(leftChild);
+			astNode* id42_pointer = PTNode->syn->next;
+			id42_pointer->prev = PTNode->syn;
+			id42_pointer->parent = PTNode->syn->parent;
+
+			leftChild=leftChild->next->next->next->next;
+			applyASTRule(leftChild);
+			id42_pointer->next = leftChild->syn;
+			leftChild->syn->prev = id42_pointer;
+			leftChild->syn->parent = id42_pointer->parent;
+
+			leftChild=leftChild->next->next;
+			
+
+
+
 
 		case 81 : 								// <dataType> --> INTEGER
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = PRIMITIVE ;
 			PTNode->syn->dt->pType = PTNode->child->tnt.term->id ;
+			//printf("%d", PTNode->child->tnt.term->id);
 			break ;
 
 		case 82 : 								// <dataType> --> REAL
@@ -713,6 +934,45 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			break ;
 
+		case 88:							//var ID whichID
+			leftChild=PTNode->child;
+			sibling = leftChild->next;
+			PTNode->syn = createASTNode(leftChild);
+			applyASTRule(sibling);
+			if(sibling->syn == NULL)
+			{
+				leftChild->syn->parent = PTNode->parent->parent->parent->syn;
+				leftChild->syn->next = sibling->syn;
+				break;
+			}
+			leftChild->syn->next = sibling->syn;
+			sibling->syn->prev = leftChild->syn;
+			leftChild->syn->parent = PTNode->parent->parent->parent->syn;
+			sibling->syn->parent = leftChild->syn->parent;
+			break;
+
+		case 89:							//var NUM
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			break;
+
+		case 90:							//var RNUM
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			break;
+		
+		case 91:							//whichID SQBO index_new SQBC
+			leftChild=PTNode->child->next;
+			createASTNode(leftChild);
+			PTNode->syn = leftChild->syn;
+			applyASTRule(leftChild);
+			PTNode->syn = leftChild->syn;
+			break;
+		
+		case 92:							//whichID EPS
+			PTNode->syn = NULL;
+			break;
+
 		case 93 :								// <index_new> --> NUM
 			leftChild = PTNode->child ;
 			astDatType = PTNode->inh->dt ;		// Array type only
@@ -736,6 +996,15 @@ astNode* applyASTRule (treeNode *PTNode)
 				printf ("\tError at either of the <index_new> of <dataType>\n") ;
 
 			break ;
+		case 95:								//value NUM
+			PTNode->syn = createASTNode(PTNode->child);
+			break;
+		case 96:				//value TRUE
+			PTNode->syn = createASTNode(PTNode->child);
+			break;	
+		case 97:				//value FLASE
+			PTNode->syn = createASTNode(PTNode->child);
+			break;		
 
 		case 98 :								// <range> --> <index_new> RANGEOP <index_new>
 			// Left <index_new>
@@ -752,18 +1021,94 @@ astNode* applyASTRule (treeNode *PTNode)
 			sibling->inh = PTNode->inh ;
 			applyASTRule (sibling) ;	//93, 94
 			break ;
+		case 99:								//idList ID idL
+			// leftChild = PTNode->child;
+			// createASTNode(leftChild);
+			// leftChild->syn->parent=PTNode->syn;
+			// PTNode->syn->child = leftChild->syn;
+			// leftChild->syn->prev = NULL;
 
-		case 102 :								// <range_new> ---> NUM RANGEOP NUM
-			// Left <index_new>							
+			// sibling = leftChild->next;
+			// //createASTNode(sibling);
+			// //sibling->syn->prev=leftChild->syn;
+			// //leftChild->syn->next = sibling->syn;
+			// applyASTRule(sibling);
+			// leftChild->syn->next=sibling->syn;
+			// astNode* temp99=leftChild->syn->next->child;
+			// while(temp99!=NULL)
+			// {
+			// 	temp99->parent = leftChild->syn->next;
+			// 	temp99=temp99->next;
+			// }
+			// break;
 			leftChild = PTNode->child ;
-			leftChild->inh = PTNode->inh ;
-			applyASTRule (leftChild) ;		// No need of a rule
+			createASTNode(leftChild);
+			leftChild->syn->parent=PTNode->syn;
+			PTNode->syn->child = leftChild->syn;
+			leftChild->syn->prev = NULL;
+			sibling = leftChild->next ;
 
-			// Right <index_new>
-			sibling = leftChild->next->next ;
-			sibling->inh = PTNode->inh ;
-			applyASTRule (sibling) ;		// No need of a rule
+			// <statements>
+			leftChild->syn->next=createASTNode(sibling);
+			sibling->syn->prev = leftChild->syn;
+			sibling->syn->parent = leftChild->syn->parent;
+			applyASTRule (sibling) ;	
+			// //leftChild->syn->next = idl_pointer;
+			// //PTNode->syn->child = sibling->syn;
+			leftChild->syn->next->child = sibling->syn;
+			while (sibling->syn != NULL)	//Ensuring that statement list parents point to Statements WRAPPERHEAD
+			{
+				//printf("\t ha ha");
+				sibling->syn->parent = PTNode->syn ;
+				sibling->syn = sibling->syn->next ;
+			}
+			
 			break ;
+			
+
+		case 100:								//idL COMMA ID idL
+			// leftChild = PTNode->next->next;
+			// sibling=leftChild->next;
+			// createASTNode(leftChild);
+			// if(PTNode->inh!=NULL)
+			// {
+			// 	leftChild->syn->prev = PTNode->inh;
+			// 	PTNode->inh->next = leftChild->syn;
+			// }
+			// sibling->inh = leftChild->syn;
+			// applyASTRule(sibling);
+			// PTNode->syn  = sibling->syn;
+			// break;
+			leftChild = PTNode->child->next ;
+			sibling = leftChild->next ;
+			//printf("    Ha hah");
+			createASTNode (leftChild) ;
+			applyASTRule (leftChild) ;		// 7
+			sibling->inh = leftChild->syn ;
+			if (PTNode-> inh != NULL)
+			{
+				PTNode->inh->next = sibling->inh ;
+				sibling->inh->prev = PTNode->inh ;
+			}
+
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;
+			break ;
+		
+		case 101:								//idL EPS		
+			PTNode->syn = PTNode->inh ;
+			if (PTNode->syn != NULL)
+			{
+				while (PTNode->syn->prev != NULL)
+					PTNode->syn = PTNode->syn->prev ;
+			}
+			break ;
+		case 102:										//range_new NUM RANGEOP NUM
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			leftChild=leftChild->next->next;
+			PTNode->syn->next = createASTNode(leftChild);  //prev , parent pointer is set in case 39...
+			break;
 
 	}
 
