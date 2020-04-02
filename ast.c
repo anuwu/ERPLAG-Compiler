@@ -982,9 +982,14 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// linking child of pmop, aT.inh and term.syn. Also the parents.
 			leftChild->syn->child = PTNode->inh ;
+			while (PTNode->inh->next != NULL)
+			{
+				PTNode->inh->parent = leftChild->syn ;
+				PTNode->inh = PTNode->inh->next ;
+			}
+			PTNode->inh->parent = leftChild->syn ;
 			PTNode->inh->next = sibling->syn ;
 			sibling->syn->prev = PTNode->inh ;
-			PTNode->inh->parent = leftChild->syn ;
 			sibling->syn->parent = leftChild->syn ;
 
 			// <aT>
@@ -1024,9 +1029,14 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// linking child of mdop, aF.inh and factor.syn. Also the parents.
 			leftChild->syn->child = PTNode->inh ;
+			while (PTNode->inh->next != NULL)
+			{
+				PTNode->inh->parent = leftChild->syn ;
+				PTNode->inh = PTNode->inh->next ;
+			}
+			PTNode->inh->parent = leftChild->syn ;
 			PTNode->inh->next = sibling->syn ;
 			sibling->syn->prev = PTNode->inh ;
-			PTNode->inh->parent = leftChild->syn ;
 			sibling->syn->parent = leftChild->syn ;
 
 			// <aF>
@@ -1242,8 +1252,13 @@ astNode* applyASTRule (treeNode *PTNode)
 			if(sibling->syn == NULL)
 				break;
 	
+			leftChild->syn->child = sibling->syn;
+			sibling->syn->parent = leftChild->syn;
+			/*
 			leftChild->syn->next = sibling->syn;
 			sibling->syn->prev = leftChild->syn;
+			*/
+
 			break;
 
 		case 89:								// <var> --> NUM
