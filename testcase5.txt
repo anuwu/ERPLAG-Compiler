@@ -1,0 +1,4 @@
+<<<driver program>>>
+start
+	declare a,b,c,d:boolean ;
+end
