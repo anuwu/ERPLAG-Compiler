@@ -3,6 +3,8 @@ start
 	declare a,b,c:integer ;
 	declare x:boolean ;
 
+	get_value (c) ;
+
 	for (k in 4 .. 10)
 	start
 		print (a[k]) ;
@@ -14,4 +16,13 @@ start
 	end
 
 	print (false) ;
+end
+
+<<module satwadhi>>
+takes input [amol:array[nikhil..khandelwal] of boolean] ;
+returns [golani:integer] ;
+start
+	declare ma_ki_chuth : real ;
+	get_value (ma_ki_chuth) ;
+	print (ma_ki_chuth[69]) ;
 end

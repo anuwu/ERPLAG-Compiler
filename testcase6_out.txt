@@ -1,0 +1,59 @@
+||-5||	EPS	1	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||2|| 						program		NO		moduleDeclarations
+||0|| 						ROOT		NO		program
+||-5||	EPS	1	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules
+||-5||	<<<	1	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	1	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	1	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	while	3	TK_WHILE	while	iterativeStmt	YES	TK_WHILE
+||41|| 						statement		NO		iterativeStmt
+||-5||	(	3	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	true	3	TK_TRUE	true	boolTerm	YES	TK_TRUE
+||53|| 						expression		NO		boolTerm
+||49|| 						iterativeStmt		NO		expression
+||-5||	EPS	3	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||-5||	)	3	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	4	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	print	5	TK_PRINT	print	ioStmt	YES	TK_PRINT
+||25|| 						statement		NO		ioStmt
+||-5||	(	5	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	a	5	TK_ID	a	var	YES	TK_ID
+||88|| 						print_var		NO		var
+||-5||	[	5	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	4	5	TK_NUM	4	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	5	TK_SQBC	]	whichID	YES	TK_SQBC
+||26|| 						ioStmt		NO		print_var
+||-5||	)	5	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	5	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	print	6	TK_PRINT	print	ioStmt	YES	TK_PRINT
+||25|| 						statement		NO		ioStmt
+||-5||	(	6	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	b	6	TK_ID	b	var	YES	TK_ID
+||88|| 						print_var		NO		var
+||-5||	EPS	6	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||26|| 						ioStmt		NO		print_var
+||-5||	)	6	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	6	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	7	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	7	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	EPS	8	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	8	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	9	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules

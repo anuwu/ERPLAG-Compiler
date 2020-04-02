@@ -691,7 +691,7 @@ astNode* applyASTRule (treeNode *PTNode)
 		
 		case 23 :								// <statement> --> <iterativeStmt>
 			leftChild = PTNode->child;
-			applyASTRule(leftChild);
+			applyASTRule(leftChild);	// 40, 
 			PTNode->syn->child = leftChild->syn;
 			leftChild->syn->parent = PTNode->syn;
 			break;
@@ -744,7 +744,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			astNode* declare_pointer = createASTNode(leftChild);   //creating ast node for declare
 			declare_pointer->parent = PTNode->parent->syn; 
 			declare_pointer->prev=NULL;
-
 			// idList
 			leftChild=leftChild->next;   
 			declare_pointer->next = createASTNode(leftChild);	
@@ -764,7 +763,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn = declare_pointer;
 			break;	
 
-		case 40 :							// <iterativeStmt> --> FOR BO ID IN range_new BC START statements END
+		case 40 :							// <iterativeStmt> --> FOR BO ID IN <range_new> BC START <statements> END
 			
 			// for
 			leftChild=PTNode->child;        //left child points to FOR node of Parse Tree  
@@ -811,7 +810,35 @@ astNode* applyASTRule (treeNode *PTNode)
 			}
 			break;	
 
-		case 42:							// <conditionalStmt> --> SWITCH BO ID BC START CASE value COLON statements BREAK SEMICOL caseStmt default_new END
+		case 41 :							// <iterativeStmt> --> WHILE BO <expression> BC START <statements> END
+			// WHILE
+			leftChild = PTNode->child ;
+			//printf ("\t Creating while\n") ;
+			children[0] = createASTNode (leftChild) ;
+			PTNode->syn = children[0] ;
+
+			// expression
+			sibling = leftChild->next->next ;
+			//printf ("\t Creating expression\n") ;
+			children[1] = createASTNode (sibling) ;
+			//applyASTRule (sibling) ; 	// case 49
+
+			// <statements>
+			sibling = sibling->next->next->next ;
+			children[2] = createASTNode (sibling) ;
+			applyASTRule (sibling) ;	// case 17, 18
+			children[2]->child = sibling->syn ;
+			while (sibling->syn != NULL)
+			{
+				sibling->syn->parent = children[2] ;
+				sibling->syn = sibling->syn->next ;
+			}
+
+			//printf ("\t Connecting children\n") ;
+			connectChildren (PTNode->parent->syn, children, 3) ;
+			break ;
+
+		case 42 :							// <conditionalStmt> --> SWITCH BO ID BC START CASE value COLON statements BREAK SEMICOL caseStmt default_new END
 			leftChild= PTNode->child;
 			PTNode->syn = createASTNode(leftChild);
 			leftChild = leftChild->next->next;
@@ -830,9 +857,12 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			leftChild=leftChild->next->next;
 			break ;
+
+
+		case 49 :							// <expression> --> <boolTerm> <bT>
+			// expression grammar
+			break ;
 			
-
-
 
 
 		case 81 :								// <dataType> --> INTEGER

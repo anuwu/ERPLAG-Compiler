@@ -1,0 +1,8 @@
+<<<driver program>>>
+start
+	while (true)
+	start
+		print (a[4]) ;
+		print (b) ;
+	end
+end
