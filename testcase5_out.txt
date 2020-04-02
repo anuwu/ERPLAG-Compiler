@@ -10,29 +10,69 @@
 ||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
 ||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	declare	3	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||-5||	for	3	TK_FOR	for	iterativeStmt	YES	TK_FOR
+||40|| 						statement		NO		iterativeStmt
+||-5||	(	3	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	allah	3	TK_ID	allah	iterativeStmt	YES	TK_ID
+||-5||	in	3	TK_IN	in	iterativeStmt	YES	TK_IN
+||-5||	6	3	TK_NUM	6	range_new	YES	TK_NUM
+||102|| 						iterativeStmt		NO		range_new
+||-5||	..	3	TK_RANGEOP	..	range_new	YES	TK_RANGEOP
+||-5||	10	3	TK_NUM	10	range_new	YES	TK_NUM
+||-5||	)	3	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	4	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	declare	5	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
 ||39|| 						statement		NO		declareStmt
-||-5||	a	3	TK_ID	a	idList	YES	TK_ID
+||-5||	a	5	TK_ID	a	idList	YES	TK_ID
 ||99|| 						declareStmt		NO		idList
-||-5||	,	3	TK_COMMA	,	idL	YES	TK_COMMA
+||-5||	,	5	TK_COMMA	,	idL	YES	TK_COMMA
 ||100|| 						idList		NO		idL
-||-5||	b	3	TK_ID	b	idL	YES	TK_ID
-||-5||	,	3	TK_COMMA	,	idL	YES	TK_COMMA
+||-5||	b	5	TK_ID	b	idL	YES	TK_ID
+||-5||	,	5	TK_COMMA	,	idL	YES	TK_COMMA
 ||100|| 						idL		NO		idL
-||-5||	c	3	TK_ID	c	idL	YES	TK_ID
-||-5||	,	3	TK_COMMA	,	idL	YES	TK_COMMA
+||-5||	c	5	TK_ID	c	idL	YES	TK_ID
+||-5||	,	5	TK_COMMA	,	idL	YES	TK_COMMA
 ||100|| 						idL		NO		idL
-||-5||	d	3	TK_ID	d	idL	YES	TK_ID
-||-5||	EPS	3	TK_EPS	EPS	idL	YES	TK_EPS
+||-5||	d	5	TK_ID	d	idL	YES	TK_ID
+||-5||	EPS	5	TK_EPS	EPS	idL	YES	TK_EPS
 ||101|| 						idL		NO		idL
-||-5||	:	3	TK_COLON	:	declareStmt	YES	TK_COLON
-||-5||	boolean	3	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||-5||	:	5	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	boolean	5	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
 ||83|| 						declareStmt		NO		dataType
-||-5||	;	3	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||-5||	;	5	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
 ||22|| 						statements		NO		statement
-||17|| 						moduleDef		NO		statements
-||-5||	EPS	4	TK_EPS	EPS	statements	YES	TK_EPS
+||17|| 						iterativeStmt		NO		statements
+||-5||	EPS	6	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	4	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	5	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	6	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	for	8	TK_FOR	for	iterativeStmt	YES	TK_FOR
+||40|| 						statement		NO		iterativeStmt
+||-5||	(	8	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	k	8	TK_ID	k	iterativeStmt	YES	TK_ID
+||-5||	in	8	TK_IN	in	iterativeStmt	YES	TK_IN
+||-5||	4	8	TK_NUM	4	range_new	YES	TK_NUM
+||102|| 						iterativeStmt		NO		range_new
+||-5||	..	8	TK_RANGEOP	..	range_new	YES	TK_RANGEOP
+||-5||	5	8	TK_NUM	5	range_new	YES	TK_NUM
+||-5||	)	8	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	9	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	get_value	10	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	10	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	c	10	TK_ID	c	ioStmt	YES	TK_ID
+||-5||	)	10	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	10	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	EPS	11	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	11	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	12	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	12	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	13	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules

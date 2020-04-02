@@ -1,4 +1,12 @@
 <<<driver program>>>
 start
-	declare a,b,c,d:boolean ;
+	for (allah in 6..10)
+	start
+		declare a,b,c,d:boolean ;
+	end
+
+	for (k in 4 .. 5)
+	start
+		get_value (c) ;
+	end
 end
