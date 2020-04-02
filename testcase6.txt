@@ -1,4 +1,6 @@
 <<<driver program>>>
 start
-	print (a) ;	
+	a := +b ;
+	b := +c ;
+	c := -a ;
 end

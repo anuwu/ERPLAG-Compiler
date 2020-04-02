@@ -582,9 +582,9 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// <expression_new>
 			sibling = leftChild->next ;
-			children[1] = createASTNode (sibling) ;
+			//children[1] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;		// 47, 48
-			children[1]->child = sibling->syn ;
+			children[1] = sibling->syn ;
 			// Do I need to link the parent here?
 
 			// Linking ASSIGNOP and <expression_new> into a two-list
@@ -923,16 +923,60 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 48 :							// <expression_new> --> <U>
-			PTNode->syn = PTNode->inh ;
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 63, 64
+			PTNode->syn = leftChild->syn ;
 			break ;
 
 
 		case 49 :							// <expression> --> <boolTerm> <bT>
 			// expression grammar
 			break ;
+
+		case 63 :							// <U> --> PLUS <factor_new>
+			leftChild = PTNode->child ;
+			createASTNode (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 66, 67
+			leftChild->syn->child = sibling->syn ;
+			while (sibling->syn != NULL)
+			{
+				sibling->syn->parent = leftChild->syn ;
+				sibling->syn = sibling->syn->next ;
+			}
 			
+			break ;
+
+		case 64 :							// <U> --> MINUS <factor_new>
+			leftChild = PTNode->child ;
+			createASTNode (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 66, 67
+			leftChild->syn->child = sibling->syn ;
+			while (sibling->syn != NULL)
+			{
+				sibling->syn->parent = leftChild->syn ;
+				sibling->syn = sibling->syn->next ;
+			}
+			break ;
+
+		case 65 :							// <factor_new> --> <arithmeticExpr>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+			break ;
 
 
+		case 66 :							// <factor_new> --> <var>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+			break ;
+			
 		case 81 :								// <dataType> --> INTEGER
 			PTNode->syn->dt = (datType *) malloc (sizeof(datType)) ;
 			PTNode->syn->dtTag = PRIMITIVE ;

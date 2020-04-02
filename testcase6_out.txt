@@ -10,20 +10,59 @@
 ||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
 ||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	print	3	TK_PRINT	print	ioStmt	YES	TK_PRINT
-||25|| 						statement		NO		ioStmt
-||-5||	(	3	TK_BO	(	ioStmt	YES	TK_BO
-||-5||	a	3	TK_ID	a	var	YES	TK_ID
-||88|| 						print_var		NO		var
+||-5||	a	3	TK_ID	a	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	3	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	+	3	TK_PLUS	+	U	YES	TK_PLUS
+||63|| 						expression_new		NO		U
+||-5||	b	3	TK_ID	b	var	YES	TK_ID
+||88|| 						factor_new		NO		var
 ||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
 ||92|| 						var		NO		whichID
-||26|| 						ioStmt		NO		print_var
-||-5||	)	3	TK_BC	)	ioStmt	YES	TK_BC
-||-5||	;	3	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
-||19|| 						statements		NO		statement
+||66|| 						U		NO		factor_new
+||48|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	3	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
 ||17|| 						moduleDef		NO		statements
-||-5||	EPS	4	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	b	4	TK_ID	b	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	4	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	+	4	TK_PLUS	+	U	YES	TK_PLUS
+||63|| 						expression_new		NO		U
+||-5||	c	4	TK_ID	c	var	YES	TK_ID
+||88|| 						factor_new		NO		var
+||-5||	EPS	4	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||66|| 						U		NO		factor_new
+||48|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	4	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	c	5	TK_ID	c	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	5	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	-	5	TK_MINUS	-	U	YES	TK_MINUS
+||64|| 						expression_new		NO		U
+||-5||	a	5	TK_ID	a	var	YES	TK_ID
+||88|| 						factor_new		NO		var
+||-5||	EPS	5	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||66|| 						U		NO		factor_new
+||48|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	5	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	6	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	4	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	5	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	6	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	7	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules
