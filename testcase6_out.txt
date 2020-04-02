@@ -10,77 +10,140 @@
 ||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
 ||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	allah	3	TK_ID	allah	assignmentStmt	YES	TK_ID
+||-5||	declare	3	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	garodia	3	TK_ID	garodia	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	3	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	sleeping	3	TK_ID	sleeping	idL	YES	TK_ID
+||-5||	EPS	3	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	3	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	3	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	3	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	declare	4	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	patil	4	TK_ID	patil	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	4	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	4	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	4	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	4	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	4	4	TK_NUM	4	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	4	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	7	4	TK_NUM	7	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	4	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	4	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	4	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	4	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	5	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	patil	5	TK_ID	patil	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	EPS	5	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	]	5	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	5	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	5	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	5	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	satwadhi	5	TK_ID	satwadhi	moduleReuseStmt	YES	TK_ID
+||-5||	with	5	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	5	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	sutta	5	TK_ID	sutta	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	5	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	hai	5	TK_ID	hai	idL	YES	TK_ID
+||-5||	,	5	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	kya	5	TK_ID	kya	idL	YES	TK_ID
+||-5||	EPS	5	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	5	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	sleeping	6	TK_ID	sleeping	assignmentStmt	YES	TK_ID
 ||30|| 						simpleStmt		NO		assignmentStmt
-||-5||	:=	3	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||-5||	:=	6	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
 ||33|| 						whichStmt		NO		lvalueIDStmt
-||-5||	(	3	TK_BO	(	factor	YES	TK_BO
-||67|| 						term		NO		factor
-||-5||	a	3	TK_ID	a	var	YES	TK_ID
+||-5||	always	6	TK_ID	always	var	YES	TK_ID
 ||88|| 						factor		NO		var
-||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||-5||	EPS	6	TK_EPS	EPS	whichID	YES	TK_EPS
 ||92|| 						var		NO		whichID
 ||68|| 						term		NO		factor
 ||60|| 						arithmeticExpr		NO		term
-||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||-5||	EPS	6	TK_EPS	EPS	aF	YES	TK_EPS
 ||62|| 						term		NO		aF
 ||57|| 						boolTerm		NO		arithmeticExpr
-||-5||	EPS	3	TK_EPS	EPS	aT	YES	TK_EPS
+||-5||	EPS	6	TK_EPS	EPS	aT	YES	TK_EPS
 ||59|| 						arithmeticExpr		NO		aT
 ||52|| 						expression		NO		boolTerm
-||-5||	>	3	TK_GT	>	relationalOp	YES	TK_GT
-||73|| 						aE		NO		relationalOp
-||55|| 						boolTerm		NO		aE
-||-5||	3	3	TK_NUM	3	var	YES	TK_NUM
-||89|| 						factor		NO		var
-||68|| 						term		NO		factor
-||60|| 						arithmeticExpr		NO		term
-||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
-||62|| 						term		NO		aF
-||57|| 						aE		NO		arithmeticExpr
-||-5||	EPS	3	TK_EPS	EPS	aT	YES	TK_EPS
-||59|| 						arithmeticExpr		NO		aT
-||49|| 						factor		NO		expression
-||-5||	EPS	3	TK_EPS	EPS	bT	YES	TK_EPS
-||51|| 						expression		NO		bT
-||-5||	)	3	TK_BC	)	factor	YES	TK_BC
-||60|| 						arithmeticExpr		NO		term
-||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
-||62|| 						term		NO		aF
-||57|| 						boolTerm		NO		arithmeticExpr
-||-5||	EPS	3	TK_EPS	EPS	aT	YES	TK_EPS
-||59|| 						arithmeticExpr		NO		aT
-||52|| 						expression		NO		boolTerm
-||-5||	EPS	3	TK_EPS	EPS	aE	YES	TK_EPS
+||-5||	EPS	6	TK_EPS	EPS	aE	YES	TK_EPS
 ||56|| 						boolTerm		NO		aE
 ||49|| 						expression_new		NO		expression
-||-5||	OR	3	TK_OR	OR	logicalOp	YES	TK_OR
-||70|| 						bT		NO		logicalOp
-||50|| 						expression		NO		bT
-||-5||	FALSE	3	TK_ID	FALSE	var	YES	TK_ID
-||88|| 						factor		NO		var
-||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
-||92|| 						var		NO		whichID
-||68|| 						term		NO		factor
-||60|| 						arithmeticExpr		NO		term
-||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
-||62|| 						term		NO		aF
-||57|| 						boolTerm		NO		arithmeticExpr
-||-5||	EPS	3	TK_EPS	EPS	aT	YES	TK_EPS
-||59|| 						arithmeticExpr		NO		aT
-||52|| 						bT		NO		boolTerm
-||-5||	EPS	3	TK_EPS	EPS	aE	YES	TK_EPS
-||56|| 						boolTerm		NO		aE
-||-5||	EPS	3	TK_EPS	EPS	bT	YES	TK_EPS
-||51|| 						bT		NO		bT
+||-5||	EPS	6	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
 ||47|| 						lvalueIDStmt		NO		expression_new
-||-5||	;	3	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||-5||	;	6	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
 ||31|| 						assignmentStmt		NO		whichStmt
 ||29|| 						statement		NO		simpleStmt
 ||20|| 						statements		NO		statement
-||17|| 						moduleDef		NO		statements
-||-5||	EPS	4	TK_EPS	EPS	statements	YES	TK_EPS
+||17|| 						statements		NO		statements
+||-5||	for	8	TK_FOR	for	iterativeStmt	YES	TK_FOR
+||40|| 						statement		NO		iterativeStmt
+||-5||	(	8	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	i	8	TK_ID	i	iterativeStmt	YES	TK_ID
+||-5||	in	8	TK_IN	in	iterativeStmt	YES	TK_IN
+||-5||	0	8	TK_NUM	0	range_new	YES	TK_NUM
+||102|| 						iterativeStmt		NO		range_new
+||-5||	..	8	TK_RANGEOP	..	range_new	YES	TK_RANGEOP
+||-5||	365	8	TK_NUM	365	range_new	YES	TK_NUM
+||-5||	)	8	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	9	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	get_value	10	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	10	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	garodia	10	TK_ID	garodia	ioStmt	YES	TK_ID
+||-5||	)	10	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	10	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	print	11	TK_PRINT	print	ioStmt	YES	TK_PRINT
+||25|| 						statement		NO		ioStmt
+||-5||	(	11	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	garodia	11	TK_ID	garodia	var	YES	TK_ID
+||88|| 						print_var		NO		var
+||-5||	[	11	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	sleeping	11	TK_ID	sleeping	index_new	YES	TK_ID
+||94|| 						whichID		NO		index_new
+||-5||	]	11	TK_SQBC	]	whichID	YES	TK_SQBC
+||26|| 						ioStmt		NO		print_var
+||-5||	)	11	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	11	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	12	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	4	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	5	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	12	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	13	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	13	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	14	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules

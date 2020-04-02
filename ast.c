@@ -295,7 +295,19 @@ void inorderAST (astNode *node, int space)
 
 	
 	if (node->tok == NULL)
-		printf ("|(%s,%s)\n", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+	{
+		if (node->dt == NULL)
+			printf ("|(%s,%s)\n", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+		else
+		{
+			printf ("|(%s,%s) ---> ", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+			if (node->dtTag == PRIMITIVE)
+				printf ("%s", tokenIDToString(node->dt->pType)) ;
+			else
+				printf ("%s[%s .. %s]", tokenIDToString(node->dt->arrType->type), node->dt->arrType->lex1, node->dt->arrType->lex2) ;
+			printf ("\n") ;
+		}
+	}
 	else	
 		printf ("|(%s,%s,%s)\n", tokenIDToString(node->id), node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
 
@@ -675,15 +687,17 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild->syn->parent = PTNode->syn;
 			break;
 
-		case 20 :							// <statement> --> <simpleStmt>
+		case 20 :								// <statement> --> <simpleStmt>
 			leftChild = PTNode->child ;
 			applyASTRule (leftChild) ;		// case 29, 35
 			PTNode->syn->child = leftChild->syn ;
-			while (leftChild->syn != NULL)			// Linking the parents here as it is too deep.
+			while (leftChild->syn != NULL)			// Linking the parent here as it is too deep.
 			{
+				//printf ("%s ", tokenIDToString(leftChild->syn->id)) ;
 				leftChild->syn->parent = PTNode->syn ;
 				leftChild->syn = leftChild->syn->next ;
 			}
+			//printf ("\n") ;
 			break ;
 				
 		case 22 :                              	// <statement> --> <declareStmt>
@@ -757,6 +771,8 @@ astNode* applyASTRule (treeNode *PTNode)
 			// <whichStmt>
 			sibling = leftChild->next ;
 			applyASTRule (sibling) ;		// case 31, 32
+
+			// Linking ID to the list the ensues.
 			leftChild->syn->next = sibling->syn ;
 			sibling->syn->prev = leftChild->syn ;
 			break ;
@@ -768,22 +784,130 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			break ;
 
+		case 32 :							// <whichStmt> --> <lvalueARRStmt>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;		// linking synthesized attribute
+			break ;
+
+
 		case 33 :							// <lvalueIDStmt> --> ASSIGNOP <expression_new> SEMICOL
 			// ASSIGNOP
 			leftChild = PTNode->child ;
-			createASTNode (leftChild) ;
-			PTNode->syn = leftChild->syn ;
+			children[0] = createASTNode (leftChild) ;
+			PTNode->syn = leftChild->syn ;		// linking synthesized attribute
 
 			// <expression_new>
 			sibling = leftChild->next ;
-			createASTNode (sibling) ;
+			children[1] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;		// 47, 48
+			children[1]->child = sibling->syn ;
+			// Do I need to link the parent here?
 
-			leftChild->syn->next = sibling->syn ;
-			sibling->syn->prev = leftChild->syn ;
+			// Linking ASSIGNOP and <expression_new> into a two-list
+			connectChildren (NULL, children, 2) ;
 			break ;
 
-		case 35 :
+		case 34 :							// <lvalueARRStmt> --> SQBO <index_new> SQBC ASSIGNOP <expression_new> SEMICOL
+			leftChild = PTNode->child ;
+
+			// <index_new>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;
+			children[0] = sibling->syn ;
+			PTNode->syn = sibling->syn ;	// linking synthesized attributes to above
+
+			// ASSIGNOP
+			sibling = sibling->next->next ;
+			children[1] = createASTNode (sibling) ;
+
+			// <expression_new>
+			sibling = sibling->next ;
+			children[2] = createASTNode (sibling) ;
+			applyASTRule (sibling) ;
+			// Do I need to link the parent here?
+
+			connectChildren (NULL, children, 3) ;
+
+			break ;
+
+		case 35 :							// <simpleStmt> --> <moduleReuseStmt>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;		// linking the synthesized attributes
+			break ;
+
+		case 36 :							// <moduleReuseStmt> --> <optional> USE MODULE ID WITH PARAMETERS <idList> SEMICOL
+			// optional
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 37, 38
+			
+			// ID
+			sibling = leftChild->next->next->next ;
+			children[0] =  createASTNode (sibling) ;
+
+			// Linking the correct synthesized.
+			PTNode->syn = sibling->syn ;
+			if (leftChild->syn != NULL)
+			{
+				PTNode->syn = leftChild->syn ;
+				leftChild->syn->next->next = sibling->syn ;		// linking ASSIGNOP of <optional>
+				sibling->syn->prev = leftChild->syn->next ;
+			}
+			else
+			{
+				//printf ("Optional is empty\n") ;
+			}
+
+			// idList
+			sibling = sibling->next->next->next ;
+			children[1] = createASTNode (sibling) ;
+			applyASTRule (sibling) ;
+
+			/*
+			node = sibling->syn->child ;
+			while (node != NULL)
+			{
+				printf ("%s ", node->tok->lexeme) ;
+				node = node->next ;
+			}
+			printf ("\n") ;
+			*/
+
+			//printf ("Connecting children and truth = %s\n"	,(children[0]->prev != NULL)?"YES":"NO") ;
+			connectChildren (NULL, children , 2) ;
+			break ;
+
+		case 37 :						// <optional> --> SQBO <idList> SQBC ASSIGNOP
+			leftChild = PTNode->child ;
+
+			// <idList>
+			sibling = leftChild->next ;
+			children[0] = createASTNode (sibling) ;
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;		// Linking the synthesized. 
+
+			node = sibling->syn->child ;
+			/*
+			while (node != NULL)
+			{
+				printf ("%s ", node->tok->lexeme) ;
+				node = node->next ;
+			}
+			printf ("\n") ;
+			char ch ;
+			scanf ("%c", &ch) ;
+			*/
+
+			// ASSIGNOP 
+			sibling = sibling->next->next ;
+			children[1] = createASTNode (sibling) ;
+
+			connectChildren (NULL, children, 2) ;
+			break ;
+
+		case 38 :						// <optional> --> EPS
+			PTNode->syn = PTNode->inh ;
 			break ;
 		
 		case 39 :							// declareStmt--> DECLARE <idList> COLON <dataType> SEMICOL
@@ -904,11 +1028,11 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 47 :							// <expression_new> --> <expression>
-			// Fill in later
+			PTNode->syn = PTNode->inh ;
 			break ;
 
 		case 48 :							// <expression_new> --> <U>
-			// Fill in later
+			PTNode->syn = PTNode->inh ;
 			break ;
 
 
@@ -1013,7 +1137,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn = leftChild->syn;
 			break;
 		
-		case 92:							// <whichID> EPS
+		case 92:								// <whichID> EPS
 			PTNode->syn = PTNode->inh ;
 			break;
 
@@ -1123,7 +1247,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			}
 			break ;
 
-		case 102:										//range_new NUM RANGEOP NUM
+		case 102:								// <range_new> --> NUM RANGEOP NUM
 			leftChild = PTNode->child;
 			PTNode->syn = createASTNode(leftChild);
 			leftChild=leftChild->next->next;

@@ -1,4 +1,13 @@
 <<<driver program>>>
 start
-	allah := (a > 3) OR FALSE ;
+	declare garodia,sleeping:integer ;
+	declare patil:array [4..7] of integer ;
+	[patil] := use module satwadhi with parameters sutta, hai, kya ;
+	sleeping := always ;
+	
+	for (i in 0 .. 365)
+	start
+		get_value (garodia) ;
+		print (garodia[sleeping]) ;
+	end
 end
