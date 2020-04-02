@@ -292,7 +292,14 @@ void inorderAST (astNode *node, int space)
 
 	for (int i = 0 ; i < 2*space ; i++)
 		printf (" ") ;
-	printf ("|(%s,%s)\n", (node->tok==NULL)?tokenIDToString(node->id):node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+
+	
+	if (node->tok == NULL)
+		printf ("|(%s,%s)\n", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+	else	
+		printf ("|(%s,%s,%s)\n", tokenIDToString(node->id), node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+
+	//printf ("|(%s,%s)\n", (node->tok==NULL)?tokenIDToString(node->id):node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
 }
 
 void connectChildren (astNode *parent, astNode **siblings, int num)
@@ -711,7 +718,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			applyASTRule(sibling);
 			p_pointer->next = sibling->syn;
 			sibling->syn->prev = p_pointer;
-			sibling->syn->parent= p_pointer->parent;
+			sibling->syn->parent= p_pointer->parent; 
 			PTNode->syn = p_pointer;
 			break;
 		
@@ -897,16 +904,13 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild=PTNode->child;
 			sibling = leftChild->next;
 			PTNode->syn = createASTNode(leftChild);
+			leftChild->syn->parent = PTNode->parent->parent->parent->syn;
 			applyASTRule(sibling);
 			if(sibling->syn == NULL)
-			{
-				leftChild->syn->parent = PTNode->parent->parent->parent->syn;
-				leftChild->syn->next = sibling->syn;
 				break;
-			}
+	
 			leftChild->syn->next = sibling->syn;
 			sibling->syn->prev = leftChild->syn;
-			leftChild->syn->parent = PTNode->parent->parent->parent->syn;
 			sibling->syn->parent = leftChild->syn->parent;
 			break;
 
@@ -922,37 +926,47 @@ astNode* applyASTRule (treeNode *PTNode)
 		
 		case 91:								// <whichID> ---> SQBO <index_new> SQBC
 			leftChild=PTNode->child->next;
-			createASTNode(leftChild);
-			PTNode->syn = leftChild->syn;
 			applyASTRule(leftChild);
 			PTNode->syn = leftChild->syn;
 			break;
 		
-		case 92:							//whichID EPS
-			PTNode->syn = NULL;
+		case 92:							// <whichID> EPS
+			PTNode->syn = PTNode->inh ;
 			break;
 
 		case 93 :								// <index_new> --> NUM
 			leftChild = PTNode->child ;
-			astDatType = PTNode->inh->dt ;		// Array type only
-			if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
-				astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
-			else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
-				astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+
+			if (PTNode->parent->tnt.nonTerm == range)		// Array type only
+			{
+				astDatType = PTNode->inh->dt ;		
+				if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
+					astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
+				else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
+					astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+				else
+					printf ("\tError at either of the <index_new> of <dataType>\n") ;
+			}
 			else
-				printf ("\tError at either of the <index_new> of <dataType>\n") ;
+				PTNode->syn = createASTNode (leftChild) ;
 
 			break ;
 
 		case 94 :								// <index_new> --> ID
 			leftChild = PTNode->child ;
-			astDatType = PTNode->inh->dt ;
-			if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
-				astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
-			else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
-				astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+
+			if (PTNode->parent->tnt.nonTerm == range)
+			{
+				astDatType = PTNode->inh->dt ;
+				if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
+					astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
+				else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
+					astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+				else
+					printf ("\tError at either of the <index_new> of <dataType>\n") ;
+			}
 			else
-				printf ("\tError at either of the <index_new> of <dataType>\n") ;
+				PTNode->syn = createASTNode (leftChild) ;
 
 			break ;
 

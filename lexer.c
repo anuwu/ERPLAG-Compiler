@@ -77,9 +77,9 @@ tokenID keywordToTokenID (char *str)
 		id = TK_WITH ;
 	else if (strcmp(str, "parameters")==0)
 		id = TK_PARAMETERS ;
-	else if (strcmp(str, "TRUE")==0)
+	else if (strcmp(str, "true")==0)
 		id = TK_TRUE ;
-	else if (strcmp(str, "FALSE")==0)
+	else if (strcmp(str, "false")==0)
 		id = TK_FALSE ;
 	else if (strcmp(str, "takes")==0)
 		id = TK_TAKES ;

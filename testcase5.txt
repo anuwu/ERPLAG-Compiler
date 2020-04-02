@@ -1,12 +1,17 @@
 <<<driver program>>>
 start
-	for (allah in 6..10)
+	declare a,b,c:integer ;
+	declare x:boolean ;
+
+	for (k in 4 .. 10)
 	start
-		declare a,b,c,d:boolean ;
+		print (a[k]) ;
+		for (j in 0 .. 6)
+		start
+			print (x) ;
+			print (b[2]) ;
+		end
 	end
 
-	for (k in 4 .. 5)
-	start
-		get_value (c) ;
-	end
+	print (false) ;
 end
