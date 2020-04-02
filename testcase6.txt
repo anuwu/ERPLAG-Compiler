@@ -1,13 +1,28 @@
 <<<driver program>>>
 start
-	declare garodia,sleeping:integer ;
-	declare patil:array [4..7] of integer ;
-	[patil] := use module satwadhi with parameters sutta, hai, kya ;
-	sleeping := always ;
-	
-	for (i in 0 .. 365)
+	declare bike, tomar:boolean ;
+	declare satwadhi:integer ;
+
+	switch (bike)
 	start
-		get_value (garodia) ;
-		print (garodia[sleeping]) ;
+		case true :
+			tomar := true ;
+			print (satwadhi[mom]) ;
+			break ;
+
+		case false :
+			tomar := false ;
+			use module satwadhi with parameters sutta, lighter ;
+			break ;
+
+		default :
+			satwadhi := MESS_WORKER ;
+			switch (satwadhi)
+			start
+				case 1 :
+					get_value (abcd) ;
+					break ;
+			end
+			break ;
 	end
 end

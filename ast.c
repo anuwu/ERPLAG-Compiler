@@ -699,6 +699,13 @@ astNode* applyASTRule (treeNode *PTNode)
 			}
 			//printf ("\n") ;
 			break ;
+
+		case 21:								// <statement> --> <conditionalStmt>
+			leftChild=PTNode->child;
+			applyASTRule(leftChild);	
+			PTNode->syn->child = leftChild->syn;
+			leftChild->syn->parent = PTNode->syn;
+			break;
 				
 		case 22 :                              	// <statement> --> <declareStmt>
 			leftChild = PTNode->child;
@@ -854,27 +861,12 @@ astNode* applyASTRule (treeNode *PTNode)
 				leftChild->syn->next->next = sibling->syn ;		// linking ASSIGNOP of <optional>
 				sibling->syn->prev = leftChild->syn->next ;
 			}
-			else
-			{
-				//printf ("Optional is empty\n") ;
-			}
 
 			// idList
 			sibling = sibling->next->next->next ;
 			children[1] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;
 
-			/*
-			node = sibling->syn->child ;
-			while (node != NULL)
-			{
-				printf ("%s ", node->tok->lexeme) ;
-				node = node->next ;
-			}
-			printf ("\n") ;
-			*/
-
-			//printf ("Connecting children and truth = %s\n"	,(children[0]->prev != NULL)?"YES":"NO") ;
 			connectChildren (NULL, children , 2) ;
 			break ;
 
@@ -888,16 +880,6 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn = sibling->syn ;		// Linking the synthesized. 
 
 			node = sibling->syn->child ;
-			/*
-			while (node != NULL)
-			{
-				printf ("%s ", node->tok->lexeme) ;
-				node = node->next ;
-			}
-			printf ("\n") ;
-			char ch ;
-			scanf ("%c", &ch) ;
-			*/
 
 			// ASSIGNOP 
 			sibling = sibling->next->next ;
@@ -1007,25 +989,158 @@ astNode* applyASTRule (treeNode *PTNode)
 			connectChildren (PTNode->parent->syn, children, 3) ;
 			break ;
 
-		case 42 :							// <conditionalStmt> --> SWITCH BO ID BC START CASE value COLON statements BREAK SEMICOL caseStmt default_new END
-			leftChild= PTNode->child;
+		case 42 :							// <conditionalStmt> --> SWITCH BO ID BC START CASE <value> COLON <statements> BREAK SEMICOL <caseStmt> <default_new> END
+			leftChild = PTNode->child;
 			PTNode->syn = createASTNode(leftChild);
-			leftChild = leftChild->next->next;
 			PTNode->syn->parent = PTNode->parent->syn;
+			PTNode->syn->prev = NULL;
 
+			leftChild=leftChild->next->next;
 			PTNode->syn->next = createASTNode(leftChild);
 			astNode* id42_pointer = PTNode->syn->next;
 			id42_pointer->prev = PTNode->syn;
 			id42_pointer->parent = PTNode->syn->parent;
 
-			leftChild=leftChild->next->next->next->next;
-			applyASTRule(leftChild);
-			id42_pointer->next = leftChild->syn;
-			leftChild->syn->prev = id42_pointer;
-			leftChild->syn->parent = id42_pointer->parent;
+			//case
+			leftChild = leftChild->next->next->next;
+			astNode* case_pointer = createASTNode(leftChild);
+			id42_pointer->next = case_pointer;
+			case_pointer->prev = id42_pointer;
+			case_pointer->parent=id42_pointer->parent;
 
-			leftChild=leftChild->next->next;
+
+			leftChild=leftChild->next;
+			applyASTRule(leftChild);
+			case_pointer->next = leftChild->syn;
+			astNode* value_pointer = case_pointer->next;
+			leftChild->syn->prev = case_pointer;
+			leftChild->syn->parent = case_pointer->parent;
+
+
+			leftChild = leftChild->next->next;		//<statements>
+			value_pointer->next = createASTNode(leftChild); //creating AST node for <statements> 
+			applyASTRule(leftChild);   //PTnode in case 17
+			astNode* stat_pointer42 =  value_pointer->next;
+			stat_pointer42->prev = value_pointer;
+			stat_pointer42->parent = value_pointer->parent;
+			astNode* temp42 = leftChild->syn;
+			value_pointer->next->child = leftChild->syn;
+
+			while(temp42!=NULL)
+			{
+				temp42->parent = stat_pointer42; //stat_pointer === statements ast node
+				temp42=temp42->next;
+			}
+			
+			leftChild=leftChild->next->next->next;
+			astNode* daddy = createASTNode(leftChild);
+			applyASTRule(leftChild);
+			temp42 = leftChild->syn;
+			while(temp42!=NULL)
+			{
+				temp42->parent = stat_pointer42->parent; //stat_pointer === statements ast node
+				temp42=temp42->next;
+			}
+			
+			if(leftChild->syn != NULL)
+			{
+				stat_pointer42->next=leftChild->syn;
+				leftChild->syn->prev = stat_pointer42;
+			}
+
+			else
+			{
+					stat_pointer42->next=NULL;
+			}
+			
+			astNode* iter = stat_pointer42;
+			leftChild=leftChild->next;
+			while(iter->next!=NULL)
+			{
+				iter=iter->next;
+			}
+
+			applyASTRule(leftChild);
+			iter->next =leftChild->syn;
+			if(leftChild->syn != NULL)
+			{
+				leftChild->syn->prev = iter;
+				leftChild->syn->parent = iter->parent;
+			}
+
+			break;
+
+		case 43:							// <caseStmt> --> CASE <value> COLON <statements> BREAK SEMICOL <caseStmt>
+			leftChild = PTNode->child;
+			astNode* case_pointer43 = createASTNode(leftChild);
+			leftChild=leftChild->next;
+			applyASTRule(leftChild);
+			case_pointer43->next = leftChild->syn;
+			astNode* value43_pointer = case_pointer43->next;
+			value43_pointer->prev = case_pointer43;
+
+			leftChild = leftChild->next->next;		//<statements>
+			value43_pointer->next = createASTNode(leftChild); //creating AST node for <statements> 
+			applyASTRule(leftChild);   //PTnode in case 17
+			astNode* stat_pointer43 =  value43_pointer->next;
+			stat_pointer43->prev = value43_pointer;
+			astNode* temp43 = leftChild->syn;
+			value43_pointer->next->child = leftChild->syn;
+			while(temp43!=NULL)
+			{
+				temp43->parent = stat_pointer43; //stat_pointer === statements ast node
+				temp43=temp43->next;
+			}
+			
+			sibling = leftChild->next->next->next;
+			sibling->inh = stat_pointer43;
+			if (PTNode-> inh != NULL)
+			{
+				
+				PTNode->inh->next = case_pointer43 ;
+				sibling->inh->prev->prev->prev = PTNode->inh ;
+			}
+
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;
 			break ;
+
+		case 44:   							// <caseStmt> --> EPS
+			PTNode->syn = PTNode->inh ;
+			if (PTNode->syn != NULL)
+			{
+				while (PTNode->syn->prev != NULL)
+					PTNode->syn = PTNode->syn->prev ;
+			}
+			break ;
+
+		case 45:             			 	// <default_new> --> DEFAULT COLON <statements> BREAK SEMICOL
+			leftChild = PTNode->child;
+			PTNode->syn = createASTNode(leftChild);
+			
+			leftChild->syn->parent = PTNode->parent->parent->syn;
+
+			leftChild = leftChild->next->next;
+
+			PTNode->syn->next = createASTNode(leftChild); //creating AST node for <statements> 
+			applyASTRule(leftChild);   //PTnode in case 17
+			astNode* stat_pointer45 =  PTNode->syn->next;
+			stat_pointer45->prev = PTNode->syn;
+			stat_pointer45->parent = PTNode->syn->parent;
+			astNode* temp45 = leftChild->syn;
+			stat_pointer45->child = leftChild->syn;
+			while(temp45!=NULL)
+			{
+				temp45->parent = stat_pointer45; //stat_pointer === statements ast node
+				temp45=temp45->next;
+			}
+			break;
+
+				
+
+		case 46:   							// <default_new> --> EPS
+			PTNode->syn = NULL;
+			break;
 
 		case 47 :							// <expression_new> --> <expression>
 			PTNode->syn = PTNode->inh ;
