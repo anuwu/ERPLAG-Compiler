@@ -56,6 +56,7 @@ static int counter = 0 ;
 
 char* nodeSymbol (treeNode* node) ;
 char* isLeafNode (treeNode* node) ;
+char* tokenIDToSting (tokenID id) ;
 void inorderTraversal(treeNode * root,FILE* ptr) ;
 void init_parser() ;
 treeNode* create_root () ;
