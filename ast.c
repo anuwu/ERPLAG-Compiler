@@ -504,16 +504,23 @@ astNode* applyASTRule (treeNode *PTNode)
 			break; 
 
 		case 25 :								// <ioStmt> --> PRINT BO <print_var> BC SEMICOL
+			// print
 			leftChild = PTNode->child;
-			sibling = leftChild->next->next;
 			astNode* p_pointer = createASTNode(leftChild);
 			p_pointer->parent = PTNode->parent->syn;
+			PTNode->syn = p_pointer ;
 
+			// <print_var>
+			sibling = leftChild->next->next;
 			applyASTRule(sibling);
 			p_pointer->next = sibling->syn;
 			sibling->syn->prev = p_pointer;
-			sibling->syn->parent= p_pointer->parent; 
-			PTNode->syn = p_pointer;
+			while (sibling->syn != NULL)
+			{
+				sibling->syn->parent= p_pointer->parent; 
+				sibling->syn = sibling->syn->next ;
+			}
+
 			break;
 		
 		case 26 :							// <print_var> --> <var>
@@ -992,17 +999,18 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 88:								// <var> --> ID <whichID>
+			// <var>
 			leftChild=PTNode->child;
-			sibling = leftChild->next;
 			PTNode->syn = createASTNode(leftChild);
-			leftChild->syn->parent = PTNode->parent->parent->parent->syn;
+
+			// <whichID>
+			sibling = leftChild->next;
 			applyASTRule(sibling);
 			if(sibling->syn == NULL)
 				break;
 	
 			leftChild->syn->next = sibling->syn;
 			sibling->syn->prev = leftChild->syn;
-			sibling->syn->parent = leftChild->syn->parent;
 			break;
 
 		case 89:								// <var> --> NUM
@@ -1021,7 +1029,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			PTNode->syn = leftChild->syn;
 			break;
 		
-		case 92:								// <whichID> EPS
+		case 92:								// <whichID> --> EPS
 			PTNode->syn = PTNode->inh ;
 			break;
 

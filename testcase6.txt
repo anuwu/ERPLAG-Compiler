@@ -1,28 +1,4 @@
 <<<driver program>>>
 start
-	declare bike, tomar:boolean ;
-	declare satwadhi:integer ;
-
-	switch (bike)
-	start
-		case true :
-			tomar := true ;
-			print (satwadhi[mom]) ;
-			break ;
-
-		case false :
-			tomar := false ;
-			use module satwadhi with parameters sutta, lighter ;
-			break ;
-
-		default :
-			satwadhi := MESS_WORKER ;
-			switch (satwadhi)
-			start
-				case 1 :
-					get_value (abcd) ;
-					break ;
-			end
-			break ;
-	end
+	print (a) ;	
 end
