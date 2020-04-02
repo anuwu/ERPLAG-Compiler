@@ -105,6 +105,7 @@ astNode* applyASTRule (treeNode *PTNode)
 	treeNode *leftChild , *sibling ;
 	datType *astDatType ;
 
+	printf ("%d\n", PTNode->gcode) ;
 	switch (PTNode->gcode)
 	{
 		case 0 :								// <program> --> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
@@ -582,13 +583,18 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// <expression_new>
 			sibling = leftChild->next ;
-			//children[1] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;		// 47, 48
 			children[1] = sibling->syn ;
-			// Do I need to link the parent here?
 
-			// Linking ASSIGNOP and <expression_new> into a two-list
-			connectChildren (NULL, children, 2) ;
+			printf ("\tBefore connectChildren\n") ;
+			//connectChildren (NULL, children, 2) ;
+			leftChild->syn->next = sibling->syn ;
+			printf ("\tNext connection done\n") ;
+			if (sibling->syn == NULL)
+				printf ("\tHOW NULL?\n") ;
+			sibling->syn->prev = leftChild->syn ;
+			printf ("\tAfter connectChildren\n") ;
+
 			break ;
 
 		case 34 :							// <lvalueARRStmt> --> SQBO <index_new> SQBC ASSIGNOP <expression_new> SEMICOL
@@ -919,13 +925,13 @@ astNode* applyASTRule (treeNode *PTNode)
 			break;
 
 		case 47 :							// <expression_new> --> <expression>
-			PTNode->syn = PTNode->inh ;
+			leftChild = PTNode->child ;
+			PTNode->syn = applyASTRule (leftChild) ;
 			break ;
 
 		case 48 :							// <expression_new> --> <U>
 			leftChild = PTNode->child ;
-			applyASTRule (leftChild) ;		// case 63, 64
-			PTNode->syn = leftChild->syn ;
+			PTNode->syn = applyASTRule (leftChild) ;		// case 63, 64
 			break ;
 
 
@@ -933,7 +939,117 @@ astNode* applyASTRule (treeNode *PTNode)
 			// expression grammar
 			break ;
 
+		case 50 :							// <bT> --> <logicalOp> <boolTerm> <bT>
+			break ;
+
+		case 51 :							// <bT> --> EPS
+			PTNode->syn = PTNode->inh ;
+			break ;
+
+		case 52 :							// <boolTerm> --> <arithmeticExpr> <aE>
+			break ;
+
+		case 53 :							//  <boolTerm> --> TRUE
+			leftChild = PTNode-> child ;
+			PTNode->syn = createASTNode (leftChild) ;
+			break ;
+
+		case 54 :							//  <boolTerm> --> FALSE
+			leftChild = PTNode-> child ;
+			PTNode->syn = createASTNode (leftChild) ;
+			break ;
+
+		case 55 :							// <aE> --> <relationalOp> <arithmeticExpr>
+			break ;
+
+		case 56 :							// <aE> --> EPS
+			break ;
+
+		case 57 :							// <arithmeticExpr> --> <term> <aT>
+			// term
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 60
+
+			// aT
+			sibling = leftChild->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;
+			break ;
+
+		case 58 :							// <aT> --> <pmop> <term> <aT>
+			// <pmop>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+
+			// <term>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 67, 68
+
+			// linking child of pmop, aT.inh and term.syn. Also the parents.
+			leftChild->syn->child = PTNode->inh ;
+			PTNode->inh->next = sibling->syn ;
+			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
+			sibling->syn->parent = leftChild->syn ;
+
+			// <aT>
+			sibling = sibling->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;
+			break ;
+
+		case 59 :							// <aT> --> EPS
+			PTNode->syn = PTNode->inh ;
+			break ;
+
+
+		case 60 :							// <term> --> <factor> <aF>
+			// factor
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;		// case 67, 68
+
+			// aF
+			sibling = leftChild->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;		// case 61
+
+			PTNode->syn = sibling->syn ;
+			break ;
+
+		case 61 :							// <aF> --> <mdop> <factor> <aF>
+			// <mdop>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+
+			// <factor>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 67, 68
+
+			// linking child of mdop, aF.inh and factor.syn. Also the parents.
+			leftChild->syn->child = PTNode->inh ;
+			PTNode->inh->next = sibling->syn ;
+			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
+			sibling->syn->parent = leftChild->syn ;
+
+			// <aF>
+			sibling = sibling->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;
+			break ;
+
+		case 62 :							// <aF> --> EPS
+			PTNode->syn = PTNode->inh ;
+			break ;
+
 		case 63 :							// <U> --> PLUS <factor_new>
+			printf ("\tIn 63\n") ;
 			leftChild = PTNode->child ;
 			createASTNode (leftChild) ;
 			PTNode->syn = leftChild->syn ;
@@ -946,7 +1062,6 @@ astNode* applyASTRule (treeNode *PTNode)
 				sibling->syn->parent = leftChild->syn ;
 				sibling->syn = sibling->syn->next ;
 			}
-			
 			break ;
 
 		case 64 :							// <U> --> MINUS <factor_new>
@@ -964,10 +1079,13 @@ astNode* applyASTRule (treeNode *PTNode)
 			}
 			break ;
 
-		case 65 :							// <factor_new> --> <arithmeticExpr>
+		case 65 :							// <factor_new> --> BO <arithmeticExpr> BC
 			leftChild = PTNode->child ;
-			applyASTRule (leftChild) ;
-			PTNode->syn = leftChild->syn ;
+
+			// <arithmeticExpr>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;
 			break ;
 
 
@@ -975,6 +1093,84 @@ astNode* applyASTRule (treeNode *PTNode)
 			leftChild = PTNode->child ;
 			applyASTRule (leftChild) ;
 			PTNode->syn = leftChild->syn ;
+			break ;
+
+		case 67 :							// <factor> --> BO <expression> BC
+			leftChild = PTNode->child ;
+
+			// <expression>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;
+			PTNode->syn = sibling->syn ;
+			break ;
+
+
+		case 68 :							// <factor> --> <var>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+			break ;
+
+		case 69 :							// <logicalOp> --> AND
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 70 :							// <logicalOp> --> OR
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 71 :							// <relationalOp> --> LT
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 72 :							// <relationalOp> --> LE
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 73 :							// <relationalOp> --> GT
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 74 :							// <relationalOp> --> GE
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 75 :							// <relationalOp> --> EQ
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 76 :							// <relationalOp> --> NE
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode(leftChild) ;
+			break ;
+
+		case 77 :							// <pmop> --> PLUS
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode (leftChild) ;
+			break ;
+
+		case 78 :							// <pmop> --> MINUS
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode (leftChild) ;
+			break ;
+
+		case 79 :							// <mdop> --> MUL
+			// MUL
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode (leftChild) ;
+			break ;
+
+		case 80 :							// <mdop> --> DIV
+			// DIV
+			leftChild = PTNode->child ;
+			PTNode->syn = createASTNode (leftChild) ;
 			break ;
 			
 		case 81 :								// <dataType> --> INTEGER

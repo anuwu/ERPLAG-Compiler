@@ -1,6 +1,4 @@
 <<<driver program>>>
 start
-	a := +b ;
-	b := +c ;
-	c := -a ;
+	a := +3.1419 ;
 end

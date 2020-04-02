@@ -16,10 +16,8 @@
 ||33|| 						whichStmt		NO		lvalueIDStmt
 ||-5||	+	3	TK_PLUS	+	U	YES	TK_PLUS
 ||63|| 						expression_new		NO		U
-||-5||	b	3	TK_ID	b	var	YES	TK_ID
-||88|| 						factor_new		NO		var
-||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
-||92|| 						var		NO		whichID
+||-5||	3.1419	3	TK_RNUM	3.1419	var	YES	TK_RNUM
+||90|| 						factor_new		NO		var
 ||66|| 						U		NO		factor_new
 ||48|| 						lvalueIDStmt		NO		expression_new
 ||-5||	;	3	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
@@ -27,42 +25,8 @@
 ||29|| 						statement		NO		simpleStmt
 ||20|| 						statements		NO		statement
 ||17|| 						moduleDef		NO		statements
-||-5||	b	4	TK_ID	b	assignmentStmt	YES	TK_ID
-||30|| 						simpleStmt		NO		assignmentStmt
-||-5||	:=	4	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
-||33|| 						whichStmt		NO		lvalueIDStmt
-||-5||	+	4	TK_PLUS	+	U	YES	TK_PLUS
-||63|| 						expression_new		NO		U
-||-5||	c	4	TK_ID	c	var	YES	TK_ID
-||88|| 						factor_new		NO		var
-||-5||	EPS	4	TK_EPS	EPS	whichID	YES	TK_EPS
-||92|| 						var		NO		whichID
-||66|| 						U		NO		factor_new
-||48|| 						lvalueIDStmt		NO		expression_new
-||-5||	;	4	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
-||31|| 						assignmentStmt		NO		whichStmt
-||29|| 						statement		NO		simpleStmt
-||20|| 						statements		NO		statement
-||17|| 						statements		NO		statements
-||-5||	c	5	TK_ID	c	assignmentStmt	YES	TK_ID
-||30|| 						simpleStmt		NO		assignmentStmt
-||-5||	:=	5	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
-||33|| 						whichStmt		NO		lvalueIDStmt
-||-5||	-	5	TK_MINUS	-	U	YES	TK_MINUS
-||64|| 						expression_new		NO		U
-||-5||	a	5	TK_ID	a	var	YES	TK_ID
-||88|| 						factor_new		NO		var
-||-5||	EPS	5	TK_EPS	EPS	whichID	YES	TK_EPS
-||92|| 						var		NO		whichID
-||66|| 						U		NO		factor_new
-||48|| 						lvalueIDStmt		NO		expression_new
-||-5||	;	5	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
-||31|| 						assignmentStmt		NO		whichStmt
-||29|| 						statement		NO		simpleStmt
-||20|| 						statements		NO		statement
-||17|| 						statements		NO		statements
-||-5||	EPS	6	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	4	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	6	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	7	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	4	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	5	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules
