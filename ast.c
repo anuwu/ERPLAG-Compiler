@@ -982,14 +982,10 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// linking child of pmop, aT.inh and term.syn. Also the parents.
 			leftChild->syn->child = PTNode->inh ;
-			while (PTNode->inh->next != NULL)
-			{
-				PTNode->inh->parent = leftChild->syn ;
-				PTNode->inh = PTNode->inh->next ;
-			}
-			PTNode->inh->parent = leftChild->syn ;
+
 			PTNode->inh->next = sibling->syn ;
 			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
 			sibling->syn->parent = leftChild->syn ;
 
 			// <aT>
@@ -1029,14 +1025,10 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// linking child of mdop, aF.inh and factor.syn. Also the parents.
 			leftChild->syn->child = PTNode->inh ;
-			while (PTNode->inh->next != NULL)
-			{
-				PTNode->inh->parent = leftChild->syn ;
-				PTNode->inh = PTNode->inh->next ;
-			}
-			PTNode->inh->parent = leftChild->syn ;
+			
 			PTNode->inh->next = sibling->syn ;
 			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
 			sibling->syn->parent = leftChild->syn ;
 
 			// <aF>
@@ -1060,11 +1052,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			sibling = leftChild->next ;
 			applyASTRule (sibling) ;		// case 66, 67
 			leftChild->syn->child = sibling->syn ;
-			while (sibling->syn != NULL)
-			{
-				sibling->syn->parent = leftChild->syn ;
-				sibling->syn = sibling->syn->next ;
-			}
+			sibling->syn->parent = leftChild->syn ;
 			break ;
 
 		case 64 :							// <U> --> MINUS <factor_new>
@@ -1075,11 +1063,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			sibling = leftChild->next ;
 			applyASTRule (sibling) ;		// case 66, 67
 			leftChild->syn->child = sibling->syn ;
-			while (sibling->syn != NULL)
-			{
-				sibling->syn->parent = leftChild->syn ;
-				sibling->syn = sibling->syn->next ;
-			}
+			sibling->syn->parent = leftChild->syn ;
 			break ;
 
 		case 65 :							// <factor_new> --> BO <arithmeticExpr> BC
