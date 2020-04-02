@@ -105,7 +105,6 @@ astNode* applyASTRule (treeNode *PTNode)
 	treeNode *leftChild , *sibling ;
 	datType *astDatType ;
 
-	printf ("%d\n", PTNode->gcode) ;
 	switch (PTNode->gcode)
 	{
 		case 0 :								// <program> --> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
@@ -586,15 +585,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			applyASTRule (sibling) ;		// 47, 48
 			children[1] = sibling->syn ;
 
-			printf ("\tBefore connectChildren\n") ;
-			//connectChildren (NULL, children, 2) ;
-			leftChild->syn->next = sibling->syn ;
-			printf ("\tNext connection done\n") ;
-			if (sibling->syn == NULL)
-				printf ("\tHOW NULL?\n") ;
-			sibling->syn->prev = leftChild->syn ;
-			printf ("\tAfter connectChildren\n") ;
-
+			connectChildren (NULL, children, 2) ;
 			break ;
 
 		case 34 :							// <lvalueARRStmt> --> SQBO <index_new> SQBC ASSIGNOP <expression_new> SEMICOL
@@ -926,12 +917,14 @@ astNode* applyASTRule (treeNode *PTNode)
 
 		case 47 :							// <expression_new> --> <expression>
 			leftChild = PTNode->child ;
-			PTNode->syn = applyASTRule (leftChild) ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
 			break ;
 
 		case 48 :							// <expression_new> --> <U>
 			leftChild = PTNode->child ;
-			PTNode->syn = applyASTRule (leftChild) ;		// case 63, 64
+			applyASTRule (leftChild) ;		// case 63, 64
+			PTNode->syn = leftChild->syn ;
 			break ;
 
 
@@ -1049,7 +1042,7 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 63 :							// <U> --> PLUS <factor_new>
-			printf ("\tIn 63\n") ;
+			//printf ("\tIn 63\n") ;
 			leftChild = PTNode->child ;
 			createASTNode (leftChild) ;
 			PTNode->syn = leftChild->syn ;

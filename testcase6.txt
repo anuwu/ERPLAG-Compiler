@@ -1,4 +1,4 @@
 <<<driver program>>>
 start
-	a := +3.1419 ;
+	a := +(pi/e - 4*r*r - 6 + a - b - c*d*e*f*g) ;
 end

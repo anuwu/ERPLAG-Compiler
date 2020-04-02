@@ -16,9 +16,127 @@
 ||33|| 						whichStmt		NO		lvalueIDStmt
 ||-5||	+	3	TK_PLUS	+	U	YES	TK_PLUS
 ||63|| 						expression_new		NO		U
-||-5||	3.1419	3	TK_RNUM	3.1419	var	YES	TK_RNUM
-||90|| 						factor_new		NO		var
-||66|| 						U		NO		factor_new
+||-5||	(	3	TK_BO	(	factor_new	YES	TK_BO
+||65|| 						U		NO		factor_new
+||-5||	pi	3	TK_ID	pi	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	/	3	TK_DIV	/	mdop	YES	TK_DIV
+||80|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	e	3	TK_ID	e	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						factor_new		NO		arithmeticExpr
+||-5||	-	3	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	4	3	TK_NUM	4	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	r	3	TK_ID	r	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						aF		NO		aF
+||-5||	r	3	TK_ID	r	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	-	3	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	6	3	TK_NUM	6	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	+	3	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	a	3	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	-	3	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	b	3	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	-	3	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	c	3	TK_ID	c	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	d	3	TK_ID	d	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						aF		NO		aF
+||-5||	e	3	TK_ID	e	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						aF		NO		aF
+||-5||	f	3	TK_ID	f	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	*	3	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						aF		NO		aF
+||-5||	g	3	TK_ID	g	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	3	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	3	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	3	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||-5||	)	3	TK_BC	)	factor_new	YES	TK_BC
 ||48|| 						lvalueIDStmt		NO		expression_new
 ||-5||	;	3	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
 ||31|| 						assignmentStmt		NO		whichStmt
