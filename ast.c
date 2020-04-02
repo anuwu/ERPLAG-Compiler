@@ -599,8 +599,8 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// <expression_new>
 			sibling = sibling->next ;
-			children[2] = createASTNode (sibling) ;
 			applyASTRule (sibling) ;
+			children[2] = sibling->syn ;
 			// Do I need to link the parent here?
 
 			connectChildren (NULL, children, 3) ;
@@ -741,7 +741,8 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// expression
 			sibling = leftChild->next->next ;
-			children[1] = createASTNode (sibling) ;
+			applyASTRule (sibling) ;
+			children[1] = sibling->syn ;
 			//applyASTRule (sibling) ; 	// case 49
 
 			// <statements>
@@ -925,10 +926,40 @@ astNode* applyASTRule (treeNode *PTNode)
 
 
 		case 49 :							// <expression> --> <boolTerm> <bT>
-			// expression grammar
+			// <boolTerm>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+
+			// <bT>
+			sibling = leftChild->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;		// Linking the synthesized
 			break ;
 
 		case 50 :							// <bT> --> <logicalOp> <boolTerm> <bT>
+			// <logicalOp>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+
+			// <boolTerm>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;		// case 67, 68
+
+			// linking child of <logicalOp>, <bT>.inh and term.syn. Also the parents.
+			leftChild->syn->child = PTNode->inh ;
+			PTNode->inh->next = sibling->syn ;
+			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
+			sibling->syn->parent = leftChild->syn ;
+
+			// <aT>
+			sibling = sibling->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;
 			break ;
 
 		case 51 :							// <bT> --> EPS
@@ -936,6 +967,16 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 52 :							// <boolTerm> --> <arithmeticExpr> <aE>
+			// <arithmeticExpr>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+
+			// <aE>
+			sibling = leftChild->next ;
+			sibling->inh = leftChild->syn ;
+			applyASTRule (sibling) ;
+
+			PTNode->syn = sibling->syn ;
 			break ;
 
 		case 53 :							//  <boolTerm> --> TRUE
@@ -949,9 +990,25 @@ astNode* applyASTRule (treeNode *PTNode)
 			break ;
 
 		case 55 :							// <aE> --> <relationalOp> <arithmeticExpr>
+			// <relationalOp>
+			leftChild = PTNode->child ;
+			applyASTRule (leftChild) ;
+			PTNode->syn = leftChild->syn ;
+
+			// <arithmeticExpr>
+			sibling = leftChild->next ;
+			applyASTRule (sibling) ;
+
+			// Linking the relational operator, PTNode.inh and right child
+			leftChild->syn->child = PTNode->inh ;
+			PTNode->inh->next = sibling->syn ;
+			sibling->syn->prev = PTNode->inh ;
+			PTNode->inh->parent = leftChild->syn ;
+			sibling->syn->parent = leftChild->syn ;
 			break ;
 
 		case 56 :							// <aE> --> EPS
+			PTNode->syn = PTNode->inh ;
 			break ;
 
 		case 57 :							// <arithmeticExpr> --> <term> <aT>
@@ -978,7 +1035,6 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			// linking child of pmop, aT.inh and term.syn. Also the parents.
 			leftChild->syn->child = PTNode->inh ;
-
 			PTNode->inh->next = sibling->syn ;
 			sibling->syn->prev = PTNode->inh ;
 			PTNode->inh->parent = leftChild->syn ;
