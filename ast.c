@@ -263,7 +263,7 @@ astNode* applyASTRule (treeNode *PTNode)
 
 
 			// Connect the children at the module level
-			PTNode->syn->child = children[3] ;
+			PTNode->syn->child = children[0] ;
 			connectChildren (PTNode->syn, children,4) ;
 			break ;
 
