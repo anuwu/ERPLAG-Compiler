@@ -9,6 +9,7 @@
 // make a global initial lexeme
 char current_lexeme[20] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" ;
 
+extern char* tokenIDToString (tokenID id) ;
 
 int hashFunction ( char* lexeme , int size ) {
 	int sm = 0 ;
@@ -97,43 +98,7 @@ moduleST * createIterST ( moduleST * parent ) {
 
 	return tmp ;
 }
-///////////////////////////////////////////////////////////////////////////
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-typedef enum _datTag
-{
-	PRIMITIVE, ARRAY
-} datTag ;
-typedef union _datType
-{
-	primitive pType ;
-	arrayTypeInfo *arrType ;
-} datType ;
-typedef struct _astNode 
-{
-	tokenID id ;
-	token *tok ;
 
-	// if id == NT
-	// 	tok = NULL
-	// else id == T
-	// 	tok holds tokn info
-	// 		id, lexeme, linenumber
-	
-	// datTag random
-	// datType NULL
-	
-	datTag dtTag ;
-	datType *dt ;
-
-	struct _astNode *parent , *child , *next, *prev ;
-} astNode ;
-*/
 varST * createVarST ( astNode * thisASTnode ) {
 	varST * tmp = (varST *) malloc ( sizeof(varST)) ;
 
@@ -142,18 +107,6 @@ varST * createVarST ( astNode * thisASTnode ) {
 	tmp->offset = 9999 ; //default value
 	tmp->arrayIndices = NULL ;
 	
-	// if(tmp->datatype != TK_ARRAY ) {
-	// 	tmp->arrayIndices = NULL ;
-	// }
-	// else {
-	// 	// TK_ARRAY
-	// 	tmp->arrayIndices = (arrayInST *) malloc ( sizeof(arrayInST)) ;
-
-	// 	tmp->arrayIndices->startingPos = "9999" ; 
-	// 	tmp->arrayIndices->endingPos = "9999" ;
-	// 	/**************fill starting and ending positions**********************/
-
-	// }
 
 	return tmp ;
 }
@@ -402,9 +355,9 @@ void printModuleST ( moduleST * thisModuleST ) {
 		varSTentry * vv = thisModuleST->inputVars[i] ;
 
 		while ( vv ) {
-			printf ("\toffset: %d - %s ---- %d ",vv->thisVarST->offset,vv->thisVarST->lexeme , vv->thisVarST->datatype ) ;
+			printf ("\toffset: %d - %s ---- %s ",vv->thisVarST->offset,vv->thisVarST->lexeme , tokenIDToString(vv->thisVarST->datatype) ) ;
 			if(vv->thisVarST->datatype == TK_ARRAY ) {
-				printf ( "%d(%s,%s)",vv->thisVarST->arrayIndices->dataType ,vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType) ,vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
 			}
 			printf ("\n") ;
 
@@ -418,9 +371,9 @@ void printModuleST ( moduleST * thisModuleST ) {
 		varSTentry * vv = thisModuleST->outputVars[i] ;
 
 		while ( vv ) {
-			printf ("\toffset: %d - %s ---- %d ",vv->thisVarST->offset,vv->thisVarST->lexeme , vv->thisVarST->datatype ) ;
+			printf ("\toffset: %d - %s ---- %s ",vv->thisVarST->offset,vv->thisVarST->lexeme , tokenIDToString(vv->thisVarST->datatype) ) ;
 			if(vv->thisVarST->datatype == TK_ARRAY ) {
-				printf ( "%d(%s,%s)",vv->thisVarST->arrayIndices->dataType,vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType),vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
 			}
 			printf ("\n") ;
 
@@ -434,9 +387,9 @@ void printModuleST ( moduleST * thisModuleST ) {
 		varSTentry * vv = thisModuleST->localVars[i] ;
 
 		while ( vv ) {
-			printf ("\toffset: %d - %s ---- %d ",vv->thisVarST->offset,vv->thisVarST->lexeme , vv->thisVarST->datatype ) ;
+			printf ("\toffset: %d - %s ---- %s ",vv->thisVarST->offset,vv->thisVarST->lexeme , tokenIDToString(vv->thisVarST->datatype) ) ;
 			if(vv->thisVarST->datatype == TK_ARRAY ) {
-				printf ( "%d(%s,%s)",vv->thisVarST->arrayIndices->dataType,vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType),vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
 			}
 			printf ("\n") ;
 
@@ -662,7 +615,8 @@ int getSize( varST * thisVar ) {
 
 
 
-moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) {
+moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
+{
 
 	int localOffset = 0 ;
 
@@ -800,61 +754,12 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 		}
 
-
-
-
-
-
-
-
 		statementAST = statementAST->next ;
 	}
-
 
 	return baseModule ;
 }
 
-
-
-
-
-
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-typedef enum _datTag
-{
-	PRIMITIVE, ARRAY
-} datTag ;
-typedef union _datType
-{
-	primitive pType ;
-	arrayTypeInfo *arrType ;
-} datType ;
-typedef struct _astNode 
-{
-	tokenID id ;
-	token *tok ;
-
-	// if id == NT
-	// 	tok = NULL
-	// else id == T
-	// 	tok holds tokn info
-	// 		id, lexeme, linenumber
-	
-	// datTag random
-	// datType NULL
-	
-	datTag dtTag ;
-	datType *dt ;
-
-	struct _astNode *parent , *child , *next, *prev ;
-} astNode ;
-*/
 
 
 baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
@@ -903,7 +808,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			while ( iplAST ) {
 
 				if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
-					printf ("ERROR : %s variable already declared\n",iplAST->child->tok->lexeme) ;
+					printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 				}
 				else{
 					varST * tmp = createVarST ( iplAST->child ) ;
@@ -922,8 +827,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 					moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
 				}
-				
-
+			
 				iplAST = iplAST->next ;
 			}
 			astNode * retAST = input_plistAST->next ;
@@ -941,20 +845,13 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 					moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
 				}
 				
-
 				oplAST = oplAST->next ;
 			}
 
 			// handle iterST
 
 			moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-			
-
-
-
-
-
-			printModuleST ( moduleToInsert ) ;
+			printModuleST ( moduleToInsert ) ;	
 
 			base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
 		}
@@ -1038,10 +935,6 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 				// handle iterST
 				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-
-
-
-
 				printModuleST ( moduleToInsert ) ;
 
 				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
@@ -1049,7 +942,6 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			else {
 				printf ( "ERROR :%s Not declared earlier\n",currentASTNode->child->tok->lexeme) ; 
 			}
-			
 		}
 		else {
 			printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
