@@ -80,6 +80,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme ) {
 		tmp->modules[i] = NULL ;
 	}
 	tmp->parent = (void *) parent ;
+	tmp->currOffset = 0 ;
 
 	return tmp ;
 }
@@ -605,6 +606,19 @@ int getSize( varST * thisVar ) {
 	else if( dataType == TK_REAL )
 		return 4 ;
 	else if ( dataType == TK_ARRAY ) {
+		if (isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
+		{
+			int sz ;
+			if (thisVar->arrayIndices->dataType == TK_INTEGER)
+				sz = 2 ;
+			else if (thisVar->arrayIndices->dataType == TK_BOOLEAN)
+				sz = 1 ;
+			else if (thisVar->arrayIndices->dataType == TK_REAL)
+				sz = 4 ;
+
+
+			return  sz * (atoi(thisVar->arrayIndices->endingPos) - atoi(thisVar->arrayIndices->startingPos) + 1) ;
+		}
 		// startingPos and endingPos is Number then and else a pointer to a memory location
 		return 1 ;
 	}
@@ -755,7 +769,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				printf("ERROR : 404\n") ;
 			}
 		}
-		else if (statementAST->child->d == TK_ID) {
+		else if (statementAST->child->id == TK_ID) {
 			// use module with parameters ... (no return)
 		}
 
@@ -820,6 +834,8 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 				
 					if ( iplAST->child->next->dtTag == PRIMITIVE) {
 						tmp->datatype = iplAST->child->next->dt->pType ;
+						tmp->offset = moduleToInsert->currOffset ;
+						moduleToInsert->currOffset += getSize (tmp) ;
 					}
 					else{
 						// array 
@@ -828,6 +844,13 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
 						tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
 						tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
+
+						int arrSize = getSize (tmp) ;
+						if (arrSize <= 0)
+							printf ("ERROR : Left index needs to be <= right index\n") ;
+
+						tmp->offset = moduleToInsert->currOffset ;
+						moduleToInsert->currOffset += arrSize ;
 					}
 
 					moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
@@ -848,6 +871,9 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 					//array can't be here
 					tmp->datatype = oplAST->child->next->id ;
 					moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
+
+					tmp->offset = moduleToInsert->currOffset ;
+					moduleToInsert->currOffset += getSize (tmp) ;
 				}
 				
 				oplAST = oplAST->next ;

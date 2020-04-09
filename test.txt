@@ -1,9 +1,9 @@
 <<module satwadhi>>
-takes input [a:integer,b:boolean,c:real] ;
+takes input [a:integer,b:boolean,c:array[0..10] of real] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
 
-end
+end	
 
 <<<driver program>>>
 start

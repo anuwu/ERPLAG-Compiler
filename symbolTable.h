@@ -41,6 +41,8 @@ struct _moduleST {
 	struct _varSTentry * outputVars[IO_BIN_COUNT] ;
 	struct _moduleSTentry * modules[ITER_BIN_COUNT] ;
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
+
+	int currOffset ;
 } ;
 
 
