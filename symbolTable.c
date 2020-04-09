@@ -704,35 +704,38 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				// generate code
 			}
 		}
-		else if ( statementAST->child->id == TK_ID ) {
-			
-			if(statementAST->child->next->id == TK_ASSIGNOP ) {
-				// a := expression_new
-			}
-			
-			else if ( statementAST->child->next->id == TK_ID && statementAST->child->next->next->id == TK_ASSIGNOP ){
-				// a[index] := expression_new
-			}
-			
-			else if ( statementAST->child->next->id == idList ) {
-				// use module with parameters [ d ] ;
-
-				int validCallFlag = isValidCall ( realBase , baseModule ,statementAST->child , 0 ) ;
-				if ( validCallFlag > 0 ) {
-					// parameter check and valid code
-					printf("> isValidCall ran\n") ;
-				}
-				else if (validCallFlag == -1 )	{
-					printf( "ERROR : Module Not declared/defined\n") ;
-				}
-				else if( validCallFlag == -2 ) {
-					printf("ERROR : Redundant Declaration\n") ;
-				}
-				else{
-					printf("ERROR : 404\n") ;
+		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP ) {
+			/*
+				{
+				if(statementAST->child->next->id == TK_ASSIGNOP ) {
+					// a := expression_new
 				}
 				
+				else if ( statementAST->child->next->id == TK_ID && statementAST->child->next->next->id == TK_ASSIGNOP ){
+					// a[index] := expression_new
+				}
+				
+				else if ( statementAST->child->next->id == idList ) {
+					// use module with parameters [ d ] ;
+
+					int validCallFlag = isValidCall ( realBase , baseModule ,statementAST->child , 0 ) ;
+					if ( validCallFlag > 0 ) {
+						// parameter check and valid code
+						printf("> isValidCall ran\n") ;
+					}
+					else if (validCallFlag == -1 )	{
+						printf( "ERROR : Module Not declared/defined\n") ;
+					}
+					else if( validCallFlag == -2 ) {
+						printf("ERROR : Redundant Declaration\n") ;
+					}
+					else{
+						printf("ERROR : 404\n") ;
+					}
+					
+				} Old code by deepak.
 			}
+			*/
 		}
 		else if ( statementAST->child->id == idList ) {
 			// [a] = use module with parameters [ d ] ;
