@@ -1,5 +1,5 @@
 <<module satwadhi>>
-takes input [a:integer,b:boolean,c:array[0..10] of real] ;
+takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
 

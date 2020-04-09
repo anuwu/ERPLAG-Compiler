@@ -9,20 +9,20 @@
 ||-5||	takes	2	TK_TAKES	takes	module	YES	TK_TAKES
 ||-5||	input	2	TK_INPUT	input	module	YES	TK_INPUT
 ||-5||	[	2	TK_SQBO	[	module	YES	TK_SQBO
-||-5||	a	2	TK_ID	a	input_plist	YES	TK_ID
+||-5||	b	2	TK_ID	b	input_plist	YES	TK_ID
 ||11|| 						module		NO		input_plist
 ||-5||	:	2	TK_COLON	:	input_plist	YES	TK_COLON
-||-5||	integer	2	TK_INTEGER	integer	dataType	YES	TK_INTEGER
-||81|| 						input_plist		NO		dataType
+||-5||	boolean	2	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						input_plist		NO		dataType
 ||-5||	,	2	TK_COMMA	,	IPL	YES	TK_COMMA
 ||12|| 						input_plist		NO		IPL
-||-5||	b	2	TK_ID	b	IPL	YES	TK_ID
+||-5||	c	2	TK_ID	c	IPL	YES	TK_ID
 ||-5||	:	2	TK_COLON	:	IPL	YES	TK_COLON
-||-5||	boolean	2	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
-||83|| 						IPL		NO		dataType
+||-5||	real	2	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
 ||-5||	,	2	TK_COMMA	,	IPL	YES	TK_COMMA
 ||12|| 						IPL		NO		IPL
-||-5||	c	2	TK_ID	c	IPL	YES	TK_ID
+||-5||	a	2	TK_ID	a	IPL	YES	TK_ID
 ||-5||	:	2	TK_COLON	:	IPL	YES	TK_COLON
 ||-5||	array	2	TK_ARRAY	array	dataType	YES	TK_ARRAY
 ||84|| 						IPL		NO		dataType
@@ -31,12 +31,12 @@
 ||93|| 						range		NO		index_new
 ||98|| 						dataType		NO		range
 ||-5||	..	2	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	10	2	TK_NUM	10	index_new	YES	TK_NUM
+||-5||	5	2	TK_NUM	5	index_new	YES	TK_NUM
 ||93|| 						range		NO		index_new
 ||-5||	]	2	TK_SQBC	]	dataType	YES	TK_SQBC
 ||-5||	of	2	TK_OF	of	dataType	YES	TK_OF
-||-5||	real	2	TK_REAL	real	type	YES	TK_REAL
-||86|| 						dataType		NO		type
+||-5||	integer	2	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
 ||-5||	EPS	2	TK_EPS	EPS	IPL	YES	TK_EPS
 ||13|| 						IPL		NO		IPL
 ||-5||	]	2	TK_SQBC	]	module	YES	TK_SQBC

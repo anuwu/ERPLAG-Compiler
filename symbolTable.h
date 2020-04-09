@@ -6,12 +6,12 @@
 
 #define VAR_BIN_COUNT 13
 #define MODULE_BIN_COUNT 13
-#define ITER_BIN_COUNT 13
+#define SCOPE_BIN_COUNT 13
 #define IO_BIN_COUNT 1
 
 
 enum _stType {
-	DRIVER_ST , MODULE_ST , ITER_ST 
+	DRIVER_ST , MODULE_ST , SCOPE_ST 
 } ;
 
 // structures
@@ -39,7 +39,7 @@ struct _moduleST {
 	struct _varSTentry * localVars[VAR_BIN_COUNT] ;
 	struct _varSTentry * inputVars[IO_BIN_COUNT] ;
 	struct _varSTentry * outputVars[IO_BIN_COUNT] ;
-	struct _moduleSTentry * modules[ITER_BIN_COUNT] ;
+	struct _moduleSTentry * modules[SCOPE_BIN_COUNT] ;
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int currOffset ;
@@ -85,7 +85,7 @@ baseST * createBaseST () ;
 
 moduleST * createModuleST ( baseST * parent , char * lexeme ) ;
 moduleST * createDriverST ( baseST * parent ) ;
-moduleST * createIterST ( moduleST * parent ) ;
+moduleST * createScopeST ( moduleST * parent ) ;
 
 
 varST * createVarST ( astNode * thisASTNode ) ;
@@ -96,7 +96,7 @@ baseST * insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;
 baseST * insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) ;
 
 
-moduleST * insertIterST ( moduleST* parent , moduleST * thisIterST ) ;
+moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) ;
 moduleST * insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) ;
 moduleST * insertInputVarST ( moduleST* thisModule , varST* thisVarST ) ;
 moduleST * insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;

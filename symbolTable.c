@@ -90,12 +90,12 @@ moduleST * createDriverST ( baseST * parent ) {
 
 	return tmp ;
 }
-moduleST * createIterST ( moduleST * parent ) {
+moduleST * createScopeST ( moduleST * parent ) {
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
 
 	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme ) ;
-	tmp->tableType = ITER_ST ;
+	tmp->tableType = SCOPE_ST ;
 
 	return tmp ;
 }
@@ -105,7 +105,7 @@ varST * createVarST ( astNode * thisASTnode ) {
 
 	tmp->lexeme = thisASTnode->tok->lexeme ;
 	tmp->datatype = thisASTnode->tok->id ;
-	tmp->offset = 9999 ; //default value
+	tmp->offset = -9999 ; //default value
 	tmp->arrayIndices = NULL ;
 	
 
@@ -140,12 +140,12 @@ baseST * insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) 
 }
 
 ///////////////////////////////////////////////////////////////////////////
-moduleST * insertIterST ( moduleST* parent , moduleST * thisIterST ) {
-	int index = hashFunction ( thisIterST->lexeme , MODULE_BIN_COUNT ) ;
+moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
+	int index = hashFunction ( thisScopeST->lexeme , MODULE_BIN_COUNT ) ;
 
 	moduleSTentry * tmp = ( moduleSTentry * ) malloc ( sizeof ( moduleSTentry )) ;
 
-	tmp->thisModuleST = thisIterST ;
+	tmp->thisModuleST = thisScopeST ;
 	tmp->next = (parent->modules)[index] ;
 	(parent->modules)[index] = tmp ;
 
@@ -278,7 +278,7 @@ varST * searchVar ( moduleST * thisModule , char * lexeme ) {
 
 
 	moduleST * tmpModule = thisModule ;
-	while( tmpModule->tableType == ITER_ST ) { //means above is a moduleST
+	while( tmpModule->tableType == SCOPE_ST ) { //means above is a moduleST
 		tmp = searchVarInCurrentModule( (moduleST *) thisModule->parent , lexeme ) ;
 		
 		if ( tmp )
@@ -335,7 +335,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 		printf("It's a Driver or Module ST \n") ;
 	}
 	else {
-		printf("It's a IterST \n") ;
+		printf("It's a ScopeST \n") ;
 		printf("Parent : %s\n" , thisModuleST->parent ? ((moduleST*)thisModuleST->parent)->lexeme : "NULL") ;
 	}
 	
@@ -475,22 +475,22 @@ varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outp
 	varSTentry * varEntry = targetModule->outputVars[0] ;
 
 	
-	astNode * inputIter = outputNode ;
-	while(inputIter->next) {
-		inputIter = inputIter->next ;
+	astNode * outputIter = outputNode ;
+	while(outputIter->next) {
+		outputIter = outputIter->next ;
 	}
 	
 
-	while( inputIter && varEntry ){
+	while( outputIter && varEntry ){
 
-		printf("---| %s & %s |---\n",inputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
+		printf("---| %s & %s |---\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
 		
-		varST * searchedVar = searchVar( thisModule , inputIter->tok->lexeme ) ;
+		varST * searchedVar = searchVar( thisModule , outputIter->tok->lexeme ) ;
 
 
 
 		if( searchedVar == NULL ){
-			printf("ERROR : %s variable not declared\n", inputIter->tok->lexeme ) ;
+			printf("ERROR : %s variable not declared\n", outputIter->tok->lexeme ) ;
 		}
 		else {
 
@@ -500,26 +500,26 @@ varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outp
 				// if(varEntry->thisVarST->datatype == TK_ARRAY && varEntry->thisVarST->arrayIndices->dataType ==  ) {
 					
 				// }
-				printf("> GOOD : %s with %s\n",inputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
+				printf("> GOOD : %s with %s\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
 
 
 			}
 			else {
-				printf ( "ERROR : %s and %s conflicting dataType\n" , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ( "ERROR : %s and %s conflicting dataType\n" , outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 				// printf( "searchedVar->datatype : %d\n",searchedVar->datatype) ;
 				// printf("varEntry->thisVarST->datatype : %d\n",varEntry->thisVarST->datatype) ;
 			}
 		}
 		
 		varEntry = varEntry->next ;
-		inputIter = inputIter->prev ;
+		outputIter = outputIter->prev ;
 	}
 
-	if ( varEntry==NULL && inputIter ){
+	if ( varEntry==NULL && outputIter ){
 		printf("ERROR : More parameters passed\n") ;
-		return searchVar(thisModule , inputIter->tok->lexeme ) ;
+		return searchVar(thisModule , outputIter->tok->lexeme ) ;
 	}
-	else if ( varEntry && inputIter==NULL ) {
+	else if ( varEntry && outputIter==NULL ) {
 		printf("ERROR : Insufficient Number of parameters\n") ;
 		return varEntry->thisVarST ;
 	}
@@ -674,18 +674,18 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		}
 		else if ( statementAST->child->id == TK_WHILE ) {
 			// while statement
-			moduleST * tmp = createIterST ( baseModule ) ;
+			moduleST * tmp = createScopeST ( baseModule ) ;
 
 			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
 
 			printModuleST ( tmp ) ;
 
-			tmp = insertIterST ( baseModule , tmp ) ;
+			tmp = insertScopeST ( baseModule , tmp ) ;
 
 		}
 		else if ( statementAST->child->id == TK_FOR ) {
 			//for stmt
-			moduleST * tmp = createIterST ( baseModule ) ;
+			moduleST * tmp = createScopeST ( baseModule ) ;
 
 			varST * iterat = createVarST ( statementAST->child->next) ;
 			iterat->datatype = TK_INTEGER ;
@@ -696,7 +696,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			printModuleST ( tmp ) ;
 
-			tmp = insertIterST ( baseModule , tmp ) ;
+			tmp = insertScopeST ( baseModule , tmp ) ;
 		}
 		else if ( statementAST->child->id == TK_GET_VALUE ) {
 			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
@@ -834,8 +834,11 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 				
 					if ( iplAST->child->next->dtTag == PRIMITIVE) {
 						tmp->datatype = iplAST->child->next->dt->pType ;
+
+						// Setting and increasing offset
 						tmp->offset = moduleToInsert->currOffset ;
 						moduleToInsert->currOffset += getSize (tmp) ;
+
 					}
 					else{
 						// array 
@@ -848,7 +851,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						int arrSize = getSize (tmp) ;
 						if (arrSize <= 0)
 							printf ("ERROR : Left index needs to be <= right index\n") ;
-
+						
 						tmp->offset = moduleToInsert->currOffset ;
 						moduleToInsert->currOffset += arrSize ;
 					}
