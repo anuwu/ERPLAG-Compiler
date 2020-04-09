@@ -613,11 +613,41 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 	else if ( haveReturns == 1 ) {
 		varST * varPtr = searchVarInbaseST(base , funcNode->next->next->tok->lexeme ) ;
 		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->next->next->tok->lexeme) ;
-		
+
+
+		if (modPtr != NULL)
+		{
+			printf("\t> Definition found\n") ;
+			//checking IP
+			if ( checkIP(thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkOP(thisModule,modPtr,funcNode->child) !=NULL ) {
+				return -3 ;
+			}
+			else{
+				return 2 ;
+			}
+		}
+		else
+		{
+			if (varPtr == NULL)
+				return -1 ;
+			else
+				return -2 ;
+		}
+
+		/*
 		if ( varPtr == NULL && modPtr == NULL )
 			return -1 ;
 		else if (varPtr != NULL && modPtr != NULL )
-			return -2 ;
+		{
+			printf("\t> Definition found\n") ;
+			//checking IP
+			if ( checkIP(thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkOP(thisModule,modPtr,funcNode->child) !=NULL ) {
+				return -3 ;
+			}
+			else{
+				return 2 ;
+			}
+		}
 		else if ( varPtr ) {
 			return 1 ;
 		}
@@ -631,6 +661,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				return 2 ;
 			}
 		}
+		*/
 	}
 	else
 		return -4 ;
@@ -683,8 +714,8 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			astNode * dataTypeAST = statementAST->child->next->next ;
 			while ( idAST ) {
 
-				if ( searchlocalVarInCurrentModule(baseModule,idAST->tok->lexeme) != NULL ){
-					printf ( "ERROR : %s Local variable already declared\n", idAST->tok->lexeme) ;
+				if ( searchlocalVarInCurrentModule(baseModule,idAST->tok->lexeme) != NULL || (baseModule->tableType == MODULE_ST &&searchOutputVarInCurrentModule(baseModule, idAST->tok->lexeme) != NULL) ){
+					printf ( "ERROR  %s : %s Local/Output variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
 				}
 				else{
 					varST * tmp = createVarST ( idAST ) ;
@@ -790,7 +821,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		else if ( statementAST->child->id == idList ) {
 			// [a] = use module with parameters [ d ] ;
 			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
-			if ( validCallFlag > 0 ) {
+			if ( validCallFlag > 0) {
 				// valid call code
 				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
 
@@ -806,10 +837,10 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			}
 			else if (validCallFlag == -1 )	{
-				printf( "ERROR : Module Not declared/defined\n") ;
+				printf( "ERROR %s : %s Module neither declared nor defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
 			}
 			else if( validCallFlag == -2 ) {
-				printf("ERROR : Redundant Declaration\n") ;
+				printf( "ERROR %s : %s Module declared but not defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
 			}
 			else{
 				printf("ERROR : 404\n") ;
@@ -883,105 +914,110 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 	//***************************************************************
 	/* handle it */
 	astNode * otherMODS = moduleDECS->next ;
-	currentASTNode = otherMODS->child ;
 	
-	//currentASTNode is now a module
-	while ( currentASTNode ) {
-		
-		if ( searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) == NULL) {
-			// need to create and insert
-			moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
 
-			// filling input_plist and output_plist
-			astNode * input_plistAST = currentASTNode->child->next ;
-			astNode * iplAST = input_plistAST->child ;
+	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
+	{
+		currentASTNode = otherMODS->child ;
+		//currentASTNode is now a modulef
+		while ( currentASTNode ) {
+			
+			if ( searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) == NULL) {
+				// need to create and insert
+				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
 
-			while ( iplAST ) {
+				// filling input_plist and output_plist
+				astNode * input_plistAST = currentASTNode->child->next ;
+				astNode * iplAST = input_plistAST->child ;
 
-				if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
-					printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
-				}
-				else{
-					varST * tmp = createVarST ( iplAST->child ) ;
-				
-					if ( iplAST->child->next->dtTag == PRIMITIVE) {
-						tmp->datatype = iplAST->child->next->dt->pType ;
+				while ( iplAST ) {
 
-						// Setting and increasing offset
-						tmp->offset = moduleToInsert->currOffset ;
-						moduleToInsert->currOffset += getSize (tmp) ;
-
+					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
+						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 					}
 					else{
-						// array 
-						tmp->datatype = TK_ARRAY ;
-						tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
-						tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
-						tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
-						tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
+						varST * tmp = createVarST ( iplAST->child ) ;
+					
+						if ( iplAST->child->next->dtTag == PRIMITIVE) {
+							tmp->datatype = iplAST->child->next->dt->pType ;
 
-						int arrSize = getSize (tmp) ;
-						if (arrSize <= 0)
-							printf ("ERROR : Left index needs to be <= right index\n") ;
-						
-						tmp->offset = moduleToInsert->currOffset ;
-						moduleToInsert->currOffset += arrSize ;
+							// Setting and increasing offset
+							tmp->offset = moduleToInsert->currOffset ;
+							moduleToInsert->currOffset += getSize (tmp) ;
+
+						}
+						else{
+							// array 
+							tmp->datatype = TK_ARRAY ;
+							tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
+							tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
+							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
+							tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
+
+							int arrSize = getSize (tmp) ;
+							if (arrSize <= 0)
+								printf ("ERROR : Left index needs to be <= right index\n") ;
+							
+							tmp->offset = moduleToInsert->currOffset ;
+							moduleToInsert->currOffset += arrSize ;
+						}
+
+						moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
 					}
-
-					moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
-				}
-			
-				iplAST = iplAST->next ;
-			}
-			astNode * retAST = input_plistAST->next ;
-			astNode * oplAST = retAST->child ;
-
-			while ( oplAST ) {
-
-				if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
-					printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
-				}
-				else{
-					varST * tmp = createVarST ( oplAST->child ) ;
-					//array can't be here
-					tmp->datatype = oplAST->child->next->id ;
-					moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
-
-					tmp->offset = moduleToInsert->currOffset ;
-					moduleToInsert->currOffset += getSize (tmp) ;
-				}
 				
-				oplAST = oplAST->next ;
+					iplAST = iplAST->next ;
+				}
+				astNode * retAST = input_plistAST->next ;
+				astNode * oplAST = retAST->child ;
+
+				while ( oplAST ) {
+
+					if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
+						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
+					}
+					else{
+						varST * tmp = createVarST ( oplAST->child ) ;
+						//array can't be here
+						tmp->datatype = oplAST->child->next->id ;
+						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
+
+						tmp->offset = moduleToInsert->currOffset ;
+						moduleToInsert->currOffset += getSize (tmp) ;
+					}
+					
+					oplAST = oplAST->next ;
+				}
+
+
+				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+				printModuleST ( moduleToInsert ) ;	
+
+				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
+			}
+			else {
+				printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
 			}
 
-			// handle iterST
-
-			moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-			printModuleST ( moduleToInsert ) ;	
-
-			base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
-		}
-		else {
-			printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
+			currentASTNode = currentASTNode->next ;
 		}
 
-		currentASTNode = currentASTNode->next ;
+	if (otherMODS->next != NULL)
+		otherMODS = otherMODS->next->next ;
 	}
 
 	//*****************************************************************
 
-	astNode * driverMODS = otherMODS->next ;
+	astNode * driverMODS = otherMODS->prev ;
 	moduleST * driverST = createDriverST(base) ;
 	
 	driverST = fillModuleST (base,driverST , driverMODS->child->child) ;
 	printModuleST ( driverST ) ;
-	base = insertDriverSTInbaseST ( base , driverST ) ;
-	
+	base = insertDriverSTInbaseST ( base , driverST ) ;	
 	
 	// statements
 
 	//*****************************************************************
-
+	/*
 	otherMODS = driverMODS->next ;
 	currentASTNode = otherMODS->child ;
 	while ( currentASTNode ) {
@@ -1055,6 +1091,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 		currentASTNode = currentASTNode->next ;
 	}
+	*/
 			
 	return base ;
 }

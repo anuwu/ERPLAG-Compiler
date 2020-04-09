@@ -1,12 +1,4 @@
-<<module test>>
-takes input [a:integer] ;
-returns [z:real, y:boolean, x:integer] ;
-start
-	z := 1/3.14169 ;
-	y := true ;
-	x := -5 ;
-end
-
+declare module test ;
 
 <<module satwadhi>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
@@ -25,4 +17,14 @@ end
 
 <<<driver program>>>
 start
+end
+
+
+<<module test>>
+takes input [a:integer] ;
+returns [z:real, y:boolean, x:integer] ;
+start
+	z := 1/3.14169 ;
+	y := true ;
+	x := -5 ;
 end
