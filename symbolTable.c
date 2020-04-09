@@ -915,94 +915,102 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 	/* handle it */
 	astNode * otherMODS = moduleDECS->next ;
 	
-
-	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
+	for (int otherMODS_Pass = 1 ; otherMODS_Pass <= 2 ; otherMODS_Pass++)
 	{
-		currentASTNode = otherMODS->child ;
-		//currentASTNode is now a modulef
-		while ( currentASTNode ) {
-			
-			if ( searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) == NULL) {
-				// need to create and insert
-				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
 
-				// filling input_plist and output_plist
-				astNode * input_plistAST = currentASTNode->child->next ;
-				astNode * iplAST = input_plistAST->child ;
+		for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
+		{
+			currentASTNode = otherMODS->child ;
+			//currentASTNode is now a modulef
+			while ( currentASTNode ) {
+				
+				if ( searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) == NULL) {
+					// need to create and insert
+					moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
 
-				while ( iplAST ) {
+					// filling input_plist and output_plist
+					astNode * input_plistAST = currentASTNode->child->next ;
+					astNode * iplAST = input_plistAST->child ;
 
-					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
-						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
-					}
-					else{
-						varST * tmp = createVarST ( iplAST->child ) ;
-					
-						if ( iplAST->child->next->dtTag == PRIMITIVE) {
-							tmp->datatype = iplAST->child->next->dt->pType ;
+					while ( iplAST ) {
 
-							// Setting and increasing offset
-							tmp->offset = moduleToInsert->currOffset ;
-							moduleToInsert->currOffset += getSize (tmp) ;
-
+						if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
+							printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 						}
 						else{
-							// array 
-							tmp->datatype = TK_ARRAY ;
-							tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
-							tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
-							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
-							tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
+							varST * tmp = createVarST ( iplAST->child ) ;
+						
+							if ( iplAST->child->next->dtTag == PRIMITIVE) {
+								tmp->datatype = iplAST->child->next->dt->pType ;
 
-							int arrSize = getSize (tmp) ;
-							if (arrSize <= 0)
-								printf ("ERROR : Left index needs to be <= right index\n") ;
-							
-							tmp->offset = moduleToInsert->currOffset ;
-							moduleToInsert->currOffset += arrSize ;
+								// Setting and increasing offset
+								tmp->offset = moduleToInsert->currOffset ;
+								moduleToInsert->currOffset += getSize (tmp) ;
+
+							}
+							else{
+								// array 
+								tmp->datatype = TK_ARRAY ;
+								tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
+								tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
+								tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
+								tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
+
+								int arrSize = getSize (tmp) ;
+								if (arrSize <= 0)
+									printf ("ERROR : Left index needs to be <= right index\n") ;
+								
+								tmp->offset = moduleToInsert->currOffset ;
+								moduleToInsert->currOffset += arrSize ;
+							}
+
+							moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
 						}
-
-						moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
-					}
-				
-					iplAST = iplAST->next ;
-				}
-				astNode * retAST = input_plistAST->next ;
-				astNode * oplAST = retAST->child ;
-
-				while ( oplAST ) {
-
-					if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
-						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
-					}
-					else{
-						varST * tmp = createVarST ( oplAST->child ) ;
-						//array can't be here
-						tmp->datatype = oplAST->child->next->id ;
-						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
-
-						tmp->offset = moduleToInsert->currOffset ;
-						moduleToInsert->currOffset += getSize (tmp) ;
-					}
 					
-					oplAST = oplAST->next ;
+						iplAST = iplAST->next ;
+					}
+					astNode * retAST = input_plistAST->next ;
+					astNode * oplAST = retAST->child ;
+
+					while ( oplAST ) {
+
+						if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
+							printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
+						}
+						else{
+							varST * tmp = createVarST ( oplAST->child ) ;
+							//array can't be here
+							tmp->datatype = oplAST->child->next->id ;
+							moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
+
+							tmp->offset = moduleToInsert->currOffset ;
+							moduleToInsert->currOffset += getSize (tmp) ;
+						}
+						
+						oplAST = oplAST->next ;
+					}
+
+					if (otherMODS_Pass == 2)
+					{
+						moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+						printModuleST ( moduleToInsert ) ;	
+
+						base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
+					}
+
+				}
+				else {
+					printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
 				}
 
-
-				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-				printModuleST ( moduleToInsert ) ;	
-
-				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
-			}
-			else {
-				printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
+				currentASTNode = currentASTNode->next ;
 			}
 
-			currentASTNode = currentASTNode->next ;
+		if (otherMODS->next != NULL)
+			otherMODS = otherMODS->next->next ;
 		}
 
-	if (otherMODS->next != NULL)
-		otherMODS = otherMODS->next->next ;
+		otherMODS = moduleDECS->next
 	}
 
 	//*****************************************************************
