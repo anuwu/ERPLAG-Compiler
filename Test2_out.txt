@@ -1,0 +1,70 @@
+||-5||	declare	1	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	1	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	test	1	TK_ID	test	moduleDeclaration	YES	TK_ID
+||-5||	;	1	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						program		NO		moduleDeclarations
+||-5||	EPS	4	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||2|| 						moduleDeclarations		NO		moduleDeclarations
+||0|| 						ROOT		NO		program
+||-5||	<<	4	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	4	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	test	4	TK_ID	test	module	YES	TK_ID
+||-5||	>>	4	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	5	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	5	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	5	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	5	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	5	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	5	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	EPS	5	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						input_plist		NO		IPL
+||-5||	]	5	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	5	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	6	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	6	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	z	6	TK_ID	z	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	6	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	real	6	TK_REAL	real	type	YES	TK_REAL
+||86|| 						output_plist		NO		type
+||-5||	,	6	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	y	6	TK_ID	y	OPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	6	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						OPL		NO		type
+||-5||	,	6	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						OPL		NO		OPL
+||-5||	x	6	TK_ID	x	OPL	YES	TK_ID
+||-5||	:	6	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	6	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	6	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	6	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	6	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	7	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	8	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	8	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	EPS	10	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules
+||-5||	<<<	10	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	10	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	10	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	10	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	11	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	EPS	12	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						moduleDef		NO		statements
+||-5||	end	12	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	13	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						program		NO		otherModules

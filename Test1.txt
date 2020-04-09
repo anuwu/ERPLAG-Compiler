@@ -1,5 +1,11 @@
 declare module test ;
 
+<<module hell>>
+takes input [g:real] ;
+start
+end
+
+
 <<module satwadhi>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
@@ -19,7 +25,6 @@ end
 start
 end
 
-
 <<module test>>
 takes input [a:integer] ;
 returns [z:real, y:boolean, x:integer] ;
@@ -27,4 +32,6 @@ start
 	z := 1/3.14169 ;
 	y := true ;
 	x := -5 ;
+
+	use module hell with parameters z ;
 end

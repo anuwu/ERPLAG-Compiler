@@ -1,0 +1,12 @@
+declare module test ;
+
+
+<<module test>>
+takes input [a:integer] ;
+returns [z:real, y:boolean, x:integer] ;
+start
+end
+
+<<<driver program>>>
+start
+end
