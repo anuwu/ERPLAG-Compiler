@@ -69,9 +69,6 @@ moduleST * createModuleST ( baseST * parent , char * lexeme ) {
 	tmp->tableType = MODULE_ST ;
 	for ( int i = 0 ; i < VAR_BIN_COUNT ; i++ ) {
 		tmp->localVars[i] = NULL ;
-		
-	}
-	for (int i = 0 ; i < IO_BIN_COUNT ; i++) {
 		tmp->inputVars[i] = NULL ;
 		tmp->outputVars[i] = NULL ;
 	}
@@ -98,42 +95,7 @@ moduleST * createIterST ( moduleST * parent ) {
 	return tmp ;
 }
 ///////////////////////////////////////////////////////////////////////////
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-typedef enum _datTag
-{
-	PRIMITIVE, ARRAY
-} datTag ;
-typedef union _datType
-{
-	primitive pType ;
-	arrayTypeInfo *arrType ;
-} datType ;
-typedef struct _astNode 
-{
-	tokenID id ;
-	token *tok ;
 
-	// if id == NT
-	// 	tok = NULL
-	// else id == T
-	// 	tok holds tokn info
-	// 		id, lexeme, linenumber
-	
-	// datTag random
-	// datType NULL
-	
-	datTag dtTag ;
-	datType *dt ;
-
-	struct _astNode *parent , *child , *next, *prev ;
-} astNode ;
-*/
 varST * createVarST ( astNode * thisASTnode ) {
 	varST * tmp = (varST *) malloc ( sizeof(varST)) ;
 
@@ -142,18 +104,6 @@ varST * createVarST ( astNode * thisASTnode ) {
 	tmp->offset = 9999 ; //default value
 	tmp->arrayIndices = NULL ;
 	
-	// if(tmp->datatype != TK_ARRAY ) {
-	// 	tmp->arrayIndices = NULL ;
-	// }
-	// else {
-	// 	// TK_ARRAY
-	// 	tmp->arrayIndices = (arrayInST *) malloc ( sizeof(arrayInST)) ;
-
-	// 	tmp->arrayIndices->startingPos = "9999" ; 
-	// 	tmp->arrayIndices->endingPos = "9999" ;
-	// 	/**************fill starting and ending positions**********************/
-
-	// }
 
 	return tmp ;
 }
@@ -210,7 +160,7 @@ moduleST * insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) {
 	return thisModule ;
 }
 moduleST * insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
-	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
+	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
@@ -220,7 +170,7 @@ moduleST * insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
 	return thisModule ;
 }
 moduleST * insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
-	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
+	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
@@ -280,7 +230,7 @@ varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 	return NULL ;
 }
 varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
-	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
+	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = thisModule->inputVars[index] ;
 	while ( tmp!= NULL ){
@@ -292,7 +242,7 @@ varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 	return NULL ;
 }
 varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
-	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
+	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = thisModule->outputVars[index] ;
 	while ( tmp!= NULL ){
@@ -397,7 +347,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 	}
 
 	printf("\nINPUT Variables :\n" ) ;
-	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ ){
+	for ( int i = 0 ; i<VAR_BIN_COUNT ; i++ ){
 		
 		varSTentry * vv = thisModuleST->inputVars[i] ;
 
@@ -413,7 +363,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 		}
 	}
 	printf("\nOUTPUT Variables :\n" ) ;
-	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ ){
+	for ( int i = 0 ; i<VAR_BIN_COUNT ; i++ ){
 		
 		varSTentry * vv = thisModuleST->outputVars[i] ;
 
@@ -450,134 +400,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 
 
 
-
-varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) {
-	
-	printf("> checkIP\n") ;
-
-	varSTentry * varEntry = targetModule->inputVars[0] ;
-
-	
-	astNode * inputIter = inputNode ;
-	while(inputIter->next) {
-		inputIter = inputIter->next ;
-	}
-	
-
-	while( inputIter && varEntry ){
-
-		printf("---| %s & %s |---\n",inputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
-		
-		varST * searchedVar = searchVar( thisModule , inputIter->tok->lexeme ) ;
-
-
-
-		if( searchedVar == NULL ){
-			printf("ERROR : %s variable not declared\n", inputIter->tok->lexeme ) ;
-		}
-		else {
-
-
-
-			if(varEntry->thisVarST->datatype == searchedVar->datatype ){
-				// if(varEntry->thisVarST->datatype == TK_ARRAY && varEntry->thisVarST->arrayIndices->dataType ==  ) {
-					
-				// }
-				printf("> GOOD : %s with %s\n",inputNode->tok->lexeme , varEntry->thisVarST->lexeme ) ;
-
-
-			}
-			else {
-				printf ( "ERROR : %s and %s conflicting dataType\n" , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
-				// printf( "searchedVar->datatype : %d\n",searchedVar->datatype) ;
-				// printf("varEntry->thisVarST->datatype : %d\n",varEntry->thisVarST->datatype) ;
-			}
-		}
-		
-		varEntry = varEntry->next ;
-		inputIter = inputIter->prev ;
-	}
-
-	if ( varEntry==NULL && inputIter ){
-		printf("ERROR : More parameters passed\n") ;
-		return searchVar(thisModule , inputIter->tok->lexeme ) ;
-	}
-	else if ( varEntry && inputIter==NULL ) {
-		printf("ERROR : Insufficient Number of parameters\n") ;
-		return varEntry->thisVarST ;
-	}
-	else{
-		printf("> All Good\n") ;
-		return NULL ;
-	}
-	
-}
-
-
-int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , int haveReturns ) {
-
-	printf ("\t> isValidCall\n") ;
-
-	if(haveReturns == 0 ) {
-		varST * varPtr = searchVarInbaseST(base , funcNode->tok->lexeme ) ;
-		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->tok->lexeme) ;
-		
-		if ( varPtr == NULL && modPtr == NULL ) {
-			printf("\t-1\n") ;
-			return -1 ;
-		}
-		else if (varPtr != NULL && modPtr != NULL ) {
-			printf("\t-2\n") ;
-			return -2 ;
-		}
-		else if ( varPtr !=NULL && modPtr == NULL) {
-			printf("\t1\n") ;
-			return 1 ;
-		}
-		else{
-			// definition found
-			printf("\t> Definition found\n") ;
-			//checking IP
-			if ( checkIP(thisModule,modPtr,funcNode->next->child) !=NULL ) {
-				return -3 ;
-			}
-			else{
-				return 2 ;
-			}
-			
-			
-		}
-	}
-	else if ( haveReturns == 1 ) {
-		varST * varPtr = searchVarInbaseST(base , funcNode->next->next->tok->lexeme ) ;
-		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->next->next->tok->lexeme) ;
-		
-		if ( varPtr == NULL && modPtr == NULL )
-			return -1 ;
-		else if (varPtr != NULL && modPtr != NULL )
-			return -2 ;
-		else if ( varPtr ) {
-			return 1 ;
-		}
-		else {
-			printf("\t> Definition found\n") ;
-			//checking IP
-			if ( checkIP(thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkIP(thisModule,modPtr,funcNode->child) !=NULL ) {
-				return -3 ;
-			}
-			else{
-				return 2 ;
-			}
-		}
-	}
-	else
-		return -4 ;
-	
-}
-
-
-
-moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) {
+moduleST * fillModuleST ( moduleST* baseModule , astNode * statementAST ) {
 
 	while ( statementAST ) {
 
@@ -617,7 +440,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			// while statement
 			moduleST * tmp = createIterST ( baseModule ) ;
 
-			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
+			tmp = fillModuleST ( tmp , statementAST->child->next->next->child ) ;
 
 			printModuleST ( tmp ) ;
 
@@ -633,7 +456,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			
 			tmp = insertLocalVarST ( tmp , iterat ) ;
 
-			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->next->next->child ) ;
+			tmp = fillModuleST ( tmp , statementAST->child->next->next->next->next->child ) ;
 
 			
 
@@ -642,128 +465,15 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			tmp = insertIterST ( baseModule , tmp ) ;
 		}
-		else if ( statementAST->child->id == TK_GET_VALUE ) {
-			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
-
-			if ( thisVar == NULL ){
-				printf ( "ERROR : %s Variable undeclared\n" , statementAST->child->next->tok->lexeme ) ;
-			}
-			else {
-				// generate code
-			}
-		}
-		else if ( statementAST->child->id == TK_PRINT ) {
-			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
-
-			if ( thisVar == NULL ){
-				printf ( "ERROR : %s undeclared\n" , statementAST->child->next->tok->lexeme ) ;
-			}
-			else {
-				// generate code
-			}
-		}
-		else if ( statementAST->child->id == TK_ID ) {
-			
-			if(statementAST->child->next->id == TK_ASSIGNOP ) {
-				// a := expression_new
-			}
-			
-			else if ( statementAST->child->next->id == TK_ID && statementAST->child->next->next->id == TK_ASSIGNOP ){
-				// a[index] := expression_new
-			}
-			
-			else if ( statementAST->child->next->id == idList ) {
-				// [a] = use module with parameters [ d ] ;
-
-				int validCallFlag = isValidCall ( realBase , baseModule ,statementAST->child , 0 ) ;
-				if ( validCallFlag > 0 ) {
-					// parameter check and valid code
-					printf("> isValidCall ran\n") ;
-				}
-				else if (validCallFlag == -1 )	{
-					printf( "ERROR : Module Not declared/defined\n") ;
-				}
-				else if( validCallFlag == -2 ) {
-					printf("ERROR : Redundant Declaration\n") ;
-				}
-				else{
-					printf("ERROR : 404\n") ;
-				}
-				
-			}
-		}
-		else if ( statementAST->child->id == idList ) {
-			// use module with parameters [ d ] ;
-			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
-			if ( validCallFlag > 0 ) {
-				// valid call code
-			}
-			else if (validCallFlag == -1 )	{
-				printf( "ERROR : Module Not declared/defined\n") ;
-			}
-			else if( validCallFlag == -2 ) {
-				printf("ERROR : Redundant Declaration\n") ;
-			}
-			else{
-				printf("ERROR : 404\n") ;
-			}
-		}
-
-
-
-
-
-
 
 
 		statementAST = statementAST->next ;
 	}
 
 
+
 	return baseModule ;
 }
-
-
-
-
-
-
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-typedef enum _datTag
-{
-	PRIMITIVE, ARRAY
-} datTag ;
-typedef union _datType
-{
-	primitive pType ;
-	arrayTypeInfo *arrType ;
-} datType ;
-typedef struct _astNode 
-{
-	tokenID id ;
-	token *tok ;
-
-	// if id == NT
-	// 	tok = NULL
-	// else id == T
-	// 	tok holds tokn info
-	// 		id, lexeme, linenumber
-	
-	// datTag random
-	// datType NULL
-	
-	datTag dtTag ;
-	datType *dt ;
-
-	struct _astNode *parent , *child , *next, *prev ;
-} astNode ;
-*/
 
 
 baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
@@ -856,7 +566,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 			// handle iterST
 
-			moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+			moduleToInsert = fillModuleST ( moduleToInsert , currentASTNode->child->next->next->next->child ) ;
 			
 
 
@@ -879,7 +589,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 	astNode * driverMODS = otherMODS->next ;
 	moduleST * driverST = createDriverST(base) ;
 	
-	driverST = fillModuleST (base,driverST , driverMODS->child->child) ;
+	driverST = fillModuleST (driverST , driverMODS->child->child) ;
 	printModuleST ( driverST ) ;
 	base = insertDriverSTInbaseST ( base , driverST ) ;
 	
@@ -946,7 +656,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 				}
 
 				// handle iterST
-				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+				moduleToInsert = fillModuleST ( moduleToInsert , currentASTNode->child->next->next->next->child ) ;
 
 
 
