@@ -4,7 +4,17 @@ declare module m ;
 takes input [a:integer] ;
 returns [b:boolean] ;
 start
+	declare a, b : integer ;
+	declare c : array [a .. b] of integer ;
+
+	while (a > b)
+	start
+		declare b : boolean ;
+	end
+
+	declare d : boolean ;
 end
+
 
 <<<driver program>>>
 start

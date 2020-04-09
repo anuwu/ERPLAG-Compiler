@@ -680,9 +680,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->next->next->child ) ;
 
-			
-
-
 			printModuleST ( tmp ) ;
 
 			tmp = insertIterST ( baseModule , tmp ) ;
