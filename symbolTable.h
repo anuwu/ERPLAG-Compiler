@@ -36,10 +36,10 @@ struct _varST {
 struct _moduleST {
 	char * lexeme ; // iterations must be given a unique name also
 	enum _stType tableType ;
-	struct _varSTentry * localVars[VAR_BIN_COUNT] ;
-	struct _varSTentry * inputVars[IO_BIN_COUNT] ;
-	struct _varSTentry * outputVars[IO_BIN_COUNT] ;
-	struct _moduleSTentry * modules[SCOPE_BIN_COUNT] ;
+	struct _varSTentry *localVars[VAR_BIN_COUNT] ;
+	struct _varSTentry *inputVars[IO_BIN_COUNT] ;
+	struct _varSTentry *outputVars[IO_BIN_COUNT] ;
+	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int currOffset ;

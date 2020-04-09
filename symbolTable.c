@@ -77,7 +77,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme ) {
 		tmp->outputVars[i] = NULL ;
 	}
 	for ( int i = 0 ; i < MODULE_BIN_COUNT ; i++ ) {
-		tmp->modules[i] = NULL ;
+		tmp->scopeVars[i] = NULL ;
 	}
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = 0 ;
@@ -146,8 +146,8 @@ moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
 	moduleSTentry * tmp = ( moduleSTentry * ) malloc ( sizeof ( moduleSTentry )) ;
 
 	tmp->thisModuleST = thisScopeST ;
-	tmp->next = (parent->modules)[index] ;
-	(parent->modules)[index] = tmp ;
+	tmp->next = (parent->scopeVars)[index] ;
+	(parent->scopeVars)[index] = tmp ;
 
 	return parent ;
 }
@@ -343,7 +343,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 	printf("Modules :\n" ) ;
 	for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ){
 		
-		tt = thisModuleST->modules[i] ;
+		tt = thisModuleST->scopeVars[i] ;
 		while ( tt != NULL ) {
 			printf("\t%s --> Label\n",tt->thisModuleST->lexeme) ;
 			tt = tt->next ;
