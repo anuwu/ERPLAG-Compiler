@@ -1,0 +1,9 @@
+program -> baseST
+moduleDeclarations -> varSTentry
+module -> 
+	1st child , ID
+	2nd child , inputplist
+	3rd child , outputplist
+	4th child , statements
+
+inputplist and outputplist ;

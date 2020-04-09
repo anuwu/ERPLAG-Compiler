@@ -25,10 +25,30 @@ typedef union _datType
 	arrayTypeInfo *arrType ;
 } datType ;
 
+
+/*
+typedef struct _token
+{
+	tokenID id ;
+	char *lexeme ;
+	int lineNumber ;
+} token ;
+*/
 typedef struct _astNode 
 {
 	tokenID id ;
 	token *tok ;
+
+	/*
+	if id == NT
+		tok = NULL
+	else id == T
+		tok holds tokn info
+			id, lexeme, linenumber
+	
+	datTag random
+	datType NULL
+	*/
 
 	datTag dtTag ;
 	datType *dt ;
@@ -38,5 +58,5 @@ typedef struct _astNode
 
 astNode* applyASTRule (treeNode *PTNode) ;
 void inorderAST (astNode *node, int space) ;
-
+void preorderAST (astNode *node, int space) ;
 #endif

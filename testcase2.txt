@@ -1,12 +1,16 @@
 declare module mod1;
+declare module mod2;
+
+<< module mod3 >>
+takes input ( input1 : boolean ) ;
+returns ( output1 : boolean ) ;
+start
+	print(you) ;
+end
+
 <<<driver program>>>
 start
 	print(a);
-	print(7.5);
-	print(6);
-	get_value(z);
-	declare a:integer;
-	declare d,e,f:real;
 end
 
 **

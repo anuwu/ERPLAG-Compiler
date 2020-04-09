@@ -3,6 +3,9 @@
 #include <string.h>
 #include <sys/time.h>
 #include "ast.h"
+#include "symbolTable.h"
+
+
 
 #define SIZE 200
 #define TNTLENGTH 40
@@ -44,6 +47,13 @@ int main(int argc, char *argv[])
 	astRoot = applyASTRule (root) ;
 	//testroot (astRoot) ;
 	inorderAST (astRoot, 0) ;
+
+	printf ("*********************************************************\n") ;
+
+	baseST * baseTable ;
+	baseTable = fillSymbolTable ( baseTable , astRoot ) ;
+
+	printBaseST ( baseTable ) ;
 
 	return 0;
 }

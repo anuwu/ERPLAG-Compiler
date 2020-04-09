@@ -1,17 +1,109 @@
 ||-5||	EPS	1	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
 ||2|| 						program		NO		moduleDeclarations
 ||0|| 						ROOT		NO		program
-||-5||	EPS	1	TK_EPS	EPS	otherModules	YES	TK_EPS
-||5|| 						program		NO		otherModules
-||-5||	<<<	1	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
-||6|| 						program		NO		driverModule
-||-5||	driver	1	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
-||-5||	program	1	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
-||-5||	>>>	1	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
-||-5||	start	2	TK_START	start	moduleDef	YES	TK_START
-||8|| 						driverModule		NO		moduleDef
-||-5||	EPS	3	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	<<	1	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	1	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	m2	1	TK_ID	m2	module	YES	TK_ID
+||-5||	>>	1	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	2	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	2	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	2	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	inmodule1	2	TK_ID	inmodule1	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	2	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	2	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	,	2	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	inmodule2	2	TK_ID	inmodule2	IPL	YES	TK_ID
+||-5||	:	2	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	2	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	2	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	2	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	2	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	2	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	,	2	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	d	2	TK_ID	d	IPL	YES	TK_ID
+||-5||	:	2	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	2	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	EPS	2	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	2	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	2	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	3	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	3	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	EPS	4	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						moduleDef		NO		statements
-||-5||	end	3	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	4	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	4	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	EPS	8	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules
+||-5||	<<<	8	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	8	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	8	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	8	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	9	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	declare	11	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	indriver1	11	TK_ID	indriver1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	11	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	indriver2	11	TK_ID	indriver2	idL	YES	TK_ID
+||-5||	EPS	11	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	11	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	11	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	11	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	[	12	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	b	12	TK_ID	b	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	12	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	c	12	TK_ID	c	idL	YES	TK_ID
+||-5||	EPS	12	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	12	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	12	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	12	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	12	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	m2	12	TK_ID	m2	moduleReuseStmt	YES	TK_ID
+||-5||	with	12	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	12	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	indriver1	12	TK_ID	indriver1	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	12	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	indriver2	12	TK_ID	indriver2	idL	YES	TK_ID
+||-5||	,	12	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	indriver1	12	TK_ID	indriver1	idL	YES	TK_ID
+||-5||	,	12	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	indriver2	12	TK_ID	indriver2	idL	YES	TK_ID
+||-5||	EPS	12	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	12	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	14	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	14	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	17	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules

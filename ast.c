@@ -36,6 +36,55 @@ astNode* createASTNode (treeNode *PTNode)
  	return node ;
 }
 
+
+void preorderAST (astNode *node, int space) 
+{	
+	if (node == NULL)
+		return ;
+
+	astNode *sib = node->child ;
+
+	for (int i = 0 ; i < 2*space ; i++)
+		printf (" ") ;
+
+	
+	if (node->tok == NULL)
+	{
+		if (node->dt == NULL)
+			printf ("|(%s,%s)\n", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+		else
+		{
+			printf ("|(%s,%s) ---> ", tokenIDToString(node->id) , (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+			if (node->dtTag == PRIMITIVE)
+				printf ("%s", tokenIDToString(node->dt->pType)) ;
+			else
+				printf ("%s[%s .. %s]", tokenIDToString(node->dt->arrType->type), node->dt->arrType->lex1, node->dt->arrType->lex2) ;
+			printf ("\n") ;
+		}
+	}
+	else	
+		printf ("|(%s,%s,%s)\n", tokenIDToString(node->id), node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+
+	if (sib != NULL)
+	{
+		while (sib->next != NULL)
+		{
+			//inorderAST (sib, space + 1) ;
+			sib = sib->next ;
+		}
+
+		
+		while (sib != NULL)
+		{
+			preorderAST (sib, space+1) ;
+			sib = sib->prev ;
+		}
+	}
+
+	
+	//printf ("|(%s,%s)\n", (node->tok==NULL)?tokenIDToString(node->id):node->tok->lexeme, (node->parent == NULL)?"NULL":tokenIDToString(node->parent->id)) ;
+}
+
 void inorderAST (astNode *node, int space)
 {	
 	if (node == NULL)
@@ -263,7 +312,7 @@ astNode* applyASTRule (treeNode *PTNode)
 
 
 			// Connect the children at the module level
-			PTNode->syn->child = children[3] ;
+			PTNode->syn->child = children[0] ;
 			connectChildren (PTNode->syn, children,4) ;
 			break ;
 
@@ -1433,4 +1482,10 @@ astNode* applyASTRule (treeNode *PTNode)
 	}
 
 	return node ;
+}
+
+void printThisAST ( astNode * thisASTNode ) {
+
+	printf ( "tokenID : %d\n" , thisASTNode->id ) ;
+
 }

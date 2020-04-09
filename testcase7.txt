@@ -1,6 +1,7 @@
 declare module satwadhi ;
 declare module kela ;
 
+
 <<module kela>>
 takes input [a:array[0..10] of integer] ;
 returns [b : boolean] ;
