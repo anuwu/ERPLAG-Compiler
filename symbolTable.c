@@ -257,6 +257,47 @@ varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme )
 	}
 	return NULL ;
 }
+
+void tinkerOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme )
+{
+	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
+
+	varSTentry * tmp = thisModule->outputVars[index] ;
+	while ( tmp!= NULL ){
+		if(strcmp(tmp->thisVarST->lexeme , lexeme) == 0 )
+		{
+			if (tmp->thisVarST->offset > 0)
+				tmp->thisVarST->offset = -tmp->thisVarST->offset ;
+			return ;
+		}
+		
+		tmp = tmp->next ;
+	}
+
+}
+
+int checkAllOpTinkered (moduleST *thisModule)
+{
+	int i , tinker = 1 ;
+	varSTentry *tmp ;
+
+	for (i = 0 ; i < IO_BIN_COUNT ; i++)
+	{
+		tmp = thisModule->outputVars[i] ;
+		while (tmp != NULL)
+		{
+			if (tmp->thisVarST->offset >= 0)
+				tinker = 0 ;
+			else
+				tmp->thisVarST->offset = - tmp->thisVarST->offset ;
+
+			tmp = tmp->next ;
+		}
+	}
+
+	return tinker ;
+}
+
 varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
 	varST * tmp ;
 	if( tmp = searchlocalVarInCurrentModule ( thisModule , lexeme ) )
@@ -264,9 +305,7 @@ varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
 	else if ( tmp = searchInputVarInCurrentModule(thisModule,lexeme) )
 		return tmp ;
 	else 
-		tmp = searchOutputVarInCurrentModule (thisModule,lexeme) ;
-	
-	return tmp ;
+		return searchOutputVarInCurrentModule (thisModule,lexeme) ;
 }
 
 
@@ -276,7 +315,8 @@ varST * searchVar ( moduleST * thisModule , char * lexeme ) {
 	if( tmp )
 		return tmp ;
 
-
+	/*
+	Do the recursive call later
 	moduleST * tmpModule = thisModule ;
 	while( tmpModule->tableType == SCOPE_ST ) { //means above is a moduleST
 		tmp = searchVarInCurrentModule( (moduleST *) thisModule->parent , lexeme ) ;
@@ -288,6 +328,7 @@ varST * searchVar ( moduleST * thisModule , char * lexeme ) {
 	}	
 	// return searchVarInbaseST ( (baseST *) thisModule->parent , lexeme ) ;
 	return NULL ;
+	*/
 }
 
 
@@ -668,7 +709,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					baseModule = insertLocalVarST(baseModule , tmp) ;
 				}
 
-
 				idAST = idAST->next ;
 			}
 		}
@@ -705,7 +745,15 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				printf ( "ERROR : %s Variable undeclared\n" , statementAST->child->next->tok->lexeme ) ;
 			}
 			else {
-				// generate code
+				// Only modifying outputVar list
+				if (searchOutputVarInCurrentModule (baseModule, statementAST->child->next->tok->lexeme))
+				{
+					//printf ("Get_value argument is an output var\n") ;
+					tinkerOutputVarInCurrentModule (baseModule, statementAST->child->next->tok->lexeme) ;
+				}
+				else
+					;
+					//printf ("Get_value argument is not an output var\n") ;
 			}
 		}
 		else if ( statementAST->child->id == TK_PRINT ) {
@@ -719,45 +767,43 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 		}
 		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP ) {
-			/*
-				{
-				if(statementAST->child->next->id == TK_ASSIGNOP ) {
-					// a := expression_new
-				}
-				
-				else if ( statementAST->child->next->id == TK_ID && statementAST->child->next->next->id == TK_ASSIGNOP ){
-					// a[index] := expression_new
-				}
-				
-				else if ( statementAST->child->next->id == idList ) {
-					// use module with parameters [ d ] ;
-
-					int validCallFlag = isValidCall ( realBase , baseModule ,statementAST->child , 0 ) ;
-					if ( validCallFlag > 0 ) {
-						// parameter check and valid code
-						printf("> isValidCall ran\n") ;
-					}
-					else if (validCallFlag == -1 )	{
-						printf( "ERROR : Module Not declared/defined\n") ;
-					}
-					else if( validCallFlag == -2 ) {
-						printf("ERROR : Redundant Declaration\n") ;
-					}
-					else{
-						printf("ERROR : 404\n") ;
-					}
-					
-				} Old code by deepak.
-			}
-			*/
-
 			// Insert new code here - Anwesh.
+			// 1. Tinkering code. Assume that variable existence checking has already been done. That is if A is an output varialble, and A[i] := <expression> is the statement, it would have been detected before.
+
+
+			if (searchVar(baseModule, statementAST->child->child->tok->lexeme) == NULL)
+			{
+				printf (" ERROR : %s LHS variable undeclared\n", statementAST->child->child->tok->lexeme) ;
+			}
+			else
+			{
+				// This is solely for the tinkering part.
+				if (statementAST->child->child->child == NULL)	//checking for A[i] as mentioned in comment above
+				{
+					if (searchOutputVarInCurrentModule (baseModule, statementAST->child->child->tok->lexeme))
+						tinkerOutputVarInCurrentModule (baseModule, statementAST->child->child->tok->lexeme) ;
+				}
+			}
+
+			// RHS business will occur here.
 		}
 		else if ( statementAST->child->id == idList ) {
 			// [a] = use module with parameters [ d ] ;
 			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
 			if ( validCallFlag > 0 ) {
 				// valid call code
+				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
+
+				// Tinkering part
+				astNode *idListHead = statementAST->child->child ;
+
+				while (idListHead != NULL)
+				{
+					if (searchOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme))
+						tinkerOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme) ;
+					idListHead = idListHead->next ;
+				}
+
 			}
 			else if (validCallFlag == -1 )	{
 				printf( "ERROR : Module Not declared/defined\n") ;
@@ -771,10 +817,36 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		}
 		else if (statementAST->child->id == TK_ID) {
 			// use module with parameters ... (no return)
+			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
+			if ( validCallFlag > 0 ) {
+				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
+			}
+			else if (validCallFlag == -1 )	{
+				printf( "ERROR : Module Not declared/defined\n") ;
+			}
+			else if( validCallFlag == -2 ) {
+				printf("ERROR : Redundant Declaration\n") ;
+			}
+			else{
+				printf("ERROR : 404\n") ;
+			}
 		}
 
 		statementAST = statementAST->next ;
 	}
+
+
+	if (baseModule->tableType == MODULE_ST)
+	{
+		int tinker ;
+		printf ("Tinker = %d\n", (tinker = checkAllOpTinkered (baseModule))) ;
+
+		if (tinker)
+			printf ("All output variables have bee TINKERED!\n") ;
+		else
+			printf ("ERROR %s : Not all output variables have been tinkered!\n", baseModule->lexeme) ;
+	}
+	
 
 	return baseModule ;
 }

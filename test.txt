@@ -1,8 +1,26 @@
+<<module test>>
+takes input [a:integer] ;
+returns [z:real, y:boolean, x:integer] ;
+start
+	z := 1/3.14169 ;
+	y := true ;
+	x := -5 ;
+end
+
+
 <<module satwadhi>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
+	**
+	cc := 3.14169 ;
+	bb := false ;
+	**
+	aa := 5 ;
 
+	declare actual:integer ;
+
+	[cc,bb,actual] := use module test with parameters actual ;
 end	
 
 <<<driver program>>>
