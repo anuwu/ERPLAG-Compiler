@@ -344,7 +344,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 		
 		tt = thisModuleST->modules[i] ;
 		while ( tt != NULL ) {
-			printf("\t%s\n",tt->thisModuleST->lexeme) ;
+			printf("\t%s --> Label\n",tt->thisModuleST->lexeme) ;
 			tt = tt->next ;
 		}
 	}
@@ -469,7 +469,7 @@ varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inpu
 
 varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) {
 	
-	printf("> checkIP\n") ;
+	printf("> checkOP\n") ;
 
 	varSTentry * varEntry = targetModule->outputVars[0] ;
 
@@ -736,6 +736,8 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				} Old code by deepak.
 			}
 			*/
+
+			// Insert new code here - Anwesh.
 		}
 		else if ( statementAST->child->id == idList ) {
 			// [a] = use module with parameters [ d ] ;
@@ -752,6 +754,9 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			else{
 				printf("ERROR : 404\n") ;
 			}
+		}
+		else if (statementAST->child->d == TK_ID) {
+			// use module with parameters ... (no return)
 		}
 
 		statementAST = statementAST->next ;
