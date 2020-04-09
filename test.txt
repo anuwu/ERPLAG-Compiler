@@ -1,0 +1,12 @@
+declare module m ;
+
+<<module m>>
+takes input [a:integer] ;
+returns [b:boolean] ;
+start
+end
+
+<<<driver program>>>
+start
+	declare k:array[0..10] of integer ;
+end

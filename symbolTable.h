@@ -121,5 +121,8 @@ moduleST * fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * mod
 int isValidCall ( baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
 
 varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
+varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) ;
+
+int getSize( varST * thisVar ) ;
 
 #endif
