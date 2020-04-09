@@ -1,4 +1,5 @@
-declare module m ;
+declare module m1 ;
+declare module m2 ;
 
 <<module m>>
 takes input [a:integer] ;
@@ -19,4 +20,9 @@ end
 <<<driver program>>>
 start
 	declare k:array[0..10] of integer ;
+end
+
+<<module satwadhi>>
+takes input [patil:real] ;
+start
 end
