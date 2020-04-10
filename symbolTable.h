@@ -30,6 +30,7 @@ struct _varST {
 	int offset ;
 	// if TK_ARRAY else unused
 	struct _arrayInST * arrayIndices ;
+	void *scopeST ;
 } ;
 
 
@@ -88,7 +89,7 @@ moduleST * createDriverST ( baseST * parent ) ;
 moduleST * createScopeST ( moduleST * parent ) ;
 
 
-varST * createVarST ( astNode * thisASTNode ) ;
+varST * createVarST ( astNode * thisASTNode, void *scope ) ;
 
 
 baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;

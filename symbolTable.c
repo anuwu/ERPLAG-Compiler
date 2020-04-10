@@ -104,14 +104,14 @@ moduleST * createScopeST ( moduleST * parent ) {
 	return tmp ;
 }
 
-varST * createVarST ( astNode * thisASTnode ) {
+varST * createVarST ( astNode * thisASTnode , void *scope) {
 	varST * tmp = (varST *) malloc ( sizeof(varST)) ;
 
 	tmp->lexeme = thisASTnode->tok->lexeme ;
 	tmp->datatype = thisASTnode->tok->id ;
 	tmp->offset = -9999 ; //default value
 	tmp->arrayIndices = NULL ;
-	
+	tmp->scopeST = scope ;
 
 	return tmp ;
 }
@@ -653,13 +653,12 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			astNode * idAST = statementAST->child->next->child ;
 			astNode * dataTypeAST = statementAST->child->next->next ;
 			while ( idAST ) {
-
+				
 				if ( searchlocalVarInCurrentModule(baseModule,idAST->tok->lexeme) != NULL || (baseModule->tableType == MODULE_ST &&searchOutputVarInCurrentModule(baseModule, idAST->tok->lexeme) != NULL) ){
 					printf ( "ERROR  %s : %s Local/Output variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
 				}
 				else{
-					//printf ("ACTUAL\n");
-					varST * tmp = createVarST ( idAST ) ;
+					varST * tmp = createVarST ( idAST, baseModule ) ;
 
 					if ( dataTypeAST->dtTag  == ARRAY ) {
 						tmp->datatype = TK_ARRAY ;
@@ -699,28 +698,21 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		else if ( statementAST->child->id == TK_WHILE ) {
 			// while statement
 			moduleST * tmp = createScopeST ( baseModule ) ;
-
-			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
-
+			tmp = fillModuleST (realBase , tmp , statementAST->child->next->next->child) ;
 			printModuleST ( tmp ) ;
-
 			tmp = insertScopeST ( baseModule , tmp ) ;
 
 		}
 		else if ( statementAST->child->id == TK_FOR ) {
-			//for stmt
+			/*
 			moduleST * tmp = createScopeST ( baseModule ) ;
-
 			varST * iterat = createVarST ( statementAST->child->next) ;
 			iterat->datatype = TK_INTEGER ;
-			
 			tmp = insertLocalVarST ( tmp , iterat ) ;
-
 			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->next->next->child ) ;
-
 			printModuleST ( tmp ) ;
-
 			tmp = insertScopeST ( baseModule , tmp ) ;
+			*/
 		}
 		else if ( statementAST->child->id == TK_GET_VALUE ) {
 			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
@@ -739,10 +731,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 		}
 		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) {
-			// Insert new code here - Anwesh.
-			// 1. Tinkering code. Assume that variable existence checking has already been done. That is if A is an output varialble, and A[i] := <expression> is the statement, it would have been detected before.
-
-
 			if (searchVar(baseModule, statementAST->child->child->tok->lexeme) == NULL)
 				printf (" ERROR : %s LHS variable undeclared\n", statementAST->child->child->tok->lexeme) ;
 
@@ -811,7 +799,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			printf("ERROR : %s Module Already Declared\n" , searchResult->lexeme ) ;
 		}
 		else {
-			varST * tmp = createVarST ( currentASTNode ) ;
+			varST * tmp = createVarST ( currentASTNode , base ) ;
 			base = insertVarSTInbaseST ( base , tmp ) ;
 		}
 
@@ -854,7 +842,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 					}
 					else{
-						varST * tmp = createVarST ( iplAST->child ) ;
+						varST * tmp = createVarST ( iplAST->child , moduleToInsert ) ;
 					
 						if ( iplAST->child->next->dtTag == PRIMITIVE) {
 							tmp->datatype = iplAST->child->next->dt->pType ;
@@ -894,7 +882,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
 					}
 					else{
-						varST * tmp = createVarST ( oplAST->child ) ;
+						varST * tmp = createVarST ( oplAST->child , moduleToInsert) ;
 						//array can't be here
 						tmp->datatype = oplAST->child->next->id ;
 						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
