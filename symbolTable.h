@@ -11,7 +11,7 @@
 
 
 enum _stType {
-	DRIVER_ST , MODULE_ST , SCOPE_ST 
+	DRIVER_ST , MODULE_ST , SCOPE_ST , MODULE_REDEC_ST
 } ;
 
 // structures

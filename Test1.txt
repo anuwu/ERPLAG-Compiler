@@ -1,4 +1,24 @@
-<<module satwadhi>>
+declare module A ;
+	
+
+<<module A>>
+takes input [a:integer] ;
+returns [z:real, y:boolean, x:integer] ;
+start
+	z := 1/3.14169 ;
+	y := true ;
+	x := -5 ;
+
+	** use module hell with parameters z ; **
+end
+
+	
+<<<driver program>>>
+start
+end
+
+
+<<module B>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
@@ -10,25 +30,14 @@ start
 
 	declare actual:integer ;
 
-	[cc,bb,actual] := use module test with parameters actual ;
-end	
-
-<<<driver program>>>
-start
+	[cc,bb,actual] := use module A with parameters actual ;
 end
 
+
+
+**
 <<module hell>>
 takes input [g:real] ;
 start
 end
-
-<<module test>>
-takes input [a:integer] ;
-returns [z:real, y:boolean, x:integer] ;
-start
-	z := 1/3.14169 ;
-	y := true ;
-	x := -5 ;
-
-	use module hell with parameters z ;
-end
+**

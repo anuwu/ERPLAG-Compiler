@@ -812,30 +812,36 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		}
 		else if ( statementAST->child->id == idList ) {
 			// [a] = use module with parameters [ d ] ;
-			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
-			if ( validCallFlag > 0) {
-				// valid call code
-				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
 
-				// Tinkering part
-				astNode *idListHead = statementAST->child->child ;
+			if (strcmp(baseModule->lexeme, statementAST->child->next->next->tok->lexeme) == 0)
+				printf ("Error : %s recursion is not allowed!\n", baseModule->lexeme) ;
+			else
+			{
+				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
+				if ( validCallFlag > 0) {
+					// valid call code
+					printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
 
-				while (idListHead != NULL)
-				{
-					if (searchOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme))
-						tinkerOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme) ;
-					idListHead = idListHead->next ;
+					// Tinkering part
+					astNode *idListHead = statementAST->child->child ;
+
+					while (idListHead != NULL)
+					{
+						if (searchOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme))
+							tinkerOutputVarInCurrentModule (baseModule, idListHead->tok->lexeme) ;
+						idListHead = idListHead->next ;
+					}
+
 				}
-
-			}
-			else if (validCallFlag == -1 )	{
-				printf( "ERROR %s : %s Module neither declared nor defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
-			}
-			else if( validCallFlag == -2 ) {
-				printf( "ERROR %s : %s Module declared but not defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
-			}
-			else{
-				printf("ERROR : 404\n") ;
+				else if (validCallFlag == -1 )	{
+					printf( "ERROR %s : %s Module neither declared nor defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
+				}
+				else if( validCallFlag == -2 ) {
+					printf( "ERROR %s : %s Module declared but not defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
+				}
+				else{
+					printf("ERROR : 404\n") ;
+				}
 			}
 		}
 		else if (statementAST->child->id == TK_ID) {
@@ -865,7 +871,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		printf ("Tinker = %d\n", (tinker = checkAllOpTinkered (baseModule))) ;
 
 		if (tinker)
-			printf ("All output variables have bee TINKERED!\n") ;
+			printf ("All output variables of %s have bee TINKERED!\n", baseModule->lexeme) ;
 		else
 			printf ("ERROR %s : Not all output variables have been tinkered!\n", baseModule->lexeme) ;
 	}
@@ -906,6 +912,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 	//***************************************************************
 	/* handle it */
 	astNode * otherMODS = moduleDECS->next ;
+	moduleST *searchCond ;
 	
 
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
@@ -913,8 +920,18 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 		currentASTNode = otherMODS->child ;
 		//currentASTNode is now a modulef
 		while ( currentASTNode ) {
+
+			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
+			{
+				printf ("ERROR : Module %s definition appearing in latter half, but not declared!\n", currentASTNode->child->tok->lexeme) ;
+				currentASTNode->child->prev = currentASTNode->child ;
+				currentASTNode = currentASTNode->next ;
+				continue ;
+			}
+
+			searchCond = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 			
-			if ( searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) == NULL) {
+			if (searchCond == NULL) {
 				// need to create and insert
 				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
 
@@ -980,16 +997,13 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 					oplAST = oplAST->next ;
 				}
 
-				/*
-
-				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-				printModuleST ( moduleToInsert ) ;	
-				*/
-
 				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
 			}
 			else {
+				// Only valid when otherMODS_Count = 1
 				printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
+				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
+				searchCond->tableType = MODULE_REDEC_ST ;
 			}
 
 			currentASTNode = currentASTNode->next ;
@@ -999,7 +1013,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			otherMODS = otherMODS->next->next ;
 	}
 
-	// ------------------------------------------------- fillModuleST ------------------------------------
+	// ------------------------------------------------- fillModuleST --------------------------------------
 
 	otherMODS = moduleDECS->next ;
 
@@ -1008,22 +1022,35 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 	{
 		currentASTNode = otherMODS->child ;
 		//currentASTNode is now a module
-		while ( currentASTNode ) {
-				moduleST *moduleToInsert = searchModuleInbaseST ( base , currentASTNode->child->tok->lexeme ) ;
-				if (moduleToInsert == NULL)
-					;
-					//printf ("NULL\n") ;
+		while (currentASTNode) {
 
-				moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-				//base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
-				printModuleST ( moduleToInsert ) ;	
+				if (currentASTNode->child->prev == currentASTNode->child)		// 
+				{
+					currentASTNode->child->prev = NULL ;
+					currentASTNode = currentASTNode->next ;
+					continue ;
+				}
+				else
+					;//printf ("Child looping is FALSE for %s\n", currentASTNode->child->tok->lexeme) ;
+
+				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
+
+				if (moduleToInsert->tableType == MODULE_ST)
+				{
+					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+					//base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
+					printModuleST ( moduleToInsert ) ;	
+				}
+				else
+					;//printf ("%s is redeclared somewhere\n", moduleToInsert->lexeme) ;
+
 
 				currentASTNode = currentASTNode->next ;
 			}
 
 		if (otherMODS->next != NULL)
 		{
-			//printf ("Pass 1 done\n") ;
+			//printf ("OM1 done\n") ;
 			otherMODS = otherMODS->next->next ;
 		}
 	}
