@@ -68,17 +68,21 @@ moduleST * createModuleST ( baseST * parent , char * lexeme ) {
 
 	tmp->lexeme = lexeme ;
 	tmp->tableType = MODULE_ST ;
+
 	for ( int i = 0 ; i < VAR_BIN_COUNT ; i++ ) {
 		tmp->localVars[i] = NULL ;
 		
 	}
+
 	for (int i = 0 ; i < IO_BIN_COUNT ; i++) {
 		tmp->inputVars[i] = NULL ;
 		tmp->outputVars[i] = NULL ;
 	}
+
 	for ( int i = 0 ; i < MODULE_BIN_COUNT ; i++ ) {
 		tmp->scopeVars[i] = NULL ;
 	}
+
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = 0 ;
 
@@ -207,9 +211,9 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) {
 
 	moduleSTentry * tmp = base->modules[index] ;
 	while ( tmp!= NULL ) {
-		if ( tmp->thisModuleST->tableType==MODULE_ST && strcmp ( tmp->thisModuleST->lexeme , lexeme ) == 0 )
+		if ( (tmp->thisModuleST->tableType == MODULE_ST ||  tmp->thisModuleST->tableType == MODULE_REDEC_ST)&& strcmp ( tmp->thisModuleST->lexeme , lexeme ) == 0 )
 		{
-			//printf ("REPEAT!\n") ;
+			//printf ("REPEAT !\n") ;
 			return tmp->thisModuleST ;
 		}
 
@@ -576,9 +580,6 @@ varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outp
 
 
 
-
-
-
 int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , int haveReturns ) {
 
 	printf ("\t> isValidCall\n") ;
@@ -589,13 +590,19 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
-			printf("\t> Definition found\n") ;
-			//checking IP
+			if (modPtr->tableType == MODULE_REDEC_ST)
+			{
+				printf ("ERROR : Module %s found, but with clashing definition\n" , modPtr->lexeme) ;
+				return -3 ;
+			}
+			else
+				printf("\t> Definition found\n") ;
+
 			if (checkIP(thisModule,modPtr,funcNode->next->child) !=NULL) {
 				return -3 ;
 			}
 			else{
-				return 2 ;
+				return 1 ;
 			}
 		}
 		else
@@ -605,48 +612,26 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 			else
 				return -2 ;
 		}
-
-
-		/*
-		if ( varPtr == NULL && modPtr == NULL ) {
-			printf("\t-1\n") ;
-			return -1 ;
-		}
-		else if (varPtr != NULL && modPtr != NULL ) {
-			printf("\t-2\n") ;
-			return -2 ;
-		}
-		else if ( varPtr !=NULL && modPtr == NULL) {
-			printf("\t1\n") ;
-			return 1 ;
-		}
-		else{
-			// definition found
-			printf("\t> Definition found\n") ;
-			//checking IP
-			if ( checkIP(thisModule,modPtr,funcNode->next->child) !=NULL ) {
-				return -3 ;
-			}
-			else{
-				return 2 ;
-			}	
-		}
-		*/
 	}
 	else if ( haveReturns == 1 ) {
 		varST * varPtr = searchVarInbaseST(base , funcNode->next->next->tok->lexeme ) ;
 		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->next->next->tok->lexeme) ;
 
-
 		if (modPtr != NULL)
 		{
-			printf("\t> Definition found\n") ;
-			//checking IP
+			if (modPtr->tableType == MODULE_REDEC_ST)
+			{
+				printf ("ERROR : Module %s found, but with clashing definition\n" , modPtr->lexeme) ;
+				return -3 ;
+			}
+			else
+				printf("\t> Definition found\n") ;
+			
 			if ( checkIP(thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkOP(thisModule,modPtr,funcNode->child) !=NULL ) {
 				return -3 ;
 			}
 			else{
-				return 2 ;
+				return 1 ;
 			}
 		}
 		else
@@ -818,7 +803,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			else
 			{
 				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
-				if ( validCallFlag > 0) {
+				if ( validCallFlag == 1) {
 					// valid call code
 					printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
 
@@ -839,15 +824,12 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				else if( validCallFlag == -2 ) {
 					printf( "ERROR %s : %s Module declared but not defined \n", baseModule->lexeme, statementAST->child->next->next->tok->lexeme) ;
 				}
-				else{
-					printf("ERROR : 404\n") ;
-				}
 			}
 		}
 		else if (statementAST->child->id == TK_ID) {
 			// use module with parameters ... (no return)
 			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
-			if ( validCallFlag > 0 ) {
+			if ( validCallFlag == 1 ) {
 				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
 			}
 			else if (validCallFlag == -1 )	{
@@ -855,9 +837,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 			else if( validCallFlag == -2 ) {
 				printf( "ERROR %s : %s Module declared but not defined \n", baseModule->lexeme, statementAST->child->tok->lexeme) ;
-			}
-			else{
-				printf("ERROR : 404\n") ;
 			}
 		}
 
@@ -998,10 +977,28 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 				}
 
 				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
+
+				/*
+				if (searchModuleInbaseST (base , "A") != NULL)
+					printf ("1. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "A", otherMODS_Count) ;
+				else
+					printf ("1. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "A", otherMODS_Count) ;
+
+				if (searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) != NULL)
+					printf ("2. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", currentASTNode->child->tok->lexeme, otherMODS_Count) ;
+				else
+					printf ("2. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", currentASTNode->child->tok->lexeme, otherMODS_Count) ;
+
+				if (searchModuleInbaseST (base , "B") != NULL)
+					printf ("3. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n","B", otherMODS_Count) ;
+				else
+					printf ("3. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "B", otherMODS_Count) ;
+				*/
+
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
-				printf ( "ERROR : %s already defined\n",currentASTNode->child->tok->lexeme) ;
+				printf ( "ERROR : %s already defined %d\n",currentASTNode->child->tok->lexeme, otherMODS_Count) ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 				searchCond->tableType = MODULE_REDEC_ST ;
 			}
@@ -1017,32 +1014,39 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 	otherMODS = moduleDECS->next ;
 
-	//printf ("Before fillMOduleST\n") ;
+
+	printf ("Before fillMOduleST\n") ;
+	/*
+	if (searchModuleInbaseST(base, "B") == NULL)
+		printf ("	Before how null?\n") ;
+	else
+		printf ("	Not null\n") ;
+	if (searchModuleInbaseST(base, "B") == NULL)
+		printf ("	Before how null?\n") ;
+	else
+		printf ("	Not null\n") ;
+	*/
+
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
 	{
 		currentASTNode = otherMODS->child ;
 		//currentASTNode is now a module
 		while (currentASTNode) {
 
-				if (currentASTNode->child->prev == currentASTNode->child)		// 
+				if (currentASTNode->child->prev == currentASTNode->child)		// For invalid nodes
 				{
 					currentASTNode->child->prev = NULL ;
 					currentASTNode = currentASTNode->next ;
 					continue ;
 				}
-				else
-					;//printf ("Child looping is FALSE for %s\n", currentASTNode->child->tok->lexeme) ;
 
 				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
 					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-					//base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
 					printModuleST ( moduleToInsert ) ;	
 				}
-				else
-					;//printf ("%s is redeclared somewhere\n", moduleToInsert->lexeme) ;
 
 
 				currentASTNode = currentASTNode->next ;
