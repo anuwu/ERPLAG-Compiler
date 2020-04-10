@@ -221,6 +221,7 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) {
 	}
 	return NULL ;
 }
+
 moduleST * searchDriverInbaseST ( baseST * base ) {
 	return base->driverST ;
 }
@@ -646,15 +647,15 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 }
 
 int getSize( varST * thisVar ) {
-	int dataType = thisVar->datatype ;
 
-	if( dataType == TK_INTEGER )
+	if(thisVar->datatype== TK_INTEGER )
 		return 2 ;
-	else if ( dataType == TK_BOOLEAN )
+	else if (thisVar->datatype == TK_BOOLEAN )
 		return 1 ;
-	else if( dataType == TK_REAL )
+	else if(thisVar->datatype == TK_REAL )
 		return 4 ;
-	else if ( dataType == TK_ARRAY ) {
+	else if (thisVar->datatype == TK_ARRAY ) 
+	{
 		if (isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
 		{
 			int sz ;
@@ -668,8 +669,10 @@ int getSize( varST * thisVar ) {
 
 			return  sz * (atoi(thisVar->arrayIndices->endingPos) - atoi(thisVar->arrayIndices->startingPos) + 1) ;
 		}
-		// startingPos and endingPos is Number then and else a pointer to a memory location
-		return 1 ;
+		else
+		{
+			return -1 ;
+		}
 	}
 	else {
 		return 0 ;
@@ -680,7 +683,7 @@ int getSize( varST * thisVar ) {
 
 moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
 {
-	int localOffset = 0 ;
+	int getOffset = 0 ;
 	//printf ("INSIDE FILL MODULE!\n") ;
 
 	while ( statementAST ) {
@@ -711,8 +714,20 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					}
 
 					// filling offset
-					tmp->offset = localOffset ;
-					localOffset += getSize( tmp ) ;
+					getOffset = getSize( tmp ) ;
+
+					if (getOffset == -1)
+						tmp->offset = -1 ;		// Offset of -1 will denote a dynamic array
+					else if (getOffset > 0)
+					{
+						tmp->offset = baseModule->currOffset ;
+						baseModule->currOffset += getOffset ;
+					}
+					else
+					{
+						// This will probably never come here.
+						printf ("ERROR : getSize() method\n") ;
+					}
 
 					baseModule = insertLocalVarST(baseModule , tmp) ;
 				}
@@ -978,23 +993,6 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
 
-				/*
-				if (searchModuleInbaseST (base , "A") != NULL)
-					printf ("1. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "A", otherMODS_Count) ;
-				else
-					printf ("1. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "A", otherMODS_Count) ;
-
-				if (searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) != NULL)
-					printf ("2. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", currentASTNode->child->tok->lexeme, otherMODS_Count) ;
-				else
-					printf ("2. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", currentASTNode->child->tok->lexeme, otherMODS_Count) ;
-
-				if (searchModuleInbaseST (base , "B") != NULL)
-					printf ("3. SUCCESSFULLY INSERTED WITHOUT BODY %s %d\n","B", otherMODS_Count) ;
-				else
-					printf ("3. UNSUCCESSFULLY INSERTED WITHOUT BODY %s %d\n", "B", otherMODS_Count) ;
-				*/
-
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
@@ -1016,16 +1014,6 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 
 
 	printf ("Before fillMOduleST\n") ;
-	/*
-	if (searchModuleInbaseST(base, "B") == NULL)
-		printf ("	Before how null?\n") ;
-	else
-		printf ("	Not null\n") ;
-	if (searchModuleInbaseST(base, "B") == NULL)
-		printf ("	Before how null?\n") ;
-	else
-		printf ("	Not null\n") ;
-	*/
 
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
 	{
@@ -1058,8 +1046,6 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			otherMODS = otherMODS->next->next ;
 		}
 	}
-
-	//printf ("After fillMOduleST\n") ;
 
 	//*****************************************************************
 

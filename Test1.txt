@@ -10,8 +10,9 @@ start
 	bb := false ;
 	**
 	aa := 5 ;
-
+	declare vandana:array[0..14] of boolean ;
 	declare actual:integer ;
+	declare cc:real ;
 
 	[cc,bb,actual] := use module A with parameters actual ;
 end
@@ -21,29 +22,3 @@ end
 <<<driver program>>>
 start
 end
-
-
-
-<<module A>>
-takes input [a:integer] ;
-returns [z:real, y:boolean, x:integer] ;
-start
-	z := 1/3.14169 ;
-	y := true ;
-	x := -5 ;
-
-	** use module hell with parameters z ; **
-end
-
-<<module B>>
-takes input [arr:array[0..5] of integer] ;
-start
-end
-
-
-**
-<<module hell>>
-takes input [g:real] ;
-start
-end
-**
