@@ -1,11 +1,3 @@
-declare module test ;
-
-<<module hell>>
-takes input [g:real] ;
-start
-end
-
-
 <<module satwadhi>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
@@ -22,6 +14,11 @@ start
 end	
 
 <<<driver program>>>
+start
+end
+
+<<module hell>>
+takes input [g:real] ;
 start
 end
 
