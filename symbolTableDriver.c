@@ -1,54 +1,39 @@
 #include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include "symbolTable.h"
+#include <string.h>
+#include <sys/time.h>
 #include "ast.h"
+#include "symbolTable.h"
 
 
+int main(int argc, char *argv[])
+{
+	if (!(argc == 3 || argc == 4))
+	{
+		printf("Incorrect number of arguments\n") ;
+		exit (0) ;
+	}
 
-extern char * current_lexeme ;
+	treeNode *root = parseTree (argv[1]) ;
+	astNode *astRoot = applyASTRule (root) ; 
 
-/*
-struct _varST {
-	char * lexeme ;
-	tokenID datatype ;
-	int offset ;
-} ;
+	if (argc == 4 && (strcmp(argv[2], "printAST") == 0))
+		inorderAST (astRoot, 0) ;
+	else
+	{
+		printf ("Incorrect command!\n") ;
+		exit (0) ;
+	}
 
-struct _moduleST {
-	char * lexeme ; // iterations must be given a unique name also
-	int isModule ;
-	struct _varSTentry * vars[VAR_BIN_COUNT] ;
-	struct _moduleSTentry * modules[ITER_BIN_COUNT] ;
-	void * parent ;
+	printf ("*********************************************************\n") ;
 
-} ;
+	baseST *baseTable ;
+	if (argc == 3)
+		baseTable = fillSymbolTable (astRoot, atoi(argv[2])) ;
+	else
+		baseTable = fillSymbolTable (astRoot, atoi(argv[3])) ;
 
-struct _moduleSTentry {
-	struct _moduleST * thisModuleST ;
-	struct _moduleSTentry * next ;
-} ;
-
-struct _varSTentry {
-	struct _varST * thisVarST ;
-	struct _varSTentry * next ;
-} ;
-
-struct _baseST {
-	struct _varSTentry * vars[VAR_BIN_COUNT] ;
-	struct _moduleSTentry * modules[MODULE_BIN_COUNT] ;
-	struct _moduleST * driverST ;
-} ;
-*/
-
-
-
-
-
-int main() {
-
-	
+	printBaseST ( baseTable ) ;
 
 	return 0 ;
 }

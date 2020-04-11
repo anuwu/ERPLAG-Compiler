@@ -15,13 +15,6 @@
 #define endl printf("\n")
 #define allRules rule
 
-
-int lineBeforeAsterisk ;
-char charBeforeAsterisk ;
-
-extern int printNextToken (twinBuffer* twinBuf);
-extern int printNextTokenCOMMENT (twinBuffer *twinBuf);
-
 twinBuffer *twinBuf ;
 
 int main(int argc, char *argv[])
@@ -36,13 +29,6 @@ int main(int argc, char *argv[])
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
 	inorderAST (astRoot, 0) ;
-
-	printf ("*********************************************************\n") ;
-
-	baseST *baseTable ;
-	baseTable = fillSymbolTable (astRoot, 0) ;
-
-	printBaseST ( baseTable ) ;
 
 	return 0;
 }
