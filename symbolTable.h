@@ -24,12 +24,25 @@ struct _arrayInST {
 	char *endingPos ;
 	tokenID dataType ;
 } ;
+
+enum _variableType 
+{
+	VAR_INPUT ,
+	VAR_OUTPUT ,
+	VAR_LOCAL ,
+	VAR_LOOP ,
+	VAR_MODULE 
+} ;
+
 struct _varST {
 	char * lexeme ; // variable name
+
 	tokenID datatype ; // TK_INTEGER, TK_REAL, TK_BOOL, TK_ARRAY
+	struct _arrayInST * arrayIndices ; // if TK_ARRAY 
+
 	int offset ;
-	// if TK_ARRAY else unused
-	struct _arrayInST * arrayIndices ;
+	void *scope ;
+	enum _variableType varType ;
 } ;
 
 
@@ -65,6 +78,7 @@ struct _baseST {
 
 
 typedef enum _stType stType ;
+typedef enum _variableType variableType ;
 typedef struct _baseST baseST ;
 typedef struct _moduleST moduleST ;
 typedef struct _arrayInST arrayInST ;
@@ -88,7 +102,7 @@ moduleST * createDriverST ( baseST * parent ) ;
 moduleST * createScopeST ( moduleST * parent ) ;
 
 
-varST * createVarST ( astNode * thisASTNode ) ;
+varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) ;
 
 
 baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
@@ -111,19 +125,19 @@ varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
-varST * searchVar ( moduleST * thisModule , char * lexeme ) ;
+varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) ;
 
 
 void printBaseST ( baseST * base ) ;
 void printModuleST ( moduleST * thisModuleST ) ;
 
-baseST * fillSymbolTable (baseST * base , astNode * thisASTNode ) ;
+baseST * fillSymbolTable (astNode * thisASTNode ) ;
 moduleST * fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode ) ;
 
 int isValidCall ( baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
 
-varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
-varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) ;
+varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
+varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 
 int getSize( varST * thisVar ) ;
 

@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
 
 	printf ("*********************************************************\n") ;
 
-	baseST * baseTable ;
-	baseTable = fillSymbolTable ( baseTable , astRoot ) ;
+	baseST *baseTable ;
+	baseTable = fillSymbolTable (astRoot) ;
 
 	printBaseST ( baseTable ) ;
 

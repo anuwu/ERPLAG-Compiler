@@ -12,9 +12,6 @@ start
 	aa := 5 ;
 	declare vandana:array[0..14] of boolean ;
 	declare actual:integer ;
-	declare cc:real ;
-
-	[cc,bb,actual] := use module A with parameters actual ;
 end
 		
 

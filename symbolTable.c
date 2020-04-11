@@ -104,14 +104,15 @@ moduleST * createScopeST ( moduleST * parent ) {
 	return tmp ;
 }
 
-varST * createVarST ( astNode * thisASTnode ) {
+varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) {
 	varST * tmp = (varST *) malloc ( sizeof(varST)) ;
 
 	tmp->lexeme = thisASTnode->tok->lexeme ;
 	tmp->datatype = thisASTnode->tok->id ;
 	tmp->offset = -9999 ; //default value
 	tmp->arrayIndices = NULL ;
-	
+	tmp->scope = scope ;
+	tmp->varType = varType ;
 
 	return tmp ;
 }
@@ -278,11 +279,19 @@ varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
 }
 
 
-varST * searchVar ( moduleST * thisModule , char * lexeme ) {
+varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) 
+{
 	
-	varST * tmp = searchVarInCurrentModule ( thisModule , lexeme );
-	if( tmp )
-		return tmp ;
+	if (thisModule->parent == realBase)
+		return searchVarInCurrentModule ( thisModule , lexeme ) ;
+	else
+	{
+		varST *tmp = searchlocalVarInCurrentModule (thisModule, lexeme) ;
+		if (tmp == NULL)
+			return searchVar (realBase, thisModule->parent, lexeme) ;
+		else
+			return tmp ;
+	}
 
 	/*
 	Do the recursive call later
@@ -415,7 +424,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 
 
 
-varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) {
+varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) {
 	
 	printf("> checkIP\n") ;
 
@@ -432,30 +441,17 @@ varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inpu
 
 		printf("---| %s & %s |---\n",inputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
 		
-		varST * searchedVar = searchVar( thisModule , inputIter->tok->lexeme ) ;
-
+		varST * searchedVar = searchVar(realBase, thisModule , inputIter->tok->lexeme ) ;
 
 
 		if( searchedVar == NULL ){
 			printf("ERROR : %s variable not declared\n", inputIter->tok->lexeme ) ;
 		}
 		else {
-
-
-
-			if(varEntry->thisVarST->datatype == searchedVar->datatype ){
-				// if(varEntry->thisVarST->datatype == TK_ARRAY && varEntry->thisVarST->arrayIndices->dataType ==  ) {
-					
-				// }
+			if(varEntry->thisVarST->datatype == searchedVar->datatype )
 				printf("> GOOD : %s with %s\n",inputNode->tok->lexeme , varEntry->thisVarST->lexeme ) ;
-
-
-			}
-			else {
+			else 
 				printf ( "ERROR : %s and %s conflicting dataType\n" , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
-				// printf( "searchedVar->datatype : %d\n",searchedVar->datatype) ;
-				// printf("varEntry->thisVarST->datatype : %d\n",varEntry->thisVarST->datatype) ;
-			}
 		}
 		
 		varEntry = varEntry->next ;
@@ -464,7 +460,7 @@ varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inpu
 
 	if ( varEntry==NULL && inputIter ){
 		printf("ERROR : More parameters passed\n") ;
-		return searchVar(thisModule , inputIter->tok->lexeme ) ;
+		return searchVar(realBase, thisModule , inputIter->tok->lexeme ) ;
 	}
 	else if ( varEntry && inputIter==NULL ) {
 		printf("ERROR : Insufficient Number of parameters\n") ;
@@ -478,7 +474,7 @@ varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inpu
 }
 
 
-varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) {
+varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) {
 	
 	printf("> checkOP\n") ;
 
@@ -490,12 +486,11 @@ varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outp
 		outputIter = outputIter->next ;
 	}
 	
-
 	while( outputIter && varEntry ){
 
 		printf("---| %s & %s |---\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
 		
-		varST * searchedVar = searchVar( thisModule , outputIter->tok->lexeme ) ;
+		varST * searchedVar = searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 
 
 
@@ -527,7 +522,7 @@ varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * outp
 
 	if ( varEntry==NULL && outputIter ){
 		printf("ERROR : More parameters passed\n") ;
-		return searchVar(thisModule , outputIter->tok->lexeme ) ;
+		return searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 	}
 	else if ( varEntry && outputIter==NULL ) {
 		printf("ERROR : Insufficient Number of parameters\n") ;
@@ -560,7 +555,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 			else
 				printf("\t> Definition found\n") ;
 
-			if (checkIP(thisModule,modPtr,funcNode->next->child) !=NULL) {
+			if (checkIP(base, thisModule,modPtr,funcNode->next->child) !=NULL) {
 				return -3 ;
 			}
 			else{
@@ -589,7 +584,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 			else
 				printf("\t> Definition found\n") ;
 			
-			if ( checkIP(thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkOP(thisModule,modPtr,funcNode->child) !=NULL ) {
+			if ( checkIP(base, thisModule,modPtr,funcNode->next->next->next->child) !=NULL || checkOP(base, thisModule,modPtr,funcNode->child) !=NULL ) {
 				return -3 ;
 			}
 			else{
@@ -659,7 +654,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				}
 				else{
 					//printf ("ACTUAL\n");
-					varST * tmp = createVarST ( idAST ) ;
+					varST * tmp = createVarST ( idAST , baseModule , VAR_LOCAL) ;
 
 					if ( dataTypeAST->dtTag  == ARRAY ) {
 						tmp->datatype = TK_ARRAY ;
@@ -711,7 +706,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			//for stmt
 			moduleST * tmp = createScopeST ( baseModule ) ;
 
-			varST * iterat = createVarST ( statementAST->child->next) ;
+			varST * iterat = createVarST ( statementAST->child->next , tmp , VAR_LOOP) ;
 			iterat->datatype = TK_INTEGER ;
 			
 			tmp = insertLocalVarST ( tmp , iterat ) ;
@@ -723,13 +718,13 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			tmp = insertScopeST ( baseModule , tmp ) ;
 		}
 		else if ( statementAST->child->id == TK_GET_VALUE ) {
-			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
+			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
 			if ( thisVar == NULL )
 				printf ( "ERROR : %s Variable undeclared\n" , statementAST->child->next->tok->lexeme ) ;
 		}
 		else if ( statementAST->child->id == TK_PRINT ) {
-			varST * thisVar = searchVar(baseModule , statementAST->child->next->tok->lexeme ) ;
+			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
 			if ( thisVar == NULL ){
 				printf ( "ERROR : %s undeclared\n" , statementAST->child->next->tok->lexeme ) ;
@@ -743,7 +738,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			// 1. Tinkering code. Assume that variable existence checking has already been done. That is if A is an output varialble, and A[i] := <expression> is the statement, it would have been detected before.
 
 
-			if (searchVar(baseModule, statementAST->child->child->tok->lexeme) == NULL)
+			if (searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) == NULL)
 				printf (" ERROR : %s LHS variable undeclared\n", statementAST->child->child->tok->lexeme) ;
 
 
@@ -791,13 +786,13 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 
 
-baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
+baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 	astNode * currentASTNode = thisASTNode ;
 
 	
 	printf( "> Calling createBaseST()\n") ;
-	base = createBaseST () ;
+	baseST * base = createBaseST () ;
 
 	//****************************************************************
 	//moduleDeclarations
@@ -811,7 +806,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 			printf("ERROR : %s Module Already Declared\n" , searchResult->lexeme ) ;
 		}
 		else {
-			varST * tmp = createVarST ( currentASTNode ) ;
+			varST * tmp = createVarST ( currentASTNode , base , VAR_MODULE) ;
 			base = insertVarSTInbaseST ( base , tmp ) ;
 		}
 
@@ -854,7 +849,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 					}
 					else{
-						varST * tmp = createVarST ( iplAST->child ) ;
+						varST * tmp = createVarST ( iplAST->child , moduleToInsert , VAR_INPUT ) ;
 					
 						if ( iplAST->child->next->dtTag == PRIMITIVE) {
 							tmp->datatype = iplAST->child->next->dt->pType ;
@@ -894,7 +889,7 @@ baseST * fillSymbolTable ( baseST * base , astNode * thisASTNode ) {
 						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
 					}
 					else{
-						varST * tmp = createVarST ( oplAST->child ) ;
+						varST * tmp = createVarST ( oplAST->child , moduleToInsert, VAR_OUTPUT) ;
 						//array can't be here
 						tmp->datatype = oplAST->child->next->id ;
 						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;

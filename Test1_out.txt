@@ -139,61 +139,21 @@
 ||-5||	;	14	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
 ||22|| 						statements		NO		statement
 ||17|| 						statements		NO		statements
-||-5||	declare	15	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
-||39|| 						statement		NO		declareStmt
-||-5||	cc	15	TK_ID	cc	idList	YES	TK_ID
-||99|| 						declareStmt		NO		idList
-||-5||	EPS	15	TK_EPS	EPS	idL	YES	TK_EPS
-||101|| 						idList		NO		idL
-||-5||	:	15	TK_COLON	:	declareStmt	YES	TK_COLON
-||-5||	real	15	TK_REAL	real	dataType	YES	TK_REAL
-||82|| 						declareStmt		NO		dataType
-||-5||	;	15	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
-||22|| 						statements		NO		statement
-||17|| 						statements		NO		statements
-||-5||	[	17	TK_SQBO	[	optional	YES	TK_SQBO
-||37|| 						moduleReuseStmt		NO		optional
-||-5||	cc	17	TK_ID	cc	idList	YES	TK_ID
-||99|| 						optional		NO		idList
-||-5||	,	17	TK_COMMA	,	idL	YES	TK_COMMA
-||100|| 						idList		NO		idL
-||-5||	bb	17	TK_ID	bb	idL	YES	TK_ID
-||-5||	,	17	TK_COMMA	,	idL	YES	TK_COMMA
-||100|| 						idL		NO		idL
-||-5||	actual	17	TK_ID	actual	idL	YES	TK_ID
-||-5||	EPS	17	TK_EPS	EPS	idL	YES	TK_EPS
-||101|| 						idL		NO		idL
-||-5||	]	17	TK_SQBC	]	optional	YES	TK_SQBC
-||-5||	:=	17	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
-||36|| 						simpleStmt		NO		moduleReuseStmt
-||-5||	use	17	TK_USE	use	moduleReuseStmt	YES	TK_USE
-||-5||	module	17	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
-||-5||	A	17	TK_ID	A	moduleReuseStmt	YES	TK_ID
-||-5||	with	17	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
-||-5||	parameters	17	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
-||-5||	actual	17	TK_ID	actual	idList	YES	TK_ID
-||99|| 						moduleReuseStmt		NO		idList
-||-5||	EPS	17	TK_EPS	EPS	idL	YES	TK_EPS
-||101|| 						idList		NO		idL
-||-5||	;	17	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
-||35|| 						statement		NO		simpleStmt
-||20|| 						statements		NO		statement
-||17|| 						statements		NO		statements
-||-5||	EPS	18	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	15	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	18	TK_END	end	moduleDef	YES	TK_END
+||-5||	end	15	TK_END	end	moduleDef	YES	TK_END
 ||4|| 						program		NO		otherModules
-||-5||	EPS	22	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	EPS	19	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						otherModules		NO		otherModules
-||-5||	<<<	22	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||-5||	<<<	19	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
 ||6|| 						program		NO		driverModule
-||-5||	driver	22	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
-||-5||	program	22	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
-||-5||	>>>	22	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
-||-5||	start	23	TK_START	start	moduleDef	YES	TK_START
+||-5||	driver	19	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	19	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	19	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	20	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	EPS	24	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	21	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						moduleDef		NO		statements
-||-5||	end	24	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	25	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	21	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	22	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules
