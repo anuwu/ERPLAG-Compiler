@@ -98,50 +98,46 @@ char * generateString () ;
 
 // function for base symbol table
 baseST * createBaseST () ;
-
-
 moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) ;
 moduleST * createDriverST ( baseST * parent ) ;
 moduleST * createScopeST ( moduleST * parent , stType scopeType ) ;
-
-
 varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) ;
-char* varTypeToString (variableType varType) ;
 
-baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
-baseST * insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;
-baseST * insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) ;
-
-
-moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) ;
-moduleST * insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) ;
-moduleST * insertInputVarST ( moduleST* thisModule , varST* thisVarST ) ;
-moduleST * insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;
+// Insertion
+void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
+void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;
+void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) ;
+void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) ;
+void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) ;
+void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) ;
+void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;
 
 //search
 varST * searchVarInbaseST ( baseST * base ,char * lexeme ) ;
 moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) ;
 moduleST * searchDriverInbaseST ( baseST * base ) ;
-
-
 varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
 varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) ;
 
-
+// Printing
 void printBaseST ( baseST * base ) ;
-void printModuleST ( moduleST * thisModuleST ) ;
+void printModuleST ( moduleST * thisModuleST, int printParam) ;
 
-baseST * fillSymbolTable (astNode * thisASTNode ) ;
-moduleST * fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode ) ;
 
+// ST population
+baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint ) ;
+void fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode, int depthSTPrint ) ;
+
+// Function call checker
 int isValidCall ( baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
-
 varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 
+// Helper
+char* varTypeToString (variableType varType) ;
 int getSize(baseST * realBase, varST * thisVar) ;
 char *getParentModuleName (baseST* realBase, moduleST *scope) ;
 

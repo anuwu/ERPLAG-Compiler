@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	printf ("*********************************************************\n") ;
 
 	baseST *baseTable ;
-	baseTable = fillSymbolTable (astRoot) ;
+	baseTable = fillSymbolTable (astRoot, 0) ;
 
 	printBaseST ( baseTable ) ;
 

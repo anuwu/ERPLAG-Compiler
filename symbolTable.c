@@ -118,7 +118,7 @@ varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType )
 	return tmp ;
 }
 ///////////////////////////////////////////////////////////////////////////
-baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) {
+void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) {
 
 	int index = hashFunction ( thisModule->lexeme , MODULE_BIN_COUNT ) ;
 
@@ -126,27 +126,23 @@ baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) {
 	tmp->thisModuleST = thisModule ;
 	tmp->next = base->modules[index] ;
 	base->modules[index] = tmp ;
-
-	return base ;
 }
 
-baseST * insertVarSTInbaseST ( baseST * base , varST * thisVarST ) {
+void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) {
 	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry *) malloc (sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
 	tmp->next = base->vars[index] ;
 	base->vars[index] = tmp ;
-
-	return base ;
 }
-baseST * insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) {
+
+void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) {
 	base->driverST = thisDriverModule ;
-	return base ;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
+void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
 	int index = hashFunction ( thisScopeST->lexeme , MODULE_BIN_COUNT ) ;
 
 	moduleSTentry * tmp = ( moduleSTentry * ) malloc ( sizeof ( moduleSTentry )) ;
@@ -154,40 +150,34 @@ moduleST * insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
 	tmp->thisModuleST = thisScopeST ;
 	tmp->next = (parent->scopeVars)[index] ;
 	(parent->scopeVars)[index] = tmp ;
-
-	return parent ;
 }
 
 
-moduleST * insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) {
+void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) {
 	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
 	tmp->next = thisModule->localVars[index] ; 
 	thisModule->localVars[index] = tmp ;
-	
-	return thisModule ;
 }
-moduleST * insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
+
+void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
 	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
 	tmp->next = thisModule->inputVars[index] ; 
 	thisModule->inputVars[index] = tmp ;
-	
-	return thisModule ;
 }
-moduleST * insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
+
+void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
 	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
 	tmp->next = thisModule->outputVars[index] ; 
 	thisModule->outputVars[index] = tmp ;
-	
-	return thisModule ;
 }
 
 
@@ -347,8 +337,10 @@ void printBaseST ( baseST * base ) {
 
 
 
-void printModuleST ( moduleST * thisModuleST ) {
+void printModuleST ( moduleST * thisModuleST, int printParam ) {
 
+	if (!printParam)
+		return ;
 
 	if( thisModuleST->tableType == DRIVER_ST || thisModuleST->tableType == MODULE_ST ){
 		printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
@@ -498,7 +490,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	else if ( varEntry && inputIter==NULL ) 
 	{
 		//printf("Condition 2\n");
-		printf("ERROR : In \"%s\" at line %d Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
+		printf("ERROR : In \"%s\" at line %d insufficient number of actual parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 
 		return (varST *) malloc (sizeof(varST)) ;
@@ -784,7 +776,7 @@ int caseValRepeat (astNode *caseAstNode)
 }
 
 
-moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST ) 
+void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
 	int getOffsetSize = 0 ;
 	statementsAST->localST = baseModule ;
@@ -832,7 +824,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					else
 						tmp->offset = -2 ;		// invalid dynamic array declaration
 
-					baseModule = insertLocalVarST(baseModule , tmp) ;
+					insertLocalVarST(baseModule , tmp) ;
 				}
 
 				idAST = idAST->next ;
@@ -843,10 +835,10 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			// TODO type checking
 
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
-			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next) ;
-			printModuleST ( tmp ) ;
+			fillModuleST ( realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
+			printModuleST (tmp,  depthSTPrint) ;
 
-			tmp = insertScopeST ( baseModule , tmp ) ;
+			insertScopeST ( baseModule , tmp ) ;
 		}
 		else if ( statementAST->child->id == TK_FOR ) {
 
@@ -881,9 +873,9 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				loopVar->offset = searchedVar->offset ;
 
 			insertLocalVarST (forScope, loopVar) ;
-			forScope = fillModuleST (realBase, forScope, loopLim->next->next) ;
+			fillModuleST (realBase, forScope, loopLim->next->next, depthSTPrint) ;
 
-			printModuleST (forScope) ;
+			printModuleST (forScope, depthSTPrint) ;
 			insertScopeST (baseModule , forScope) ;
 		}
  		else if ( statementAST->child->id == TK_GET_VALUE ) {
@@ -1000,7 +992,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 						realBase->semanticError = 1 ;
 					}
 
-					fillModuleST (realBase, switchST, caseAstNode->next->next) ;
+					fillModuleST (realBase, switchST, caseAstNode->next->next, depthSTPrint) ;
 				}
 				else
 				{
@@ -1010,7 +1002,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 						realBase->semanticError = 1 ;
 					}
 
-					fillModuleST (realBase, switchST, caseAstNode->next) ;
+					fillModuleST (realBase, switchST, caseAstNode->next, depthSTPrint) ;
 				}
 
 				if (caseAstNode->id != TK_DEFAULT)
@@ -1024,19 +1016,16 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			//printf ("Done with loop\n") ;
 
 			insertScopeST (baseModule , switchST) ;
-			printModuleST (switchST) ;
+			printModuleST (switchST, depthSTPrint) ;
 		}
  
 		statementAST = statementAST->next ;
 	}
-
-	
-	return baseModule ;
 }
 
 
 
-baseST * fillSymbolTable (astNode * thisASTNode ) {
+baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) {
 
 	astNode * currentASTNode = thisASTNode ;
 
@@ -1058,7 +1047,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 		}
 		else {
 			varST * tmp = createVarST ( currentASTNode , base , VAR_MODULE) ;
-			base = insertVarSTInbaseST ( base , tmp ) ;
+			insertVarSTInbaseST ( base , tmp ) ;
 		}
 
 		currentASTNode = currentASTNode->next ;
@@ -1127,7 +1116,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 							}
 						}
 
-						moduleToInsert = insertInputVarST ( moduleToInsert , tmp ) ;
+						insertInputVarST ( moduleToInsert , tmp ) ;
 					}
 				
 					iplAST = iplAST->next ;
@@ -1147,7 +1136,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 						varST * tmp = createVarST ( oplAST->child , moduleToInsert, VAR_OUTPUT) ;
 						//array can't be here
 						tmp->datatype = oplAST->child->next->id ;
-						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
+						insertOutputVarST ( moduleToInsert , tmp ) ;
 
 						tmp->offset = moduleToInsert->currOffset ;
 						moduleToInsert->currOffset += getSize (base, tmp) ;
@@ -1156,7 +1145,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 					oplAST = oplAST->next ;
 				}
 
-				base = insertModuleSTInbaseST ( base , moduleToInsert ) ;
+				insertModuleSTInbaseST ( base , moduleToInsert ) ;
 
 			}
 			else {
@@ -1195,8 +1184,8 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
-					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next) ;
-					printModuleST ( moduleToInsert ) ;	
+					fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
+					printModuleST ( moduleToInsert, depthSTPrint ) ;	
 				}
 				currentASTNode = currentASTNode->next ;
 			}
@@ -1211,11 +1200,11 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 	astNode * driverMODS = otherMODS->prev ;
 	moduleST * driverST = createDriverST(base) ;
 	
-	driverST = fillModuleST (base,driverST , driverMODS->child) ;
+	fillModuleST (base,driverST , driverMODS->child, depthSTPrint) ;
 	//driverMODS->child->localST = driverST ;
 	printf ("BEFORE!\n") ;
-	printModuleST ( driverST ) ;
-	base = insertDriverSTInbaseST ( base , driverST ) ;	
+	printModuleST (driverST, depthSTPrint) ;
+	insertDriverSTInbaseST ( base , driverST ) ;	
 			
 	return base ;
 }
