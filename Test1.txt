@@ -1,20 +1,20 @@
 declare module A ;
 declare module B ;
 
-<<module B>>
+<<module Bollocks>>
 takes input [b:boolean, c:real, a:array[0..5] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
-	**
-	cc := 3.14169 ;
-	bb := false ;
-	**
-	aa := 5 ;
-	declare vandana:array[0..14] of boolean ;
-	declare actual:integer ;
+	declare a, b, c, test :integer ;
+
+	while (true)
+	start
+		declare test:real ;
+	end
+
+	declare lord:array[0..5] of real ;
 end
 		
-
 
 <<<driver program>>>
 start

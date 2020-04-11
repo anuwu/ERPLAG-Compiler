@@ -63,7 +63,7 @@ baseST * createBaseST () {
 }
 
 /////////////////////////////////////////////////////////////////////////
-moduleST * createModuleST ( baseST * parent , char * lexeme ) {
+moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) {
 	moduleST * tmp = ( moduleST *) malloc ( sizeof(moduleST)) ;
 
 	tmp->lexeme = lexeme ;
@@ -84,12 +84,12 @@ moduleST * createModuleST ( baseST * parent , char * lexeme ) {
 	}
 
 	tmp->parent = (void *) parent ;
-	tmp->currOffset = 0 ;
+	tmp->currOffset = currOffset ;
 
 	return tmp ;
 }
 moduleST * createDriverST ( baseST * parent ) {
-	moduleST * tmp = createModuleST ( parent , "|DRIVER|" ) ;
+	moduleST * tmp = createModuleST ( parent , "|DRIVER|", 0 ) ;
 	tmp->tableType = DRIVER_ST ;
 
 	return tmp ;
@@ -98,7 +98,7 @@ moduleST * createScopeST ( moduleST * parent ) {
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
 
-	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme ) ;
+	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme, parent->currOffset ) ;
 	tmp->tableType = SCOPE_ST ;
 
 	return tmp ;
@@ -346,15 +346,15 @@ void printBaseST ( baseST * base ) {
 
 void printModuleST ( moduleST * thisModuleST ) {
 
-	printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
+	//printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
 
-
-	
 	if( thisModuleST->tableType == DRIVER_ST || thisModuleST->tableType == MODULE_ST ){
-		printf("It's a Driver or Module ST \n") ;
+		printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
+		//printf("It's a Driver or Module ST \n") ;
 	}
 	else {
-		printf("It's a ScopeST \n") ;
+		printf("**************printModuleST(SCOPE : %s )***************\n",thisModuleST->lexeme ) ;
+		//printf("It's a ScopeST \n") ;
 		printf("Parent : %s\n" , thisModuleST->parent ? ((moduleST*)thisModuleST->parent)->lexeme : "NULL") ;
 	}
 	
@@ -489,31 +489,15 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	while( outputIter && varEntry ){
 
 		printf("---| %s & %s |---\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
-		
 		varST * searchedVar = searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 
-
-
-		if( searchedVar == NULL ){
+		if( searchedVar == NULL )
 			printf("ERROR : %s variable not declared\n", outputIter->tok->lexeme ) ;
-		}
 		else {
-
-
-
-			if(varEntry->thisVarST->datatype == searchedVar->datatype ){
-				// if(varEntry->thisVarST->datatype == TK_ARRAY && varEntry->thisVarST->arrayIndices->dataType ==  ) {
-					
-				// }
+			if(varEntry->thisVarST->datatype == searchedVar->datatype )
 				printf("> GOOD : %s with %s\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
-
-
-			}
-			else {
+			else 
 				printf ( "ERROR : %s and %s conflicting dataType\n" , outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
-				// printf( "searchedVar->datatype : %d\n",searchedVar->datatype) ;
-				// printf("varEntry->thisVarST->datatype : %d\n",varEntry->thisVarST->datatype) ;
-			}
 		}
 		
 		varEntry = varEntry->next ;
@@ -635,28 +619,70 @@ int getSize( varST * thisVar ) {
 	}
 }
 
+char *getParentModule (baseST* realBase, moduleST *scope)
+{
+	if (scope->parent == realBase)
+		return scope->lexeme ;
+	else
+		return getParentModule (realBase, scope->parent) ;
+}
 
 
 moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
 {
-	int getOffset = 0 ;
+	int getOffsetSize = 0 ;
 	//printf ("INSIDE FILL MODULE!\n") ;
 
 	while ( statementAST ) {
 		if(statementAST->child->id == TK_DECLARE ) {
 			// declare statement
+			//printf ("Inside DECLARE statement\n") ;
 			astNode * idAST = statementAST->child->next->child ;
 			astNode * dataTypeAST = statementAST->child->next->next ;
-			while ( idAST ) {
+			int i = 1 ;
+			while ( idAST ) 
+			{
 
+				varST *searchedVar ;
+				//printf ("%d. Before searching VAR!\n", i) ;
+				searchedVar = searchVar (realBase, baseModule, idAST->tok->lexeme) ;
+				//printf ("%d. After searching VAR!\n", i) ;
+
+				if (searchedVar == NULL)
+					;
+					//printf ("IT IS NULL\n") ;
+
+				/*
 				if ( searchlocalVarInCurrentModule(baseModule,idAST->tok->lexeme) != NULL || (baseModule->tableType == MODULE_ST &&searchOutputVarInCurrentModule(baseModule, idAST->tok->lexeme) != NULL) ){
 					printf ( "ERROR  %s : %s Local/Output variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
 				}
-				else{
-					//printf ("ACTUAL\n");
+				*/
+				/*
+				if (searchedVar != NULL && searchedVar->scope == baseModule && (searchedVar->varType == VAR_LOCAL || searchedVar->varType == VAR_OUTPUT))
+				{
+					if (searchedVar->varType == VAR_LOCAL)
+						printf ( "ERROR  %s : %s Local variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
+					else
+						printf ( "ERROR  %s : %s Output variable already exists\n", baseModule->lexeme, idAST->tok->lexeme) ;
+				}
+				*/
+				if (searchedVar != NULL && searchedVar->varType == VAR_OUTPUT)
+				{
+					printf ( "ERROR in %s : %s Output variable already exists\n", getParentModule (realBase, baseModule) ,idAST->tok->lexeme) ;
+				}
+				else if (searchedVar != NULL && searchedVar->scope == baseModule && (searchedVar->varType == VAR_LOCAL || searchedVar->varType == VAR_LOOP))
+				{
+					if (searchedVar->varType == VAR_LOCAL)
+						printf ( "ERROR in %s : %s Local variable already declared\n", getParentModule (realBase, baseModule) ,idAST->tok->lexeme) ;
+					else
+						printf ( "ERROR in %s : %s Loop variable already declared\n", getParentModule (realBase, baseModule) ,idAST->tok->lexeme) ;
+				}
+				else		// if input variable, or a local variable in some parent scope
+				{
+					//printf ("TO BE LOCAL\n");
 					varST * tmp = createVarST ( idAST , baseModule , VAR_LOCAL) ;
 
-					if ( dataTypeAST->dtTag  == ARRAY ) {
+					if (dataTypeAST->dtTag  == ARRAY ){
 						tmp->datatype = TK_ARRAY ;
 
 						tmp->arrayIndices = (arrayInST *) malloc(sizeof(arrayInST)) ;
@@ -670,29 +696,32 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					}
 
 					// filling offset
-					getOffset = getSize( tmp ) ;
+					getOffsetSize = getSize(tmp) ;
 
-					if (getOffset == -1)
+					if (getOffsetSize == -1)
 						tmp->offset = -1 ;		// Offset of -1 will denote a dynamic array
-					else if (getOffset > 0)
+					else if (getOffsetSize > 0)
 					{
 						tmp->offset = baseModule->currOffset ;
-						baseModule->currOffset += getOffset ;
+						baseModule->currOffset += getOffsetSize ;
 					}
 					else
 					{
 						// This will probably never come here.
 						printf ("ERROR : getSize() method\n") ;
 					}
-
 					baseModule = insertLocalVarST(baseModule , tmp) ;
 				}
 
 				idAST = idAST->next ;
+				i++ ;
 			}
+
+			//printf ("Done with idLIST\n") ;
 		}
 		else if ( statementAST->child->id == TK_WHILE ) {
 			// while statement
+			printf ("AT WHILE STATEMENT\n") ;
 			moduleST * tmp = createScopeST ( baseModule ) ;
 
 			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
@@ -837,7 +866,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 			
 			if (searchCond == NULL) {
 				// need to create and insert
-				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme) ;
+				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme, 0) ;
 
 				// filling input_plist and output_plist
 				astNode * input_plistAST = currentASTNode->child->next ;
@@ -923,7 +952,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 	otherMODS = moduleDECS->next ;
 
 
-	printf ("Before fillMOduleST\n") ;
+	//printf ("Before fillMOduleST\n") ;
 
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
 	{

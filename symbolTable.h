@@ -97,7 +97,7 @@ char * generateString () ;
 baseST * createBaseST () ;
 
 
-moduleST * createModuleST ( baseST * parent , char * lexeme ) ;
+moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) ;
 moduleST * createDriverST ( baseST * parent ) ;
 moduleST * createScopeST ( moduleST * parent ) ;
 

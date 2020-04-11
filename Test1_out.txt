@@ -16,7 +16,7 @@
 ||-5||	<<	4	TK_DEF	<<	module	YES	TK_DEF
 ||7|| 						otherModules		NO		module
 ||-5||	module	4	TK_MODULE	module	module	YES	TK_MODULE
-||-5||	B	4	TK_ID	B	module	YES	TK_ID
+||-5||	Bollocks	4	TK_ID	Bollocks	module	YES	TK_ID
 ||-5||	>>	4	TK_ENDDEF	>>	module	YES	TK_ENDDEF
 ||-5||	takes	5	TK_TAKES	takes	module	YES	TK_TAKES
 ||-5||	input	5	TK_INPUT	input	module	YES	TK_INPUT
@@ -79,69 +79,80 @@
 ||-5||	;	6	TK_SEMICOL	;	ret	YES	TK_SEMICOL
 ||-5||	start	7	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						module		NO		moduleDef
-||-5||	aa	12	TK_ID	aa	assignmentStmt	YES	TK_ID
-||30|| 						simpleStmt		NO		assignmentStmt
-||-5||	:=	12	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
-||33|| 						whichStmt		NO		lvalueIDStmt
-||-5||	5	12	TK_NUM	5	var	YES	TK_NUM
-||89|| 						factor		NO		var
-||68|| 						term		NO		factor
-||60|| 						arithmeticExpr		NO		term
-||-5||	EPS	12	TK_EPS	EPS	aF	YES	TK_EPS
-||62|| 						term		NO		aF
-||57|| 						boolTerm		NO		arithmeticExpr
-||-5||	EPS	12	TK_EPS	EPS	aT	YES	TK_EPS
-||59|| 						arithmeticExpr		NO		aT
-||52|| 						expression		NO		boolTerm
-||-5||	EPS	12	TK_EPS	EPS	aE	YES	TK_EPS
-||56|| 						boolTerm		NO		aE
-||49|| 						expression_new		NO		expression
-||-5||	EPS	12	TK_EPS	EPS	bT	YES	TK_EPS
-||51|| 						expression		NO		bT
-||47|| 						lvalueIDStmt		NO		expression_new
-||-5||	;	12	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
-||31|| 						assignmentStmt		NO		whichStmt
-||29|| 						statement		NO		simpleStmt
-||20|| 						statements		NO		statement
-||17|| 						moduleDef		NO		statements
-||-5||	declare	13	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||-5||	declare	8	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
 ||39|| 						statement		NO		declareStmt
-||-5||	vandana	13	TK_ID	vandana	idList	YES	TK_ID
+||-5||	a	8	TK_ID	a	idList	YES	TK_ID
 ||99|| 						declareStmt		NO		idList
-||-5||	EPS	13	TK_EPS	EPS	idL	YES	TK_EPS
+||-5||	,	8	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	b	8	TK_ID	b	idL	YES	TK_ID
+||-5||	,	8	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	c	8	TK_ID	c	idL	YES	TK_ID
+||-5||	,	8	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	test	8	TK_ID	test	idL	YES	TK_ID
+||-5||	EPS	8	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	8	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	8	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	8	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	while	10	TK_WHILE	while	iterativeStmt	YES	TK_WHILE
+||41|| 						statement		NO		iterativeStmt
+||-5||	(	10	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	true	10	TK_TRUE	true	boolTerm	YES	TK_TRUE
+||53|| 						expression		NO		boolTerm
+||49|| 						iterativeStmt		NO		expression
+||-5||	EPS	10	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||-5||	)	10	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	11	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	declare	12	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	test	12	TK_ID	test	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	12	TK_EPS	EPS	idL	YES	TK_EPS
 ||101|| 						idList		NO		idL
-||-5||	:	13	TK_COLON	:	declareStmt	YES	TK_COLON
-||-5||	array	13	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||-5||	:	12	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	12	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	12	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	EPS	13	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	13	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	15	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	lord	15	TK_ID	lord	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	15	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	15	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	15	TK_ARRAY	array	dataType	YES	TK_ARRAY
 ||84|| 						declareStmt		NO		dataType
-||-5||	[	13	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	0	13	TK_NUM	0	index_new	YES	TK_NUM
+||-5||	[	15	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	0	15	TK_NUM	0	index_new	YES	TK_NUM
 ||93|| 						range		NO		index_new
 ||98|| 						dataType		NO		range
-||-5||	..	13	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	14	13	TK_NUM	14	index_new	YES	TK_NUM
+||-5||	..	15	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	5	15	TK_NUM	5	index_new	YES	TK_NUM
 ||93|| 						range		NO		index_new
-||-5||	]	13	TK_SQBC	]	dataType	YES	TK_SQBC
-||-5||	of	13	TK_OF	of	dataType	YES	TK_OF
-||-5||	boolean	13	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
-||87|| 						dataType		NO		type
-||-5||	;	13	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||-5||	]	15	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	15	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	15	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	;	15	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
 ||22|| 						statements		NO		statement
 ||17|| 						statements		NO		statements
-||-5||	declare	14	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
-||39|| 						statement		NO		declareStmt
-||-5||	actual	14	TK_ID	actual	idList	YES	TK_ID
-||99|| 						declareStmt		NO		idList
-||-5||	EPS	14	TK_EPS	EPS	idL	YES	TK_EPS
-||101|| 						idList		NO		idL
-||-5||	:	14	TK_COLON	:	declareStmt	YES	TK_COLON
-||-5||	integer	14	TK_INTEGER	integer	dataType	YES	TK_INTEGER
-||81|| 						declareStmt		NO		dataType
-||-5||	;	14	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
-||22|| 						statements		NO		statement
-||17|| 						statements		NO		statements
-||-5||	EPS	15	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	16	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	15	TK_END	end	moduleDef	YES	TK_END
+||-5||	end	16	TK_END	end	moduleDef	YES	TK_END
 ||4|| 						program		NO		otherModules
 ||-5||	EPS	19	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						otherModules		NO		otherModules
