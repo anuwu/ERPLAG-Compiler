@@ -18,12 +18,13 @@ enum _stType {
 struct _baseST ;
 struct _moduleST ;
 
-
+/*
 struct _arrayInST {
 	char *startingPos ;
 	char *endingPos ;
 	tokenID dataType ;
 } ;
+*/
 
 enum _variableType 
 {
@@ -38,7 +39,7 @@ struct _varST {
 	char * lexeme ; // variable name
 
 	tokenID datatype ; // TK_INTEGER, TK_REAL, TK_BOOL, TK_ARRAY
-	struct _arrayInST * arrayIndices ; // if TK_ARRAY 
+	arrayTypeInfo *arrayIndices ; // if TK_ARRAY 
 
 	int offset ;
 	void *scope ;
@@ -83,7 +84,7 @@ typedef enum _stType stType ;
 typedef enum _variableType variableType ;
 typedef struct _baseST baseST ;
 typedef struct _moduleST moduleST ;
-typedef struct _arrayInST arrayInST ;
+//typedef struct _arrayInST arrayInST ;
 typedef struct _varST varST ;
 typedef struct _varSTentry varSTentry ;
 typedef struct _moduleSTentry moduleSTentry ;
@@ -142,6 +143,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 
 int getSize(baseST * realBase, varST * thisVar) ;
-char *getParentModule (baseST* realBase, moduleST *scope) ;
+char *getParentModuleName (baseST* realBase, moduleST *scope) ;
 
 #endif

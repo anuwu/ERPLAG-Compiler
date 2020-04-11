@@ -349,11 +349,9 @@ void printBaseST ( baseST * base ) {
 
 void printModuleST ( moduleST * thisModuleST ) {
 
-	//printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
 
 	if( thisModuleST->tableType == DRIVER_ST || thisModuleST->tableType == MODULE_ST ){
 		printf("**************printModuleST( %s )***************\n",thisModuleST->lexeme ) ;
-		//printf("It's a Driver or Module ST \n") ;
 	}
 	else {
 		printf("**************printModuleST(SCOPE : %s )***************\n",thisModuleST->lexeme ) ;
@@ -380,7 +378,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 		while ( vv ) {
 			printf ("\toffset: %d - %s ---- %s ",vv->thisVarST->offset,vv->thisVarST->lexeme , tokenIDToString(vv->thisVarST->datatype) ) ;
 			if(vv->thisVarST->datatype == TK_ARRAY ) {
-				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType) ,vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->type) ,vv->thisVarST->arrayIndices->tokLeft->lexeme , vv->thisVarST->arrayIndices->tokRight->lexeme ) ;
 			}
 			printf ("\n") ;
 
@@ -396,7 +394,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 		while ( vv ) {
 			printf ("\toffset: %d - %s ---- %s ",vv->thisVarST->offset,vv->thisVarST->lexeme , tokenIDToString(vv->thisVarST->datatype) ) ;
 			if(vv->thisVarST->datatype == TK_ARRAY ) {
-				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType),vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->type),vv->thisVarST->arrayIndices->tokLeft->lexeme , vv->thisVarST->arrayIndices->tokRight->lexeme ) ;
 			}
 			printf ("\n") ;
 
@@ -415,7 +413,7 @@ void printModuleST ( moduleST * thisModuleST ) {
 
 			if(vv->thisVarST->datatype == TK_ARRAY ) 
 			{
-				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->dataType),vv->thisVarST->arrayIndices->startingPos , vv->thisVarST->arrayIndices->endingPos ) ;
+				printf ( "%s(%s,%s)",tokenIDToString(vv->thisVarST->arrayIndices->type),vv->thisVarST->arrayIndices->tokLeft->lexeme , vv->thisVarST->arrayIndices->tokRight->lexeme ) ;
 			}
 
 
@@ -457,7 +455,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 
 		if( searchedVar == NULL ){
-			printf("ERROR : In \"%s\" line %d, \"%s\" variable not declared\n",getParentModule(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme) ;
+			printf("ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n",getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme) ;
 			realBase->semanticError = 1 ;
 			sameArgNoErr = 1 ;
 		}
@@ -476,7 +474,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 			}
 			else 
 			{
-				printf ( "ERROR : In \"%s\" line %d, \"%s\" and \"%s\" conflicting dataType\n" ,  getParentModule(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" conflicting dataType\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
@@ -492,7 +490,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	if ( varEntry==NULL && inputIter )
 	{
 		//printf("Condition 1\n");
-		printf("ERROR : In \"%s\" line %d More parameters passed\n", getParentModule(realBase, thisModule), inputIter->tok->lineNumber) ;
+		printf("ERROR : In \"%s\" at line %d More parameters passed\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return (varST *) malloc (sizeof(varST)) ;
 		//return searchVar(realBase, thisModule , inputIter->tok->lexeme ) ;
@@ -500,7 +498,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	else if ( varEntry && inputIter==NULL ) 
 	{
 		//printf("Condition 2\n");
-		printf("ERROR : In \"%s\" line %d Insufficient number of parameters\n", getParentModule(realBase, thisModule), inputNode->tok->lineNumber) ;
+		printf("ERROR : In \"%s\" at line %d Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 
 		return (varST *) malloc (sizeof(varST)) ;
@@ -543,7 +541,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 		if( searchedVar == NULL )
 		{
-			printf("ERROR : In \"%s\" line %d, \"%s\" variable not declared\n", getParentModule(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
+			printf("ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
 			sameArgNoErr = 1 ;
 			realBase->semanticError = 1 ;
 		}
@@ -553,7 +551,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 				//printf("> GOOD : %s with %s\n",outputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
 			else 
 			{
-				printf ( "ERROR : In \"%s\" line %d, \"%s\" and \"%s\" have conflicting data types\n" , getParentModule(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting data types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
 			}
@@ -564,12 +562,12 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	}
 
 	if ( varEntry==NULL && outputIter ){
-		printf("ERROR : In \"%s\" line %d, more parameters passed\n", getParentModule(realBase, thisModule), outputIter->tok->lineNumber) ;
+		printf("ERROR : In \"%s\" at line %d, more parameters passed\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 	}
 	else if ( varEntry && outputIter==NULL ) {
-		printf("ERROR : In \"%s\" line %d, Insufficient number of parameters\n", getParentModule(realBase, thisModule), outputNode->tok->lineNumber) ;
+		printf("ERROR : In \"%s\" at line %d, Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return varEntry->thisVarST ;
 	}
@@ -602,7 +600,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		{
 			if (modPtr->tableType == MODULE_REDEC_ST)
 			{
-				printf ("ERROR : In \"%s\" line %d, Module %s found, but with clashing definition\n" , getParentModule(base, thisModule),funcNode->tok->lineNumber ,modPtr->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, Module %s found, but with clashing definition\n" , getParentModuleName(base, thisModule),funcNode->tok->lineNumber ,modPtr->lexeme) ;
 				base->semanticError = 1 ;
 				return -3 ;
 			}
@@ -633,7 +631,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		{
 			if (modPtr->tableType == MODULE_REDEC_ST)
 			{
-				printf ("ERROR : In \"%s\" line %d, Module %s was found, but with repeating definition\n" ,getParentModule(base, thisModule) , funcNode->next->next->tok->lineNumber ,modPtr->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, Module %s was found, but with repeating definition\n" ,getParentModuleName(base, thisModule) , funcNode->next->next->tok->lineNumber ,modPtr->lexeme) ;
 				return -3 ;
 			}
 			else
@@ -669,28 +667,28 @@ int getSize(baseST * realBase, varST * thisVar) {
 	else if (thisVar->datatype == TK_ARRAY ) 
 	{
 		int left, right, indexErrorFlag = 0 ;
-		char *parentModule = getParentModule (realBase , (moduleST *)thisVar->scope) ;
+		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
 
-		if (isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
+		if (isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
 		{
 			int sz ;
 
-			left = atoi(thisVar->arrayIndices->startingPos) ;
-			right = atoi(thisVar->arrayIndices->endingPos) ;
+			left = atoi(thisVar->arrayIndices->tokLeft->lexeme) ;
+			right = atoi(thisVar->arrayIndices->tokRight->lexeme) ;
 
 
-			if (thisVar->arrayIndices->dataType == TK_INTEGER)
+			if (thisVar->arrayIndices->type == TK_INTEGER)
 				sz = 2 ;
-			else if (thisVar->arrayIndices->dataType == TK_BOOLEAN)
+			else if (thisVar->arrayIndices->type == TK_BOOLEAN)
 				sz = 1 ;
-			else if (thisVar->arrayIndices->dataType == TK_REAL)
+			else if (thisVar->arrayIndices->type == TK_REAL)
 				sz = 4 ;
 
 			sz *= (right - left + 1) ;
 
 			if (sz <= 0)
 			{
-				printf ("ERROR : In \"%s\" line <insert here>, Left index of \"%s\" must be <= right index\n", parentModule, thisVar->lexeme) ;
+				printf ("ERROR : In definition of \"%s\" at line %d, Left index of \"%s\" must be <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
 				realBase->semanticError = 1 ;
 				return -1 ;
 			}
@@ -700,16 +698,16 @@ int getSize(baseST * realBase, varST * thisVar) {
 		else
 		{
 			// dynamic array index checks
-			if (!isdigit (thisVar->arrayIndices->startingPos[0]) && !isdigit (thisVar->arrayIndices->endingPos[0]))
+			if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && !isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
 			{
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) == NULL)
 				{
-					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) == NULL)
 				{
-					printf ("ERROR : In %s, Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\", Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 
@@ -719,12 +717,12 @@ int getSize(baseST * realBase, varST * thisVar) {
 					return -1 ;
 				}
 			}
-			else if (!isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
+			else if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
 			{
 				// Left dynamic, right static
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) == NULL)
 				{
-					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 
 					realBase->semanticError = 1 ;
 					return -1 ;
@@ -733,9 +731,9 @@ int getSize(baseST * realBase, varST * thisVar) {
 			else
 			{
 				// left static, right dynamic
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) == NULL)
 				{
-					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 
 					realBase->semanticError = 1 ;
 					return -1 ;
@@ -751,12 +749,12 @@ int getSize(baseST * realBase, varST * thisVar) {
 	}
 }
 
-char *getParentModule (baseST* realBase, moduleST *scope)
+char *getParentModuleName (baseST* realBase, moduleST *scope)
 {
 	if (scope->parent == realBase)
 		return scope->lexeme ;
 	else
-		return getParentModule (realBase, scope->parent) ;
+		return getParentModuleName (realBase, scope->parent) ;
 }
 
 char *typeIDToString (tokenID id)
@@ -786,27 +784,27 @@ int caseValRepeat (astNode *caseAstNode)
 }
 
 
-moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
+moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST ) 
 {
 	int getOffsetSize = 0 ;
+	statementsAST->localST = baseModule ;
+	astNode * statementAST = statementsAST->child ;
 	//printf ("INSIDE FILL MODULE!\n") ;
 
-	while ( statementAST ) {
+	while (statementAST) {
 		if(statementAST->child->id == TK_DECLARE ) {
 			// declare statement
-			//printf ("Inside DECLARE statement\n") ;
 			astNode * idAST = statementAST->child->next->child ;
 			astNode * dataTypeAST = statementAST->child->next->next ;
-			int i = 1 ;
+
 			while ( idAST ) 
 			{
-
 				varST *searchedVar ;
 				searchedVar = searchVar (realBase, baseModule, idAST->tok->lexeme) ;
 
 				if (searchedVar != NULL && searchedVar->scope == baseModule && searchedVar->varType != VAR_INPUT)
 				{
-					printf ( "ERROR : In \"%s\" line %d, %s variable \"%s\" already declared\n", getParentModule (realBase, baseModule) ,idAST->tok->lineNumber, varTypeToString(searchedVar->varType) , idAST->tok->lexeme) ;
+					printf ( "ERROR : In \"%s\" at line %d, %s variable \"%s\" already declared\n", getParentModuleName (realBase, baseModule) ,idAST->tok->lineNumber, varTypeToString(searchedVar->varType) , idAST->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
 				else		// if input variable, or a local variable in some parent scope, or not found at all
@@ -815,12 +813,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 					if (dataTypeAST->dtTag  == ARRAY ){
 						tmp->datatype = TK_ARRAY ;
-
-						tmp->arrayIndices = (arrayInST *) malloc(sizeof(arrayInST)) ;
-						tmp->arrayIndices->startingPos = dataTypeAST->dt->arrType->tokLeft->lexeme ;
-						tmp->arrayIndices->endingPos = dataTypeAST->dt->arrType->tokRight->lexeme ;
-						tmp->arrayIndices->dataType = dataTypeAST->dt->arrType->type ;
-
+						tmp->arrayIndices = dataTypeAST->dt->arrType ; 
 					}
 					else {
 						tmp->datatype = dataTypeAST->dt->pType ;
@@ -837,16 +830,12 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 						baseModule->currOffset += getOffsetSize ;
 					}
 					else
-					{
-						// This will probably never come here.
-						//printf ("ERROR : getSize() method\n") ;
 						tmp->offset = -2 ;		// invalid dynamic array declaration
-					}
+
 					baseModule = insertLocalVarST(baseModule , tmp) ;
 				}
 
 				idAST = idAST->next ;
-				i++ ;
 			}
 
 		}
@@ -854,7 +843,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			// TODO type checking
 
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
-			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
+			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next) ;
 			printModuleST ( tmp ) ;
 
 			tmp = insertScopeST ( baseModule , tmp ) ;
@@ -864,12 +853,12 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			varST *searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
-				printf ("ERROR : In \"%s\" line %d, loop variable \"%s\" is undeclared\n", getParentModule(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if (searchedVar->datatype != TK_INTEGER)
 			{
-				printf ("ERROR : In \"%s\" line %d, loop variable \"%s\" needs to be of integer type\n", getParentModule(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" needs to be of integer type\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -878,7 +867,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			if (atoi(loopLim->tok->lexeme) > atoi(loopLim->next->tok->lexeme))
 			{
-				printf ("ERROR : In \"%s\" line %d, left loop limit must be <= right loop limit\n", getParentModule(realBase, baseModule), loopLim->tok->lineNumber) ;
+				printf ("ERROR : In \"%s\" at line %d, left loop limit must be <= right loop limit\n", getParentModuleName(realBase, baseModule), loopLim->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -892,25 +881,25 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				loopVar->offset = searchedVar->offset ;
 
 			insertLocalVarST (forScope, loopVar) ;
-			forScope = fillModuleST (realBase, forScope, loopLim->next->next->child) ;
+			forScope = fillModuleST (realBase, forScope, loopLim->next->next) ;
 
 			printModuleST (forScope) ;
 			insertScopeST (baseModule , forScope) ;
 		}
-		else if ( statementAST->child->id == TK_GET_VALUE ) {
+ 		else if ( statementAST->child->id == TK_GET_VALUE ) {
 			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
 			if ( thisVar == NULL )
 			{
-				printf ( "ERROR : In \"%s\" line %d, \"%s\" variable undeclared\n" ,  getParentModule(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 		}
-		else if ( statementAST->child->id == TK_PRINT ) {
+ 		else if ( statementAST->child->id == TK_PRINT ) {
 			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
 			if ( thisVar == NULL ){
-				printf ( "ERROR : In \"%s\" line %d, \"%s\" variable undeclared\n" ,  getParentModule(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 			else {
@@ -921,16 +910,16 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			// TODO typechecking
 
 			if (searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) == NULL)
-				printf (" ERROR : In \"%s\" line %d, \"%s\" variable undeclared\n",  getParentModule(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
+				printf (" ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
 
 			// RHS business will occur here.
 		}
-		else if ( statementAST->child->id == idList) {
+ 		else if ( statementAST->child->id == idList) {
 			// [a] = use module with parameters [ d ] ;
 
 			if (strcmp(baseModule->lexeme, statementAST->child->next->next->tok->lexeme) == 0)
 			{
-				printf ("ERROR : In \"%s\" line %d, recursion is not allowed!\n", getParentModule(realBase, baseModule), statementAST->child->next->next->tok->lineNumber) ;
+				printf ("ERROR : In \"%s\" at line %d, recursion is not allowed!\n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 			else
@@ -942,11 +931,11 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 				}
 				else if (validCallFlag == -1 )	{
-					printf( "ERROR : In \"%s\" line %d, \"%s\" Module neither declared nor defined \n", getParentModule(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
 				else if( validCallFlag == -2 ) {
-					printf( "ERROR : In \"%s\" line %d, \"%s\" declared but not defined \n", getParentModule(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+					printf( "ERROR : In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
 				// else error messages is printed in internal functions
@@ -959,30 +948,30 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
 			}
 			else if (validCallFlag == -1 )	{
-				printf( "ERROR : In \"%s\" line %d, \"%s\" Module neither declared nor defined \n", getParentModule(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if( validCallFlag == -2 ) {
-				printf( "ERROR : In \"%s\" line %d, \"%s\" Module declared but not defined \n", getParentModule(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			// else error messages is printed in internal functions
 		}
-		else if (statementAST->child->id == TK_SWITCH)
+ 		else if (statementAST->child->id == TK_SWITCH)
 		{
 			int switchTypeError = 0 ;
 
 			varST *searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
-				printf ("ERROR : In \"%s\" line %d, \"%s\" switch variable undeclared\n",  getParentModule(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else
 			{
 				if (!(searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN))
 				{
-					printf ("ERROR : In \"%s\" line %d, \"%s\" switch variable must be integer or boolean\n",  getParentModule(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+					printf ("ERROR : In \"%s\" at line %d, \"%s\" switch variable must be integer or boolean\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 					switchTypeError = 1 ;
 				}
@@ -998,7 +987,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				{
 					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE))|| (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
 					{
-						printf ("ERROR : In \"%s\" line %d, switch variable has type %s and case value has type %s\n", getParentModule(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
+						printf ("ERROR : In \"%s\" at line %d, switch variable has type %s and case value has type %s\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
 						realBase->semanticError = 1 ;
 					}
 				}
@@ -1007,21 +996,21 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				{
 					if (caseValRepeat (caseAstNode))
 					{
-						printf ("ERROR : In \"%s\" line %d, case value is repeating\n", getParentModule(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
+						printf ("ERROR : In \"%s\" at line %d, case value is repeating\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
 					}
 
-					fillModuleST (realBase, switchST, caseAstNode->next->next->child) ;
+					fillModuleST (realBase, switchST, caseAstNode->next->next) ;
 				}
 				else
 				{
 					if (searchedVar->datatype == TK_BOOLEAN)
 					{
-						printf ("ERROR : In \"%s\" line %d, switch variable is boolean, default case is not allowed\n", getParentModule(realBase, baseModule), caseAstNode->tok->lineNumber) ;
+						printf ("ERROR : In \"%s\" at line %d, switch variable is boolean, default case is not allowed\n", getParentModuleName(realBase, baseModule), caseAstNode->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
 					}
 
-					fillModuleST (realBase, switchST, caseAstNode->next->child) ;
+					fillModuleST (realBase, switchST, caseAstNode->next) ;
 				}
 
 				if (caseAstNode->id != TK_DEFAULT)
@@ -1034,16 +1023,14 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			//printf ("Done with loop\n") ;
 
-			switchST = insertScopeST (baseModule , switchST) ;
+			insertScopeST (baseModule , switchST) ;
 			printModuleST (switchST) ;
 		}
-
-
-
+ 
 		statementAST = statementAST->next ;
 	}
+
 	
-	statementAST->parent->localST = baseModule ;
 	return baseModule ;
 }
 
@@ -1066,7 +1053,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 		
 		varST * searchResult ;
 		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
-			printf("ERROR : %s Module Already Declared\n" , searchResult->lexeme ) ;
+			printf("ERROR : In line %d, \"%s\" module already declared.\n" , currentASTNode->tok->lineNumber, searchResult->lexeme ) ;
 			base->semanticError = 1 ;
 		}
 		else {
@@ -1091,7 +1078,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
 			{
-				printf ("ERROR : Module %s definition appearing after driver program, but not declared!\n", currentASTNode->child->tok->lexeme) ;
+				printf ("ERROR : In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;
 				currentASTNode = currentASTNode->next ;
@@ -1111,7 +1098,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				while ( iplAST ) {
 
 					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
-						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
+						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else{
@@ -1128,11 +1115,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 						else{
 							// array 
 							tmp->datatype = TK_ARRAY ;
-							tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
-							tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->tokLeft->lexeme ;
-							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->tokRight->lexeme ;
-							tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
-
+							tmp->arrayIndices = iplAST->child->next->dt->arrType ;
 
 							int arrSize = getSize (base, tmp) ;		// Return will be positive or -1
 							if (arrSize == -1)
@@ -1154,8 +1137,9 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 				while ( oplAST ) {
 
-					if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
-						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
+					if (searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id)) 
+					{
+						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" variable already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 
 					}
@@ -1177,7 +1161,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
-				printf ( "ERROR : %s already defined %d\n",currentASTNode->child->tok->lexeme, otherMODS_Count) ;
+				printf ( "ERROR : In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 				searchCond->tableType = MODULE_REDEC_ST ;
@@ -1193,7 +1177,6 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 	// ------------------------------------------------- fillModuleST --------------------------------------
 
 	otherMODS = moduleDECS->next ;
-
 
 
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
@@ -1212,8 +1195,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
-					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
-					currentASTNode->child->next->next->next->next->localST = moduleToInsert ;
+					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next) ;
 					printModuleST ( moduleToInsert ) ;	
 				}
 				currentASTNode = currentASTNode->next ;
@@ -1225,11 +1207,13 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 	//*****************************************************************
 
+
 	astNode * driverMODS = otherMODS->prev ;
 	moduleST * driverST = createDriverST(base) ;
 	
-	driverST = fillModuleST (base,driverST , driverMODS->child->child) ;
+	driverST = fillModuleST (base,driverST , driverMODS->child) ;
 	//driverMODS->child->localST = driverST ;
+	printf ("BEFORE!\n") ;
 	printModuleST ( driverST ) ;
 	base = insertDriverSTInbaseST ( base , driverST ) ;	
 			
