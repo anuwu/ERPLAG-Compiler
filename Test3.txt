@@ -4,7 +4,7 @@ start
 	declare r:real ;
 	declare b:boolean ;
 
-	switch (b)
+	switch (r)
 	start
 		case true :
 			declare abc:integer ;

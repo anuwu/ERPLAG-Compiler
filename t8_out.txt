@@ -1,0 +1,4108 @@
+||-5||	declare	13	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	13	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	function1	13	TK_ID	function1	moduleDeclaration	YES	TK_ID
+||-5||	;	13	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						program		NO		moduleDeclarations
+||-5||	declare	14	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	14	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	function2	14	TK_ID	function2	moduleDeclaration	YES	TK_ID
+||-5||	;	14	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	declare	15	TK_DECLARE	declare	moduleDeclaration	YES	TK_DECLARE
+||3|| 						moduleDeclarations		NO		moduleDeclaration
+||-5||	module	15	TK_MODULE	module	moduleDeclaration	YES	TK_MODULE
+||-5||	function4	15	TK_ID	function4	moduleDeclaration	YES	TK_ID
+||-5||	;	15	TK_SEMICOL	;	moduleDeclaration	YES	TK_SEMICOL
+||1|| 						moduleDeclarations		NO		moduleDeclarations
+||-5||	EPS	17	TK_EPS	EPS	moduleDeclarations	YES	TK_EPS
+||2|| 						moduleDeclarations		NO		moduleDeclarations
+||0|| 						ROOT		NO		program
+||-5||	<<	17	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	17	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	var_demo_array	17	TK_ID	var_demo_array	module	YES	TK_ID
+||-5||	>>	17	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	18	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	18	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	18	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	x	18	TK_ID	x	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	18	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	18	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	,	18	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	m	18	TK_ID	m	IPL	YES	TK_ID
+||-5||	:	18	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	18	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	18	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	18	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	18	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	20	18	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	18	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	18	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	18	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	,	18	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	p	18	TK_ID	p	IPL	YES	TK_ID
+||-5||	:	18	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	18	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	EPS	18	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	18	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	18	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	19	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	19	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	n	19	TK_ID	n	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	19	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	integer	19	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						output_plist		NO		type
+||-5||	,	19	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	k	19	TK_ID	k	OPL	YES	TK_ID
+||-5||	:	19	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	19	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						OPL		NO		type
+||-5||	EPS	19	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	19	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	19	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	20	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	declare	21	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	a	21	TK_ID	a	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	21	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	b	21	TK_ID	b	idL	YES	TK_ID
+||-5||	,	21	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	h	21	TK_ID	h	idL	YES	TK_ID
+||-5||	EPS	21	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	21	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	21	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	21	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	get_value	22	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	22	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	b	22	TK_ID	b	ioStmt	YES	TK_ID
+||-5||	)	22	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	22	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	23	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	b4	23	TK_ID	b4	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	23	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	23	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	23	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	23	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	100	23	TK_NUM	100	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	23	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	150	23	TK_NUM	150	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	23	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	23	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	23	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	;	23	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	24	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	p	24	TK_ID	p	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	24	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	24	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	24	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	24	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	24	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	24	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	20	24	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	24	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	24	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	24	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	24	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	a	25	TK_ID	a	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	25	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	m	25	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	25	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	5	25	TK_NUM	5	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	25	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	25	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	25	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	3	25	TK_NUM	3	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	25	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	25	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	25	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	25	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	25	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	26	TK_EPS	EPS	optional	YES	TK_EPS
+||38|| 						moduleReuseStmt		NO		optional
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	26	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	26	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function2	26	TK_ID	function2	moduleReuseStmt	YES	TK_ID
+||-5||	with	26	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	26	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	a	26	TK_ID	a	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	26	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	b	26	TK_ID	b	idL	YES	TK_ID
+||-5||	EPS	26	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	26	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	p	27	TK_ID	p	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	27	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	m	27	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	27	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	27	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	27	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	27	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	27	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	27	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	k	28	TK_ID	k	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	28	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	true	28	TK_TRUE	true	boolTerm	YES	TK_TRUE
+||53|| 						expression		NO		boolTerm
+||49|| 						expression_new		NO		expression
+||-5||	EPS	28	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	28	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	p	29	TK_ID	p	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	29	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	m	29	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	29	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	29	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	29	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	p	29	TK_ID	p	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	29	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	29	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	29	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	29	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	29	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	29	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	30	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	v1	30	TK_ID	v1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	30	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	v2	30	TK_ID	v2	idL	YES	TK_ID
+||-5||	EPS	30	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	30	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	30	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	30	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	p	31	TK_ID	p	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	31	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	10	31	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	31	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	31	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	a	31	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	31	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	31	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	b	31	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	31	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	31	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	31	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	20	31	TK_NUM	20	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	31	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	h	31	TK_ID	h	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	31	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	31	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	31	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	31	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	31	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	31	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	32	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	b7	32	TK_ID	b7	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	32	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	32	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	32	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	32	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	35	32	TK_NUM	35	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	32	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	50	32	TK_NUM	50	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	32	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	32	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	32	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	;	32	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	while	33	TK_WHILE	while	iterativeStmt	YES	TK_WHILE
+||41|| 						statement		NO		iterativeStmt
+||-5||	(	33	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	k	33	TK_ID	k	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	33	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	33	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	33	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	33	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						iterativeStmt		NO		expression
+||-5||	AND	33	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	x	33	TK_ID	x	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	33	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	33	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	33	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	<=	33	TK_LE	<=	relationalOp	YES	TK_LE
+||72|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	m	33	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	33	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	11	33	TK_NUM	11	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	33	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	33	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	33	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||-5||	OR	33	TK_OR	OR	logicalOp	YES	TK_OR
+||70|| 						bT		NO		logicalOp
+||50|| 						bT		NO		bT
+||-5||	false	33	TK_FALSE	false	boolTerm	YES	TK_FALSE
+||54|| 						bT		NO		boolTerm
+||-5||	EPS	33	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||-5||	)	33	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	34	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	declare	35	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	p	35	TK_ID	p	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	35	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u	35	TK_ID	u	idL	YES	TK_ID
+||-5||	EPS	35	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	35	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	35	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	35	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	declare	36	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	b	36	TK_ID	b	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	36	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	36	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	36	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	36	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	36	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	36	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	20	36	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	36	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	36	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	36	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	36	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	37	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	b5	37	TK_ID	b5	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	37	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	b6	37	TK_ID	b6	idL	YES	TK_ID
+||-5||	EPS	37	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	37	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	37	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	37	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	35	37	TK_NUM	35	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	37	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	50	37	TK_NUM	50	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	37	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	37	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	37	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	;	37	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	b	38	TK_ID	b	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	38	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	m	38	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	38	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	38	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	38	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	38	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	38	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	38	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	39	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	v1	39	TK_ID	v1	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u	39	TK_ID	u	idL	YES	TK_ID
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	39	TK_ID	k	idL	YES	TK_ID
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	39	TK_ID	p	idL	YES	TK_ID
+||-5||	EPS	39	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	39	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	39	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	39	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	39	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	39	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	39	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	39	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	b4	39	TK_ID	b4	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	v2	39	TK_ID	v2	idL	YES	TK_ID
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	39	TK_ID	p	idL	YES	TK_ID
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	b5	39	TK_ID	b5	idL	YES	TK_ID
+||-5||	,	39	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	u	39	TK_ID	u	idL	YES	TK_ID
+||-5||	EPS	39	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	39	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	b	40	TK_ID	b	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	40	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	2	40	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	40	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	40	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	u	40	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	40	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	40	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	40	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	m	40	TK_ID	m	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	40	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	25	40	TK_NUM	25	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	40	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	40	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	40	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	40	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	40	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	40	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	p	41	TK_ID	p	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	41	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	b	41	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	41	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	18	41	TK_NUM	18	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	41	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	41	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	18.56E+2	41	TK_RNUM	18.56E+2	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	41	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	41	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	41	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	41	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	41	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	42	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	v3	42	TK_ID	v3	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	42	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	42	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	42	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	42	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	43	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	v1	43	TK_ID	v1	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u	43	TK_ID	u	idL	YES	TK_ID
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	43	TK_ID	k	idL	YES	TK_ID
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	v3	43	TK_ID	v3	idL	YES	TK_ID
+||-5||	EPS	43	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	43	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	43	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	43	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	43	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	43	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	43	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	43	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	b4	43	TK_ID	b4	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	v2	43	TK_ID	v2	idL	YES	TK_ID
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	43	TK_ID	p	idL	YES	TK_ID
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	v3	43	TK_ID	v3	idL	YES	TK_ID
+||-5||	,	43	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	u	43	TK_ID	u	idL	YES	TK_ID
+||-5||	EPS	43	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	43	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	44	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	44	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	a	45	TK_ID	a	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	45	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	45	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	45	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	45	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	45	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	p	45	TK_ID	p	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	45	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	45	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	b	45	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	45	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	45	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	45	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	45	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	45	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	45	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	b	46	TK_ID	b	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	46	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	b	46	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	46	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	46	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	46	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	3	46	TK_NUM	3	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	46	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	46	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	46	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	46	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	46	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	k	47	TK_ID	k	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	47	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	47	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	47	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	47	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	47	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	>	47	TK_GT	>	relationalOp	YES	TK_GT
+||73|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	b	47	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	47	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	47	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	47	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||49|| 						expression_new		NO		expression
+||-5||	OR	47	TK_OR	OR	logicalOp	YES	TK_OR
+||70|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	b	47	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	47	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	47	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	47	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	>	47	TK_GT	>	relationalOp	YES	TK_GT
+||73|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	100	47	TK_NUM	100	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	47	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	47	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||-5||	EPS	47	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	47	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	48	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	v1	48	TK_ID	v1	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	a	48	TK_ID	a	idL	YES	TK_ID
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	48	TK_ID	k	idL	YES	TK_ID
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	h	48	TK_ID	h	idL	YES	TK_ID
+||-5||	EPS	48	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	48	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	48	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	48	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	48	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	48	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	48	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	48	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	b7	48	TK_ID	b7	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	v2	48	TK_ID	v2	idL	YES	TK_ID
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	48	TK_ID	p	idL	YES	TK_ID
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	b7	48	TK_ID	b7	idL	YES	TK_ID
+||-5||	,	48	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	b	48	TK_ID	b	idL	YES	TK_ID
+||-5||	EPS	48	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	48	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	print	49	TK_PRINT	print	ioStmt	YES	TK_PRINT
+||25|| 						statement		NO		ioStmt
+||-5||	(	49	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	k	49	TK_ID	k	var	YES	TK_ID
+||88|| 						print_var		NO		var
+||-5||	EPS	49	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||26|| 						ioStmt		NO		print_var
+||-5||	)	49	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	49	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	50	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	50	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	<<	52	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	52	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function2	52	TK_ID	function2	module	YES	TK_ID
+||-5||	>>	52	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	53	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	53	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	53	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	x	53	TK_ID	x	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	53	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	integer	53	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						input_plist		NO		dataType
+||-5||	,	53	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	y	53	TK_ID	y	IPL	YES	TK_ID
+||-5||	:	53	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	53	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	53	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	53	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	53	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	EPS	54	TK_EPS	EPS	ret	YES	TK_EPS
+||10|| 						module		NO		ret
+||-5||	start	54	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	declare	55	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	temp	55	TK_ID	temp	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	55	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	55	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	55	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	55	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	EPS	56	TK_EPS	EPS	optional	YES	TK_EPS
+||38|| 						moduleReuseStmt		NO		optional
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	56	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	56	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function2	56	TK_ID	function2	moduleReuseStmt	YES	TK_ID
+||-5||	with	56	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	56	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	x	56	TK_ID	x	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	56	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y	56	TK_ID	y	idL	YES	TK_ID
+||-5||	EPS	56	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	56	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	temp	57	TK_ID	temp	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	57	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	x	57	TK_ID	x	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	57	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	57	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	57	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	y	57	TK_ID	y	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	57	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	57	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	57	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	57	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	57	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	57	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	58	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	58	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	<<	61	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	61	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	f1	61	TK_ID	f1	module	YES	TK_ID
+||-5||	>>	61	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	62	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	62	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	62	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	62	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	62	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	array	62	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						input_plist		NO		dataType
+||-5||	[	62	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	10	62	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	62	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	30	62	TK_NUM	30	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	62	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	62	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	62	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	,	62	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	62	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	62	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	62	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	62	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	10	62	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	62	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	30	62	TK_NUM	30	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	62	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	62	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	62	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	,	62	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	c	62	TK_ID	c	IPL	YES	TK_ID
+||-5||	:	62	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	62	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	EPS	62	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	62	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	62	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	63	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	63	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	m	63	TK_ID	m	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	63	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	boolean	63	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						output_plist		NO		type
+||-5||	,	63	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	n	63	TK_ID	n	OPL	YES	TK_ID
+||-5||	:	63	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	63	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	63	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	63	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	63	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	64	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	declare	65	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	x	65	TK_ID	x	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	65	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y	65	TK_ID	y	idL	YES	TK_ID
+||-5||	,	65	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	65	TK_ID	p	idL	YES	TK_ID
+||-5||	EPS	65	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	65	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	65	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	65	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	declare	66	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	k	66	TK_ID	k	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	66	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y1	66	TK_ID	y1	idL	YES	TK_ID
+||-5||	EPS	66	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	66	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	66	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	66	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	67	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	E	67	TK_ID	E	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	67	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	67	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	67	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	67	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	67	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	67	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	20	67	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	67	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	67	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	67	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	67	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	68	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	Var3	68	TK_ID	Var3	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	68	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	var4	68	TK_ID	var4	idL	YES	TK_ID
+||-5||	EPS	68	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	68	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	68	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	68	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	100	68	TK_NUM	100	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	68	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	150	68	TK_NUM	150	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	68	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	68	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	68	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	;	68	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	69	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	69	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	y	69	TK_ID	y	ioStmt	YES	TK_ID
+||-5||	)	69	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	69	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	70	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	70	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	x	70	TK_ID	x	ioStmt	YES	TK_ID
+||-5||	)	70	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	70	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	71	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	A	71	TK_ID	A	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	71	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	B	71	TK_ID	B	idL	YES	TK_ID
+||-5||	EPS	71	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	71	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	71	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	71	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	4	71	TK_NUM	4	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	71	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	10	71	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	71	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	71	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	71	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	71	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	72	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	Var1	72	TK_ID	Var1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	72	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	Var2	72	TK_ID	Var2	idL	YES	TK_ID
+||-5||	EPS	72	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	72	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	72	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	72	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	35	72	TK_NUM	35	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	72	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	50	72	TK_NUM	50	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	72	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	72	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	72	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	;	72	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	73	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	73	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	B	73	TK_ID	B	ioStmt	YES	TK_ID
+||-5||	)	73	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	73	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	74	TK_EPS	EPS	optional	YES	TK_EPS
+||38|| 						moduleReuseStmt		NO		optional
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	74	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	74	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function2	74	TK_ID	function2	moduleReuseStmt	YES	TK_ID
+||-5||	with	74	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	74	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	k	74	TK_ID	k	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	74	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y1	74	TK_ID	y1	idL	YES	TK_ID
+||-5||	EPS	74	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	74	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	75	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	D	75	TK_ID	D	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	75	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	C	75	TK_ID	C	idL	YES	TK_ID
+||-5||	EPS	75	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	75	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	75	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	75	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	10	75	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	75	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	30	75	TK_NUM	30	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	75	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	75	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	75	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	75	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	A	76	TK_ID	A	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	76	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	B	76	TK_ID	B	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	76	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	76	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	76	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	76	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	76	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	76	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	77	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	y1	77	TK_ID	y1	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	77	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	m	77	TK_ID	m	idL	YES	TK_ID
+||-5||	EPS	77	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	77	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	77	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	77	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	77	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	var_demo_array	77	TK_ID	var_demo_array	moduleReuseStmt	YES	TK_ID
+||-5||	with	77	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	77	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	k	77	TK_ID	k	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	77	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	E	77	TK_ID	E	idL	YES	TK_ID
+||-5||	,	77	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	x	77	TK_ID	x	idL	YES	TK_ID
+||-5||	EPS	77	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	77	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	C	78	TK_ID	C	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	78	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	78	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	78	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	78	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	78	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	78	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	78	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	78	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	79	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	x	79	TK_ID	x	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y1	79	TK_ID	y1	idL	YES	TK_ID
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	m	79	TK_ID	m	idL	YES	TK_ID
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	79	TK_ID	k	idL	YES	TK_ID
+||-5||	EPS	79	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	79	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	79	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	79	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	79	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	79	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	79	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	79	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	Var3	79	TK_ID	Var3	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	c	79	TK_ID	c	idL	YES	TK_ID
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	79	TK_ID	k	idL	YES	TK_ID
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	Var2	79	TK_ID	Var2	idL	YES	TK_ID
+||-5||	,	79	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	79	TK_ID	k	idL	YES	TK_ID
+||-5||	EPS	79	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	79	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	D	80	TK_ID	D	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	80	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	C	80	TK_ID	C	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	80	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	80	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	80	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	80	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	80	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	80	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	83	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	k	83	TK_ID	k	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	83	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	m	83	TK_ID	m	idL	YES	TK_ID
+||-5||	EPS	83	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	83	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	83	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	83	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	83	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	var_demo_array	83	TK_ID	var_demo_array	moduleReuseStmt	YES	TK_ID
+||-5||	with	83	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	83	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	k	83	TK_ID	k	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	83	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	B	83	TK_ID	B	idL	YES	TK_ID
+||-5||	,	83	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	83	TK_ID	p	idL	YES	TK_ID
+||-5||	EPS	83	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	83	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	for	84	TK_FOR	for	iterativeStmt	YES	TK_FOR
+||40|| 						statement		NO		iterativeStmt
+||-5||	(	84	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	k	84	TK_ID	k	iterativeStmt	YES	TK_ID
+||-5||	in	84	TK_IN	in	iterativeStmt	YES	TK_IN
+||-5||	15	84	TK_NUM	15	range_new	YES	TK_NUM
+||102|| 						iterativeStmt		NO		range_new
+||-5||	..	84	TK_RANGEOP	..	range_new	YES	TK_RANGEOP
+||-5||	40	84	TK_NUM	40	range_new	YES	TK_NUM
+||-5||	)	84	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	85	TK_START	start	iterativeStmt	YES	TK_START
+||-5||	x	86	TK_ID	x	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	86	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	x	86	TK_ID	x	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	86	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	86	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	86	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	k	86	TK_ID	k	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	86	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	86	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	y	86	TK_ID	y	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	86	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	86	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	86	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	86	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	86	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	86	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	declare	87	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	u	87	TK_ID	u	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	87	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	v	87	TK_ID	v	idL	YES	TK_ID
+||-5||	EPS	87	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	87	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	87	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	87	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	88	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	int1	88	TK_ID	int1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	88	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	88	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	88	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	88	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	u	89	TK_ID	u	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	89	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	y	89	TK_ID	y	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	89	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	89	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	89	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	c	89	TK_ID	c	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	89	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	89	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	34.2	89	TK_RNUM	34.2	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	89	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	89	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	89	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	89	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	89	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	v	90	TK_ID	v	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	90	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	u	90	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	90	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	90	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	90	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	c	90	TK_ID	c	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	90	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	90	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	p	90	TK_ID	p	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	90	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	90	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	-	90	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	20.5E+2	90	TK_RNUM	20.5E+2	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	90	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	90	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	90	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	90	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	90	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	91	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	x	91	TK_ID	x	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	int1	91	TK_ID	int1	idL	YES	TK_ID
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	m	91	TK_ID	m	idL	YES	TK_ID
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	91	TK_ID	k	idL	YES	TK_ID
+||-5||	EPS	91	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	91	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	91	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	91	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	91	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	91	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	91	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	91	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	Var3	91	TK_ID	Var3	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	c	91	TK_ID	c	idL	YES	TK_ID
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	91	TK_ID	k	idL	YES	TK_ID
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	Var4	91	TK_ID	Var4	idL	YES	TK_ID
+||-5||	,	91	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	int1	91	TK_ID	int1	idL	YES	TK_ID
+||-5||	EPS	91	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	91	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	switch	92	TK_SWITCH	switch	conditionalStmt	YES	TK_SWITCH
+||42|| 						statement		NO		conditionalStmt
+||-5||	(	92	TK_BO	(	conditionalStmt	YES	TK_BO
+||-5||	k	92	TK_ID	k	conditionalStmt	YES	TK_ID
+||-5||	)	92	TK_BC	)	conditionalStmt	YES	TK_BC
+||-5||	start	93	TK_START	start	conditionalStmt	YES	TK_START
+||-5||	case	94	TK_CASE	case	conditionalStmt	YES	TK_CASE
+||-5||	10	94	TK_NUM	10	value	YES	TK_NUM
+||95|| 						conditionalStmt		NO		value
+||-5||	:	94	TK_COLON	:	conditionalStmt	YES	TK_COLON
+||-5||	declare	94	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	A	94	TK_ID	A	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	94	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	94	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	94	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	94	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						conditionalStmt		NO		statements
+||-5||	declare	95	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	Q	95	TK_ID	Q	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	95	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	95	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	95	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	95	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	96	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	B	96	TK_ID	B	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	96	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	96	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	96	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	96	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	10	96	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	96	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	30	96	TK_NUM	30	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	96	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	96	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	96	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	96	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	97	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	E	97	TK_ID	E	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	97	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	97	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	97	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	97	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	4	97	TK_NUM	4	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	97	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	10	97	TK_NUM	10	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	97	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	97	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	97	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	97	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	B	98	TK_ID	B	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	98	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	9	98	TK_NUM	9	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	98	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	98	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	k	98	TK_ID	k	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	98	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	98	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	20	98	TK_NUM	20	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	98	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	98	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	98	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	98	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	98	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	B	99	TK_ID	B	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	99	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	C	99	TK_ID	C	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	99	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	99	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	99	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	99	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	99	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	99	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	E	100	TK_ID	E	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	100	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	Q	100	TK_ID	Q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	100	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	100	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	100	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	100	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	100	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	100	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	101	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	break	101	TK_BREAK	break	conditionalStmt	YES	TK_BREAK
+||-5||	;	101	TK_SEMICOL	;	conditionalStmt	YES	TK_SEMICOL
+||-5||	case	102	TK_CASE	case	caseStmt	YES	TK_CASE
+||43|| 						conditionalStmt		NO		caseStmt
+||-5||	20	102	TK_NUM	20	value	YES	TK_NUM
+||95|| 						caseStmt		NO		value
+||-5||	:	102	TK_COLON	:	caseStmt	YES	TK_COLON
+||-5||	A	102	TK_ID	A	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	102	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	12.90	102	TK_RNUM	12.90	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	102	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	102	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	u	102	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	102	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	102	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	y	102	TK_ID	y	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	102	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	102	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	-	102	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	c	102	TK_ID	c	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	102	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	102	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	102	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	102	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	102	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	102	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						caseStmt		NO		statements
+||-5||	[	103	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	A	103	TK_ID	A	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	Q	103	TK_ID	Q	idL	YES	TK_ID
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	u	103	TK_ID	u	idL	YES	TK_ID
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	y1	103	TK_ID	y1	idL	YES	TK_ID
+||-5||	EPS	103	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	103	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	103	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	103	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	103	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	103	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	103	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	103	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	Var3	103	TK_ID	Var3	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	c	103	TK_ID	c	idL	YES	TK_ID
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	103	TK_ID	k	idL	YES	TK_ID
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	Var1	103	TK_ID	Var1	idL	YES	TK_ID
+||-5||	,	103	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	int1	103	TK_ID	int1	idL	YES	TK_ID
+||-5||	EPS	103	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	103	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	104	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	104	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	Q	104	TK_ID	Q	ioStmt	YES	TK_ID
+||-5||	)	104	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	104	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	E	105	TK_ID	E	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	105	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	7	105	TK_NUM	7	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	105	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	105	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	k	105	TK_ID	k	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	105	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	105	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	105	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	12	105	TK_NUM	12	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	105	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	-	105	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	Q	105	TK_ID	Q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	105	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	105	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	10	105	TK_NUM	10	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	105	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	+	105	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	u	105	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	105	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	105	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	105	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	105	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	105	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	105	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	106	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	break	106	TK_BREAK	break	caseStmt	YES	TK_BREAK
+||-5||	;	106	TK_SEMICOL	;	caseStmt	YES	TK_SEMICOL
+||-5||	EPS	107	TK_EPS	EPS	caseStmt	YES	TK_EPS
+||44|| 						caseStmt		NO		caseStmt
+||-5||	default	107	TK_DEFAULT	default	default_new	YES	TK_DEFAULT
+||45|| 						conditionalStmt		NO		default_new
+||-5||	:	107	TK_COLON	:	default_new	YES	TK_COLON
+||-5||	E	107	TK_ID	E	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	107	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	9	107	TK_NUM	9	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	107	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	107	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	B	107	TK_ID	B	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	107	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	15	107	TK_NUM	15	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	107	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	107	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	107	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	Q	107	TK_ID	Q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	107	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	107	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	107	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	107	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	107	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	107	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						default_new		NO		statements
+||-5||	[	108	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	A	108	TK_ID	A	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	108	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	Q	108	TK_ID	Q	idL	YES	TK_ID
+||-5||	EPS	108	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	108	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	108	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	108	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	108	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	108	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	108	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	108	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	Var3	108	TK_ID	Var3	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	108	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	c	108	TK_ID	c	idL	YES	TK_ID
+||-5||	,	108	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	108	TK_ID	k	idL	YES	TK_ID
+||-5||	,	108	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	Var1	108	TK_ID	Var1	idL	YES	TK_ID
+||-5||	,	108	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	int1	108	TK_ID	int1	idL	YES	TK_ID
+||-5||	EPS	108	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	108	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	109	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	break	109	TK_BREAK	break	default_new	YES	TK_BREAK
+||-5||	;	109	TK_SEMICOL	;	default_new	YES	TK_SEMICOL
+||-5||	end	110	TK_END	end	conditionalStmt	YES	TK_END
+||21|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	x	111	TK_ID	x	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	111	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	x	111	TK_ID	x	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	111	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	111	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	111	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	u	111	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	111	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	111	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	v	111	TK_ID	v	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	111	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	111	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	-	111	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	u	111	TK_ID	u	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	111	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	111	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	111	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	<=	111	TK_LE	<=	relationalOp	YES	TK_LE
+||72|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	v	111	TK_ID	v	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	111	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	111	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	111	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||49|| 						expression_new		NO		expression
+||-5||	EPS	111	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	111	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	112	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	112	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	x	113	TK_ID	x	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	113	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	c	113	TK_ID	c	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	113	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	113	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	113	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	y	113	TK_ID	y	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	113	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	113	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	113	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	113	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	113	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	113	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	114	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	p	114	TK_ID	p	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	EPS	114	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	]	114	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	114	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	114	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	114	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function3	114	TK_ID	function3	moduleReuseStmt	YES	TK_ID
+||-5||	with	114	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	114	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	x	114	TK_ID	x	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	114	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	y	114	TK_ID	y	idL	YES	TK_ID
+||-5||	EPS	114	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	114	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	C	115	TK_ID	C	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	115	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	18	115	TK_NUM	18	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	115	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	115	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	a	115	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	115	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	18	115	TK_NUM	18	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	115	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	115	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	115	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	b	115	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	115	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	18	115	TK_NUM	18	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	115	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	115	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	115	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	115	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	115	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	115	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	A	116	TK_ID	A	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	116	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	5	116	TK_NUM	5	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	116	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	116	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	B	116	TK_ID	B	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	116	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	6	116	TK_NUM	6	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	116	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	116	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	116	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	10	116	TK_NUM	10	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	116	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	116	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	116	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	116	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	116	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	m	117	TK_ID	m	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	117	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	A	117	TK_ID	A	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	117	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	5	117	TK_NUM	5	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	117	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	117	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	117	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	<	117	TK_LT	<	relationalOp	YES	TK_LT
+||71|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	C	117	TK_ID	C	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	117	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	18	117	TK_NUM	18	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	117	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	117	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	+	117	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	A	117	TK_ID	A	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	117	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	11	117	TK_NUM	11	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	117	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	117	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	117	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||49|| 						expression_new		NO		expression
+||-5||	EPS	117	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	117	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	y1	118	TK_ID	y1	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	118	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	20	118	TK_NUM	20	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	118	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	8	118	TK_NUM	8	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	118	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	118	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	5	118	TK_NUM	5	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	118	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	118	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	118	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	118	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	118	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	119	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	119	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	<<	123	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	123	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function3	123	TK_ID	function3	module	YES	TK_ID
+||-5||	>>	123	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	124	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	124	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	124	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	124	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	124	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	real	124	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						input_plist		NO		dataType
+||-5||	,	124	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	124	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	124	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	124	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	EPS	124	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	124	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	124	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	125	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	125	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	c	125	TK_ID	c	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	125	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	real	125	TK_REAL	real	type	YES	TK_REAL
+||86|| 						output_plist		NO		type
+||-5||	EPS	125	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						output_plist		NO		OPL
+||-5||	]	125	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	125	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	126	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	c	127	TK_ID	c	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	127	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	127	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	127	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	127	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	127	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	b	127	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	127	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	127	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	127	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	127	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	127	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	127	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	EPS	128	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	128	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	<<	130	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	130	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function4	130	TK_ID	function4	module	YES	TK_ID
+||-5||	>>	130	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	131	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	131	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	131	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	131	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	131	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	boolean	131	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						input_plist		NO		dataType
+||-5||	,	131	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	131	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	131	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	131	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	EPS	131	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	131	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	131	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	132	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	132	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	c	132	TK_ID	c	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	132	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	boolean	132	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						output_plist		NO		type
+||-5||	EPS	132	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						output_plist		NO		OPL
+||-5||	]	132	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	132	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	133	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	c	134	TK_ID	c	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	134	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	134	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	134	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	134	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	134	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	134	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	AND	134	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	b	134	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	134	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	134	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	134	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	EPS	134	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||-5||	EPS	134	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	134	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	EPS	135	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	135	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	<<	137	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	137	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function3	137	TK_ID	function3	module	YES	TK_ID
+||-5||	>>	137	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	138	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	138	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	138	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	a	138	TK_ID	a	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	138	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	real	138	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						input_plist		NO		dataType
+||-5||	,	138	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	b	138	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	138	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	boolean	138	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						IPL		NO		dataType
+||-5||	,	138	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	e	138	TK_ID	e	IPL	YES	TK_ID
+||-5||	:	138	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	138	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	138	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	138	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	138	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	139	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	139	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	c	139	TK_ID	c	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	139	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	boolean	139	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						output_plist		NO		type
+||-5||	,	139	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	d	139	TK_ID	d	OPL	YES	TK_ID
+||-5||	:	139	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	139	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	139	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	139	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	139	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	140	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	d	141	TK_ID	d	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	141	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	5	141	TK_NUM	5	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	141	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	43	141	TK_NUM	43	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	141	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	141	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	e	141	TK_ID	e	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	141	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	141	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	141	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	141	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	141	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	141	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	c	142	TK_ID	c	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	142	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	142	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	142	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	142	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	142	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	<	142	TK_LT	<	relationalOp	YES	TK_LT
+||71|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	15.50	142	TK_RNUM	15.50	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	142	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	142	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||49|| 						expression_new		NO		expression
+||-5||	AND	142	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	b	142	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	142	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	142	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	142	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	EPS	142	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||-5||	EPS	142	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	142	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	143	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	143	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	EPS	145	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules
+||-5||	<<<	145	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||6|| 						program		NO		driverModule
+||-5||	driver	145	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	145	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	145	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	146	TK_START	start	moduleDef	YES	TK_START
+||8|| 						driverModule		NO		moduleDef
+||-5||	declare	147	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	v_1_2_3	147	TK_ID	v_1_2_3	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	147	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	A	147	TK_ID	A	idL	YES	TK_ID
+||-5||	EPS	147	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	147	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	147	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	147	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	declare	148	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	u1	148	TK_ID	u1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	148	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u2	148	TK_ID	u2	idL	YES	TK_ID
+||-5||	,	148	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	k	148	TK_ID	k	idL	YES	TK_ID
+||-5||	EPS	148	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	148	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	boolean	148	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						declareStmt		NO		dataType
+||-5||	;	148	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	A	149	TK_ID	A	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	149	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	12	149	TK_NUM	12	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	149	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	149	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	149	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	149	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	149	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	150	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	p	150	TK_ID	p	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	150	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	150	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	150	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	150	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	151	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	k	151	TK_ID	k	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	EPS	151	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	]	151	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	151	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	151	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	151	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function4	151	TK_ID	function4	moduleReuseStmt	YES	TK_ID
+||-5||	with	151	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	151	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	u1	151	TK_ID	u1	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	151	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u2	151	TK_ID	u2	idL	YES	TK_ID
+||-5||	EPS	151	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	151	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	p	152	TK_ID	p	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	152	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	23.56	152	TK_RNUM	23.56	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	152	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	152	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	152	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	152	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	152	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	153	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	153	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	v_1_2_3	153	TK_ID	v_1_2_3	ioStmt	YES	TK_ID
+||-5||	)	153	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	153	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	154	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	B	154	TK_ID	B	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	154	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	C	154	TK_ID	C	idL	YES	TK_ID
+||-5||	EPS	154	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	154	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	154	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	154	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	154	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	154	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	20	154	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	154	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	154	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	154	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	154	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	155	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	v_1_2_3	155	TK_ID	v_1_2_3	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	155	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	u1	155	TK_ID	u1	idL	YES	TK_ID
+||-5||	EPS	155	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	155	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	155	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	155	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	155	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	var_demo_array	155	TK_ID	var_demo_array	moduleReuseStmt	YES	TK_ID
+||-5||	with	155	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	155	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	A	155	TK_ID	A	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	155	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	B	155	TK_ID	B	idL	YES	TK_ID
+||-5||	,	155	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	155	TK_ID	p	idL	YES	TK_ID
+||-5||	EPS	155	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	155	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	156	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	v_1_2_3	156	TK_ID	v_1_2_3	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	156	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	k	156	TK_ID	k	idL	YES	TK_ID
+||-5||	EPS	156	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	156	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	156	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	156	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	156	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	var_demo_array	156	TK_ID	var_demo_array	moduleReuseStmt	YES	TK_ID
+||-5||	with	156	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	156	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	A	156	TK_ID	A	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	156	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	B	156	TK_ID	B	idL	YES	TK_ID
+||-5||	,	156	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p	156	TK_ID	p	idL	YES	TK_ID
+||-5||	EPS	156	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	156	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	157	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	a	157	TK_ID	a	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	157	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	b	157	TK_ID	b	idL	YES	TK_ID
+||-5||	EPS	157	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	157	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	157	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	157	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	a	158	TK_ID	a	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	158	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	5.89e-2	158	TK_RNUM	5.89e-2	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	158	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	158	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	158	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	158	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	158	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	159	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	159	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	b	159	TK_ID	b	ioStmt	YES	TK_ID
+||-5||	)	159	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	159	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	160	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	value	160	TK_ID	value	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	160	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	q	160	TK_ID	q	idL	YES	TK_ID
+||-5||	,	160	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	r	160	TK_ID	r	idL	YES	TK_ID
+||-5||	EPS	160	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	160	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	160	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	160	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	161	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	161	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	q	161	TK_ID	q	ioStmt	YES	TK_ID
+||-5||	)	161	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	161	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	r	162	TK_ID	r	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	162	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	23.67e+2	162	TK_RNUM	23.67e+2	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	162	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	162	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	162	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	162	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	162	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	value	163	TK_ID	value	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	163	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	p	163	TK_ID	p	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	163	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	163	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	163	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	q	163	TK_ID	q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	163	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	163	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	r	163	TK_ID	r	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	163	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	163	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	-	163	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	a	163	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	163	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	163	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	value	163	TK_ID	value	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	163	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						aF		NO		factor
+||-5||	EPS	163	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	163	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	163	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	163	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	163	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	k	164	TK_ID	k	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	164	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	true	164	TK_TRUE	true	boolTerm	YES	TK_TRUE
+||53|| 						expression		NO		boolTerm
+||49|| 						expression_new		NO		expression
+||-5||	AND	164	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	false	164	TK_FALSE	false	boolTerm	YES	TK_FALSE
+||54|| 						bT		NO		boolTerm
+||-5||	OR	164	TK_OR	OR	logicalOp	YES	TK_OR
+||70|| 						bT		NO		logicalOp
+||50|| 						bT		NO		bT
+||-5||	q	164	TK_ID	q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	164	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	164	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	164	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	EPS	164	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||-5||	EPS	164	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	164	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	u1	165	TK_ID	u1	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	165	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	165	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	165	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	165	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	165	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	<=	165	TK_LE	<=	relationalOp	YES	TK_LE
+||72|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	b	165	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	165	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	165	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	165	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||49|| 						expression_new		NO		expression
+||-5||	EPS	165	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	165	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	166	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	w	166	TK_ID	w	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	166	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	166	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	166	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	166	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	w	167	TK_ID	w	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	167	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	23	167	TK_NUM	23	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	167	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	167	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	B	167	TK_ID	B	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	167	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	6	167	TK_NUM	6	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	167	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	167	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	167	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	167	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	167	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	167	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	b	168	TK_ID	b	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	168	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	168	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	168	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	*	168	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	25	168	TK_NUM	25	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	168	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	168	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	100	168	TK_NUM	100	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	*	168	TK_MUL	*	mdop	YES	TK_MUL
+||79|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	C	168	TK_ID	C	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	168	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	1	168	TK_NUM	1	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	168	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						aF		NO		factor
+||-5||	EPS	168	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	168	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	168	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	168	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	168	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	169	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	D	169	TK_ID	D	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	169	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	169	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	169	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	169	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	20	169	TK_NUM	20	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	169	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	40	169	TK_NUM	40	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	169	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	169	TK_OF	of	dataType	YES	TK_OF
+||-5||	integer	169	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						dataType		NO		type
+||-5||	;	169	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	D	170	TK_ID	D	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	170	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	value	170	TK_ID	value	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	170	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	170	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	-	170	TK_MINUS	-	pmop	YES	TK_MINUS
+||78|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	q	170	TK_ID	q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	170	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	170	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	+	170	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						aT		NO		aT
+||-5||	r	170	TK_ID	r	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	170	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	170	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	170	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	170	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	170	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	170	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	w	171	TK_ID	w	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	171	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	w	171	TK_ID	w	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	171	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	171	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	171	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	5	171	TK_NUM	5	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	171	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	171	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	171	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	171	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	171	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	B	172	TK_ID	B	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	172	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	C	172	TK_ID	C	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	172	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	172	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	172	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	172	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	172	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	172	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	C	173	TK_ID	C	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	173	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	D	173	TK_ID	D	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	173	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	173	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	173	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	173	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	173	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	173	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	174	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	174	TK_END	end	moduleDef	YES	TK_END
+||-5||	<<	176	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	176	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function1	176	TK_ID	function1	module	YES	TK_ID
+||-5||	>>	176	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	177	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	177	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	177	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	data	177	TK_ID	data	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	177	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	array	177	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						input_plist		NO		dataType
+||-5||	[	177	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	100	177	TK_NUM	100	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	177	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	150	177	TK_NUM	150	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	177	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	177	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	177	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	,	177	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	weight	177	TK_ID	weight	IPL	YES	TK_ID
+||-5||	:	177	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	real	177	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						IPL		NO		dataType
+||-5||	,	177	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	length	177	TK_ID	length	IPL	YES	TK_ID
+||-5||	:	177	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	177	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	,	177	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	b	177	TK_ID	b	IPL	YES	TK_ID
+||-5||	:	177	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	array	177	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						IPL		NO		dataType
+||-5||	[	177	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	35	177	TK_NUM	35	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	177	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	50	177	TK_NUM	50	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	177	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	177	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	177	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	,	177	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						IPL		NO		IPL
+||-5||	q	177	TK_ID	q	IPL	YES	TK_ID
+||-5||	:	177	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	177	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	177	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	177	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	177	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	178	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	178	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	R1	178	TK_ID	R1	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	178	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	real	178	TK_REAL	real	type	YES	TK_REAL
+||86|| 						output_plist		NO		type
+||-5||	,	178	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	R2	178	TK_ID	R2	OPL	YES	TK_ID
+||-5||	:	178	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	178	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	,	178	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						OPL		NO		OPL
+||-5||	R3	178	TK_ID	R3	OPL	YES	TK_ID
+||-5||	:	178	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	boolean	178	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						OPL		NO		type
+||-5||	,	178	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						OPL		NO		OPL
+||-5||	R4	178	TK_ID	R4	OPL	YES	TK_ID
+||-5||	:	178	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	178	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	178	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	178	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	178	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	179	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	declare	180	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	e	180	TK_ID	e	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	180	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	f	180	TK_ID	f	idL	YES	TK_ID
+||-5||	EPS	180	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	180	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	180	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	180	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	declare	181	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	g	181	TK_ID	g	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	,	181	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	h	181	TK_ID	h	idL	YES	TK_ID
+||-5||	EPS	181	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	:	181	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	181	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	181	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	100	181	TK_NUM	100	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	181	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	150	181	TK_NUM	150	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	181	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	181	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	181	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	;	181	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	182	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	182	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	g	182	TK_ID	g	ioStmt	YES	TK_ID
+||-5||	)	182	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	182	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	h	183	TK_ID	h	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	183	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	data	183	TK_ID	data	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	183	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	183	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	183	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	183	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	183	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	183	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	h	184	TK_ID	h	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	[	184	TK_SQBO	[	lvalueARRStmt	YES	TK_SQBO
+||34|| 						whichStmt		NO		lvalueARRStmt
+||-5||	120	184	TK_NUM	120	index_new	YES	TK_NUM
+||93|| 						lvalueARRStmt		NO		index_new
+||-5||	]	184	TK_SQBC	]	lvalueARRStmt	YES	TK_SQBC
+||-5||	:=	184	TK_ASSIGNOP	:=	lvalueARRStmt	YES	TK_ASSIGNOP
+||-5||	g	184	TK_ID	g	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	184	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	120	184	TK_NUM	120	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	184	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	184	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	184	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	184	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	OR	184	TK_OR	OR	logicalOp	YES	TK_OR
+||70|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	length	184	TK_ID	length	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	184	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	184	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	184	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	<=	184	TK_LE	<=	relationalOp	YES	TK_LE
+||72|| 						aE		NO		relationalOp
+||55|| 						boolTerm		NO		aE
+||-5||	q	184	TK_ID	q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	184	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	184	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						aE		NO		arithmeticExpr
+||-5||	EPS	184	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||-5||	AND	184	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						bT		NO		bT
+||-5||	h	184	TK_ID	h	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	[	184	TK_SQBO	[	whichID	YES	TK_SQBO
+||91|| 						var		NO		whichID
+||-5||	140	184	TK_NUM	140	index_new	YES	TK_NUM
+||93|| 						whichID		NO		index_new
+||-5||	]	184	TK_SQBC	]	whichID	YES	TK_SQBC
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	184	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	184	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	EPS	184	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||-5||	EPS	184	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueARRStmt		NO		expression_new
+||-5||	;	184	TK_SEMICOL	;	lvalueARRStmt	YES	TK_SEMICOL
+||32|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	185	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	a	185	TK_ID	a	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	185	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	185	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	real	185	TK_REAL	real	dataType	YES	TK_REAL
+||82|| 						declareStmt		NO		dataType
+||-5||	;	185	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	186	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	p1	186	TK_ID	p1	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	186	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	186	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	boolean	186	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						declareStmt		NO		dataType
+||-5||	;	186	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	R2	187	TK_ID	R2	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	187	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	q	187	TK_ID	q	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	187	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	187	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	187	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	1	187	TK_NUM	1	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	187	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	187	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	187	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	187	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	187	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	get_value	188	TK_GET_VALUE	get_value	ioStmt	YES	TK_GET_VALUE
+||24|| 						statement		NO		ioStmt
+||-5||	(	188	TK_BO	(	ioStmt	YES	TK_BO
+||-5||	a	188	TK_ID	a	ioStmt	YES	TK_ID
+||-5||	)	188	TK_BC	)	ioStmt	YES	TK_BC
+||-5||	;	188	TK_SEMICOL	;	ioStmt	YES	TK_SEMICOL
+||19|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	[	189	TK_SQBO	[	optional	YES	TK_SQBO
+||37|| 						moduleReuseStmt		NO		optional
+||-5||	R1	189	TK_ID	R1	idList	YES	TK_ID
+||99|| 						optional		NO		idList
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	e	189	TK_ID	e	idL	YES	TK_ID
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	p1	189	TK_ID	p1	idL	YES	TK_ID
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	f	189	TK_ID	f	idL	YES	TK_ID
+||-5||	EPS	189	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	]	189	TK_SQBC	]	optional	YES	TK_SQBC
+||-5||	:=	189	TK_ASSIGNOP	:=	optional	YES	TK_ASSIGNOP
+||36|| 						simpleStmt		NO		moduleReuseStmt
+||-5||	use	189	TK_USE	use	moduleReuseStmt	YES	TK_USE
+||-5||	module	189	TK_MODULE	module	moduleReuseStmt	YES	TK_MODULE
+||-5||	function1	189	TK_ID	function1	moduleReuseStmt	YES	TK_ID
+||-5||	with	189	TK_WITH	with	moduleReuseStmt	YES	TK_WITH
+||-5||	parameters	189	TK_PARAMETERS	parameters	moduleReuseStmt	YES	TK_PARAMETERS
+||-5||	g	189	TK_ID	g	idList	YES	TK_ID
+||99|| 						moduleReuseStmt		NO		idList
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idList		NO		idL
+||-5||	a	189	TK_ID	a	idL	YES	TK_ID
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	e	189	TK_ID	e	idL	YES	TK_ID
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	b	189	TK_ID	b	idL	YES	TK_ID
+||-5||	,	189	TK_COMMA	,	idL	YES	TK_COMMA
+||100|| 						idL		NO		idL
+||-5||	f	189	TK_ID	f	idL	YES	TK_ID
+||-5||	EPS	189	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idL		NO		idL
+||-5||	;	189	TK_SEMICOL	;	moduleReuseStmt	YES	TK_SEMICOL
+||35|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	R1	190	TK_ID	R1	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	190	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	a	190	TK_ID	a	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	190	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	190	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	190	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	weight	190	TK_ID	weight	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	190	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	/	190	TK_DIV	/	mdop	YES	TK_DIV
+||80|| 						aF		NO		mdop
+||61|| 						term		NO		aF
+||-5||	20.50	190	TK_RNUM	20.50	var	YES	TK_RNUM
+||90|| 						factor		NO		var
+||68|| 						aF		NO		factor
+||-5||	EPS	190	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						aF		NO		aF
+||-5||	EPS	190	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	190	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	190	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	190	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	R4	191	TK_ID	R4	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	191	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	f	191	TK_ID	f	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	191	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	191	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	191	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	100	191	TK_NUM	100	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	191	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	191	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	191	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	191	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	191	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	192	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	192	TK_END	end	moduleDef	YES	TK_END
+||4|| 						program		NO		otherModules
+||-5||	<<	194	TK_DEF	<<	module	YES	TK_DEF
+||7|| 						otherModules		NO		module
+||-5||	module	194	TK_MODULE	module	module	YES	TK_MODULE
+||-5||	function1	194	TK_ID	function1	module	YES	TK_ID
+||-5||	>>	194	TK_ENDDEF	>>	module	YES	TK_ENDDEF
+||-5||	takes	195	TK_TAKES	takes	module	YES	TK_TAKES
+||-5||	input	195	TK_INPUT	input	module	YES	TK_INPUT
+||-5||	[	195	TK_SQBO	[	module	YES	TK_SQBO
+||-5||	b	195	TK_ID	b	input_plist	YES	TK_ID
+||11|| 						module		NO		input_plist
+||-5||	:	195	TK_COLON	:	input_plist	YES	TK_COLON
+||-5||	boolean	195	TK_BOOLEAN	boolean	dataType	YES	TK_BOOLEAN
+||83|| 						input_plist		NO		dataType
+||-5||	,	195	TK_COMMA	,	IPL	YES	TK_COMMA
+||12|| 						input_plist		NO		IPL
+||-5||	e	195	TK_ID	e	IPL	YES	TK_ID
+||-5||	:	195	TK_COLON	:	IPL	YES	TK_COLON
+||-5||	integer	195	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						IPL		NO		dataType
+||-5||	EPS	195	TK_EPS	EPS	IPL	YES	TK_EPS
+||13|| 						IPL		NO		IPL
+||-5||	]	195	TK_SQBC	]	module	YES	TK_SQBC
+||-5||	;	195	TK_SEMICOL	;	module	YES	TK_SEMICOL
+||-5||	returns	196	TK_RETURNS	returns	ret	YES	TK_RETURNS
+||9|| 						module		NO		ret
+||-5||	[	196	TK_SQBO	[	ret	YES	TK_SQBO
+||-5||	c	196	TK_ID	c	output_plist	YES	TK_ID
+||14|| 						ret		NO		output_plist
+||-5||	:	196	TK_COLON	:	output_plist	YES	TK_COLON
+||-5||	boolean	196	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						output_plist		NO		type
+||-5||	,	196	TK_COMMA	,	OPL	YES	TK_COMMA
+||15|| 						output_plist		NO		OPL
+||-5||	d	196	TK_ID	d	OPL	YES	TK_ID
+||-5||	:	196	TK_COLON	:	OPL	YES	TK_COLON
+||-5||	integer	196	TK_INTEGER	integer	type	YES	TK_INTEGER
+||85|| 						OPL		NO		type
+||-5||	EPS	196	TK_EPS	EPS	OPL	YES	TK_EPS
+||16|| 						OPL		NO		OPL
+||-5||	]	196	TK_SQBC	]	ret	YES	TK_SQBC
+||-5||	;	196	TK_SEMICOL	;	ret	YES	TK_SEMICOL
+||-5||	start	197	TK_START	start	moduleDef	YES	TK_START
+||8|| 						module		NO		moduleDef
+||-5||	d	198	TK_ID	d	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	198	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	e	198	TK_ID	e	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	198	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	198	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	+	198	TK_PLUS	+	pmop	YES	TK_PLUS
+||77|| 						aT		NO		pmop
+||58|| 						arithmeticExpr		NO		aT
+||-5||	15	198	TK_NUM	15	var	YES	TK_NUM
+||89|| 						factor		NO		var
+||68|| 						term		NO		factor
+||60|| 						aT		NO		term
+||-5||	EPS	198	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||-5||	EPS	198	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						aT		NO		aT
+||52|| 						expression		NO		boolTerm
+||-5||	EPS	198	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||49|| 						expression_new		NO		expression
+||-5||	EPS	198	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	198	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						moduleDef		NO		statements
+||-5||	c	199	TK_ID	c	assignmentStmt	YES	TK_ID
+||30|| 						simpleStmt		NO		assignmentStmt
+||-5||	:=	199	TK_ASSIGNOP	:=	lvalueIDStmt	YES	TK_ASSIGNOP
+||33|| 						whichStmt		NO		lvalueIDStmt
+||-5||	true	199	TK_TRUE	true	boolTerm	YES	TK_TRUE
+||53|| 						expression		NO		boolTerm
+||49|| 						expression_new		NO		expression
+||-5||	AND	199	TK_AND	AND	logicalOp	YES	TK_AND
+||69|| 						bT		NO		logicalOp
+||50|| 						expression		NO		bT
+||-5||	b	199	TK_ID	b	var	YES	TK_ID
+||88|| 						factor		NO		var
+||-5||	EPS	199	TK_EPS	EPS	whichID	YES	TK_EPS
+||92|| 						var		NO		whichID
+||68|| 						term		NO		factor
+||60|| 						arithmeticExpr		NO		term
+||-5||	EPS	199	TK_EPS	EPS	aF	YES	TK_EPS
+||62|| 						term		NO		aF
+||57|| 						boolTerm		NO		arithmeticExpr
+||-5||	EPS	199	TK_EPS	EPS	aT	YES	TK_EPS
+||59|| 						arithmeticExpr		NO		aT
+||52|| 						bT		NO		boolTerm
+||-5||	EPS	199	TK_EPS	EPS	aE	YES	TK_EPS
+||56|| 						boolTerm		NO		aE
+||-5||	EPS	199	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						bT		NO		bT
+||47|| 						lvalueIDStmt		NO		expression_new
+||-5||	;	199	TK_SEMICOL	;	lvalueIDStmt	YES	TK_SEMICOL
+||31|| 						assignmentStmt		NO		whichStmt
+||29|| 						statement		NO		simpleStmt
+||20|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	200	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	200	TK_END	end	moduleDef	YES	TK_END
+||4|| 						otherModules		NO		otherModules
+||-5||	EPS	201	TK_EPS	EPS	otherModules	YES	TK_EPS
+||5|| 						otherModules		NO		otherModules

@@ -1183,16 +1183,12 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 					currentASTNode = currentASTNode->next ;
 					continue ;
 				}
-
 				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
-
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
 					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
 					printModuleST ( moduleToInsert ) ;	
 				}
-
-
 				currentASTNode = currentASTNode->next ;
 			}
 

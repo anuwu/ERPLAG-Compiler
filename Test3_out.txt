@@ -52,7 +52,7 @@
 ||-5||	switch	7	TK_SWITCH	switch	conditionalStmt	YES	TK_SWITCH
 ||42|| 						statement		NO		conditionalStmt
 ||-5||	(	7	TK_BO	(	conditionalStmt	YES	TK_BO
-||-5||	b	7	TK_ID	b	conditionalStmt	YES	TK_ID
+||-5||	r	7	TK_ID	r	conditionalStmt	YES	TK_ID
 ||-5||	)	7	TK_BC	)	conditionalStmt	YES	TK_BC
 ||-5||	start	8	TK_START	start	conditionalStmt	YES	TK_START
 ||-5||	case	9	TK_CASE	case	conditionalStmt	YES	TK_CASE
