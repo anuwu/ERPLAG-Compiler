@@ -34,24 +34,20 @@ typedef struct _token
 	int lineNumber ;
 } token ;
 */
+
+struct _moduleST ;
+typedef struct _moduleST moduleST ;
+
+
 typedef struct _astNode 
 {
 	tokenID id ;
 	token *tok ;
 
-	/*
-	if id == NT
-		tok = NULL
-	else id == T
-		tok holds tokn info
-			id, lexeme, linenumber
-	
-	datTag random
-	datType NULL
-	*/
-
 	datTag dtTag ;
 	datType *dt ;
+
+	moduleST *localST ;
 
 	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;

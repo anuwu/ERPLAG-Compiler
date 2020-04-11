@@ -759,6 +759,17 @@ char *getParentModule (baseST* realBase, moduleST *scope)
 		return getParentModule (realBase, scope->parent) ;
 }
 
+char *typeIDToString (tokenID id)
+{
+	switch (id)
+	{
+		case TK_INTEGER :
+			return "integer" ;
+		case TK_BOOLEAN :
+			return "boolean" ;
+	}
+}
+
 
 moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
 {
@@ -825,6 +836,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 		}
 		else if ( statementAST->child->id == TK_WHILE ) {
+			// TODO type checking
 
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
 			tmp = fillModuleST ( realBase , tmp , statementAST->child->next->next->child ) ;
@@ -834,7 +846,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 		}
 		else if ( statementAST->child->id == TK_FOR ) {
-			//for stmt
 
 			varST *searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
@@ -893,6 +904,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 		}
 		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) {
+			// TODO typechecking
 
 			if (searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) == NULL)
 				printf (" ERROR : In \"%s\" line %d, \"%s\" variable undeclared\n",  getParentModule(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
@@ -942,6 +954,66 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			}
 			// else error messages is printed in internal functions
 		}
+		else if (statementAST->child->id == TK_SWITCH)
+		{
+			int switchTypeError = 0 ;
+
+			varST *searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
+			if (searchedVar == NULL)
+			{
+				printf ("ERROR : In \"%s\" line %d, \"%s\" switch variable undeclared\n",  getParentModule(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+				realBase->semanticError = 1 ;
+			}
+			else
+			{
+				if (!(searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN))
+				{
+					printf ("ERROR : In \"%s\" line %d, \"%s\" switch variable must be integer or boolean\n",  getParentModule(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+					realBase->semanticError = 1 ;
+					switchTypeError = 1 ;
+				}
+			}
+
+			moduleST *switchST = createScopeST (baseModule, SWITCH_ST) ;
+			astNode *caseAstNode = statementAST->child->next->next ;
+
+			while (caseAstNode != NULL)
+			{
+				if (!switchTypeError && caseAstNode->id != TK_DEFAULT)
+				{
+					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE))|| (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
+					{
+						printf ("ERROR : In \"%s\" line %d, switch variable has type %s and case value has type %s\n", getParentModule(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
+						realBase->semanticError = 1 ;
+					}
+				}
+				
+				if (caseAstNode->id != TK_DEFAULT)
+					fillModuleST (realBase, switchST, caseAstNode->next->next->child) ;
+				else
+				{
+					if (searchedVar->datatype == TK_BOOLEAN)
+					{
+						printf ("ERROR : In \"%s\" line %d, switch variable is boolean, default case is not allowed\n", getParentModule(realBase, baseModule), caseAstNode->tok->lineNumber) ;
+						realBase->semanticError = 1 ;
+					}
+
+					fillModuleST (realBase, switchST, caseAstNode->next->child) ;
+				}
+
+				if (caseAstNode->id != TK_DEFAULT)
+					caseAstNode = caseAstNode->next->next->next ;
+				else
+					caseAstNode = caseAstNode->next->next ;
+			}
+
+			//printf ("Done with loop\n") ;
+
+			insertScopeST (baseModule , switchST) ;
+			printModuleST (switchST) ;
+		}
+
+
 
 		statementAST = statementAST->next ;
 	}
@@ -1126,7 +1198,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 		if (otherMODS->next != NULL)
 		{
-			//printf ("OM1 done\n") ;
+			
 			otherMODS = otherMODS->next->next ;
 		}
 	}

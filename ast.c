@@ -30,6 +30,7 @@ astNode* createASTNode (treeNode *PTNode)
  	node->next = NULL ;
  	node->prev = NULL ;
  	node->dt = NULL ;
+ 	node->localST = NULL ;
 
  	PTNode->syn = node ;
 
@@ -1358,15 +1359,15 @@ astNode* applyASTRule (treeNode *PTNode)
 
 			break ;
 
-		case 95:								// value NUM
+		case 95:								// <value> --> NUM
 			PTNode->syn = createASTNode(PTNode->child);
 			break;
 
-		case 96:								// value TRUE
+		case 96:								// <value> --> TRUE
 			PTNode->syn = createASTNode(PTNode->child);
 			break;	
 
-		case 97:								// value FLASE
+		case 97:								// <value> --> FLASE
 			PTNode->syn = createASTNode(PTNode->child);
 			break;		
 
