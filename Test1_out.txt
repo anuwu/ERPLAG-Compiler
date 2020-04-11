@@ -154,11 +154,11 @@
 ||-5||	array	16	TK_ARRAY	array	dataType	YES	TK_ARRAY
 ||84|| 						declareStmt		NO		dataType
 ||-5||	[	16	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	2	16	TK_NUM	2	index_new	YES	TK_NUM
-||93|| 						range		NO		index_new
+||-5||	god	16	TK_ID	god	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
 ||98|| 						dataType		NO		range
 ||-5||	..	16	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	lol	16	TK_ID	lol	index_new	YES	TK_ID
+||-5||	aa	16	TK_ID	aa	index_new	YES	TK_ID
 ||94|| 						range		NO		index_new
 ||-5||	]	16	TK_SQBC	]	dataType	YES	TK_SQBC
 ||-5||	of	16	TK_OF	of	dataType	YES	TK_OF

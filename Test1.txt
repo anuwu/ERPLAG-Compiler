@@ -13,7 +13,7 @@ start
 		while (false)
 		start
 			declare lol : integer ;
-			declare test : array[2..lol] of boolean ;
+			declare test : array[god..aa] of boolean ;
 		end
 		declare lol:integer ;
 	end

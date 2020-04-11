@@ -606,19 +606,6 @@ int getSize(baseST * realBase, varST * thisVar) {
 			left = atoi(thisVar->arrayIndices->startingPos) ;
 			right = atoi(thisVar->arrayIndices->endingPos) ;
 
-			if (left < 0)
-			{
-				indexErrorFlag = 1 ;
-				printf ("ERROR : In %s, Left index of %s variable %s is negative!\n", parentModule, (thisVar->varType == VAR_LOCAL)?"local":"input" , thisVar->lexeme) ;
-			}
-			if (right < 0)
-			{
-				indexErrorFlag = 1 ;
-				printf ("ERROR : In %s, Right index of %s variable %s is negative!\n", parentModule, (thisVar->varType == VAR_LOCAL)?"local":"input" , thisVar->lexeme) ;
-			}
-
-			if (indexErrorFlag)
-				return -1 ;
 
 			if (thisVar->arrayIndices->dataType == TK_INTEGER)
 				sz = 2 ;
@@ -631,7 +618,7 @@ int getSize(baseST * realBase, varST * thisVar) {
 
 			if (sz < 0)
 			{
-				printf ("ERROR : In %s, Left index of %s must be <= right index", parentModule, thisVar->lexeme) ;
+				printf ("ERROR : In %s, Left index of \"%s\" must be <= right index", parentModule, thisVar->lexeme) ;
 				return -1 ;
 			}
 			else
@@ -644,52 +631,36 @@ int getSize(baseST * realBase, varST * thisVar) {
 			{
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
 				{
-					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
 				{
-					printf ("ERROR : In %s, Right index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
+
+				if (indexErrorFlag)
+					return -1 ;
 			}
 			else if (!isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
 			{
 				// Left dynamic, right static
-
-				right = atoi(thisVar->arrayIndices->endingPos) ;
-
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
 				{
-					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
-					indexErrorFlag = 1 ;
-				}
-				if (right < 0)
-				{
-					printf ("ERROR : In %s, Right index of local variable %s is negative\n", parentModule, thisVar->lexeme) ;
-					indexErrorFlag = 1 ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					return -1 ;
 				}
 			}
 			else
 			{
 				// left static, right dynamic
-
-				left = atoi(thisVar->arrayIndices->startingPos) ;
-
-				if (left < 0)
-				{
-					printf ("ERROR : In %s, Left index of local variable %s is negative\n", parentModule, thisVar->lexeme) ;
-					indexErrorFlag = 1 ;
-				}
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
 				{
-					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
-					indexErrorFlag = 1 ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					return -1 ;
 				}
 			}
-
-			if (indexErrorFlag)
-				return -1 ;
 
 			return 0 ;	// correct dynamic array
 		}
