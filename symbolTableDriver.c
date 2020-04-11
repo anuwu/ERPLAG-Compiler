@@ -17,12 +17,15 @@ int main(int argc, char *argv[])
 	treeNode *root = parseTree (argv[1]) ;
 	astNode *astRoot = applyASTRule (root) ; 
 
-	if (argc == 4 && (strcmp(argv[2], "printAST") == 0))
-		inorderAST (astRoot, 0) ;
-	else
+	if (argc == 4)
 	{
-		printf ("Incorrect command!\n") ;
-		exit (0) ;
+		if (strcmp(argv[2], "printAST") == 0)
+			inorderAST (astRoot, 0) ;
+		else
+		{
+			printf ("Incorrect command!\n") ;
+			exit (0) ;
+		}
 	}
 
 	printf ("*********************************************************\n") ;
