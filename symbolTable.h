@@ -11,7 +11,7 @@
 
 
 enum _stType {
-	DRIVER_ST , MODULE_ST , SCOPE_ST , MODULE_REDEC_ST
+	DRIVER_ST , MODULE_ST , FOR_ST, WHILE_ST , SWITCH_ST,  MODULE_REDEC_ST
 } ;
 
 // structures
@@ -99,11 +99,11 @@ baseST * createBaseST () ;
 
 moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) ;
 moduleST * createDriverST ( baseST * parent ) ;
-moduleST * createScopeST ( moduleST * parent ) ;
+moduleST * createScopeST ( moduleST * parent , stType scopeType ) ;
 
 
 varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) ;
-
+char* varTypeToString (variableType varType) ;
 
 baseST * insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
 baseST * insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;

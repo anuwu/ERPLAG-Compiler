@@ -2,7 +2,7 @@ declare module A ;
 declare module B ;
 
 <<module Bollocks>>
-takes input [b:boolean, c:real, a:array[0..5] of integer] ;
+takes input [b:boolean, c:real, a:array[5..3] of integer] ;
 returns [cc:real, bb:boolean, aa:integer] ;
 start
 	declare a, b, c, test :integer ;
@@ -12,8 +12,10 @@ start
 		declare test:real ;
 		while (false)
 		start
+			declare cc:boolean ;
 			declare lol : integer ;
 			declare test : array[god..aa] of boolean ;
+			declare lol:real ;
 		end
 		declare lol:integer ;
 	end
