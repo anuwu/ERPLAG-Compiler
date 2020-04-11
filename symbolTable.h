@@ -139,6 +139,7 @@ int isValidCall ( baseST * base ,moduleST* thisModule , astNode * funcIDNode , i
 varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
 
-int getSize( varST * thisVar ) ;
+int getSize(baseST * realBase, varST * thisVar) ;
+char *getParentModule (baseST* realBase, moduleST *scope) ;
 
 #endif

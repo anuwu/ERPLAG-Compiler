@@ -10,6 +10,12 @@ start
 	while (true)
 	start
 		declare test:real ;
+		while (false)
+		start
+			declare lol : integer ;
+			declare test : array[2..lol] of boolean ;
+		end
+		declare lol:integer ;
 	end
 
 	declare lord:array[0..5] of real ;

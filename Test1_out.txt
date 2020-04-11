@@ -122,49 +122,111 @@
 ||-5||	;	12	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
 ||22|| 						statements		NO		statement
 ||17|| 						iterativeStmt		NO		statements
-||-5||	EPS	13	TK_EPS	EPS	statements	YES	TK_EPS
-||18|| 						statements		NO		statements
-||-5||	end	13	TK_END	end	iterativeStmt	YES	TK_END
-||23|| 						statements		NO		statement
-||17|| 						statements		NO		statements
+||-5||	while	13	TK_WHILE	while	iterativeStmt	YES	TK_WHILE
+||41|| 						statement		NO		iterativeStmt
+||-5||	(	13	TK_BO	(	iterativeStmt	YES	TK_BO
+||-5||	false	13	TK_FALSE	false	boolTerm	YES	TK_FALSE
+||54|| 						expression		NO		boolTerm
+||49|| 						iterativeStmt		NO		expression
+||-5||	EPS	13	TK_EPS	EPS	bT	YES	TK_EPS
+||51|| 						expression		NO		bT
+||-5||	)	13	TK_BC	)	iterativeStmt	YES	TK_BC
+||-5||	start	14	TK_START	start	iterativeStmt	YES	TK_START
 ||-5||	declare	15	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
 ||39|| 						statement		NO		declareStmt
-||-5||	lord	15	TK_ID	lord	idList	YES	TK_ID
+||-5||	lol	15	TK_ID	lol	idList	YES	TK_ID
 ||99|| 						declareStmt		NO		idList
 ||-5||	EPS	15	TK_EPS	EPS	idL	YES	TK_EPS
 ||101|| 						idList		NO		idL
 ||-5||	:	15	TK_COLON	:	declareStmt	YES	TK_COLON
-||-5||	array	15	TK_ARRAY	array	dataType	YES	TK_ARRAY
-||84|| 						declareStmt		NO		dataType
-||-5||	[	15	TK_SQBO	[	dataType	YES	TK_SQBO
-||-5||	0	15	TK_NUM	0	index_new	YES	TK_NUM
-||93|| 						range		NO		index_new
-||98|| 						dataType		NO		range
-||-5||	..	15	TK_RANGEOP	..	range	YES	TK_RANGEOP
-||-5||	5	15	TK_NUM	5	index_new	YES	TK_NUM
-||93|| 						range		NO		index_new
-||-5||	]	15	TK_SQBC	]	dataType	YES	TK_SQBC
-||-5||	of	15	TK_OF	of	dataType	YES	TK_OF
-||-5||	real	15	TK_REAL	real	type	YES	TK_REAL
-||86|| 						dataType		NO		type
+||-5||	integer	15	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
 ||-5||	;	15	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
 ||22|| 						statements		NO		statement
+||17|| 						iterativeStmt		NO		statements
+||-5||	declare	16	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	test	16	TK_ID	test	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	16	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	16	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	16	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	16	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	2	16	TK_NUM	2	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	16	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	lol	16	TK_ID	lol	index_new	YES	TK_ID
+||94|| 						range		NO		index_new
+||-5||	]	16	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	16	TK_OF	of	dataType	YES	TK_OF
+||-5||	boolean	16	TK_BOOLEAN	boolean	type	YES	TK_BOOLEAN
+||87|| 						dataType		NO		type
+||-5||	;	16	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
 ||17|| 						statements		NO		statements
-||-5||	EPS	16	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	17	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						statements		NO		statements
-||-5||	end	16	TK_END	end	moduleDef	YES	TK_END
+||-5||	end	17	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	18	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	lol	18	TK_ID	lol	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	18	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	18	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	integer	18	TK_INTEGER	integer	dataType	YES	TK_INTEGER
+||81|| 						declareStmt		NO		dataType
+||-5||	;	18	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	19	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	19	TK_END	end	iterativeStmt	YES	TK_END
+||23|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	declare	21	TK_DECLARE	declare	declareStmt	YES	TK_DECLARE
+||39|| 						statement		NO		declareStmt
+||-5||	lord	21	TK_ID	lord	idList	YES	TK_ID
+||99|| 						declareStmt		NO		idList
+||-5||	EPS	21	TK_EPS	EPS	idL	YES	TK_EPS
+||101|| 						idList		NO		idL
+||-5||	:	21	TK_COLON	:	declareStmt	YES	TK_COLON
+||-5||	array	21	TK_ARRAY	array	dataType	YES	TK_ARRAY
+||84|| 						declareStmt		NO		dataType
+||-5||	[	21	TK_SQBO	[	dataType	YES	TK_SQBO
+||-5||	0	21	TK_NUM	0	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||98|| 						dataType		NO		range
+||-5||	..	21	TK_RANGEOP	..	range	YES	TK_RANGEOP
+||-5||	5	21	TK_NUM	5	index_new	YES	TK_NUM
+||93|| 						range		NO		index_new
+||-5||	]	21	TK_SQBC	]	dataType	YES	TK_SQBC
+||-5||	of	21	TK_OF	of	dataType	YES	TK_OF
+||-5||	real	21	TK_REAL	real	type	YES	TK_REAL
+||86|| 						dataType		NO		type
+||-5||	;	21	TK_SEMICOL	;	declareStmt	YES	TK_SEMICOL
+||22|| 						statements		NO		statement
+||17|| 						statements		NO		statements
+||-5||	EPS	22	TK_EPS	EPS	statements	YES	TK_EPS
+||18|| 						statements		NO		statements
+||-5||	end	22	TK_END	end	moduleDef	YES	TK_END
 ||4|| 						program		NO		otherModules
-||-5||	EPS	19	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	EPS	25	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						otherModules		NO		otherModules
-||-5||	<<<	19	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
+||-5||	<<<	25	TK_DRIVERDEF	<<<	driverModule	YES	TK_DRIVERDEF
 ||6|| 						program		NO		driverModule
-||-5||	driver	19	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
-||-5||	program	19	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
-||-5||	>>>	19	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
-||-5||	start	20	TK_START	start	moduleDef	YES	TK_START
+||-5||	driver	25	TK_DRIVER	driver	driverModule	YES	TK_DRIVER
+||-5||	program	25	TK_PROGRAM	program	driverModule	YES	TK_PROGRAM
+||-5||	>>>	25	TK_DRIVERENDDEF	>>>	driverModule	YES	TK_DRIVERENDDEF
+||-5||	start	26	TK_START	start	moduleDef	YES	TK_START
 ||8|| 						driverModule		NO		moduleDef
-||-5||	EPS	21	TK_EPS	EPS	statements	YES	TK_EPS
+||-5||	EPS	27	TK_EPS	EPS	statements	YES	TK_EPS
 ||18|| 						moduleDef		NO		statements
-||-5||	end	21	TK_END	end	moduleDef	YES	TK_END
-||-5||	EPS	22	TK_EPS	EPS	otherModules	YES	TK_EPS
+||-5||	end	27	TK_END	end	moduleDef	YES	TK_END
+||-5||	EPS	28	TK_EPS	EPS	otherModules	YES	TK_EPS
 ||5|| 						program		NO		otherModules

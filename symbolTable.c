@@ -586,7 +586,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 	
 }
 
-int getSize( varST * thisVar ) {
+int getSize(baseST * realBase, varST * thisVar) {
 
 	if(thisVar->datatype== TK_INTEGER )
 		return 2 ;
@@ -596,9 +596,30 @@ int getSize( varST * thisVar ) {
 		return 4 ;
 	else if (thisVar->datatype == TK_ARRAY ) 
 	{
+		int left, right, indexErrorFlag = 0 ;
+		char *parentModule = getParentModule (realBase , (moduleST *)thisVar->scope) ;
+
 		if (isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
 		{
 			int sz ;
+
+			left = atoi(thisVar->arrayIndices->startingPos) ;
+			right = atoi(thisVar->arrayIndices->endingPos) ;
+
+			if (left < 0)
+			{
+				indexErrorFlag = 1 ;
+				printf ("ERROR : In %s, Left index of %s variable %s is negative!\n", parentModule, (thisVar->varType == VAR_LOCAL)?"local":"input" , thisVar->lexeme) ;
+			}
+			if (right < 0)
+			{
+				indexErrorFlag = 1 ;
+				printf ("ERROR : In %s, Right index of %s variable %s is negative!\n", parentModule, (thisVar->varType == VAR_LOCAL)?"local":"input" , thisVar->lexeme) ;
+			}
+
+			if (indexErrorFlag)
+				return -1 ;
+
 			if (thisVar->arrayIndices->dataType == TK_INTEGER)
 				sz = 2 ;
 			else if (thisVar->arrayIndices->dataType == TK_BOOLEAN)
@@ -606,16 +627,75 @@ int getSize( varST * thisVar ) {
 			else if (thisVar->arrayIndices->dataType == TK_REAL)
 				sz = 4 ;
 
+			sz *= (right - left + 1) ;
 
-			return  sz * (atoi(thisVar->arrayIndices->endingPos) - atoi(thisVar->arrayIndices->startingPos) + 1) ;
+			if (sz < 0)
+			{
+				printf ("ERROR : In %s, Left index of %s must be <= right index", parentModule, thisVar->lexeme) ;
+				return -1 ;
+			}
+			else
+				return sz  ;
 		}
 		else
 		{
-			return -1 ;
+			// dynamic array index checks
+			if (!isdigit (thisVar->arrayIndices->startingPos[0]) && !isdigit (thisVar->arrayIndices->endingPos[0]))
+			{
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
+				{
+					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
+				{
+					printf ("ERROR : In %s, Right index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+			}
+			else if (!isdigit (thisVar->arrayIndices->startingPos[0]) && isdigit (thisVar->arrayIndices->endingPos[0]))
+			{
+				// Left dynamic, right static
+
+				right = atoi(thisVar->arrayIndices->endingPos) ;
+
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
+				{
+					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+				if (right < 0)
+				{
+					printf ("ERROR : In %s, Right index of local variable %s is negative\n", parentModule, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+			}
+			else
+			{
+				// left static, right dynamic
+
+				left = atoi(thisVar->arrayIndices->startingPos) ;
+
+				if (left < 0)
+				{
+					printf ("ERROR : In %s, Left index of local variable %s is negative\n", parentModule, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
+				{
+					printf ("ERROR : In %s, Left index %s of local variable %s is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+			}
+
+			if (indexErrorFlag)
+				return -1 ;
+
+			return 0 ;	// correct dynamic array
 		}
 	}
 	else {
-		return 0 ;
+		return -1 ;		// Error code
 	}
 }
 
@@ -650,22 +730,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 				if (searchedVar == NULL)
 					;
-					//printf ("IT IS NULL\n") ;
 
-				/*
-				if ( searchlocalVarInCurrentModule(baseModule,idAST->tok->lexeme) != NULL || (baseModule->tableType == MODULE_ST &&searchOutputVarInCurrentModule(baseModule, idAST->tok->lexeme) != NULL) ){
-					printf ( "ERROR  %s : %s Local/Output variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
-				}
-				*/
-				/*
-				if (searchedVar != NULL && searchedVar->scope == baseModule && (searchedVar->varType == VAR_LOCAL || searchedVar->varType == VAR_OUTPUT))
-				{
-					if (searchedVar->varType == VAR_LOCAL)
-						printf ( "ERROR  %s : %s Local variable already declared\n", baseModule->lexeme, idAST->tok->lexeme) ;
-					else
-						printf ( "ERROR  %s : %s Output variable already exists\n", baseModule->lexeme, idAST->tok->lexeme) ;
-				}
-				*/
 				if (searchedVar != NULL && searchedVar->varType == VAR_OUTPUT)
 				{
 					printf ( "ERROR in %s : %s Output variable already exists\n", getParentModule (realBase, baseModule) ,idAST->tok->lexeme) ;
@@ -696,9 +761,9 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					}
 
 					// filling offset
-					getOffsetSize = getSize(tmp) ;
+					getOffsetSize = getSize(realBase, tmp) ;
 
-					if (getOffsetSize == -1)
+					if (getOffsetSize == 0)
 						tmp->offset = -1 ;		// Offset of -1 will denote a dynamic array
 					else if (getOffsetSize > 0)
 					{
@@ -709,6 +774,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 					{
 						// This will probably never come here.
 						printf ("ERROR : getSize() method\n") ;
+						tmp->offset = -2 ;		// invalid dynamic array declaration
 					}
 					baseModule = insertLocalVarST(baseModule , tmp) ;
 				}
@@ -885,7 +951,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 							// Setting and increasing offset
 							tmp->offset = moduleToInsert->currOffset ;
-							moduleToInsert->currOffset += getSize (tmp) ;
+							moduleToInsert->currOffset += getSize (base , tmp) ;
 
 						}
 						else{
@@ -896,7 +962,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
 							tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
 
-							int arrSize = getSize (tmp) ;
+							int arrSize = getSize (base, tmp) ;
 							if (arrSize <= 0)
 								printf ("ERROR : Left index needs to be <= right index\n") ;
 							
@@ -924,7 +990,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 						moduleToInsert = insertOutputVarST ( moduleToInsert , tmp ) ;
 
 						tmp->offset = moduleToInsert->currOffset ;
-						moduleToInsert->currOffset += getSize (tmp) ;
+						moduleToInsert->currOffset += getSize (base, tmp) ;
 					}
 					
 					oplAST = oplAST->next ;
