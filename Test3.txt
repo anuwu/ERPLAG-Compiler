@@ -1,10 +1,23 @@
+declare module printArray ;
+
+<<module printArray>>
+takes input [a:array[0..10] of integer] ;
+start
+	declare i:integer ;
+	for (i in 0 .. 10)
+	start
+		print (a[i]) ;
+	end
+end
+
+
 <<<driver program>>>
 start
 	declare i,j:integer ;
 	declare r:real ;
 	declare b:boolean ;
 
-	switch (r)
+	switch (i)
 	start
 		case true :
 			declare abc:integer ;
@@ -12,9 +25,6 @@ start
 
 		case false :
 			declare bcd:real ;
-			break ;
-
-		default :
 			break ;
 	end
 end

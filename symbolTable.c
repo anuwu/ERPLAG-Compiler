@@ -770,6 +770,21 @@ char *typeIDToString (tokenID id)
 	}
 }
 
+int caseValRepeat (astNode *caseAstNode)
+{
+	char *searchLex = caseAstNode->next->tok->lexeme ;
+
+	caseAstNode = caseAstNode->prev->prev->prev ;
+	while (caseAstNode)
+	{
+		if (strcmp(searchLex , caseAstNode->next->tok->lexeme) == 0)
+			return 1 ;
+		caseAstNode = caseAstNode->prev->prev->prev ;
+	}
+
+	return 0 ;
+}
+
 
 moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementAST ) 
 {
@@ -843,7 +858,6 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 			printModuleST ( tmp ) ;
 
 			tmp = insertScopeST ( baseModule , tmp ) ;
-
 		}
 		else if ( statementAST->child->id == TK_FOR ) {
 
@@ -878,7 +892,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				loopVar->offset = searchedVar->offset ;
 
 			insertLocalVarST (forScope, loopVar) ;
-			fillModuleST (realBase, forScope, loopLim->next->next->child) ;
+			forScope = fillModuleST (realBase, forScope, loopLim->next->next->child) ;
 
 			printModuleST (forScope) ;
 			insertScopeST (baseModule , forScope) ;
@@ -979,6 +993,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 
 			while (caseAstNode != NULL)
 			{
+				// case value mismatch
 				if (!switchTypeError && caseAstNode->id != TK_DEFAULT)
 				{
 					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE))|| (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
@@ -989,7 +1004,15 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				}
 				
 				if (caseAstNode->id != TK_DEFAULT)
+				{
+					if (caseValRepeat (caseAstNode))
+					{
+						printf ("ERROR : In \"%s\" line %d, case value is repeating\n", getParentModule(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
+						realBase->semanticError = 1 ;
+					}
+
 					fillModuleST (realBase, switchST, caseAstNode->next->next->child) ;
+				}
 				else
 				{
 					if (searchedVar->datatype == TK_BOOLEAN)
@@ -1002,14 +1025,16 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 				}
 
 				if (caseAstNode->id != TK_DEFAULT)
+				{
 					caseAstNode = caseAstNode->next->next->next ;
+				}
 				else
 					caseAstNode = caseAstNode->next->next ;
 			}
 
 			//printf ("Done with loop\n") ;
 
-			insertScopeST (baseModule , switchST) ;
+			switchST = insertScopeST (baseModule , switchST) ;
 			printModuleST (switchST) ;
 		}
 
@@ -1018,6 +1043,7 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 		statementAST = statementAST->next ;
 	}
 	
+	statementAST->parent->localST = baseModule ;
 	return baseModule ;
 }
 
@@ -1169,11 +1195,11 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 	otherMODS = moduleDECS->next ;
 
 
-	//printf ("Before fillMOduleST\n") ;
 
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
 	{
 		currentASTNode = otherMODS->child ;
+
 		//currentASTNode is now a module
 		while (currentASTNode) {
 
@@ -1187,16 +1213,14 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
 					moduleToInsert = fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next->child ) ;
+					currentASTNode->child->next->next->next->next->localST = moduleToInsert ;
 					printModuleST ( moduleToInsert ) ;	
 				}
 				currentASTNode = currentASTNode->next ;
 			}
 
 		if (otherMODS->next != NULL)
-		{
-			
 			otherMODS = otherMODS->next->next ;
-		}
 	}
 
 	//*****************************************************************
@@ -1205,6 +1229,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 	moduleST * driverST = createDriverST(base) ;
 	
 	driverST = fillModuleST (base,driverST , driverMODS->child->child) ;
+	//driverMODS->child->localST = driverST ;
 	printModuleST ( driverST ) ;
 	base = insertDriverSTInbaseST ( base , driverST ) ;	
 			
