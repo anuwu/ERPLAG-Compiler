@@ -704,12 +704,12 @@ int getSize(baseST * realBase, varST * thisVar) {
 			{
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
 				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
 				{
-					printf ("ERROR : In \"%s\", Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 
@@ -724,7 +724,7 @@ int getSize(baseST * realBase, varST * thisVar) {
 				// Left dynamic, right static
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->startingPos) == NULL)
 				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->startingPos, thisVar->lexeme) ;
 
 					realBase->semanticError = 1 ;
 					return -1 ;
@@ -735,7 +735,7 @@ int getSize(baseST * realBase, varST * thisVar) {
 				// left static, right dynamic
 				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->endingPos) == NULL)
 				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
+					printf ("ERROR : In %s, Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->endingPos, thisVar->lexeme) ;
 
 					realBase->semanticError = 1 ;
 					return -1 ;
@@ -1066,7 +1066,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 		
 		varST * searchResult ;
 		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
-			printf("ERROR : \"%s\" Module Already Declared\n" , searchResult->lexeme ) ;
+			printf("ERROR : %s Module Already Declared\n" , searchResult->lexeme ) ;
 			base->semanticError = 1 ;
 		}
 		else {
@@ -1091,7 +1091,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 
 			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
 			{
-				printf ("ERROR : Module \"%s\" definition appearing after driver program, but not declared!\n", currentASTNode->child->tok->lexeme) ;
+				printf ("ERROR : Module %s definition appearing after driver program, but not declared!\n", currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;
 				currentASTNode = currentASTNode->next ;
@@ -1111,7 +1111,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				while ( iplAST ) {
 
 					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
-						printf ("ERROR : In the definition of \"%s\" line %d, input variable \"%s\" already declared\n", moduleToInsert->lexeme, iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
+						printf ("ERROR : Module %s variable already declared\n",iplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else{
@@ -1155,7 +1155,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 				while ( oplAST ) {
 
 					if ( searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id )) {
-						printf ("ERROR : In the definition of \"%s\" line %d, output variable \"%s\" already declared\n", moduleToInsert->lexeme, oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						printf ("ERROR : %s variable already declared\n",oplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 
 					}
@@ -1177,7 +1177,7 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
-				printf ( "ERROR : Module \"%s\" already defined %d\n",currentASTNode->child->tok->lexeme, otherMODS_Count) ;
+				printf ( "ERROR : %s already defined %d\n",currentASTNode->child->tok->lexeme, otherMODS_Count) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 				searchCond->tableType = MODULE_REDEC_ST ;
