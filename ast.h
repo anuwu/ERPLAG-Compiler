@@ -8,8 +8,8 @@
 typedef struct _arrayTypeInfo
 {
 	tokenID type ;
-	char *lex1 ;
-	char *lex2 ;
+	token *tokLeft ;
+	token *tokRight ;
 } arrayTypeInfo ;
 
 typedef enum _datTag

@@ -74,7 +74,7 @@ void inorderAST (astNode *node, int space)
 			if (node->dtTag == PRIMITIVE)
 				printf ("%s", tokenIDToString(node->dt->pType)) ;
 			else
-				printf ("%s[%s .. %s]", tokenIDToString(node->dt->arrType->type), node->dt->arrType->lex1, node->dt->arrType->lex2) ;
+				printf ("%s[%s .. %s]", tokenIDToString(node->dt->arrType->type), node->dt->arrType->tokLeft->lexeme, node->dt->arrType->tokRight->lexeme) ;
 			printf ("\n") ;
 		}
 	}
@@ -1329,10 +1329,10 @@ astNode* applyASTRule (treeNode *PTNode)
 			if (PTNode->parent->tnt.nonTerm == range)		// Array type only
 			{
 				astDatType = PTNode->inh->dt ;		
-				if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
-					astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
-				else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
-					astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+				if (astDatType->arrType->tokLeft == NULL && astDatType->arrType->tokRight == NULL)
+					astDatType->arrType->tokLeft = leftChild->tnt.term ;
+				else if (astDatType->arrType->tokLeft != NULL && astDatType->arrType->tokRight == NULL)
+					astDatType->arrType->tokRight = leftChild->tnt.term ;
 				else
 					printf ("\tError at either of the <index_new> of <dataType>\n") ;
 			}
@@ -1347,10 +1347,10 @@ astNode* applyASTRule (treeNode *PTNode)
 			if (PTNode->parent->tnt.nonTerm == range)
 			{
 				astDatType = PTNode->inh->dt ;
-				if (astDatType->arrType->lex1 == NULL && astDatType->arrType->lex2 == NULL)
-					astDatType->arrType->lex1 = leftChild->tnt.term->lexeme ;
-				else if (astDatType->arrType->lex1 != NULL && astDatType->arrType->lex2 == NULL)
-					astDatType->arrType->lex2 = leftChild->tnt.term->lexeme ;
+				if (astDatType->arrType->tokLeft == NULL && astDatType->arrType->tokRight == NULL)
+					astDatType->arrType->tokLeft = leftChild->tnt.term ;
+				else if (astDatType->arrType->tokLeft != NULL && astDatType->arrType->tokRight == NULL)
+					astDatType->arrType->tokRight = leftChild->tnt.term ;
 				else
 					printf ("\tError at either of the <index_new> of <dataType>\n") ;
 			}
@@ -1375,8 +1375,8 @@ astNode* applyASTRule (treeNode *PTNode)
 			// Left <index_new>
 			leftChild = PTNode->child ;
 			PTNode->inh->dt->arrType = (arrayTypeInfo *) malloc (sizeof(arrayTypeInfo)) ;		// Array type only
-			PTNode->inh->dt->arrType->lex1 = NULL ;
-			PTNode->inh->dt->arrType->lex2 = NULL ;
+			PTNode->inh->dt->arrType->tokLeft = NULL ;
+			PTNode->inh->dt->arrType->tokRight = NULL ;
 
 			leftChild->inh = PTNode->inh ;
 			applyASTRule(leftChild) ; 	// 93, 94

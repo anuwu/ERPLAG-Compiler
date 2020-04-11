@@ -817,8 +817,8 @@ moduleST * fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * st
 						tmp->datatype = TK_ARRAY ;
 
 						tmp->arrayIndices = (arrayInST *) malloc(sizeof(arrayInST)) ;
-						tmp->arrayIndices->startingPos = dataTypeAST->dt->arrType->lex1 ;
-						tmp->arrayIndices->endingPos = dataTypeAST->dt->arrType->lex2 ;
+						tmp->arrayIndices->startingPos = dataTypeAST->dt->arrType->tokLeft->lexeme ;
+						tmp->arrayIndices->endingPos = dataTypeAST->dt->arrType->tokRight->lexeme ;
 						tmp->arrayIndices->dataType = dataTypeAST->dt->arrType->type ;
 
 					}
@@ -1129,8 +1129,8 @@ baseST * fillSymbolTable (astNode * thisASTNode ) {
 							// array 
 							tmp->datatype = TK_ARRAY ;
 							tmp->arrayIndices = (arrayInST* ) malloc ( sizeof(arrayInST)) ;
-							tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->lex1 ;
-							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->lex2 ;
+							tmp->arrayIndices->startingPos = iplAST->child->next->dt->arrType->tokLeft->lexeme ;
+							tmp->arrayIndices->endingPos = iplAST->child->next->dt->arrType->tokRight->lexeme ;
 							tmp->arrayIndices->dataType = iplAST->child->next->dt->arrType->type ;
 
 
