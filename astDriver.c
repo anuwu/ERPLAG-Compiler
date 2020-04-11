@@ -26,26 +26,15 @@ twinBuffer *twinBuf ;
 
 int main(int argc, char *argv[])
 {
-	// if (argc != 3)
-	// {
-	// 	printf("Incorrect number of arguments\n") ;
-	// 	exit (0) ;
-	// }
-	FILE* outfile ;
-	outfile = fopen (argv[2] , "w") ;
+	if (argc != 2)
+	{
+		printf("Incorrect number of arguments\n") ;
+		exit (0) ;
+	}
 
-	//astTest () ;
-	//printf ("Before parseTree\n") ;
 	treeNode *root = parseTree (argv[1]) ;
-	//printf ("After parseTree\n") ;
-	inorderTraversal(root, outfile) ;
-	fclose (outfile) ;
-
-	//printf ("astDriver : gcode of parse tree root = %d\n", root->gcode) ;
 	astNode *astRoot ;
-	//printf ("Before applying astRule\n") ;
 	astRoot = applyASTRule (root) ;
-	//testroot (astRoot) ;
 	inorderAST (astRoot, 0) ;
 
 	printf ("*********************************************************\n") ;

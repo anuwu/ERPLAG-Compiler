@@ -14,17 +14,9 @@ enum _stType {
 	DRIVER_ST , MODULE_ST , FOR_ST, WHILE_ST , SWITCH_ST,  MODULE_REDEC_ST
 } ;
 
-// structures
 struct _baseST ;
 struct _moduleST ;
 
-/*
-struct _arrayInST {
-	char *startingPos ;
-	char *endingPos ;
-	tokenID dataType ;
-} ;
-*/
 
 enum _variableType 
 {
@@ -60,7 +52,6 @@ struct _moduleST {
 } ;
 
 
-
 struct _moduleSTentry {
 	struct _moduleST * thisModuleST ;
 	struct _moduleSTentry * next ;
@@ -84,7 +75,6 @@ typedef enum _stType stType ;
 typedef enum _variableType variableType ;
 typedef struct _baseST baseST ;
 typedef struct _moduleST moduleST ;
-//typedef struct _arrayInST arrayInST ;
 typedef struct _varST varST ;
 typedef struct _varSTentry varSTentry ;
 typedef struct _moduleSTentry moduleSTentry ;

@@ -883,7 +883,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			if ( thisVar == NULL )
 			{
-				printf ( "ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
+				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 		}
@@ -891,7 +891,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
 			if ( thisVar == NULL ){
-				printf ( "ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
+				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 			else {
@@ -902,7 +902,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			// TODO typechecking
 
 			if (searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) == NULL)
-				printf (" ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
 
 			// RHS business will occur here.
 		}
