@@ -74,6 +74,8 @@ struct _baseST {
 	struct _varSTentry * vars[VAR_BIN_COUNT] ;
 	struct _moduleSTentry * modules[MODULE_BIN_COUNT] ;
 	struct _moduleST * driverST ;
+
+	int semanticError ;
 } ;
 
 

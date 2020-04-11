@@ -1,0 +1,12 @@
+<<<driver program>>>
+start
+	declare i:integer ;
+
+	for (i in 4 .. 5)
+	start
+		for (i in 6 .. 7)
+		start
+			print (i) ;
+		end
+	end
+end
