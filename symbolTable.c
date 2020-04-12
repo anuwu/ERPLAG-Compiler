@@ -975,7 +975,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  		else if ( statementAST->child->id == TK_GET_VALUE ) {
 			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
 
-			if ( thisVar == NULL )
+			if (thisVar == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
