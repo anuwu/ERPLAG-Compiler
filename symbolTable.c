@@ -865,6 +865,30 @@ int validVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode)
 	return isValidVar ;
 }
 
+void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode)
+{
+	if (var->varType == VAR_LOOP)
+	{
+		printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		realBase->semanticError = 1 ;
+	}
+	else if (var->varType == VAR_OUTPUT)
+		var->tinker = 1 ;
+}
+
+void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead)
+{
+	varST *searchedVar ;
+	while (idListHead)
+	{
+		searchedVar = searchVar (realBase, baseModule, idListHead->tok->lexeme) ;
+		if (searchedVar != NULL)
+			tinkerVar (realBase, baseModule, searchedVar, idListHead) ;
+
+		idListHead = idListHead->next ;
+	}
+}
+
 
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
@@ -966,23 +990,16 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			insertScopeST (baseModule , forScope) ;
 		}
  		else if ( statementAST->child->id == TK_GET_VALUE ) {
-			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
+			varST * searchedVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 
-			if (thisVar == NULL)
+			if (searchedVar == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 			else
-			{
-				if (thisVar->varType == VAR_OUTPUT)
-					thisVar->tinker = 1 ;
-				else if (thisVar->varType == VAR_LOOP)
-				{
-					printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme) ;
-					realBase->semanticError = 1 ;
-				}
-			}
+				tinkerVar (realBase, baseModule, searchedVar, statementAST->child->next) ;
+
 		}
  		else if ( statementAST->child->id == TK_PRINT) 
  		{
@@ -999,20 +1016,12 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			{
 				varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
 				if (searchedVar != NULL)
-				{
-					if (searchedVar->varType == VAR_OUTPUT)
-						searchedVar->tinker = 1 ;
-					else if (searchedVar->varType == VAR_LOOP)
-					{
-						printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
-						realBase->semanticError = 1 ;
-					}
-				}
+					tinkerVar (realBase, baseModule, searchedVar, statementAST->child->child) ;
 			}
 
 			// RHS business will occur here.
 		}
- 		else if ( statementAST->child->id == idList) 
+ 		else if (statementAST->child->id == idList) 
  		{
 			// [a] = use module with parameters [ d ] ;
 
@@ -1039,7 +1048,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				// else error messages is printed in internal functions
 			}
 
-			// Tinkering check
+			idListTinker (realBase, baseModule, statementAST->child->child) ;
 		}
 		else if (statementAST->child->id == TK_ID) 
 		{

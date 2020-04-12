@@ -6,7 +6,7 @@ end
 
 <<<driver program>>>
 start
-	**
+	
 	declare i,j:integer ;
 	declare dd:real ;
 	declare cc:boolean ;
@@ -17,5 +17,5 @@ start
 	start
 		[dd, i, cc] := use module sum with parameters bb ;
 	end
-	**
+	
 end
