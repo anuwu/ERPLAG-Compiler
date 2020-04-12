@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	if (argc == 4)
 	{
-		if (strcmp(argv[2], "printAST") == 0)
+		if (strcmp(argv[2], "-printAST") == 0)
 			inorderAST (astRoot, 0) ;
 		else
 		{
