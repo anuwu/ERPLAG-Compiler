@@ -1,31 +1,19 @@
+<<module gas>>
+takes input [b:boolean] ;
+start
+end
+
 <<<driver program>>>
 start
 	declare i,j,k:integer;
-	declare r:array[4 .. 7] of real '
-		
-	for (i in 3 .. 7)
+	switch (i)
 	start
-		get_value (i) ;
-		print (i) ;
-	end
+		case 1 :
+			declare i:real ;
+			break ;
+		case 2 :
+			declare i:boolean ;
+			break ;
 
-	while (false)
-	start
-		switch (i)
-		start
-
-			case 1 :
-				print (true) ;
-				break ;
-	
-			case 2 :
-				print (false) ;
-				break ;
-			
-			default :
-				print (i) ;
-				break ;
-
-		end
 	end
 end
