@@ -1,9 +1,16 @@
 <<module sum>>
 takes input [b:array[6 .. 9] of boolean];
+returns [c:real]; 
 start
-	declare i:integer ;
+	declare b,c:integer ;
 	i := 0 ;
 	print (b[i]) ;
+
+	for (b in 0 .. 4)
+	start
+		b := b + 6 ;
+		get_value (b) ;
+	end
 end
 
 <<<driver program>>>

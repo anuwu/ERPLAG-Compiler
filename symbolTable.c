@@ -626,13 +626,13 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 int getSize(baseST * realBase, varST * thisVar) {
 
-	if(thisVar->datatype== TK_INTEGER )
+	if(thisVar->datatype== TK_INTEGER)
 		return 2 ;
-	else if (thisVar->datatype == TK_BOOLEAN )
+	else if (thisVar->datatype == TK_BOOLEAN)
 		return 1 ;
-	else if(thisVar->datatype == TK_REAL )
+	else if(thisVar->datatype == TK_REAL)
 		return 4 ;
-	else if (thisVar->datatype == TK_ARRAY ) 
+	else if (thisVar->datatype == TK_ARRAY) 
 	{
 		int left, right, indexErrorFlag = 0 ;
 		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
@@ -711,12 +711,6 @@ int getSize(baseST * realBase, varST * thisVar) {
 			return -1 ;		// correct dynamic array
 		}
 	}
-	/*
-	else {
-		realBase->semanticError = 1 ;
-		return -1 ;		// Error code
-	}
-	*/
 }
 
 char *getParentModuleName (baseST* realBase, moduleST *scope)
@@ -954,12 +948,22 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			insertScopeST (baseModule , forScope) ;
 		}
  		else if ( statementAST->child->id == TK_GET_VALUE ) {
-			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
+			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 
 			if (thisVar == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
+			}
+			else
+			{
+				if (thisVar->varType == VAR_OUTPUT)
+					thisVar->tinker = 1 ;
+				else if (thisVar->varType == VAR_LOOP)
+				{
+					printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme) ;
+					realBase->semanticError = 1 ;
+				}
 			}
 		}
  		else if ( statementAST->child->id == TK_PRINT ) 
@@ -1111,9 +1115,17 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			insertScopeST (baseModule , switchST) ;
 			printModuleST (switchST, depthSTPrint) ;
 		}
- 
 		statementAST = statementAST->next ;
 	}
+
+
+	/*
+	if (!checkAllOutputTinkered (baseModule))
+	{
+		printf ("Hello\n") ;
+	}
+	*/
+
 }
 
 
