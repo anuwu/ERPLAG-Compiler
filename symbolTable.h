@@ -117,6 +117,12 @@ void printBaseST ( baseST * base ) ;
 void printModuleST ( moduleST * thisModuleST, int printParam) ;
 
 
+// <var> checker
+int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode) ;
+int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode) ;
+int validVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode) ;
+
+
 // ST population
 baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint ) ;
 void fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode, int depthSTPrint ) ;

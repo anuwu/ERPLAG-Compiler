@@ -1,5 +1,3 @@
-** THIS WILL PASS ATM **
-
 ** Test case 1: Testing symbol table creation for variable declaration and redeclaration checks**
 ** Single level nesting using primitive data types**
 

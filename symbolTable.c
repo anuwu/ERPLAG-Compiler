@@ -751,6 +751,8 @@ char *typeIDToString (tokenID id)
 			return "integer" ;
 		case TK_BOOLEAN :
 			return "boolean" ;
+		case TK_REAL :
+			return "real" ;
 	}
 }
 
@@ -770,12 +772,110 @@ int caseValRepeat (astNode *caseAstNode)
 }
 
 
+int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode)
+{
+	// Assumes varIndexASTNode isn't NULL
+
+	if (varIndexASTNode->id == TK_NUM)
+		return TK_NUM ;
+
+	varST *indexVar = searchVar (realBase, baseModule, varIndexASTNode->tok->lexeme) ;
+	if (indexVar == NULL)
+	{
+		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		return 0 ;
+	}
+	else if (indexVar->datatype != TK_INTEGER)
+	{
+		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		return 0 ;
+	}
+
+	return TK_ID ;
+}
+
+/*
+searchVar ()
+	--> NULL 											==> ERROR
+	--> NOT NULL
+		--> Primitive
+		--> Array
+				--> dynamic array
+					--> dynamic index 					==> searchVar
+						--> NULL						==> ERROR : index variable does not exist
+						--> NOT NULL
+							--> integer type
+							--> non-integer type 		==> ERROR : index variable is not of integer type
+					--> static index 					==> No checks 
+				--> static array
+					--> dynamic index 					==> searchVar
+						--> NULL						==> ERROR : index variable does not exist
+						--> NOT NULL
+							--> integer type 			 
+							--> non-integer type 		==> ERROR : index variable not of integer type
+					--> static index 	==> Check bounds
+						--> Correct bounds
+						--> Incorrect bounds 			==> ERROR : incorrect bounds for static array
+*/
+
+int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode)
+{
+	int num = atoi(indASTNode->tok->lexeme) , leftLim = atoi(arrVar->arrayIndices->tokLeft->lexeme), rightLim = atoi(arrVar->arrayIndices->tokRight->lexeme) ;
+	if (num < leftLim || num > rightLim)
+	{
+		printf ("ERROR : In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrVar->lexeme, leftLim, rightLim) ;
+		return 0 ;
+	}
+
+	return 1 ;
+}
+
+
+int validVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode)
+{
+	int isValidVar = 1 , isValidVarIndex ;
+	varST *searchedVar = searchVar (realBase, baseModule, varASTNode->tok->lexeme) ;
+
+	if (searchedVar == NULL)
+	{
+		printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+
+		isValidVar = 0 ;
+		if (varASTNode->child != NULL)
+			validVarIndex (realBase, baseModule, varASTNode->child) ;
+	}
+	else if (searchedVar->datatype != TK_ARRAY)
+	{
+		if (varASTNode->child != NULL)
+		{
+			isValidVar = 0 ;
+			printf ("ERROR : In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (searchedVar->datatype), searchedVar->lexeme) ;
+			validVarIndex (realBase, baseModule, varASTNode->child) ;
+		}
+	}
+	else if (varASTNode->child != NULL)		// It is array and has an index
+	{
+		isValidVarIndex = validVarIndex(realBase, baseModule, varASTNode->child) ;
+
+		if (searchedVar->offset >= 0 && isValidVarIndex == TK_NUM)		// Static array
+		{
+			if (!validStaticArrStaticIndex (realBase, baseModule, searchedVar, varASTNode->child))
+				isValidVar = 0 ;
+		}
+		else if (!isValidVarIndex)
+			isValidVar = 0 ;
+	}
+	// else ---> It is an array without an index, which is fine
+
+	return isValidVar ;
+}
+
+
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
 	int getOffsetSize = 0 ;
 	statementsAST->localST = baseModule ;
 	astNode * statementAST = statementsAST->child ;
-	//printf ("INSIDE FILL MODULE!\n") ;
 
 	while (statementAST) {
 		if(statementAST->child->id == TK_DECLARE ) {
@@ -862,7 +962,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			loopVar->datatype = TK_INTEGER ;
 
 			if (searchedVar == NULL)
-				loopVar->offset = -2 ;
+				loopVar->offset = -2 ;		// VAR_LOOP with offset of -2 is undeclared loop counter
 			else
 				loopVar->offset = searchedVar->offset ;
 
@@ -881,15 +981,12 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				realBase->semanticError = 1 ;
 			}
 		}
- 		else if ( statementAST->child->id == TK_PRINT ) {
-			varST * thisVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme ) ;
-
-			if ( thisVar == NULL ){
-				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
-				realBase->semanticError = 1 ;
-			}
-			else {
-				// generate code
+ 		else if ( statementAST->child->id == TK_PRINT ) 
+ 		{
+ 			if (statementAST->child->next->id == TK_ID)
+ 			{
+ 				if (!validVar (realBase, baseModule, statementAST->child->next))
+ 					realBase->semanticError = 1 ;
 			}
 		}
 		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) {
@@ -978,6 +1075,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			moduleST *switchST = createScopeST (baseModule, SWITCH_ST) ;
 			astNode *caseAstNode = statementAST->child->next->next ;
 
+			int hasDefault = 0 ;
+
 			while (caseAstNode != NULL)
 			{
 				// case value mismatch
@@ -1002,6 +1101,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				}
 				else
 				{
+					hasDefault = 1 ;
 					if (searchedVar->datatype == TK_BOOLEAN)
 					{
 						printf ("ERROR : In \"%s\" at line %d, switch variable is boolean, default case is not allowed\n", getParentModuleName(realBase, baseModule), caseAstNode->tok->lineNumber) ;
@@ -1012,14 +1112,17 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				}
 
 				if (caseAstNode->id != TK_DEFAULT)
-				{
 					caseAstNode = caseAstNode->next->next->next ;
-				}
 				else
 					caseAstNode = caseAstNode->next->next ;
 			}
 
 			//printf ("Done with loop\n") ;
+			if (!hasDefault && searchedVar->datatype == TK_INTEGER)
+			{
+				printf ("ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
+				realBase->semanticError = 1 ;
+			}
 
 			insertScopeST (baseModule , switchST) ;
 			printModuleST (switchST, depthSTPrint) ;

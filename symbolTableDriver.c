@@ -36,7 +36,12 @@ int main(int argc, char *argv[])
 	else
 		baseTable = fillSymbolTable (astRoot, atoi(argv[3])) ;
 
-	printBaseST ( baseTable ) ;
+	printBaseST (baseTable) ;
+
+	if (baseTable->semanticError)
+		printf ("Please check the above messages for semantic errors!\n") ;
+	else
+		printf ("Code is semantically clean!\n") ;
 
 	return 0 ;
 }

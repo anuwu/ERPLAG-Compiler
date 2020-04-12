@@ -1,0 +1,15 @@
+<<module sum>>
+takes input [b:array[6 .. 9] of boolean];
+start
+	declare i:integer ;
+	i := 0 ;
+	print (b[i]) ;
+end
+
+<<<driver program>>>
+start
+	declare i,j:integer ;
+	declare f:real ;
+	declare A:array [i..j] of boolean ;
+	print (A[4]) ;
+end
