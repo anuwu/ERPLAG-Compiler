@@ -28,15 +28,22 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf ("*********************************************************\n") ;
 
 	baseST *baseTable ;
 	if (argc == 3)
+	{
 		baseTable = fillSymbolTable (astRoot, atoi(argv[2])) ;
+		if (argv[2][0] == '1')
+			printBaseST (baseTable) ;
+	}
 	else
+	{
 		baseTable = fillSymbolTable (astRoot, atoi(argv[3])) ;
+		if (argv[3][0] == '1')
+			printBaseST (baseTable) ;
+	}
 
-	printBaseST (baseTable) ;
+	printf ("*********************************************************\n") ;
 
 	if (baseTable->semanticError)
 		printf ("Please check the above messages for semantic errors!\n") ;

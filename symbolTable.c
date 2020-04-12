@@ -946,7 +946,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					varST * tmp = createVarST ( idAST , baseModule , VAR_LOCAL) ;
 
-					if (dataTypeAST->dtTag  == ARRAY ){
+					if (dataTypeAST->dtTag  == ARRAY)
+					{
 						tmp->datatype = TK_ARRAY ;
 						tmp->arrayIndices = dataTypeAST->dt->arrType ; 
 					}
@@ -1198,12 +1199,10 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 
 
-baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) {
+baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) 
+{
 
 	astNode * currentASTNode = thisASTNode ;
-
-	
-	printf( "> Calling createBaseST()\n") ;
 	baseST * base = createBaseST () ;
 
 	//****************************************************************
