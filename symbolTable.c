@@ -977,7 +977,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			{
 				if (thisVar->varType == VAR_OUTPUT)
 					thisVar->tinker = 1 ;
-				else if (thisVar->varType == VAR_LOOP)
+				else if (thisVar->varType == VAR_LOOP && thisVar->scope == baseModule)
 				{
 					printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
@@ -1002,7 +1002,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					if (searchedVar->varType == VAR_OUTPUT)
 						searchedVar->tinker = 1 ;
-					else if (searchedVar->varType == VAR_LOOP)
+					else if (searchedVar->varType == VAR_LOOP && searchedVar->scope == baseModule)
 					{
 						printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
 						realBase->semanticError = 1 ;
@@ -1038,6 +1038,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				}
 				// else error messages is printed in internal functions
 			}
+
+			// Tinkering check
 		}
 		else if (statementAST->child->id == TK_ID) 
 		{
@@ -1050,7 +1052,6 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			}
 			else
 			{
-
 				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
 				if ( validCallFlag == 1 ) {
 					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;

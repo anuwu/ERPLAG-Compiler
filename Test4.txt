@@ -8,8 +8,11 @@ start
 
 	for (c in 0 .. 4)
 	start
-		c := b[1] + 6 ;
-		get_value (b) ;
+		for (i in 1 .. 5)
+		start
+			c := i ;
+			i := c ;
+		end
 	end
 end
 
