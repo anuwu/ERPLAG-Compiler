@@ -1,5 +1,6 @@
 <<module sum>>
 takes input [b:array[6 .. 9] of boolean];
+returns [d:real] ;
 start
 	declare c:integer ;
 	declare i:integer ;

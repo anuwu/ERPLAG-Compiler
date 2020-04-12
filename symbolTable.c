@@ -86,6 +86,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) {
 
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = currOffset ;
+	tmp->hasReturns = 0 ;
 
 	return tmp ;
 }
@@ -179,6 +180,9 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
 	tmp->thisVarST = thisVarST ;
 	tmp->next = thisModule->outputVars[index] ; 
 	thisModule->outputVars[index] = tmp ;
+
+	if (!thisModule->hasReturns)
+		thisModule->hasReturns = 1 ;
 }
 
 
@@ -464,7 +468,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 			}
 			else 
 			{
-				printf ("ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" do not have matching data types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
@@ -526,7 +530,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		else {
 			if(varEntry->thisVarST->datatype != searchedVar->datatype)
 			{
-				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting data types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
 			}
@@ -569,9 +573,16 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
+			if (modPtr->hasReturns)
+			{
+				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
+				base->semanticError = 1 ;
+			}
+
+
 			if (modPtr->tableType == MODULE_REDEC_ST)
 			{
-				printf ("ERROR : In \"%s\" at line %d, Module %s found, but with clashing definition\n" , getParentModuleName(base, thisModule),funcNode->tok->lineNumber ,modPtr->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, module \"%s\" found, but with clashing definition\n" , getParentModuleName(base, thisModule),funcNode->tok->lineNumber ,modPtr->lexeme) ;
 				base->semanticError = 1 ;
 				return -3 ;
 			}
@@ -597,6 +608,13 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
+			if (!modPtr->hasReturns)
+			{
+				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
+				base->semanticError = 1 ;
+			}
+
+
 			if (modPtr->tableType == MODULE_REDEC_ST)
 			{
 				printf ("ERROR : In \"%s\" at line %d, Module %s was found, but with repeating definition\n" ,getParentModuleName(base, thisModule) , funcNode->next->next->tok->lineNumber ,modPtr->lexeme) ;
@@ -994,7 +1012,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			// RHS business will occur here.
 		}
- 		else if ( statementAST->child->id == idList) {
+ 		else if ( statementAST->child->id == idList) 
+ 		{
 			// [a] = use module with parameters [ d ] ;
 
 			if (strcmp(baseModule->lexeme, statementAST->child->next->next->tok->lexeme) == 0)
@@ -1004,7 +1023,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			}
 			else
 			{
-				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
+				int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
 				if ( validCallFlag == 1) {
 					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
 					;
@@ -1020,7 +1039,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				// else error messages is printed in internal functions
 			}
 		}
-		else if (statementAST->child->id == TK_ID) {
+		else if (statementAST->child->id == TK_ID) 
+		{
 			// use module with parameters ... (no return)
 
 			if (strcmp(baseModule->lexeme, statementAST->child->tok->lexeme) == 0)

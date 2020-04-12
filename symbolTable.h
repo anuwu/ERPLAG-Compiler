@@ -50,6 +50,7 @@ struct _moduleST {
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int currOffset ;
+	int hasReturns ;
 } ;
 
 
