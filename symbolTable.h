@@ -118,6 +118,12 @@ varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) ;
 void printBaseST ( baseST * base ) ;
 void printModuleST ( moduleST * thisModuleST, int printParam) ;
 
+// Tinker
+void printOutputsNotTinkered (moduleST *baseModule) ;
+int checkAllOutputsTinkered (moduleST *baseModule) ;
+void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) ;
+void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode) ;
+
 
 // <var> checker
 int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode) ;
