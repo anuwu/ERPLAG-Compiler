@@ -424,13 +424,11 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 
 
 
-varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) {
-	
+varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) 
+{
 	//printf("> checkIP\n") ;
-
-	varSTentry * varEntry = targetModule->inputVars[0] ;
-
 	
+	varSTentry * varEntry = targetModule->inputVars[0] ;	
 	astNode * inputIter = inputNode ;
 	while(inputIter->next) {
 		inputIter = inputIter->next ;
@@ -438,7 +436,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 	int sameArgNoErr = 0 ;
 	
-
 	while( inputIter && varEntry ){
 
 		//printf("---| %s & %s |---\n",inputIter->tok->lexeme , varEntry->thisVarST->lexeme ) ;
@@ -461,7 +458,8 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 				else
 				{
 					// Enter code here
-					printf("Still need to to bound check for input arrays!\n") ;
+					//printf("Still need to to bound check for input arrays!\n") ;
+					;
 				}
 			}
 			else 
@@ -477,11 +475,9 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		inputIter = inputIter->prev ;
 	}
 
-	//printf ("Done with LIST\n") ;
 
 	if ( varEntry==NULL && inputIter )
 	{
-		//printf("Condition 1\n");
 		printf("ERROR : In \"%s\" at line %d More parameters passed\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return (varST *) malloc (sizeof(varST)) ;
@@ -489,7 +485,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	}
 	else if ( varEntry && inputIter==NULL ) 
 	{
-		//printf("Condition 2\n");
 		printf("ERROR : In \"%s\" at line %d insufficient number of actual parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 
@@ -497,7 +492,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		//return varEntry->thisVarST ;
 	}
 	else{
-		//printf ("Are you here?\n") ;
 
 		if (sameArgNoErr)
 		{
@@ -506,7 +500,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		}
 		else
 		{
-			printf("> All Good with input\n") ;
+			//printf("> All Good with input\n") ;
 			return NULL ;
 		}
 	}
@@ -902,7 +896,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			// TODO typechecking
 
 			if (searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) == NULL)
-				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
 
 			// RHS business will occur here.
 		}
@@ -919,7 +913,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 1 ) ;
 				if ( validCallFlag == 1) {
 					// valid call code
-					printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
+					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
+					;
 
 				}
 				else if (validCallFlag == -1 )	{
@@ -935,17 +930,28 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		}
 		else if (statementAST->child->id == TK_ID) {
 			// use module with parameters ... (no return)
-			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
-			if ( validCallFlag == 1 ) {
-				printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
-			}
-			else if (validCallFlag == -1 )	{
-				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+
+			if (strcmp(baseModule->lexeme, statementAST->child->tok->lexeme) == 0)
+			{
+				printf ("ERROR : In \"%s\" at line %d, recursion is not allowed!\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
-			else if( validCallFlag == -2 ) {
-				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
-				realBase->semanticError = 1 ;
+			else
+			{
+
+				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
+				if ( validCallFlag == 1 ) {
+					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
+					;
+				}
+				else if (validCallFlag == -1 )	{
+					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+					realBase->semanticError = 1 ;
+				}
+				else if( validCallFlag == -2 ) {
+					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+					realBase->semanticError = 1 ;
+				}
 			}
 			// else error messages is printed in internal functions
 		}
@@ -1201,8 +1207,6 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) {
 	moduleST * driverST = createDriverST(base) ;
 	
 	fillModuleST (base,driverST , driverMODS->child, depthSTPrint) ;
-	//driverMODS->child->localST = driverST ;
-	printf ("BEFORE!\n") ;
 	printModuleST (driverST, depthSTPrint) ;
 	insertDriverSTInbaseST ( base , driverST ) ;	
 			
