@@ -34,6 +34,7 @@ struct _varST {
 	arrayTypeInfo *arrayIndices ; // if TK_ARRAY 
 
 	int offset ;
+	int tinker ;
 	void *scope ;
 	enum _variableType varType ;
 } ;

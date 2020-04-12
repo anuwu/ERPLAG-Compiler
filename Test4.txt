@@ -12,4 +12,7 @@ start
 	declare f:real ;
 	declare A:array [i..j] of boolean ;
 	print (A[4]) ;
+
+	declare bb:array[9..6] of boolean ;
+	use module sum with parameters bb ;
 end
