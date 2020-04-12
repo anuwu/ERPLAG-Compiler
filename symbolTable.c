@@ -889,6 +889,36 @@ void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead)
 	}
 }
 
+int checkAllOutputsTinkered (moduleST *baseModule)
+{
+	for (int i = 0 ; i<IO_BIN_COUNT ; i++ )
+	{
+		varSTentry * vv = baseModule->outputVars[i] ;
+		while (vv) 
+		{
+			if (!vv->thisVarST->tinker)
+				return 0 ;
+			vv = vv->next ;
+		}
+	}
+
+	return 1 ;
+}
+
+void printOutputsNotTinkered (moduleST *baseModule)
+{
+	for (int i = 0 ; i<IO_BIN_COUNT ; i++ )
+	{
+		varSTentry * vv = baseModule->outputVars[i] ;
+		while (vv) 
+		{
+			if (!vv->thisVarST->tinker)
+				printf ("%s, " , vv->thisVarST->lexeme) ;
+			vv = vv->next ;
+		}
+	}
+}
+
 
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
@@ -1156,12 +1186,13 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 	}
 
 
-	/*
-	if (!checkAllOutputTinkered (baseModule))
+	if (baseModule->parent == realBase && !checkAllOutputsTinkered (baseModule))
 	{
-		printf ("Hello\n") ;
+		printf ("ERROR : In the definition of \"%s\", the following variables are not assigned - ", baseModule->lexeme) ;
+		printOutputsNotTinkered (baseModule) ;
+		printf ("\n") ;
+		realBase->semanticError = 1 ;
 	}
-	*/
 
 }
 
