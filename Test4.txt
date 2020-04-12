@@ -1,14 +1,13 @@
 <<module sum>>
 takes input [b:array[6 .. 9] of boolean];
-returns [c:real]; 
 start
-	declare b,c:integer ;
-	i := 0 ;
+	declare c:integer ;
+	declare i:integer ;
 	print (b[i]) ;
 
-	for (b in 0 .. 4)
+	for (c in 0 .. 4)
 	start
-		b := b + 6 ;
+		c := b[1] + 6 ;
 		get_value (b) ;
 	end
 end

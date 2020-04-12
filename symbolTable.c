@@ -966,7 +966,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				}
 			}
 		}
- 		else if ( statementAST->child->id == TK_PRINT ) 
+ 		else if ( statementAST->child->id == TK_PRINT) 
  		{
  			if (statementAST->child->next->id == TK_ID)
  			{
@@ -974,16 +974,23 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  					realBase->semanticError = 1 ;
 			}
 		}
-		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) {
+		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) 
+		{
 			// TODO typechecking
-
-			varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
-
-			if (searchedVar == NULL)
-				printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
-			else
-				searchedVar->tinker = 1 ;
-
+			if (validVar(realBase, baseModule, statementAST->child->child))
+			{
+				varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
+				if (searchedVar != NULL)
+				{
+					if (searchedVar->varType == VAR_OUTPUT)
+						searchedVar->tinker = 1 ;
+					else if (searchedVar->varType == VAR_LOOP)
+					{
+						printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
+						realBase->semanticError = 1 ;
+					}
+				}
+			}
 
 			// RHS business will occur here.
 		}
@@ -1003,7 +1010,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					;
 				}
 				else if (validCallFlag == -1 )	{
-					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+					printf("ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
 				else if( validCallFlag == -2 ) {
