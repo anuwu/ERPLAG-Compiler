@@ -1,28 +1,21 @@
 <<module sum>>
 takes input [b:array[6 .. 9] of boolean];
-returns [d:real] ;
+returns [d:real, k:integer, c:boolean] ;
 start
-	declare c:integer ;
-	declare i:integer ;
-	print (b[i]) ;
-
-	for (c in 0 .. 4)
-	start
-		for (i in 1 .. 5)
-		start
-			c := i ;
-			i := c ;
-		end
-	end
 end
 
 <<<driver program>>>
 start
+	**
 	declare i,j:integer ;
-	declare f:real ;
-	declare A:array [i..j] of boolean ;
-	print (A[4]) ;
+	declare dd:real ;
+	declare cc:boolean ;
 
-	declare bb:array[9..6] of boolean ;
-	use module sum with parameters bb ;
+	declare bb:array[6 .. 9] of boolean ;
+
+	for (i in 0 .. 5)
+	start
+		[dd, i, cc] := use module sum with parameters bb ;
+	end
+	**
 end

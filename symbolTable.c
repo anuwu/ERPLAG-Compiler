@@ -977,7 +977,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			{
 				if (thisVar->varType == VAR_OUTPUT)
 					thisVar->tinker = 1 ;
-				else if (thisVar->varType == VAR_LOOP && thisVar->scope == baseModule)
+				else if (thisVar->varType == VAR_LOOP)
 				{
 					printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
@@ -1002,7 +1002,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					if (searchedVar->varType == VAR_OUTPUT)
 						searchedVar->tinker = 1 ;
-					else if (searchedVar->varType == VAR_LOOP && searchedVar->scope == baseModule)
+					else if (searchedVar->varType == VAR_LOOP)
 					{
 						printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n",  getParentModuleName(realBase, baseModule),statementAST->child->child->tok->lineNumber ,  statementAST->child->child->tok->lexeme) ;
 						realBase->semanticError = 1 ;
