@@ -3,9 +3,6 @@
 #include <string.h>
 #include <sys/time.h>
 #include "ast.h"
-#include "symbolTable.h"
-
-
 
 #define SIZE 200
 #define TNTLENGTH 40

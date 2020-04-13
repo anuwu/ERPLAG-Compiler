@@ -1,0 +1,6 @@
+<<<driver program>>>
+start
+	declare i:integer ;
+	print (i[2]) ;
+	i := 3 + 5 - 6 ; 
+end

@@ -124,13 +124,6 @@ int checkAllOutputsTinkered (moduleST *baseModule) ;
 void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) ;
 void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode) ;
 
-
-// <var> checker
-int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode) ;
-int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode) ;
-int validVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode) ;
-
-
 // ST population
 baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint ) ;
 void fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode, int depthSTPrint ) ;
@@ -144,5 +137,6 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 char* varTypeToString (variableType varType) ;
 int getSize(baseST * realBase, varST * thisVar) ;
 char *getParentModuleName (baseST* realBase, moduleST *scope) ;
+char *typeIDToString (tokenID id) ;
 
 #endif

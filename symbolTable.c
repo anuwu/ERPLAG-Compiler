@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "symbolTable.h"
 #include "ast.h"
+#include "typeChecker.h"
 
 
 // make a global initial lexeme
@@ -96,6 +97,7 @@ moduleST * createDriverST ( baseST * parent ) {
 
 	return tmp ;
 }
+
 moduleST * createScopeST ( moduleST * parent , stType scopeType) {
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
@@ -238,6 +240,7 @@ varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 	}
 	return NULL ;
 }
+
 varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
 	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
 
@@ -426,14 +429,7 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 	printf("\n**************************************\n") ;
 }
 
-int isVarStaticArr (varST *arrayVar)
-{
-	return (arrayVar->offset >= 0 || arrayVar->offset == -2) ;
-}
-
-
-
-varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) 
+varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModule, astNode * inputNode)
 {	
 	varSTentry * varEntry = targetModule->inputVars[0] ;	
 	astNode * inputIter = inputNode ;
@@ -768,103 +764,6 @@ int caseValRepeat (astNode *caseAstNode)
 }
 
 
-int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode)
-{
-	// Assumes varIndexASTNode isn't NULL
-
-	if (varIndexASTNode->id == TK_NUM)
-		return TK_NUM ;
-
-	varST *indexVar = searchVar (realBase, baseModule, varIndexASTNode->tok->lexeme) ;
-	if (indexVar == NULL)
-	{
-		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
-		return 0 ;
-	}
-	else if (indexVar->datatype != TK_INTEGER)
-	{
-		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
-		return 0 ;
-	}
-
-	return TK_ID ;
-}
-
-/*
-searchVar ()
-	--> NULL 											==> ERROR
-	--> NOT NULL
-		--> Primitive
-		--> Array
-				--> dynamic array
-					--> dynamic index 					==> searchVar
-						--> NULL						==> ERROR : index variable does not exist
-						--> NOT NULL
-							--> integer type
-							--> non-integer type 		==> ERROR : index variable is not of integer type
-					--> static index 					==> No checks 
-				--> static array
-					--> dynamic index 					==> searchVar
-						--> NULL						==> ERROR : index variable does not exist
-						--> NOT NULL
-							--> integer type 			 
-							--> non-integer type 		==> ERROR : index variable not of integer type
-					--> static index 	==> Check bounds
-						--> Correct bounds
-						--> Incorrect bounds 			==> ERROR : incorrect bounds for static array
-*/
-
-int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode)
-{
-	int num = atoi(indASTNode->tok->lexeme) , leftLim = atoi(arrVar->arrayIndices->tokLeft->lexeme), rightLim = atoi(arrVar->arrayIndices->tokRight->lexeme) ;
-	if (num < leftLim || num > rightLim)
-	{
-		printf ("ERROR : In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrVar->lexeme, leftLim, rightLim) ;
-		return 0 ;
-	}
-
-	return 1 ;
-}
-
-
-int validVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode)
-{
-	int isValidVar = 1 , isValidVarIndex ;
-	varST *searchedVar = searchVar (realBase, baseModule, varASTNode->tok->lexeme) ;
-
-	if (searchedVar == NULL)
-	{
-		printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
-
-		isValidVar = 0 ;
-		if (varASTNode->child != NULL)
-			validVarIndex (realBase, baseModule, varASTNode->child) ;
-	}
-	else if (searchedVar->datatype != TK_ARRAY)
-	{
-		if (varASTNode->child != NULL)
-		{
-			isValidVar = 0 ;
-			printf ("ERROR : In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (searchedVar->datatype), searchedVar->lexeme) ;
-			validVarIndex (realBase, baseModule, varASTNode->child) ;
-		}
-	}
-	else if (varASTNode->child != NULL)		// It is array and has an index
-	{
-		isValidVarIndex = validVarIndex(realBase, baseModule, varASTNode->child) ;
-
-		if (isVarStaticArr (searchedVar) && isValidVarIndex == TK_NUM)		// Static array
-		{
-			if (!validStaticArrStaticIndex (realBase, baseModule, searchedVar, varASTNode->child))
-				isValidVar = 0 ;
-		}
-		else if (!isValidVarIndex)
-			isValidVar = 0 ;
-	}
-
-	return isValidVar ;
-}
-
 void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode)
 {
 	if (var->varType == VAR_LOOP)
@@ -923,6 +822,7 @@ void printOutputsNotTinkered (moduleST *baseModule)
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
 	int getOffsetSize = 0 ;
+	varST *searchedVar ;
 	statementsAST->localST = baseModule ;
 	astNode * statementAST = statementsAST->child ;
 
@@ -934,7 +834,6 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			while ( idAST ) 
 			{
-				varST *searchedVar ;
 				searchedVar = searchVar (realBase, baseModule, idAST->tok->lexeme) ;
 
 				if (searchedVar != NULL && searchedVar->scope == baseModule && searchedVar->varType != VAR_INPUT)
@@ -973,7 +872,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			}
 
 		}
-		else if ( statementAST->child->id == TK_WHILE ) {
+		else if ( statementAST->child->id == TK_WHILE ) 
+		{
 			// TODO type checking
 
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
@@ -982,9 +882,10 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			insertScopeST ( baseModule , tmp ) ;
 		}
-		else if ( statementAST->child->id == TK_FOR ) {
+		else if ( statementAST->child->id == TK_FOR ) 
+		{
 
-			varST *searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
+			searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
@@ -1020,8 +921,9 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			printModuleST (forScope, depthSTPrint) ;
 			insertScopeST (baseModule , forScope) ;
 		}
- 		else if ( statementAST->child->id == TK_GET_VALUE ) {
-			varST * searchedVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
+ 		else if ( statementAST->child->id == TK_GET_VALUE ) 
+ 		{
+			searchedVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 
 			if (searchedVar == NULL)
 			{
@@ -1032,25 +934,25 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				tinkerVar (realBase, baseModule, searchedVar, statementAST->child->next) ;
 
 		}
- 		else if ( statementAST->child->id == TK_PRINT) 
+ 		else if ( statementAST->child->id == TK_PRINT)
  		{
  			if (statementAST->child->next->id == TK_ID)
- 			{
- 				if (!validVar (realBase, baseModule, statementAST->child->next))
- 					realBase->semanticError = 1 ;
-			}
-		}
-		else if ( statementAST->child->id == /*TK_ID*/ TK_ASSIGNOP) 
+ 				validateVar (realBase, baseModule, statementAST->child->next, searchedVar) ;
+ 		} 
+		else if ( statementAST->child->id == TK_ASSIGNOP) 
 		{
+			//expressionTypeCheck (realBase, baseModule, statementAST->child) ;
+			;
 			// TODO typechecking
-			if (validVar(realBase, baseModule, statementAST->child->child))
-			{
-				varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
-				if (searchedVar != NULL)
-					tinkerVar (realBase, baseModule, searchedVar, statementAST->child->child) ;
-			}
+			/*
+			varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
+			if (validVar(realBase, baseModule, statementAST->child->child) && searchedVar != NULL)
+				tinkerVar (realBase, baseModule, searchedVar, statementAST->child->child) ;
 
-			// RHS business will occur here.
+			// RHS business will occur here
+			LHSTypeExtract (statementAST->child)
+			RHSTypeCheck (realBase, baseModule, search)
+			*/
 		}
  		else if (statementAST->child->id == idList) 
  		{
@@ -1064,11 +966,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			else
 			{
 				int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
-				if ( validCallFlag == 1) {
-					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->next->next->tok->lexeme) ;
-					;
-				}
-				else if (validCallFlag == -1 )	{
+
+				if (validCallFlag == -1 )	{
 					printf("ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
@@ -1093,11 +992,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			else
 			{
 				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
-				if ( validCallFlag == 1 ) {
-					//printf ("%s calling %s ALL GOOD\n", baseModule->lexeme ,statementAST->child->tok->lexeme) ;
-					;
-				}
-				else if (validCallFlag == -1 )	{
+
+				if (validCallFlag == -1 )	{
 					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
@@ -1112,7 +1008,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		{
 			int switchTypeError = 0 ;
 
-			varST *searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
+			searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
