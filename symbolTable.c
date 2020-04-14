@@ -937,11 +937,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  		else if ( statementAST->child->id == TK_PRINT)
  		{
  			if (statementAST->child->next->id == TK_ID)
- 				validateVar (realBase, baseModule, statementAST->child->next, searchedVar) ;
+ 				validateVar (realBase, baseModule, statementAST->child->next, &searchedVar) ;
  		} 
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
 		{
-			//expressionTypeCheck (realBase, baseModule, statementAST->child) ;
+			expressionTypeCheck (realBase, baseModule, statementAST->child) ;
 			;
 			// TODO typechecking
 			/*

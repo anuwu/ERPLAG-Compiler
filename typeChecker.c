@@ -5,6 +5,8 @@
 #include "symbolTable.h"
 #include "typeChecker.h"
 
+extern char* tokenIDToString (tokenID id) ;
+
 int isVarStaticArr (varST *arrayVar)
 {
 	return (arrayVar->offset >= 0 || arrayVar->offset == -2) ;
@@ -72,12 +74,12 @@ int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *ar
 }
 
 
-int validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, varST *searchedVar)
+tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, varST **searchedVar)
 {
-	int isValidVar = 1 , isValidVarIndex ;
-	searchedVar = searchVar (realBase, baseModule, varASTNode->tok->lexeme) ;
+	int isValidVarIndex ;
+	*searchedVar = searchVar (realBase, baseModule, varASTNode->tok->lexeme) ;
 
-	if (searchedVar == NULL)
+	if (*searchedVar == NULL)
 	{
 		printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 
@@ -87,34 +89,99 @@ int validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, 
 
 		return 0 ;
 	}
-	else if (searchedVar->datatype != TK_ARRAY)
+	else if ((*searchedVar)->datatype != TK_ARRAY)
 	{
 		if (varASTNode->child != NULL)
 		{
-			isValidVar = 0 ;
 			realBase->semanticError = 1 ;
-			printf ("ERROR : In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (searchedVar->datatype), searchedVar->lexeme) ;
+			printf ("ERROR : In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString ((*searchedVar)->datatype), (*searchedVar)->lexeme) ;
 			validVarIndex (realBase, baseModule, varASTNode->child) ;
 		}
 
-		return searchedVar->datatype ;
+		return (*searchedVar)->datatype ;
 	}
 	else if (varASTNode->child != NULL)		// It is array and has an index
 	{
 		isValidVarIndex = validVarIndex(realBase, baseModule, varASTNode->child) ;
 
-		if (isVarStaticArr (searchedVar) && isValidVarIndex == TK_NUM)		// Static array
+		if (isVarStaticArr (*searchedVar) && isValidVarIndex == TK_NUM)		// Static array
 		{
-			if (!validStaticArrStaticIndex (realBase, baseModule, searchedVar, varASTNode->child))
+			if (!validStaticArrStaticIndex (realBase, baseModule, *searchedVar, varASTNode->child))
 				realBase->semanticError = 1 ;
 		}
 		else if (!isValidVarIndex)
 			realBase->semanticError = 1 ;
 
-		return searchedVar->arrayIndices->type ;
+		return (*searchedVar)->arrayIndices->type ;
 	}
 	else
+	{
+		//printf ("hain?\n") ;
 		return TK_ARRAY ;
+	}
+}
 
-	return isValidVar ;
+void expressionTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assignopASTNode)
+{
+	if (assignopASTNode->child->next->child == NULL && assignopASTNode->child->next->id == TK_ID) // Simple assignment with RHS also as ID
+	{
+		//printf ("Simple id to id assignment\n") ;
+		varST *searchedVarLeft, *searchedVarRight ;
+		tokenID typeLeft, typeRight ;
+
+		typeLeft = validateVar (realBase, baseModule, assignopASTNode->child, &searchedVarLeft) ;
+		typeRight = validateVar (realBase, baseModule, assignopASTNode->child->next, &searchedVarRight) ;
+
+		//printf ("After both validateVars %s %s\n", tokenIDToString (typeLeft), tokenIDToString(typeRight)) ;
+
+		if (typeLeft == TK_ARRAY && typeRight == TK_ARRAY) 	// Array assignment
+		{
+			//printf ("Inside here 1\n") ;
+			if (searchedVarLeft->arrayIndices->type == searchedVarRight->arrayIndices->type)
+			{
+				//printf ("Inside here 2\n") ;
+
+				int leftLim1, rightLim1, leftLim2, rightLim2 ;	
+				leftLim1 = atoi (searchedVarLeft->arrayIndices->tokLeft->lexeme) ;
+				rightLim1 = atoi (searchedVarLeft->arrayIndices->tokRight->lexeme) ;
+				leftLim2 = atoi (searchedVarRight->arrayIndices->tokLeft->lexeme) ;
+				rightLim2 = atoi (searchedVarRight->arrayIndices->tokRight->lexeme) ;
+
+				if (leftLim1 != leftLim2 || rightLim1 != rightLim2)
+				{
+					printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+					realBase->semanticError = 1 ;
+				}
+			}
+			else
+			{
+				//printf ("ERROR?\n") ;
+				printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have the same base type\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+				realBase->semanticError = 1 ;
+			}
+		}
+		else if (typeLeft != 0 && typeRight != 0)
+		{
+			if (typeLeft != TK_ARRAY && typeRight == TK_ARRAY)
+			{
+				printf ("ERROR : In \"%s\" at line %d, array \"%s\" cannot be assigned to primitive \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				realBase->semanticError = 1 ;
+			}
+			else if (typeRight != TK_ARRAY && typeLeft == TK_ARRAY)
+			{
+				printf ("ERROR : In \"%s\" at line %d, primitive \"%s\" cannot be assigned to array \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				realBase->semanticError = 1 ;
+
+			}
+			else if (typeLeft != typeRight)
+			{
+				printf ("ERROR : In \"%s\" at line %d, assignment of \"%s\" to \"%s\" are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				realBase->semanticError = 1 ;
+			}
+		}
+	}
+	else if (assignopASTNode->child->next->child->next == NULL) // <U>
+		printf ("HEY : Going to U\n") ;
+	else
+		printf ("HEY : Skies clear\n") ;
 }

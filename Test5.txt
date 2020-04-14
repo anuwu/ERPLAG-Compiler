@@ -1,6 +1,8 @@
 <<<driver program>>>
 start
 	declare i:integer ;
-	print (i[2]) ;
-	i := 3 + 5 - 6 ; 
+	**declare j:real ;**
+	declare A:array [4..6] of integer ;
+	**declare B:array [0..10] of real ;**
+	j := B ;
 end
