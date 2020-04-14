@@ -273,19 +273,23 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 
 	/* ------------------------------------------------------------------------------------------------------------------*/
 
-	typeLeft = validateVar (realBase, baseModule, assignopASTNode->child, NULL) ;
+	typeLeft = validateVar (realBase, baseModule, assignopASTNode->child, &searchedVarLeft) ;
 	if (!typeLeft)
 		return ;
-	else if (typeLeft == TK_ARRAY)
-	{
-		printf ("ERROR : In \"%s\" at line %d, the assignment of an expression to array \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
-		realBase->semanticError = 1 ;
-		return ;
+	else
+	{ 
+		tinkerVar (realBase, baseModule, searchedVarLeft, assignopASTNode->child) ;
+		if (typeLeft == TK_ARRAY)
+		{
+			printf ("ERROR : In \"%s\" at line %d, the assignment of an expression to array \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
+			realBase->semanticError = 1 ;
+			return ;
+		}
 	}
 
 	if (!typeRight)
 	{
-		printf ("ERROR : In \"%s\" at line %d, the RHS expression has unknown/badly formed type\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber) ;
+		//printf ("ERROR : In \"%s\" at line %d, the RHS expression has unknown/badly formed type\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return ;
 	}

@@ -27,17 +27,17 @@ end
 
 <<module compute>>
 takes input[a:integer, b:integer, s: real, c:integer];
-returns [res_1:boolean, res_2_a:integer, res_2__b:real];
+returns [res_1:boolean, res_2_a:integer, res_2_b:real];
 start
 	declare new:boolean;
 	declare abc_1, pqr_2: integer;
-	pqr_2:= abc_1 + 6;
+	pqr_2:= abc_1 + 6;	
 	declare abc_1: real;				**ERROR: variable abc_1 is re-declared**
 	res_2_a:= -(a*b-c/pqr_2);
 	declare s: integer;				**Not an error as a local variable can shadow the input parameter**
-	res_2__b:= res_2_b + p *12+22.34E-2;		**ERROR variable p is not declared**
+	res_2_b:= res_2_b + p *12+22.34E-2;		**ERROR variable p is not declared**
 	declare m,n: boolean;
-	res_1 := a <=  b AND c >= a OR  s<=23.50 AND false;
+	res_1 := a <=  b AND c >= a OR  s<=23.50 AND false;	** ERROR_MAAM : s is integer now, hence error**
 	m:= n AND (abc_1<=pqr_2);
 	m:= m OR (a <= b) AND (res_2_b >= 30.65);
 	res_1:= (true AND c==b)OR(b>s AND (a<=d));	**ERROR: variable d is not declared**

@@ -108,7 +108,7 @@ start
 		x:=x + u*v- u<=v;                             **ERROR: Type mismatch error**
 	end
 	x:=c+y;	
-	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined**
+	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined** 			** CORRECT IT!!!!!!!!!!!!!!!! **
 	C[18]:= a[18]+ b[18];
 	A[5]:= B[6]- 10;
 	m:= A[5]< C[18] + A[11];			      **ERROR: element of array A is out of bound** 
@@ -124,7 +124,7 @@ start
 	c:= a+b;
 end
 
-<<module function4>>			    **ERROR: function4 definition and its declaration both appear before its call**
+<<module function4>>			    **ERROR: function4 definition and its declaration both appear before its call**	** CORRECT IT!!!!!!!!!!!!!!!! **
 takes input [a: boolean, b:boolean];
 returns [c:boolean];
 start
