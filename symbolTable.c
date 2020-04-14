@@ -941,7 +941,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  		} 
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
 		{
-			expressionTypeCheck (realBase, baseModule, statementAST->child) ;
+			assignmentTypeCheck (realBase, baseModule, statementAST->child) ;
 			;
 			// TODO typechecking
 			/*
@@ -1152,7 +1152,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				astNode * input_plistAST = currentASTNode->child->next ;
 				astNode * iplAST = input_plistAST->child ;
 
-				while ( iplAST ) {
+				while (iplAST) 
+				{
 
 					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
 						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
@@ -1191,11 +1192,15 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				
 					iplAST = iplAST->next ;
 				}
+
 				astNode * retAST = input_plistAST->next ;
 				astNode * oplAST = retAST->child ;
 
-				while ( oplAST ) {
+				// Handle exact offsets later
 
+				while ( oplAST ) 
+				{
+					// Input and output parameters CANNOT share identifiers
 					if (searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id)) 
 					{
 						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" variable already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;

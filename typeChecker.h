@@ -18,6 +18,14 @@ int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *ar
 tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, varST **searchedVar) ;
 int isVarStaticArr (varST *arrayVar) ;
 
-void expressionTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assignopASTNode) ;
+// Overall function
+void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assignopASTNode) ;
+
+// expression checker
+int isArithmeticType (tokenID id) ;
+int isLogicalOp (tokenID id) ;
+int isRelationalOp (tokenID id) ;
+int isArithmeticType (tokenID id) ;
+tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *exprNode) ;
 
 #endif

@@ -1,8 +1,7 @@
 <<<driver program>>>
 start
-	declare i:integer ;
-	**declare j:real ;**
-	declare A:array [4..6] of integer ;
-	**declare B:array [0..10] of real ;**
-	j := B ;
+	declare i,j:integer ;
+	declare A:array[6..9] of boolean ;
+	declare B:array[6..9] of boolean ;
+	j := 3.14E-6 ;
 end
