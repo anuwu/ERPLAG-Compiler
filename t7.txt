@@ -122,10 +122,9 @@ takes input [a: real, b:real];
 returns [c:real];
 start
 	c:= a+b;
-	declare c:integer ;
 end
 
-<<module function4>>			    **ERROR: function4 definition and its declaration both appear before its call**	** CORRECT IT!!!!!!!!!!!!!!!! **
+<<module function4>>			    **ERROR: function4 definition and its declaration both appear before its call**
 takes input [a: boolean, b:boolean];
 returns [c:boolean];
 start

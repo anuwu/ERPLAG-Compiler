@@ -11,7 +11,7 @@
 
 
 enum _stType {
-	DRIVER_ST , MODULE_ST , FOR_ST, WHILE_ST , SWITCH_ST,  MODULE_REDEC_ST
+	DRIVER_ST , MODULE_ST , FOR_ST, WHILE_ST , SWITCH_ST
 } ;
 
 struct _baseST ;

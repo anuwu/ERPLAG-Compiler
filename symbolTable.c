@@ -211,11 +211,8 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) {
 
 	moduleSTentry * tmp = base->modules[index] ;
 	while ( tmp!= NULL ) {
-		if ( (tmp->thisModuleST->tableType == MODULE_ST ||  tmp->thisModuleST->tableType == MODULE_REDEC_ST)&& strcmp ( tmp->thisModuleST->lexeme , lexeme ) == 0 )
-		{
-			//printf ("REPEAT !\n") ;
+		if ((tmp->thisModuleST->tableType == MODULE_ST /*||  tmp->thisModuleST->tableType == MODULE_REDEC_ST*/)&& strcmp ( tmp->thisModuleST->lexeme , lexeme) == 0 )
 			return tmp->thisModuleST ;
-		}
 
 		tmp = tmp->next ;
 	}
@@ -571,7 +568,12 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		if (modPtr != NULL)
 		{
 
-			if (varPtr == NULL && !modPtr->filledMod)
+			if (varPtr != NULL)
+			{
+				printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
+				base->semanticError = 1 ;
+			}
+			else if (!modPtr->filledMod)
 			{
 				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
 				base->semanticError = 1 ;
@@ -581,13 +583,6 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 			{
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
-			}
-
-			if (modPtr->tableType == MODULE_REDEC_ST)
-			{
-				printf ("ERROR : In \"%s\" at line %d, module \"%s\" found, but with clashing definition\n" , getParentModuleName(base, thisModule),funcNode->tok->lineNumber ,modPtr->lexeme) ;
-				base->semanticError = 1 ;
-				return -3 ;
 			}
 
 			if (checkIP(base, thisModule,modPtr,funcNode->next->child) !=NULL) {
@@ -611,7 +606,12 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
-			if (varPtr == NULL && !modPtr->filledMod)
+			if (varPtr != NULL)
+			{
+				printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber ,funcNode->next->next->tok->lexeme) ;
+				base->semanticError = 1 ;
+			}
+			else if (!modPtr->filledMod)
 			{
 				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
 				base->semanticError = 1 ;
@@ -622,16 +622,6 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
 			}
-
-
-			if (modPtr->tableType == MODULE_REDEC_ST)
-			{
-				printf ("ERROR : In \"%s\" at line %d, Module %s was found, but with repeating definition\n" ,getParentModuleName(base, thisModule) , funcNode->next->next->tok->lineNumber ,modPtr->lexeme) ;
-				return -3 ;
-			}
-			else
-				;
-				//printf("\t> Definition found\n") ;
 			
 			if (checkIP(base, thisModule,modPtr,funcNode->next->next->next->child) !=NULL | checkOP(base, thisModule,modPtr,funcNode->child) !=NULL ) {
 				return -3 ;		// Errors printed in checkIP and checkOP
@@ -1144,7 +1134,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			{
 				printf ("ERROR : In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
-				currentASTNode->child->prev = currentASTNode->child ;
+				//currentASTNode->child->prev = currentASTNode->child ;
 				currentASTNode = currentASTNode->next ;
 				continue ;
 			}
@@ -1235,7 +1225,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				printf ( "ERROR : In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
-				searchCond->tableType = MODULE_REDEC_ST ;
+				//searchCond->tableType = MODULE_REDEC_ST ;
 			}
 
 			currentASTNode = currentASTNode->next ;
@@ -1257,18 +1247,26 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 		//currentASTNode is now a module
 		while (currentASTNode) {
 
+				
 				if (currentASTNode->child->prev == currentASTNode->child)		// For invalid nodes
 				{
 					currentASTNode->child->prev = NULL ;
 					currentASTNode = currentASTNode->next ;
 					continue ;
 				}
+				
+
 				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
+				//printf ("Filling %s\n", currentASTNode->child->tok->lexeme) ;
+				fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
+				printModuleST ( moduleToInsert, depthSTPrint ) ;
+				/*
 				if (moduleToInsert->tableType == MODULE_ST)
 				{
 					fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
 					printModuleST ( moduleToInsert, depthSTPrint ) ;	
 				}
+				*/
 				currentASTNode = currentASTNode->next ;
 			}
 
