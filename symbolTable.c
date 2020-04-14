@@ -88,6 +88,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) {
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = currOffset ;
 	tmp->hasReturns = 0 ;
+	tmp->filledMod = 0 ;
 
 	return tmp ;
 }
@@ -564,17 +565,23 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 	//printf ("\t> isValidCall\n") ;
 
 	if(haveReturns == 0 ) {
-		varST * varPtr = searchVarInbaseST(base , funcNode->tok->lexeme ) ;
-		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->tok->lexeme) ;
+		varST * varPtr = searchVarInbaseST(base , funcNode->tok->lexeme) ;
+		moduleST * modPtr = searchModuleInbaseST (base , funcNode->tok->lexeme) ;
 
 		if (modPtr != NULL)
 		{
+
+			if (varPtr == NULL && !modPtr->filledMod)
+			{
+				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
+				base->semanticError = 1 ;
+			}
+
 			if (modPtr->hasReturns)
 			{
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
 			}
-
 
 			if (modPtr->tableType == MODULE_REDEC_ST)
 			{
@@ -604,6 +611,12 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
+			if (varPtr == NULL && !modPtr->filledMod)
+			{
+				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
+				base->semanticError = 1 ;
+			}
+
 			if (!modPtr->hasReturns)
 			{
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
@@ -942,17 +955,6 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
 		{
 			assignmentTypeCheck (realBase, baseModule, statementAST->child) ;
-			;
-			// TODO typechecking
-			/*
-			varST *searchedVar = searchVar(realBase, baseModule, statementAST->child->child->tok->lexeme) ;
-			if (validVar(realBase, baseModule, statementAST->child->child) && searchedVar != NULL)
-				tinkerVar (realBase, baseModule, searchedVar, statementAST->child->child) ;
-
-			// RHS business will occur here
-			LHSTypeExtract (statementAST->child)
-			RHSTypeCheck (realBase, baseModule, search)
-			*/
 		}
  		else if (statementAST->child->id == idList) 
  		{
@@ -1083,12 +1085,17 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 	}
 
 
-	if (baseModule->parent == realBase && !checkAllOutputsTinkered (baseModule))
+	if (baseModule->parent == realBase)
 	{
-		printf ("ERROR : In the definition of \"%s\", the following variables are not assigned - ", baseModule->lexeme) ;
-		printOutputsNotTinkered (baseModule) ;
-		printf ("\n") ;
-		realBase->semanticError = 1 ;
+		if (!checkAllOutputsTinkered(baseModule))
+		{
+			printf ("ERROR : In the definition of \"%s\", the following variables are not assigned - ", baseModule->lexeme) ;
+			printOutputsNotTinkered (baseModule) ;
+			printf ("\n") ;
+			realBase->semanticError = 1 ;
+		}
+
+		baseModule->filledMod = 1 ;
 	}
 
 }

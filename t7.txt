@@ -21,7 +21,7 @@ start
 	declare b4: array[100..150] of boolean;
 	declare p: array[2..20] of integer;	
 	a:= m[5]+3;				   **Not an error: array index within bounds**
-	use module function2 with parameters a,b;  **not an error as module function2 is declared before this call**
+	use module function2 with parameters a,b,c;  **not an error as module function2 is declared before this call**
 	p:= m;					   **Not an error: type expressions of array variables p and m are same and assignment is a valid operation**
 	k:=true;	
 	p:= m + p;                                 **ERROR: array variables m and p cannot be added**
@@ -108,7 +108,7 @@ start
 		x:=x + u*v- u<=v;                             **ERROR: Type mismatch error**
 	end
 	x:=c+y;	
-	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined** 			** CORRECT IT!!!!!!!!!!!!!!!! **
+	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined**
 	C[18]:= a[18]+ b[18];
 	A[5]:= B[6]- 10;
 	m:= A[5]< C[18] + A[11];			      **ERROR: element of array A is out of bound** 
@@ -122,6 +122,7 @@ takes input [a: real, b:real];
 returns [c:real];
 start
 	c:= a+b;
+	declare c:integer ;
 end
 
 <<module function4>>			    **ERROR: function4 definition and its declaration both appear before its call**	** CORRECT IT!!!!!!!!!!!!!!!! **

@@ -49,6 +49,7 @@ struct _moduleST {
 	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
+	int filledMod ;
 	int currOffset ;
 	int hasReturns ;
 } ;
@@ -105,18 +106,18 @@ void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) ;
 void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;
 
 //search
-varST * searchVarInbaseST ( baseST * base ,char * lexeme ) ;
-moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) ;
-moduleST * searchDriverInbaseST ( baseST * base ) ;
-varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
-varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
-varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
-varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) ;
-varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) ;
+varST * searchVarInbaseST (baseST * base ,char * lexeme) ;
+moduleST * searchModuleInbaseST (baseST * base, char * lexeme) ;
+moduleST * searchDriverInbaseST (baseST * base ) ;
+varST * searchlocalVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
+varST * searchInputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
+varST * searchOutputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
+varST * searchVarInCurrentModule (moduleST * thisModule , char *lexeme) ;
+varST * searchVar (baseST* realBase, moduleST *thisModule , char *lexeme) ;
 
 // Printing
-void printBaseST ( baseST * base ) ;
-void printModuleST ( moduleST * thisModuleST, int printParam) ;
+void printBaseST (baseST * base ) ;
+void printModuleST (moduleST * thisModuleST, int printParam) ;
 
 // Tinker
 void printOutputsNotTinkered (moduleST *baseModule) ;
@@ -125,13 +126,13 @@ void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) 
 void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode) ;
 
 // ST population
-baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint ) ;
-void fillModuleST ( baseST* realBase ,moduleST* baseModule , astNode * moduleASTNode, int depthSTPrint ) ;
+baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint) ;
+void fillModuleST (baseST* realBase , moduleST* baseModule , astNode* moduleASTNode, int depthSTPrint) ;
 
 // Function call checker
-int isValidCall ( baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
-varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
-varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode ) ;
+int isValidCall (baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
+varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
+varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
 
 // Helper
 char* varTypeToString (variableType varType) ;
