@@ -14,13 +14,13 @@ start
 	k:=true;	
 	p:= m + p;                                 **ERROR: array variables m and p cannot be added**
 	p[10]:= a*b-20*h;                          **Not an error: array index within bounds**			 
-	while(k AND x<=m[11] OR false)
+	while(k AND a<=m[11] OR false)
 	start
 		declare p, u:integer;
 		declare b: array[2..20] of integer;
 		b:= m;
 		b[2]:= u+m[25];			   **ERROR: element of array m is out of bound** 
-		p:= b[18]*18.56E+2;		   **ERROR: type mismatch **
+		a:= b[18]*18.56E+2;		   **ERROR: type mismatch **
 	end
         n:= a - p*b;				   **ERROR: types of p and b are different**
 	b:= b+3;

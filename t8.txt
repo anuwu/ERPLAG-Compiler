@@ -36,7 +36,7 @@ start
 		declare b: array[2..20] of integer;
 		declare b5, b6: array[35..50] of real;
 		b:= m;
-		[v1, u, k, p]:=use module function1 with parameters b4, v2, p, b5, u;	**not an error**						
+		[v1, u, k, p]:=use module function1 with parameters b4, v2, p, b5, u;	**not an error**			
 		b[2]:= u+m[25];			   **ERROR: element of array m is out of bound** 
 		p:= b[18]*18.56E+2;		   **ERROR: type mismatch **
 		declare v3:integer;
@@ -85,10 +85,10 @@ start
 	start
 		x:=x+k*y;				    **ERROR: Type mismatch error**
 		declare u, v:real;
-		declare int1: integer;
+		declare int1, int2: integer;
 		u := y+c*34.2;
 		v:= u-c*p-20.5E+2;
-		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, var4, int1; **ERROR: Input parameter type of Var4 does not match with formal parameter type**
+		[x, int1, m, int2]:=use module function1 with parameters Var3, c, k, Var4, int1; **ERROR: Input parameter type of Var4 does not match with formal parameter type**		
 		switch(k)
 		start
 			case 10: declare A:real;
@@ -100,18 +100,18 @@ start
 				 E:= Q;                       **ERROR: variables E and Q are of different types	**	 
 				 break;
 			case 20: A:= 12.90 + u*y - c; 
-				 [A, Q, u, y1]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Output parameter type of u does not match with formal parameter type**     
+				 [A, Q, u, y1]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Output parameter type of u does not match with formal parameter type**      
 				 get_value(Q);
 				 E[7]:= k+12 - Q*10+u;        **ERROR: Type mismatch error**    
 				 break;
 			default: E[9]:= B[15]+Q;	      **not an error**	
-				 [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters** 
+				 [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**       
 				 break;			 	
 		end
 		x:=x + u*v- u<=v;                             **ERROR: Type mismatch error**
 	end
 	x:=c+y;	
-	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined**
+	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is neither defined nor declared preceding this call**
 	C[18]:= a[18]+ b[18];
 	A[5]:= B[6]- 10;
 	m:= A[5]< C[18] + A[11];			      **ERROR: element of array A is out of bound** 

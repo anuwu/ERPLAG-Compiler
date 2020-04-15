@@ -1,7 +1,8 @@
 <<<driver program>>>
 start
 	declare i,j:integer ;
-	declare A:array[6..9] of boolean ;
-	declare B:array[6..9] of boolean ;
-	j := 3.14E-6 ;
+	declare k:boolean ;
+	declare l:real ;
+	declare A: array[k..l] of boolean ;
+	l := A[6] ;
 end

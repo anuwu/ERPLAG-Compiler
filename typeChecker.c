@@ -12,7 +12,7 @@ int isVarStaticArr (varST *arrayVar)
 	return (arrayVar->offset >= 0 || arrayVar->offset == -2) ;
 }
 
-int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode)
+int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode)	// Returns TK_NUM for static index, 0 for invalid dynamic index, TK_ID for valid dynamic index
 {
 	// Assumes varIndexASTNode isn't NULL
 
@@ -107,16 +107,16 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 	}
 	else if (varASTNode->child != NULL)		// It is array and has an index
 	{
-		isValidVarIndex = validVarIndex(realBase, baseModule, varASTNode->child) ;
+		isValidVarIndex = validVarIndex(realBase, baseModule, varASTNode->child) ;	// 0 if invalid static/dyanmic, TK_NUM if valid static, TK_ID if valid dynamic
 
-		if (isVarStaticArr (locSearchedVar) && isValidVarIndex == TK_NUM)		// Static array
+		if (!isValidVarIndex)
+			realBase->semanticError = 1 ;
+		else if (isVarStaticArr (locSearchedVar) && isValidVarIndex == TK_NUM)		// Static array
 		{
 			if (!validStaticArrStaticIndex (realBase, baseModule, locSearchedVar, varASTNode->child))
 				realBase->semanticError = 1 ;
 		}
-		else if (!isValidVarIndex)
-			realBase->semanticError = 1 ;
-
+		
 		return locSearchedVar->arrayIndices->type ;
 	}
 	else

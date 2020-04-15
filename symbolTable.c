@@ -650,8 +650,8 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 	
 }
 
-int getSize(baseST * realBase, varST * thisVar) {
-
+int getSize(baseST * realBase, varST * thisVar) 
+{
 	if(thisVar->datatype== TK_INTEGER)
 		return 2 ;
 	else if (thisVar->datatype == TK_BOOLEAN)
@@ -660,7 +660,7 @@ int getSize(baseST * realBase, varST * thisVar) {
 		return 4 ;
 	else if (thisVar->datatype == TK_ARRAY) 
 	{
-		int left, right, indexErrorFlag = 0 ;
+		int left, right ;
 		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
 
 		if (isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
@@ -682,7 +682,7 @@ int getSize(baseST * realBase, varST * thisVar) {
 
 			if (sz <= 0)
 			{
-				printf ("ERROR : In definition of \"%s\" at line %d, Left index of \"%s\" must be <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, the declaration of array \"%s\" must have left index <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
 				realBase->semanticError = 1 ;
 				return -2 ;
 			}
@@ -692,46 +692,43 @@ int getSize(baseST * realBase, varST * thisVar) {
 		else
 		{
 			// dynamic array index checks
-			if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && !isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
+			int indexErrorFlag = 0 ;
+			varST *searchedVarLeft, *searchedVarRight ;
+
+			if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]))
 			{
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) == NULL)
+				searchedVarLeft = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) ;
+				if (searchedVarLeft == NULL)
 				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) == NULL)
+				else if (searchedVarLeft->datatype != TK_INTEGER)
 				{
-					printf ("ERROR : In \"%s\", Right index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
+			}
 
-				if (indexErrorFlag)
+			if (!isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
+			{
+				searchedVarRight = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) ;
+				if (searchedVarRight == NULL)
 				{
-					realBase->semanticError = 1 ;
-					return -3 ;		// incorect dynamic array
+					printf ("ERROR : In \"%s\" at line %d, right index \"%s\" of array\"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+				else if (searchedVarRight->datatype != TK_INTEGER)
+				{
+					printf ("ERROR : In \"%s\" at line %d, right index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
 				}
 			}
-			else if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
-			{
-				// Left dynamic, right static
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) == NULL)
-				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 
-					realBase->semanticError = 1 ;
-					return -3 ;		// incorrect dynamic array
-				}
-			}
-			else
+			if (indexErrorFlag)
 			{
-				// left static, right dynamic
-				if (searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) == NULL)
-				{
-					printf ("ERROR : In \"%s\", Left index \"%s\" of local variable \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
-
-					realBase->semanticError = 1 ;
-					return -3 ;		// incorrect dynamic array
-				}
+				realBase->semanticError = 1 ;
+				return -3 ;		// incorect dynamic array
 			}
 
 			return -1 ;		// correct dynamic array
@@ -778,13 +775,12 @@ int caseValRepeat (astNode *caseAstNode)
 
 void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode)
 {
+	var->tinker++ ;
 	if (var->varType == VAR_LOOP)
 	{
 		printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
-	}
-	else if (var->varType == VAR_OUTPUT)
-		var->tinker = 1 ;
+	}	
 }
 
 void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead)
@@ -839,12 +835,13 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 	astNode * statementAST = statementsAST->child ;
 
 	while (statementAST) {
-		if(statementAST->child->id == TK_DECLARE ) {
+		if(statementAST->child->id == TK_DECLARE) 
+		{
 			// declare statement
 			astNode * idAST = statementAST->child->next->child ;
 			astNode * dataTypeAST = statementAST->child->next->next ;
 
-			while ( idAST ) 
+			while (idAST) 
 			{
 				searchedVar = searchVar (realBase, baseModule, idAST->tok->lexeme) ;
 
@@ -884,9 +881,14 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			}
 
 		}
-		else if ( statementAST->child->id == TK_WHILE ) 
+		else if ( statementAST->child->id == TK_WHILE) 
 		{
 			// TODO type checking
+			if (getExpressionType (realBase, baseModule, statementAST->child->next) != TK_BOOLEAN)
+			{
+
+				realBase->semanticError = 1 ;
+			}
 
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
 			fillModuleST ( realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
@@ -894,7 +896,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			insertScopeST ( baseModule , tmp ) ;
 		}
-		else if ( statementAST->child->id == TK_FOR ) 
+		else if ( statementAST->child->id == TK_FOR) 
 		{
 
 			searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
@@ -933,7 +935,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			printModuleST (forScope, depthSTPrint) ;
 			insertScopeST (baseModule , forScope) ;
 		}
- 		else if ( statementAST->child->id == TK_GET_VALUE ) 
+ 		else if (statementAST->child->id == TK_GET_VALUE) 
  		{
 			searchedVar = searchVar(realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 
@@ -952,9 +954,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  				validateVar (realBase, baseModule, statementAST->child->next, &searchedVar) ;
  		} 
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
-		{
 			assignmentTypeCheck (realBase, baseModule, statementAST->child) ;
-		}
  		else if (statementAST->child->id == idList) 
  		{
 			// [a] = use module with parameters [ d ] ;
@@ -1029,7 +1029,6 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			astNode *caseAstNode = statementAST->child->next->next ;
 
 			int hasDefault = 0 ;
-
 			while (caseAstNode != NULL)
 			{
 				// case value mismatch
@@ -1070,7 +1069,6 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					caseAstNode = caseAstNode->next->next ;
 			}
 
-			//printf ("Done with loop\n") ;
 			if (!hasDefault && searchedVar->datatype == TK_INTEGER)
 			{
 				printf ("ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
@@ -1082,28 +1080,10 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		}
 		statementAST = statementAST->next ;
 	}
-
-
-	if (baseModule->parent == realBase)
-	{
-		if (!checkAllOutputsTinkered(baseModule))
-		{
-			printf ("ERROR : In the definition of \"%s\", the following variables are not assigned - ", baseModule->lexeme) ;
-			printOutputsNotTinkered (baseModule) ;
-			printf ("\n") ;
-			realBase->semanticError = 1 ;
-		}
-
-		baseModule->filledMod = 1 ;
-	}
-
 }
-
-
 
 baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) 
 {
-
 	astNode * currentASTNode = thisASTNode ;
 	baseST * base = createBaseST () ;
 
@@ -1112,7 +1092,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	astNode * moduleDECS = currentASTNode->child ;
 	currentASTNode = moduleDECS->child ;
 	//inserting declare module id ;
-	while (currentASTNode) {
+	while (currentASTNode) 
+	{
 		
 		varST * searchResult ;
 		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
@@ -1128,11 +1109,9 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	}
 
 	//***************************************************************
-	/* handle it */
 	astNode * otherMODS = moduleDECS->next ;
 	moduleST *searchCond ;
 	
-
 	for (int otherMODS_Count = 1 ; otherMODS_Count <= 2 ; otherMODS_Count++)
 	{
 		currentASTNode = otherMODS->child ;
@@ -1266,7 +1245,17 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			
 			moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 			fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
-			printModuleST ( moduleToInsert, depthSTPrint ) ;
+
+			if (!checkAllOutputsTinkered(moduleToInsert))
+			{
+				printf ("ERROR : In the definition of \"%s\", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
+				printOutputsNotTinkered (moduleToInsert) ;
+				printf ("\n") ;
+				base->semanticError = 1 ;
+			}
+			moduleToInsert->filledMod = 1 ;
+
+			printModuleST (moduleToInsert, depthSTPrint) ;
 
 			currentASTNode = currentASTNode->next ;
 		}
