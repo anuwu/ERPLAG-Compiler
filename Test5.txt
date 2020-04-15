@@ -1,8 +1,11 @@
 <<<driver program>>>
 start
 	declare i,j:integer ;
-	declare k:boolean ;
 	declare l:real ;
-	declare A: array[k..l] of boolean ;
-	l := A[6] ;
+	declare K:array[4..7] of boolean ;
+
+	while (i + j >= 5 OR K[6])
+	start
+		l := 3.14 ;
+	end
 end

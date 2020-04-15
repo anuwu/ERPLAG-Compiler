@@ -12,7 +12,8 @@ char current_lexeme[20] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" ;
 
 extern char* tokenIDToString (tokenID id) ;
 
-int hashFunction ( char* lexeme , int size ) {
+int hashFunction ( char* lexeme , int size ) 
+{
 	int sm = 0 ;
 	int i = 0 ;
 
@@ -826,6 +827,71 @@ void printOutputsNotTinkered (moduleST *baseModule)
 	}
 }
 
+void addTinkerList (guardTinkerNode *tinkerHead, int tinker)
+{
+	if (tinkerHead->tinker == -1)
+		tinkerHead->tinker = tinker ;
+	else
+	{
+		while (tinkerHead->next != NULL)
+			tinkerHead = tinkerHead->next ;
+
+		guardTinkerNode *tinkerNode = (guardTinkerNode *) malloc (sizeof(guardTinkerNode)) ;
+		tinkerNode->tinker = tinker ;
+		tinkerNode->next = NULL ;
+
+		tinkerHead->next = tinkerNode ;
+	}
+}
+
+void getExprVars (baseST *realBase, moduleST *baseModule, guardTinkerNode *tinkerHead, astNode *exprNode)
+{
+	if (exprNode->child == NULL || exprNode->child->next == NULL)	// array[index]
+	{
+		varST *searchedVar, *searchedVarIndex ;
+
+		searchedVar = searchVar (realBase, baseModule, exprNode->tok->lexeme) ;
+		if (searchedVar != NULL)
+			addTinkerList (tinkerHead, searchedVar->tinker) ;
+
+		if (exprNode->child != NULL && exprNode->child->id == TK_ID)
+		{
+			searchedVarIndex = searchVar (realBase, baseModule, exprNode->child->tok->lexeme) ;
+			if (searchedVarIndex != NULL)
+				addTinkerList (tinkerHead, searchedVarIndex->tinker) ;
+		}
+	}
+	else
+	{
+		getExprVars (realBase, baseModule, tinkerHead, exprNode->child) ;
+		getExprVars (realBase, baseModule, tinkerHead, exprNode->child->next) ;
+	}
+}
+
+guardTinkerNode* getGuardTinkerList (baseST *realBase, moduleST *baseModule, astNode *exprNode)
+{
+	guardTinkerNode *tinkerHead = (guardTinkerNode *) malloc (sizeof(guardTinkerNode)) ;
+	tinkerHead->tinker = -1 ;
+	tinkerHead->next = NULL ;
+
+	getExprVars (realBase, baseModule, tinkerHead, exprNode) ;
+	return tinkerHead ;
+}
+
+int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *tinkerHeadAfter)
+{
+	while (tinkerHeadBefore && tinkerHeadAfter)
+	{
+		if (tinkerHeadAfter->tinker > tinkerHeadBefore->tinker)
+			return 1 ;
+
+		tinkerHeadAfter = tinkerHeadAfter->next ;
+		tinkerHeadBefore = tinkerHeadBefore->next ;
+	}
+
+	return 0 ;
+}
+
 
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
@@ -859,9 +925,9 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 						tmp->datatype = TK_ARRAY ;
 						tmp->arrayIndices = dataTypeAST->dt->arrType ; 
 					}
-					else {
+					else 
 						tmp->datatype = dataTypeAST->dt->pType ;
-					}
+					
 
 					// filling offset
 					getOffsetSize = getSize(realBase, tmp) ;
@@ -884,21 +950,31 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		else if ( statementAST->child->id == TK_WHILE) 
 		{
 			// TODO type checking
+			guardTinkerNode *tinkerHeadBefore, *tinkerHeadAfter ;
+
 			if (getExpressionType (realBase, baseModule, statementAST->child->next) != TK_BOOLEAN)
 			{
-
+				printf ("ERROR : In \"%s\" at line %d, the guard condition must be of type boolean\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
+			tinkerHeadBefore = getGuardTinkerList (realBase, baseModule, statementAST->child->next) ;
 			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
 			fillModuleST ( realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
-			printModuleST (tmp,  depthSTPrint) ;
+			tinkerHeadAfter = getGuardTinkerList (realBase, baseModule, statementAST->child->next) ;
 
+			
+			if (!hasTinkerListChanged (tinkerHeadBefore, tinkerHeadAfter))
+			{
+				printf ("ERROR : In \"%s\" at line %d, none of the identifiers of the guard condition are being changed in the while loop body\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
+				realBase->semanticError = 1 ;
+			}
+
+			printModuleST (tmp,  depthSTPrint) ;
 			insertScopeST ( baseModule , tmp ) ;
 		}
 		else if ( statementAST->child->id == TK_FOR) 
 		{
-
 			searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
