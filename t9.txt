@@ -119,7 +119,7 @@ start
 		declare b: array[2..20] of integer;
 		declare b5, b6: array[35..50] of real;
 		b:= m;
-		[v1, u, k, p]:=use module function1 with parameters b4, v2, p, b5, u;	**not an error**			** CORRECT IT **		
+		[v1, u, k, p]:=use module function1 with parameters b4, v2, p, b5, u;	**not an error**		
 		b[2]:= u+m[25];			   **ERROR: element of array m is out of bound** 
 		p:= b[18]*18.56E+2;		   **ERROR: type mismatch **
 		declare v3:integer;
@@ -171,7 +171,7 @@ start
 		declare int1: integer;
 		u := y+c*34.2;
 		v:= u-c*p-20.5E+2;
-		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**	** CORR **
+		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**
 		switch(k)
 		start
 			case 10: declare A:real;
@@ -188,7 +188,7 @@ start
 				 E[7]:= k+12 - Q*10+u;        **ERROR: Type mismatch error**    
 				 break;
 			default: E[9]:= B[15]+Q;	      **not an error**	
-				 [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**  **CR**     
+				 [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**      
 				 break;			 	
 		end
 		x:=x + u*v- u<=v;                             **ERROR: Type mismatch error**

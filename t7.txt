@@ -21,7 +21,7 @@ start
 	declare b4: array[100..150] of boolean;
 	declare p: array[2..20] of integer;	
 	a:= m[5]+3;				   **Not an error: array index within bounds**
-	use module function2 with parameters a,b,c;  **not an error as module function2 is declared before this call**
+	use module function2 with parameters a,b;  **not an error as module function2 is declared before this call**
 	p:= m;					   **Not an error: type expressions of array variables p and m are same and assignment is a valid operation**
 	k:=true;	
 	p:= m + p;                                 **ERROR: array variables m and p cannot be added**
@@ -85,7 +85,7 @@ start
 		declare int1: integer;
 		u := y+c*34.2;
 		v:= u-c*p-20.5E+2;
-		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**		
+		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**		
 		switch(k)
 		start
 			case 10: declare A:real;

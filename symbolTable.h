@@ -50,6 +50,8 @@ struct _moduleST {
 	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int filledMod ;
+	int declUse ;
+
 	int currOffset ;
 	int hasReturns ;
 } ;

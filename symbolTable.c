@@ -557,21 +557,24 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 
 
-int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , int haveReturns ) {
-
-	//printf ("\t> isValidCall\n") ;
-
-	if(haveReturns == 0 ) {
+int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , int haveReturns) 
+{
+	if(haveReturns == 0) 
+	{
 		varST * varPtr = searchVarInbaseST(base , funcNode->tok->lexeme) ;
 		moduleST * modPtr = searchModuleInbaseST (base , funcNode->tok->lexeme) ;
 
 		if (modPtr != NULL)
 		{
-
 			if (varPtr != NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
-				base->semanticError = 1 ;
+				if (modPtr->filledMod && !modPtr->declUse)
+				{
+					printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
+					base->semanticError = 1 ;
+				}
+				else
+					modPtr->declUse = 1 ;
 			}
 			else if (!modPtr->filledMod)
 			{
@@ -600,7 +603,8 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				return -2 ;
 		}
 	}
-	else if ( haveReturns == 1 ) {
+	else if ( haveReturns == 1 ) 
+	{
 		varST * varPtr = searchVarInbaseST(base , funcNode->next->next->tok->lexeme ) ;
 		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->next->next->tok->lexeme) ;
 
@@ -608,8 +612,13 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		{
 			if (varPtr != NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber ,funcNode->next->next->tok->lexeme) ;
-				base->semanticError = 1 ;
+				if (modPtr->filledMod && !modPtr->declUse)
+				{
+					printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber ,funcNode->next->next->tok->lexeme) ;
+					base->semanticError = 1 ;
+				}
+				else
+					modPtr->declUse = 1 ;
 			}
 			else if (!modPtr->filledMod)
 			{
@@ -1103,7 +1112,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	astNode * moduleDECS = currentASTNode->child ;
 	currentASTNode = moduleDECS->child ;
 	//inserting declare module id ;
-	while ( currentASTNode ) {
+	while (currentASTNode) {
 		
 		varST * searchResult ;
 		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
@@ -1128,7 +1137,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	{
 		currentASTNode = otherMODS->child ;
 		//currentASTNode is now a modulef
-		while ( currentASTNode ) {
+		while (currentASTNode) 
+		{
 
 			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
 			{
@@ -1245,30 +1255,21 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 		currentASTNode = otherMODS->child ;
 
 		//currentASTNode is now a module
-		while (currentASTNode) {
-
-				
-				if (currentASTNode->child->prev == currentASTNode->child)		// For invalid nodes
-				{
-					currentASTNode->child->prev = NULL ;
-					currentASTNode = currentASTNode->next ;
-					continue ;
-				}
-				
-
-				moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
-				//printf ("Filling %s\n", currentASTNode->child->tok->lexeme) ;
-				fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
-				printModuleST ( moduleToInsert, depthSTPrint ) ;
-				/*
-				if (moduleToInsert->tableType == MODULE_ST)
-				{
-					fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
-					printModuleST ( moduleToInsert, depthSTPrint ) ;	
-				}
-				*/
+		while (currentASTNode)
+		{
+			if (currentASTNode->child->prev == currentASTNode->child)		// For invalid nodes
+			{
+				currentASTNode->child->prev = NULL ;
 				currentASTNode = currentASTNode->next ;
+				continue ;
 			}
+			
+			moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
+			fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
+			printModuleST ( moduleToInsert, depthSTPrint ) ;
+
+			currentASTNode = currentASTNode->next ;
+		}
 
 		if (otherMODS->next != NULL)
 			otherMODS = otherMODS->next->next ;
