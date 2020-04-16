@@ -1,6 +1,5 @@
 <<<driver program>>>
 start
 	declare i:integer ;
-	i := 4 - (5 + 7) ;
-	print (i) ;
+	i := 4 ;
 end
