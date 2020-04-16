@@ -26,108 +26,108 @@ int get_label()
 	return x;
 }
 
-void boundCheck(varST* v, astNode* temp)
+void boundCheck(varST* vst, astNode* temp,FILE* fp)
 	{
 	// Case 1 : Static array
 	if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_NUM)
 	   {
-	   	//printf("Entered static array\n");
-		 	//printf("Entered static array, variable index type checking\n");
-		 	printf("PUSH AX\n");
+	   	//fprintf(fp,"Entered static array\n");
+		 	//fprintf(fp,"Entered static array, variable index type checking\n");
+		 	fprintf(fp,"PUSH AX\n");
 		 	if(temp->child->id == TK_ID) // variable index
-		 		printf("MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
+		 		fprintf(fp,"MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
 		 	else //static index
-		 		printf("MOV AX,%d\n",atoi(temp->child->tok->lexeme));
-		 	printf("CMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
+		 		fprintf(fp,"MOV AX,%d\n",atoi(temp->child->tok->lexeme));
+		 	fprintf(fp,"CMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
 		 	int l1=get_label();
 		 	int l2=get_label();
-		 	printf("JG LABEL%d\n",l1);//It will give error
-		 	printf("CMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-		 	printf("JL LABEL%d\n",l1);
-		 	printf("JMP LABEL%d\n",l2);
-		 	printf("LABEL%d:\n",l1);
-		 	//printf("call error\n");
-		 	printf("call exit\n");
-		 	printf("LABEL%d:\n",l2);
-		 	printf("POP AX\n");
+		 	fprintf(fp,"JG LABEL%d\n",l1);//It will give error
+		 	fprintf(fp,"CMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+		 	fprintf(fp,"JL LABEL%d\n",l1);
+		 	fprintf(fp,"JMP LABEL%d\n",l2);
+		 	fprintf(fp,"LABEL%d:\n",l1);
+		 	//fprintf(fp,"call error\n");
+		 	fprintf(fp,"call exit\n");
+		 	fprintf(fp,"LABEL%d:\n",l2);
+		 	fprintf(fp,"POP AX\n");
 	   }
 	else if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_NUM) // Left bound is variable
 	   {
-	   //printf("Entered left dynamic array\n");
+	   //fprintf(fp,"Entered left dynamic array\n");
 	   		int l1=get_label();
 		 	int l2=get_label();
-	   		printf("PUSH AX\n");
+	   		fprintf(fp,"PUSH AX\n");
 		 	if(temp->child->id == TK_ID) // variable index
-		 		printf("MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
+		 		fprintf(fp,"MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
 		 	else //static index
-		 		printf("MOV AX,%d\n",atoi(temp->child->tok->lexeme));
-		 	printf("CMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
-		 	printf("JG LABEL%d\n",l1);//It will give error
-		 	printf("PUSH BX\n");
-		 	printf("MOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-		 	printf("CMP AX,BX\n");
-		 	printf("JL LABEL%d\n",l1);
-		 	printf("JMP LABEL%d\n",l2);
-		 	printf("LABEL%d:\n",l1);
-		 	//printf("call error\n");
-		 	printf("call exit\n");
-		 	printf("LABEL%d:\n",l2);
-		 	printf("POP BX\n");
-		 	printf("POP AX\n");
+		 		fprintf(fp,"MOV AX,%d\n",atoi(temp->child->tok->lexeme));
+		 	fprintf(fp,"CMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
+		 	fprintf(fp,"JG LABEL%d\n",l1);//It will give error
+		 	fprintf(fp,"PUSH BX\n");
+		 	fprintf(fp,"MOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
+		 	fprintf(fp,"CMP AX,BX\n");
+		 	fprintf(fp,"JL LABEL%d\n",l1);
+		 	fprintf(fp,"JMP LABEL%d\n",l2);
+		 	fprintf(fp,"LABEL%d:\n",l1);
+		 	//fprintf(fp,"call error\n");
+		 	fprintf(fp,"call exit\n");
+		 	fprintf(fp,"LABEL%d:\n",l2);
+		 	fprintf(fp,"POP BX\n");
+		 	fprintf(fp,"POP AX\n");
 	   }
 	else if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_ID) // Right bound is variable   
 	   {
-	   //printf("Entered right dynamic array\n");
+	   //fprintf(fp,"Entered right dynamic array\n");
 	   	 
 	   		int l1=get_label();
 		 	int l2=get_label();
-	   		printf("PUSH AX\n");
-	   		printf("PUSH BX\n");
+	   		fprintf(fp,"PUSH AX\n");
+	   		fprintf(fp,"PUSH BX\n");
 	   		if(temp->child->id == TK_ID) // variable index
-		 		printf("MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
+		 		fprintf(fp,"MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
 		 	else //static index
-		 		printf("MOV AX,%d\n",atoi(temp->child->tok->lexeme));	
-		 	printf("MOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-		 	printf("CMP AX,BX\n");
-		 	printf("JG LABEL%d\n",l1);//It will give error
-		 	printf("CMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-		 	//printf("CMP AX,BX\n");
-		 	printf("JL LABEL%d\n",l1);// It will give an error
-		 	printf("JMP LABEL%d\n",l2);
-		 	printf("LABEL%d:\n",l1);
-		 	//printf("call error\n");
-		 	printf("call exit\n");
-		 	printf("LABEL%d:\n",l2);
-		 	printf("POP BX\n");
-		 	printf("POP AX\n");
+		 		fprintf(fp,"MOV AX,%d\n",atoi(temp->child->tok->lexeme));	
+		 	fprintf(fp,"MOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
+		 	fprintf(fp,"CMP AX,BX\n");
+		 	fprintf(fp,"JG LABEL%d\n",l1);//It will give error
+		 	fprintf(fp,"CMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+		 	//fprintf(fp,"CMP AX,BX\n");
+		 	fprintf(fp,"JL LABEL%d\n",l1);// It will give an error
+		 	fprintf(fp,"JMP LABEL%d\n",l2);
+		 	fprintf(fp,"LABEL%d:\n",l1);
+		 	//fprintf(fp,"call error\n");
+		 	fprintf(fp,"call exit\n");
+		 	fprintf(fp,"LABEL%d:\n",l2);
+		 	fprintf(fp,"POP BX\n");
+		 	fprintf(fp,"POP AX\n");
 	 
 	   }
 	else if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_ID) // Both bounds are variable    		
 	   {
-	  // printf("Entered dynamic array\n");
+	  // fprintf(fp,"Entered dynamic array\n");
 	   		int l1=get_label();
 		 	int l2=get_label();
-	   		printf("PUSH AX\n");
-	   		printf("PUSH BX\n");
+	   		fprintf(fp,"PUSH AX\n");
+	   		fprintf(fp,"PUSH BX\n");
 		 	if(temp->child->id == TK_ID) // variable index
-		 		printf("MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
+		 		fprintf(fp,"MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
 		 	else //static index
-		 		printf("MOV AX,%d\n",atoi(temp->child->tok->lexeme));	
-		 	printf("MOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-		 	printf("CMP AX,BX\n");
-		 	printf("JG LABEL%d\n",l1);//It will give error
-		 	printf("MOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-		 	printf("CMP AX,BX\n");
-		 	printf("JL LABEL%d\n",l1);// It will give an error
-		 	printf("JMP LABEL%d\n",l2);
-		 	printf("LABEL%d:\n",l1);
-		 	//printf("call error\n");
-		 	printf("call exit\n");
-		 	printf("LABEL%d:\n",l2);
-		 	printf("POP BX\n");
-		 	printf("POP AX\n");
+		 		fprintf(fp,"MOV AX,%d\n",atoi(temp->child->tok->lexeme));	
+		 	fprintf(fp,"MOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
+		 	fprintf(fp,"CMP AX,BX\n");
+		 	fprintf(fp,"JG LABEL%d\n",l1);//It will give error
+		 	fprintf(fp,"MOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
+		 	fprintf(fp,"CMP AX,BX\n");
+		 	fprintf(fp,"JL LABEL%d\n",l1);// It will give an error
+		 	fprintf(fp,"JMP LABEL%d\n",l2);
+		 	fprintf(fp,"LABEL%d:\n",l1);
+		 	//fprintf(fp,"call error\n");
+		 	fprintf(fp,"call exit\n");
+		 	fprintf(fp,"LABEL%d:\n",l2);
+		 	fprintf(fp,"POP BX\n");
+		 	fprintf(fp,"POP AX\n");
 	   }
-	 //printf("Leaving bound checking\n");  		
+	 //fprintf(fp,"Leaving bound checking\n");  		
   }	   	 
 void print1()
 {
@@ -166,12 +166,12 @@ void print2()
 
 varST* vst;
 moduleST* lst;
-void code_generation(astNode* astt)
+void code_generation(astNode* astRoot, FILE* fp)
 {
 	astNode* temp = astRoot; // Initially stores the root node of the AST
 	if(temp==NULL)
 	{
-		//printf("null");
+		//fprintf(fp,"null");
 		return;
 	}
 
@@ -179,39 +179,39 @@ void code_generation(astNode* astt)
 	{
 		if(temp->id == program)  // Encounters program as the root node
 		{
-			code_generation(temp->child,fp);  // Moves to children of pram
+			code_generation(temp->child,fp);  // Moves to children of program
 		}
 
 		else if(temp->id == moduleDeclarations )
 		{
-			code_generation(temp->next,fp); // It hasn’t been accounted foet
+			code_generation(temp->next,fp); // It hasn’t been accounted for yet
 		}
 
 		else if(temp->id == otherModules )
 		{
-			code_generation(temp->next,fp); // It hasn’t been accounted foet
+			code_generation(temp->next,fp); // It hasn’t been accounted for yet
 		}	
 
 		else if(temp->id == driverModule )
 		{
-			//printf("push BP\n");
-			//printf("MOV BP,SP\n");
-			code_generation(temp->child,fp); //Move to first child of der
-			code_generation(temp->next,fp); // Move to the next child of pram
+			//fprintf(fp,"push BP\n");
+			//fprintf(fp,"MOV BP,SP\n");
+			code_generation(temp->child,fp); //Move to first child of driver
+			code_generation(temp->next,fp); // Move to the next child of program
 		}
 
 		else if(temp->id == statements)
 		{	
 			lst = temp->localST;
-			code_generation(temp->child);
-			code_generation(temp->next);
+			code_generation(temp->child,fp);
+			code_generation(temp->next,fp);
 		}
 
 		else if(temp->id == statement)
 		{	
 			
-			code_generation(temp->child);
-			code_generation(temp->next);
+			code_generation(temp->child,fp);
+			code_generation(temp->next,fp);
 		}
 	}
 
@@ -221,42 +221,42 @@ void code_generation(astNode* astt)
 		{
 			temp=temp->next;
 			//STORING ORIGINAL VALUE ON STACK
-			 // printf("MOV AX, [%s_cb] \n",temp->tok->lexeme);
-			 // printf("PUSH AX\n");
-			code_generation(temp);
+			 // fprintf(fp,"MOV AX, [%s_cb] \n",temp->tok->lexeme);
+			 // fprintf(fp,"PUSH AX\n");
+			code_generation(temp,fp);
 
 			//storing upper bound 
-			 // printf("MOV BX, %s\n",temp->next->next->tok->lexeme);//4
-			 // printf("PUSH BX\n");//4
-			code_generation(temp->next->next);
+			 // fprintf(fp,"MOV BX, %s\n",temp->next->next->tok->lexeme);//4
+			 // fprintf(fp,"PUSH BX\n");//4
+			code_generation(temp->next->next,fp);
 
 			//changing value of loop variable to lower bound
-			printf("MOV AX,%s\n", temp->next->tok->lexeme);
-			printf("MOV [%s_cb], AX\n",temp->tok->lexeme );
+			fprintf(fp,"MOV AX,%s\n", temp->next->tok->lexeme);
+			fprintf(fp,"MOV [%s_cb], AX\n",temp->tok->lexeme );
 
-			//printf("MOV AX, [%s_cb]\n",temp->tok->lexeme);
-			//printf("PUSH AX\n");
+			//fprintf(fp,"MOV AX, [%s_cb]\n",temp->tok->lexeme);
+			//fprintf(fp,"PUSH AX\n");
 			int start_label = get_label();
 			int end_label = get_label();
-			printf("\n\n\nLABEL%d:\n",start_label);
+			fprintf(fp,"\n\n\nLABEL%d:\n",start_label);
 			//temp=temp->next->next->next;//statements
 
 
-			printf("POP AX\n"); //4
-			printf("PUSH AX\n");
+			fprintf(fp,"POP AX\n"); //4
+			fprintf(fp,"PUSH AX\n");
 			
-			printf("MOV BX, [%s_cb]\n",temp->tok->lexeme);//variable
-			printf("CMP BX,AX\n");
-			printf("JG LABEL%d\n",end_label);
-			code_generation(temp->next->next->next);
-			printf("MOV BX, [%s_cb]\n",temp->tok->lexeme);
-			printf("INC BX\n");
-			printf("MOV [%s_cb],BX\n",temp->tok->lexeme);
-			printf("JMP LABEL%d",start_label);
-			printf("\n\n\n\nLABEL%d:\n",end_label);
-			printf("POP AX\n");
-			printf("POP AX\n");
-			printf("MOV [%s_cb],AX\n",temp->tok->lexeme);
+			fprintf(fp,"MOV BX, [%s_cb]\n",temp->tok->lexeme);//variable
+			fprintf(fp,"CMP BX,AX\n");
+			fprintf(fp,"JG LABEL%d\n",end_label);
+			code_generation(temp->next->next->next,fp);
+			fprintf(fp,"MOV BX, [%s_cb]\n",temp->tok->lexeme);
+			fprintf(fp,"INC BX\n");
+			fprintf(fp,"MOV [%s_cb],BX\n",temp->tok->lexeme);
+			fprintf(fp,"JMP LABEL%d",start_label);
+			fprintf(fp,"\n\n\n\nLABEL%d:\n",end_label);
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"MOV [%s_cb],AX\n",temp->tok->lexeme);
 
 		}
 
@@ -265,14 +265,14 @@ void code_generation(astNode* astt)
 			temp=temp->next;
 			int start=get_label();
 			int end=  get_label();
-			printf("\nLABEL%d:\n",start);
-			code_generation(temp);
-			printf("POP AX\n");
-			printf("CMP AX,00000001h\n");
-			printf("JNE LABEL%d\n",end);
-			code_generation(temp->next);
-			printf("JMP LABEL%d\n",start);
-			printf("\nLABEL%d:\n",end);
+			fprintf(fp,"\nLABEL%d:\n",start);
+			code_generation(temp,fp);
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"CMP AX,00000001h\n");
+			fprintf(fp,"JNE LABEL%d\n",end);
+			code_generation(temp->next,fp);
+			fprintf(fp,"JMP LABEL%d\n",start);
+			fprintf(fp,"\nLABEL%d:\n",end);
 
 		}
 
@@ -282,27 +282,27 @@ void code_generation(astNode* astt)
 			vst=searchVarInCurrentModule (lst,temp->tok->lexeme);
 			if(vst->datatype == TK_INTEGER || vst->datatype == TK_REAL )
 			{
-				code_generation(temp);
-				printf("POP AX\n");
-				printf("call outPut\n");
-				printf("call printInt\n");
+				code_generation(temp,fp);
+				fprintf(fp,"POP AX\n");
+				fprintf(fp,"call outPut\n");
+				fprintf(fp,"call printInt\n");
 			}
 			//check for boolean using ST			
 			else if(vst->datatype == TK_BOOLEAN)
 			{
 				int start=get_label();
 				int end=get_label();
-				code_generation(temp);
-				printf("POP AX\n");
-				printf("CMP AX,00000000h\n");
-				printf( "JNE LABEL%d\n",start);
-				printf("call outPut\n");
-				printf("call faLSE\n");
-				printf( "JMP LABEL%d\n",end);
-				printf( "\nLABEL%d:\n",start);
-				printf("call outPut\n");
-				printf("call trUE\n");
-				printf( "\nLABEL%d:\n",end);
+				code_generation(temp,fp);
+				fprintf(fp,"POP AX\n");
+				fprintf(fp,"CMP AX,00000000h\n");
+				fprintf(fp, "JNE LABEL%d\n",start);
+				fprintf(fp,"call outPut\n");
+				fprintf(fp,"call faLSE\n");
+				fprintf(fp, "JMP LABEL%d\n",end);
+				fprintf(fp, "\nLABEL%d:\n",start);
+				fprintf(fp,"call outPut\n");
+				fprintf(fp,"call trUE\n");
+				fprintf(fp, "\nLABEL%d:\n",end);
 			}
 
 			else if(vst->datatype == TK_ARRAY)
@@ -329,25 +329,25 @@ void code_generation(astNode* astt)
 				{
 					int lb=atoi(vst->arrayIndices->tokLeft->lexeme);
 					int ub=atoi(vst->arrayIndices->tokRight->lexeme);
-					printf("call outPut\n");
+					fprintf(fp,"call outPut\n");
 					if(vst->arrayIndices->type == TK_BOOLEAN)  //static array of type boolean
 					{
 						for(int i=lb;i<=ub;i++)
 						{	
 							int start=get_label();
 							int end=get_label();
-							printf("MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (i-lb)*size);
-							printf("PUSH AX\n");
-							printf("POP AX\n");
-							printf("CMP AX,00000000h\n");
-							printf( "JNE LABEL%d\n",start);
-							//printf("call outPut\n");
-							printf("call faLSE\n");
-							printf( "JMP LABEL%d\n",end);
-							printf( "\nLABEL%d:\n",start);
-							//printf("call outPut\n");
-							printf("call trUE\n");
-							printf( "\nLABEL%d:\n",end);
+							fprintf(fp,"MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (i-lb)*size);
+							fprintf(fp,"PUSH AX\n");
+							fprintf(fp,"POP AX\n");
+							fprintf(fp,"CMP AX,00000000h\n");
+							fprintf(fp, "JNE LABEL%d\n",start);
+							//fprintf(fp,"call outPut\n");
+							fprintf(fp,"call faLSE\n");
+							fprintf(fp, "JMP LABEL%d\n",end);
+							fprintf(fp, "\nLABEL%d:\n",start);
+							//fprintf(fp,"call outPut\n");
+							fprintf(fp,"call trUE\n");
+							fprintf(fp, "\nLABEL%d:\n",end);
 						}
 					}
 
@@ -356,10 +356,10 @@ void code_generation(astNode* astt)
 					{
 						for(int i=lb;i<=ub;i++) //static array of type num
 						{
-							printf("MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (i-lb)*size);
-							printf("PUSH AX\n");
-							printf("POP AX\n");
-							printf("call printInt\n");
+							fprintf(fp,"MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (i-lb)*size);
+							fprintf(fp,"PUSH AX\n");
+							fprintf(fp,"POP AX\n");
+							fprintf(fp,"call printInt\n");
 						}
 					}
 				}
@@ -378,9 +378,9 @@ void code_generation(astNode* astt)
 			temp=temp->next;
 			if(temp->child == NULL)//if not an array
 			{
-				printf("call inPut\n");
-				printf("call readInt\n");
-				printf("MOV [%s_cb],EAX\n",temp->tok->lexeme);
+				fprintf(fp,"call inPut\n");
+				fprintf(fp,"call readInt\n");
+				fprintf(fp,"MOV [%s_cb],EAX\n",temp->tok->lexeme);
 			}
 
 			else
@@ -392,168 +392,168 @@ void code_generation(astNode* astt)
 		else if(temp->id == TK_AND || temp->id == TK_OR) //checked
 		{
 			int start,mid,end;
-			code_generation(temp->child);
-			code_generation(temp->child->next);
+			code_generation(temp->child,fp);
+			code_generation(temp->child->next,fp);
 
 			start=get_label();
 			mid=get_label();
 			end=get_label();
 
-			printf("POP BX\n");
-			printf("POP AX\n"); 
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"POP AX\n"); 
 			if(temp->id == TK_AND)
 			{
-				printf("CMP AX,00000001h\n");
-				printf("JE LABEL%d\n",start);
-				printf("MOV AX,00000000h\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n",end);
+				fprintf(fp,"CMP AX,00000001h\n");
+				fprintf(fp,"JE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,00000000h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n",end);
 
-				printf("\n\nLABEL%d:\n",start);
-				printf("CMP BX,00000001h\n");
-				printf("JNE LABEL%d\n",mid);
-				printf("MOV AX,00000001h\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n",end);
-				printf("\n\nLABEL%d:\n",mid);
-				printf("MOV AX,00000000h\n");
-				printf("PUSH AX\n");
-				printf("\n\nLABEL%d:\n",end);
+				fprintf(fp,"\n\nLABEL%d:\n",start);
+				fprintf(fp,"CMP BX,00000001h\n");
+				fprintf(fp,"JNE LABEL%d\n",mid);
+				fprintf(fp,"MOV AX,00000001h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n",end);
+				fprintf(fp,"\n\nLABEL%d:\n",mid);
+				fprintf(fp,"MOV AX,00000000h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"\n\nLABEL%d:\n",end);
 
 			}
 
 			else
 			{
-				printf("CMP AX,00000001h\n");
-				printf("JNE LABEL%d\n",start);
-				printf("MOV AX,00000001h\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n",end);
+				fprintf(fp,"CMP AX,00000001h\n");
+				fprintf(fp,"JNE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,00000001h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n",end);
 
-				printf("\n\nLABEL%d:\n",start);
-				printf("CMP BX,00000001h\n");
-				printf("JNE LABEL%d\n",mid);
-				printf("MOV AX,00000001h\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n",end);
-				printf("\n\nLABEL%d:\n",mid);
-				printf("MOV AX,00000000h\n");
-				printf("PUSH AX\n");
-				printf("\n\nLABEL%d:\n",end);
+				fprintf(fp,"\n\nLABEL%d:\n",start);
+				fprintf(fp,"CMP BX,00000001h\n");
+				fprintf(fp,"JNE LABEL%d\n",mid);
+				fprintf(fp,"MOV AX,00000001h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n",end);
+				fprintf(fp,"\n\nLABEL%d:\n",mid);
+				fprintf(fp,"MOV AX,00000000h\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"\n\nLABEL%d:\n",end);
 
 			}
 		}
 		
 		else if(temp->id == TK_LT || temp->id == TK_GT || temp->id == TK_LE ||temp->id == TK_GE ||temp->id == TK_NE ||temp->id == TK_EQ)  //all correct
 		{
-			code_generation(temp->child);
-			code_generation(temp->child->next);
-			printf("POP BX\n");
-			printf("POP AX\n");
+			code_generation(temp->child,fp);
+			code_generation(temp->child->next,fp);
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"POP AX\n");
 			int start=get_label();
 			int end=get_label();
-			printf("CMP AX,BX\n\n");
+			fprintf(fp,"CMP AX,BX\n\n");
 			if(temp->id == TK_LT)
 			{
-				printf("JL LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JL LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
 			else if(temp->id == TK_LE)
 			{
-				printf("JLE LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JLE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
 			else if(temp->id == TK_GT)
 			{
-				printf("JG LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JG LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
 			else if(temp->id == TK_GE)
 			{
-				printf("JGE LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JGE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
 			else if(temp->id == TK_EQ)
 			{
-				printf("JE LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
 			else if(temp->id == TK_EQ)
 			{
-				printf("JNE LABEL%d\n",start);
-				printf("MOV AX,0\n");
-				printf("PUSH AX\n");
-				printf("JMP LABEL%d\n\n",end);
+				fprintf(fp,"JNE LABEL%d\n",start);
+				fprintf(fp,"MOV AX,0\n");
+				fprintf(fp,"PUSH AX\n");
+				fprintf(fp,"JMP LABEL%d\n\n",end);
 			}
 
-			printf("LABEL%d:\n\n",start);
-			printf("MOV AX,1\n");
-			printf("PUSH AX\n\n\n");
+			fprintf(fp,"LABEL%d:\n\n",start);
+			fprintf(fp,"MOV AX,1\n");
+			fprintf(fp,"PUSH AX\n\n\n");
 
-			printf("LABEL%d:\n\n",end);
+			fprintf(fp,"LABEL%d:\n\n",end);
 
 		}
 
 		else if(temp->id == TK_ASSIGNOP)
 		{
-			code_generation(temp->child->next);
-			code_generation(temp->child);
+			code_generation(temp->child->next,fp);
+			code_generation(temp->child,fp);
 		}
 
 		else if(temp->id == TK_PLUS )
 		{
-			code_generation(temp->child);
-			code_generation(temp->child->next);
-			printf("POP AX\n");
-			printf("POP BX\n");
-			printf("ADD AX,BX\n");
-			printf("PUSH AX\n");
+			code_generation(temp->child,fp);
+			code_generation(temp->child->next,fp);
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"ADD AX,BX\n");
+			fprintf(fp,"PUSH AX\n");
 		}
 
 		else if(temp->id == TK_MINUS )
 		{
-			code_generation(temp->child->next);
-			code_generation(temp->child);
-			printf("POP AX\n");
-			printf("POP BX\n");
-			printf("SUB AX,BX\n");
-			printf("PUSH AX\n");
+			code_generation(temp->child->next,fp);
+			code_generation(temp->child,fp);
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"SUB AX,BX\n");
+			fprintf(fp,"PUSH AX\n");
 		}
 
 		else if(temp->id == TK_MUL) //working 
 		{
-			code_generation(temp->child->next);
-			code_generation(temp->child);
-			printf("POP AX\n");
-			printf("POP BX\n");
-			printf("IMUL BX\n");
-			printf("PUSH AX\n");
+			code_generation(temp->child->next,fp);
+			code_generation(temp->child,fp);
+			fprintf(fp,"POP AX\n");
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"IMUL BX\n");
+			fprintf(fp,"PUSH AX\n");
 		}
 
 		else if(temp->id == TK_DIV) //working
 		{
-			code_generation(temp->child);
-			code_generation(temp->child->next);
-			printf("POP BX\n");
-			printf("POP AX\nCWD\n");
+			code_generation(temp->child,fp);
+			code_generation(temp->child->next,fp);
+			fprintf(fp,"POP BX\n");
+			fprintf(fp,"POP AX\nCWD\n");
 
-			printf("IDIV BX\n");
-			printf("PUSH AX\n");
+			fprintf(fp,"IDIV BX\n");
+			fprintf(fp,"PUSH AX\n");
 		}
 
 		//temp->parent->id == TK_PLUS || temp->parent->id==TK_MINUS || temp->parent->id==TK_MUL ||temp->parent->id==TK_DIV  || temp->parent->id==TK_LT ||
@@ -563,32 +563,32 @@ void code_generation(astNode* astt)
 			{
 				if(temp->id == TK_NUM || temp->id==TK_RNUM)
 				{
-					printf("MOV AX, %s\n",temp->tok->lexeme);
-					printf("PUSH AX\n");		
+					fprintf(fp,"MOV AX, %s\n",temp->tok->lexeme);
+					fprintf(fp,"PUSH AX\n");		
 				}
 
 				else if(temp->id == TK_TRUE || temp->id==TK_FALSE)
 				{
 					if(temp->id == TK_TRUE)
 					{
-						printf("MOV AX,00000001H\n");
-						printf("PUSH AX\n");	
+						fprintf(fp,"MOV AX,00000001H\n");
+						fprintf(fp,"PUSH AX\n");	
 					}
 
 					else
 					{
 						if(temp->id == TK_FALSE)
 						{
-							printf("MOV AX,00000000H\n");
-							printf("PUSH AX\n");	
+							fprintf(fp,"MOV AX,00000000H\n");
+							fprintf(fp,"PUSH AX\n");	
 						}
 					}
 				}
 
 				else if(temp->id == TK_ID && temp->child==NULL)
 				{
-					printf("MOV AX, [%s_cb]\n",temp->tok->lexeme);
-					printf("PUSH AX\n");	
+					fprintf(fp,"MOV AX, [%s_cb]\n",temp->tok->lexeme);
+					fprintf(fp,"PUSH AX\n");	
 				}
 
 
@@ -608,23 +608,23 @@ void code_generation(astNode* astt)
 					}
 					else if(vst->arrayIndices->type == TK_REAL)
 						size=4;
-					//printf("Starting bound checking\n");
-					boundCheck(vst,temp);
-					//printf("Ended bound checking\n");
+					//fprintf(fp,"Starting bound checking\n");
+					boundCheck(vst,temp,fp);
+					//fprintf(fp,"Ended bound checking\n");
 					if(temp->child->id == TK_ID) // For dynamic index
 					{
-						printf("MOV EAX,%s_cb\n",temp->tok->lexeme);
-						printf("PUSH EBX\n");
-						printf("MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
-						printf("SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf("IMUL BX,%d\n",size);
-						printf("ADD EBX,EAX\n");
-						printf("MOV AX,[EBX]\n");
-						printf("POP EBX\n");
+						fprintf(fp,"MOV EAX,%s_cb\n",temp->tok->lexeme);
+						fprintf(fp,"PUSH EBX\n");
+						fprintf(fp,"MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
+						fprintf(fp,"SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf(fp,"IMUL BX,%d\n",size);
+						fprintf(fp,"ADD EBX,EAX\n");
+						fprintf(fp,"MOV AX,[EBX]\n");
+						fprintf(fp,"POP EBX\n");
 					}
 					else
-					printf("MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
-					printf("PUSH AX\n");	
+					fprintf(fp,"MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+					fprintf(fp,"PUSH AX\n");	
 				}
 			}
 
@@ -632,32 +632,32 @@ void code_generation(astNode* astt)
 			{
 				if((temp->id == TK_NUM || temp->id==TK_RNUM))
 				{
-					printf("MOV BX, %s\n",temp->tok->lexeme);
-					printf("PUSH BX\n");		
+					fprintf(fp,"MOV BX, %s\n",temp->tok->lexeme);
+					fprintf(fp,"PUSH BX\n");		
 				}
 
 				else if(temp->id == TK_TRUE || temp->id==TK_FALSE)
 				{
 					if(temp->id == TK_TRUE)
 					{
-						printf("MOV BX,00000001H\n");
-						printf("PUSH BX\n");	
+						fprintf(fp,"MOV BX,00000001H\n");
+						fprintf(fp,"PUSH BX\n");	
 					}
 
 					else
 					{
 						if(temp->id == TK_FALSE)
 						{
-							printf("MOV BX,00000000H\n");
-							printf("PUSH BX\n");	
+							fprintf(fp,"MOV BX,00000000H\n");
+							fprintf(fp,"PUSH BX\n");	
 						}
 					}
 				}
 
 				else if(temp->id == TK_ID && temp->child==NULL)
 				{
-					printf("MOV BX, [%s_cb]\n",temp->tok->lexeme);
-					printf("PUSH BX\n");	
+					fprintf(fp,"MOV BX, [%s_cb]\n",temp->tok->lexeme);
+					fprintf(fp,"PUSH BX\n");	
 				}
 
 
@@ -680,22 +680,22 @@ void code_generation(astNode* astt)
 						size=4;
 						//strcpy(reg,"R9");
 					}
-					boundCheck(vst,temp);
+					boundCheck(vst,temp,fp);
 					if(temp->child->id == TK_ID) // For dynamic index
 					{
-						printf("MOV EBX,%s_cb\n",temp->tok->lexeme);
-						printf("PUSH EAX\n");
-						printf("AND EAX,00000000H\n");
-						printf("MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
-						printf("SUB AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf("IMUL AX,%d\n",size);
-						printf("ADD EAX,EBX\n");
-						printf("MOV BX,[EAX]\n");
-						printf("POP EAX\n");
+						fprintf(fp,"MOV EBX,%s_cb\n",temp->tok->lexeme);
+						fprintf(fp,"PUSH EAX\n");
+						fprintf(fp,"AND EAX,00000000H\n");
+						fprintf(fp,"MOV AX,[%s_cb]\n",temp->child->tok->lexeme);
+						fprintf(fp,"SUB AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf(fp,"IMUL AX,%d\n",size);
+						fprintf(fp,"ADD EAX,EBX\n");
+						fprintf(fp,"MOV BX,[EAX]\n");
+						fprintf(fp,"POP EAX\n");
 					}
 					else
-					printf("MOV BX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
-					printf("PUSH BX\n");	
+					fprintf(fp,"MOV BX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+					fprintf(fp,"PUSH BX\n");	
 				}
 			}
 
@@ -705,15 +705,15 @@ void code_generation(astNode* astt)
 		{
 			if(temp->id == TK_NUM || temp->id==TK_RNUM)
 			{
-				printf("MOV AX, %s\n",temp->tok->lexeme);
-				printf("PUSH AX\n");		
+				fprintf(fp,"MOV AX, %s\n",temp->tok->lexeme);
+				fprintf(fp,"PUSH AX\n");		
 			}
 
 
 			else if(temp->id == TK_ID && temp->child==NULL && temp->prev!=NULL)
 			{
-				printf("MOV AX, [%s_cb]\n",temp->tok->lexeme);
-				printf("PUSH AX\n");	
+				fprintf(fp,"MOV AX, [%s_cb]\n",temp->tok->lexeme);
+				fprintf(fp,"PUSH AX\n");	
 			}
 
 
@@ -737,35 +737,35 @@ void code_generation(astNode* astt)
 						size=4;
 						//strcpy(reg,"R9");
 					}
-				boundCheck(vst,temp);	
+				boundCheck(vst,temp,fp);	
 				if(temp->child->id == TK_ID)
 					{
-						printf("PUSH AX\n");
-						printf("MOV EAX,%s_cb\n",temp->tok->lexeme);
-						printf("PUSH EBX\n");
-						printf("AND EBX,00000000H\n");
-						printf("MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
-						printf("SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf("IMUL BX,%d\n",size);
-						printf("ADD EBX,EAX\n");
-						printf("MOV AX,[EBX]\n");
-						printf("POP EBX\n");
+						fprintf(fp,"PUSH AX\n");
+						fprintf(fp,"MOV EAX,%s_cb\n",temp->tok->lexeme);
+						fprintf(fp,"PUSH EBX\n");
+						fprintf(fp,"AND EBX,00000000H\n");
+						fprintf(fp,"MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
+						fprintf(fp,"SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf(fp,"IMUL BX,%d\n",size);
+						fprintf(fp,"ADD EBX,EAX\n");
+						fprintf(fp,"MOV AX,[EBX]\n");
+						fprintf(fp,"POP EBX\n");
 					}
 				else
-					printf("MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
-				printf("PUSH AX\n");	
+					fprintf(fp,"MOV AX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+				fprintf(fp,"PUSH AX\n");	
 			}
 
 			else if(temp->id == TK_ID && temp->child==NULL && temp->prev==NULL)
 			{
-				printf("POP AX\n");
-				printf("MOV [%s_cb],AX\n",temp->tok->lexeme);	
+				fprintf(fp,"POP AX\n");
+				fprintf(fp,"MOV [%s_cb],AX\n",temp->tok->lexeme);	
 			}
 
 
 			else if(temp->id == TK_ID && temp->child!=NULL && temp->prev==NULL) // A[i]:=j
 			{
-					printf("POP AX\n");	
+					fprintf(fp,"POP AX\n");	
 					vst=searchVarInCurrentModule(lst,temp->tok->lexeme);
 					int size;
 					if(vst->arrayIndices->type == TK_BOOLEAN)
@@ -783,24 +783,24 @@ void code_generation(astNode* astt)
 						size=4;
 						//strcpy(reg,"R9");
 					}
-				boundCheck(vst,temp);	
+				boundCheck(vst,temp,fp);	
 				if(temp->child->id == TK_ID)
 					{
-						printf("PUSH EBX\n");
-						printf("PUSH AX\n");
-						printf("MOV EAX,%s_cb\n",temp->tok->lexeme);
-						printf("AND EBX,00000000H\n");
-						printf("MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
-						printf("SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf("IMUL BX,%d\n",size);
-						printf("ADD EBX,EAX\n");
-						printf("POP AX\n");
-						printf("MOV [EBX],AX\n");
-						printf("POP EBX\n");
+						fprintf(fp,"PUSH EBX\n");
+						fprintf(fp,"PUSH AX\n");
+						fprintf(fp,"MOV EAX,%s_cb\n",temp->tok->lexeme);
+						fprintf(fp,"AND EBX,00000000H\n");
+						fprintf(fp,"MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
+						fprintf(fp,"SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf(fp,"IMUL BX,%d\n",size);
+						fprintf(fp,"ADD EBX,EAX\n");
+						fprintf(fp,"POP AX\n");
+						fprintf(fp,"MOV [EBX],AX\n");
+						fprintf(fp,"POP EBX\n");
 					}
 				else
-				printf("MOV [%s_cb+%d],AX \n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
-				//printf("PUSH AX\n");
+				fprintf(fp,"MOV [%s_cb+%d],AX \n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+				//fprintf(fp,"PUSH AX\n");
 			}
 		}
 	}
@@ -821,9 +821,24 @@ int main(int argc, char *argv[])
 	treeNode *root = parseTree (argv[1]) ;
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
-
-
-	code_generation(ast);
-
+	inorderAST (astRoot, 0) ;
+	baseST* base=fillSymbolTable(astRoot,0);
+	printf ("*********************************************************\n") ;
+	FILE* target=fopen("code.asm","w");
+	fprintf(target,"SECTION .bss\n");
+	fprintf(target,"\tlpBuffer: resb 18\n\tBuf_Len: equ $-lpBuffer\n");
+	fclose(target);
+	//allocate_memory();
+	printf("Code prefix successful\n");
+	print1();
+	printf("Target opening ...\n");
+	if(fopen("code.asm","a")==NULL)
+		printf("Error in locating target\n");
+	target=fopen("code.asm","a");
+	printf("Target opened\n");
+	code_generation(astRoot,target);
+	fclose(target);
+	print2();
+	printf("Here\n");
 	return 0;
 }
