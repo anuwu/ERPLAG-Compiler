@@ -1,0 +1,21 @@
+
+SECTION .data
+    msg db "The OUTPUT is:  " 
+    len equ $- msg
+ 	
+    msgi db "INPUT: ENTER AN INTEGER VALUE:" 
+    leni equ $- msgi
+    
+    msgt db "true  " 
+    lent equ $- msgt
+    
+    msgf db "false  " 
+    lenf equ $- msgf	
+     
+    msgerror db "run-time error detected"
+    lenerror equ $- msgerror		
+SECTION .text
+global _start
+
+_start:
+

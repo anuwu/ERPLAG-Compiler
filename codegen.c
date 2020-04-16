@@ -6,7 +6,6 @@
 #include "symbolTable.h"
 
 
-
 #define SIZE 200
 #define TNTLENGTH 40
 
@@ -250,7 +249,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 			fprintf(fp,"CMP BX,AX\n");
 			fprintf(fp,"JG LABEL%d\n",end_label);
 			code_generation(temp->next->next->next,fp);
-			fprintf(fp,"AND BX,00000000h\n");
 			fprintf(fp,"MOV BX, [%s_cb]\n",temp->tok->lexeme);
 			fprintf(fp,"INC BX\n");
 			fprintf(fp,"MOV [%s_cb],BX\n",temp->tok->lexeme);
@@ -269,7 +267,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 			int end=  get_label();
 			fprintf(fp,"\nLABEL%d:\n",start);
 			code_generation(temp,fp);
-			fprintf(fp,"AND AX,00000000h\n");
 			fprintf(fp,"POP AX\n");
 			fprintf(fp,"CMP AX,00000001h\n");
 			fprintf(fp,"JNE LABEL%d\n",end);
@@ -566,7 +563,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 			{
 				if(temp->id == TK_NUM || temp->id==TK_RNUM)
 				{
-					fprintf(fp,"AND AX,00000000H\n");
 					fprintf(fp,"MOV AX, %s\n",temp->tok->lexeme);
 					fprintf(fp,"PUSH AX\n");		
 				}
@@ -591,7 +587,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 
 				else if(temp->id == TK_ID && temp->child==NULL)
 				{
-					fprintf(fp,"AND AX,00000000H\n");
 					fprintf(fp,"MOV AX, [%s_cb]\n",temp->tok->lexeme);
 					fprintf(fp,"PUSH AX\n");	
 				}
@@ -612,14 +607,7 @@ void code_generation(astNode* astRoot, FILE* fp)
 						//strcpy(reg,"R9W");
 					}
 					else if(vst->arrayIndices->type == TK_REAL)
-					{
 						size=4;
-						// fprintf(fp,"AND EAX,00000000H\n");
-						// fprintf(fp,"MOV EAX, [%s_cb+%d]\n",temp->tok->lexeme, (atoi(temp->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
-						// fprintf(fp,"PUSH EAX\n");
-						// return;
-						//strcpy(reg,"R9");
-					}
 					//fprintf(fp,"Starting bound checking\n");
 					boundCheck(vst,temp,fp);
 					//fprintf(fp,"Ended bound checking\n");
@@ -627,7 +615,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 					{
 						fprintf(fp,"MOV EAX,%s_cb\n",temp->tok->lexeme);
 						fprintf(fp,"PUSH EBX\n");
-						fprintf(fp,"AND EBX,00000000H\n");
 						fprintf(fp,"MOV BX,[%s_cb]\n",temp->child->tok->lexeme);
 						fprintf(fp,"SUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
 						fprintf(fp,"IMUL BX,%d\n",size);
@@ -645,7 +632,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 			{
 				if((temp->id == TK_NUM || temp->id==TK_RNUM))
 				{
-					fprintf(fp,"AND BX,00000000H\n");
 					fprintf(fp,"MOV BX, %s\n",temp->tok->lexeme);
 					fprintf(fp,"PUSH BX\n");		
 				}
@@ -670,7 +656,6 @@ void code_generation(astNode* astRoot, FILE* fp)
 
 				else if(temp->id == TK_ID && temp->child==NULL)
 				{
-					fprintf(fp,"AND BX,00000000H\n");
 					fprintf(fp,"MOV BX, [%s_cb]\n",temp->tok->lexeme);
 					fprintf(fp,"PUSH BX\n");	
 				}
@@ -844,7 +829,7 @@ int main(int argc, char *argv[])
 	fprintf(target,"\tlpBuffer: resb 18\n\tBuf_Len: equ $-lpBuffer\n");
 	fclose(target);
 	//allocate_memory();
-	printf("Code prefix successfu\n");
+	printf("Code prefix successful\n");
 	print1();
 	printf("Target opening ...\n");
 	if(fopen("code.asm","a")==NULL)
@@ -854,6 +839,6 @@ int main(int argc, char *argv[])
 	code_generation(astRoot,target);
 	fclose(target);
 	print2();
-	printf("Here");
+	printf("Here\n");
 	return 0;
 }
