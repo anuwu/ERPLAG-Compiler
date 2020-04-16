@@ -29,9 +29,8 @@ char * generateString () {
 	int i=0 ; 
 
 	while ( 1 ) {	
-		if(current_lexeme[i] == '\0') {
-			// increase string length
-			// printf ( "CHAR : ENDLINE\n") ;
+		if(current_lexeme[i] == '\0') 
+		{
 			while ( i >= 0 ){
 				current_lexeme[i] = 'a' ;
 				i-- ;
@@ -895,7 +894,7 @@ int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *ti
 
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
-	int getOffsetSize = 0 ;
+	int retSize = 0 ;
 	varST *searchedVar ;
 	statementsAST->localST = baseModule ;
 	astNode * statementAST = statementsAST->child ;
@@ -930,15 +929,15 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					
 
 					// filling offset
-					getOffsetSize = getSize(realBase, tmp) ;
+					retSize = getSize(realBase, tmp) ;
 
-					if (getOffsetSize > 0)
+					if (retSize > 0)
 					{
-						tmp->offset = baseModule->currOffset ;
-						baseModule->currOffset += getOffsetSize ;
+						tmp->offset = baseModule->currOffset + retSize ;
+						baseModule->currOffset += retSize ;
 					}
 					else	// correct dynamic array, or invalid static/dynamic array
-						tmp->offset = getOffsetSize ;
+						tmp->offset = retSize ;
 
 					insertLocalVarST(baseModule , tmp) ;
 				}
@@ -1164,10 +1163,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	baseST * base = createBaseST () ;
 
 	//****************************************************************
-	//moduleDeclarations
 	astNode * moduleDECS = currentASTNode->child ;
 	currentASTNode = moduleDECS->child ;
-	//inserting declare module id ;
 	while (currentASTNode) 
 	{
 		
@@ -1223,14 +1220,16 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					}
 					else{
 						varST * tmp = createVarST (iplAST->child , moduleToInsert , VAR_INPUT ) ;
+						int retSize ;
 					
 						if ( iplAST->child->next->dtTag == PRIMITIVE) 
 						{
 							tmp->datatype = iplAST->child->next->dt->pType ;
 
 							// Setting and increasing offset
-							tmp->offset = moduleToInsert->currOffset ;
-							moduleToInsert->currOffset += getSize (base , tmp) ;
+							retSize = getSize (base, tmp) ;
+							tmp->offset = moduleToInsert->currOffset + retSize ;
+							moduleToInsert->currOffset += retSize ;
 
 						}
 						else{
@@ -1238,15 +1237,15 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							tmp->datatype = TK_ARRAY ;
 							tmp->arrayIndices = iplAST->child->next->dt->arrType ;
 
-							int arrSize = getSize (base, tmp) ;		// Return will be positive or -1	
+							retSize = getSize (base, tmp) ;		// Return will be positive or -1	
 
-							if (arrSize > 0)
+							if (retSize > 0)
 							{
-								tmp->offset = moduleToInsert->currOffset ;
-								moduleToInsert->currOffset += arrSize ;
+								tmp->offset = moduleToInsert->currOffset + retSize ;
+								moduleToInsert->currOffset += retSize ;
 							}
 							else
-								tmp->offset = arrSize ;
+								tmp->offset = retSize ;
 						}
 
 						insertInputVarST (moduleToInsert , tmp) ;
@@ -1257,6 +1256,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 				astNode * retAST = input_plistAST->next ;
 				astNode * oplAST = retAST->child ;
+				moduleToInsert->currOffset = 0 ;
 
 				// Handle exact offsets later
 
@@ -1275,8 +1275,10 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 						tmp->datatype = oplAST->child->next->id ;
 						insertOutputVarST ( moduleToInsert , tmp ) ;
 
-						tmp->offset = moduleToInsert->currOffset ;
-						moduleToInsert->currOffset += getSize (base, tmp) ;
+						int retSize = getSize (base, tmp) ;
+
+						tmp->offset = moduleToInsert->currOffset + retSize ;
+						moduleToInsert->currOffset += retSize ;
 					}
 					
 					oplAST = oplAST->next ;

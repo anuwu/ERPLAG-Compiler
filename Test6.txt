@@ -1,6 +1,13 @@
+<<module mod>>
+takes input [a:integer, b:boolean, c:real] ;
+returns [x:integer] ;
+start
+	declare i,j : integer ;
+end
+
+
 <<<driver program>>>
 start
 	declare i:integer ;
-	i := 4 - (5 + 7) ;
-	print (i) ;
+	i := 4 ;
 end
