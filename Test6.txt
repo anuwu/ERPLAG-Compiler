@@ -1,9 +1,11 @@
 <<<driver program>>>
 start
 	declare i, j, k :integer ;
-	k := 0 ;
-	for (i in 0 .. 10)
+	k := 45 ;
+	while (k <= 45)
 	start
-		k := k + i ;
+		k := k + 1 ;
 	end
 end
+
+	

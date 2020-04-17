@@ -655,7 +655,7 @@ int getSize(baseST * realBase, varST * thisVar)
 	if(thisVar->datatype== TK_INTEGER)
 		return 2 ;
 	else if (thisVar->datatype == TK_BOOLEAN)
-		return 1 ;
+		return 2 ;
 	else if(thisVar->datatype == TK_REAL)
 		return 4 ;
 	else if (thisVar->datatype == TK_ARRAY) 

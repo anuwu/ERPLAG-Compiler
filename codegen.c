@@ -6,12 +6,16 @@
 #include "symbolTable.h"
 
 
+int x = 0 ;
+
+
 int get_label()
 {
-	static int x=0;
 	x++;
 	return x;
 }
+
+baseST *realBase ;
 
 
 void boundCheck(astNode* node, varST *vst, FILE* fp)
@@ -113,51 +117,60 @@ void boundCheck(astNode* node, varST *vst, FILE* fp)
 	 	printf ("\tPOP BX\n");
 	 	printf ("\tPOP AX\n");
    }
-}	   	 
+}
 
-
-void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, FILE* fp)
+int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
 {
+
 	if (node == NULL)
-		return;
+		return 0 ;
 
 	switch (node->id)
 	{
-		case program :
-			codeGeneration (node->child->next, realBase, lst, vst, fp) ;		// <otherModules>
-			break ;
-
-		case otherModules :
-			codeGeneration (node->child, realBase, lst ,vst, fp) ;				// Do module definitions
-			codeGeneration (node->next, realBase, lst, vst, fp) ;				// <driverModule>
-			break ;
-
-		case driverModule :
-			codeGeneration(node->child, realBase, lst, vst, fp); 				// <statements>
-			codeGeneration(node->next, realBase, lst, vst, fp); 				// Move to the next child of program
-			break ;
+		int start_label, end_label ;
 
 		case statements :
-			codeGeneration(node->child, realBase, node->localST, vst, fp);		// Access local scope and move below
+			moduleGeneration (node->child, rbpDepth, rspDepth, node->localST, vst, fp);		// Access local scope and move below
 			break ;
 
 		case statement :
-			codeGeneration(node->child, realBase, lst, vst, fp);
-			codeGeneration(node->next, realBase, lst, vst, fp);
+			rspDepth = moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			if (node->next == NULL)
+			{
+				if (rspDepth - rbpDepth > 0)
+					printf ("\tADD RSP, %d\t\t\t;Restoring RSP to previous scope\n", (rspDepth-rbpDepth)) ;
+				if (lst->parent == realBase)
+				{
+					printf ("\tPOP RBP\n") ;
+					printf ("\tret\n") ;
+				}
+			}
+			else
+				moduleGeneration(node->next, rbpDepth, rspDepth, lst, vst, fp);
 			break ;
 
 		case TK_DECLARE :
-			// subtract rsp for offset here	
-			break ;											// Nothing to be done
+			;
+			int endOffset ;
+			astNode *idListHead = node->next->child ;
+			while (idListHead->next != NULL)
+				idListHead = idListHead->next ;
+
+			endOffset = searchVar (realBase, lst, idListHead->tok->lexeme)->offset ;
+			printf ("\tSUB RSP, %d\t\t\t;Updating RSP\n", (endOffset - rspDepth)) ;
+			rspDepth = endOffset ;
+			
+			break ;											
 
 		case TK_ASSIGNOP :
-			codeGeneration(node->child->next, realBase, lst, vst, fp);
-			codeGeneration(node->child, realBase, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth,  lst, vst, fp);
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			printf ("\n") ;
 			break ;
 
 		case TK_PLUS :
-			codeGeneration(node->child, realBase, lst, vst, fp);
-			codeGeneration(node->child->next, realBase, lst, vst, fp);
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth,  lst, vst, fp);
 			printf ("\tPOP AX\n");
 			printf ("\tPOP BX\n");
 			printf ("\tADD AX,BX\n");
@@ -166,8 +179,8 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 			break ;
 
 		case TK_MINUS :
-			codeGeneration(node->child->next, realBase, lst, vst, fp);
-			codeGeneration(node->child, realBase, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
 			printf ("\tPOP AX\n");
 			printf ("\tPOP BX\n");
 			printf ("\tSUB AX,BX\n");
@@ -176,8 +189,8 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 			break ;
 
 		case TK_MUL :
-			codeGeneration(node->child->next, realBase, lst, vst, fp);
-			codeGeneration(node->child, realBase, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
 			printf ("\tPOP AX\n");
 			printf ("\tPOP BX\n");
 			printf ("\tIMUL BX\n");
@@ -186,8 +199,8 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 			break ;
 
 		case TK_DIV :
-			codeGeneration(node->child, realBase, lst, vst, fp);
-			codeGeneration(node->child->next, realBase, lst, vst, fp);
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
 			printf ("\tPOP BX\n");
 			printf ("\tPOP AX\n\n");
 
@@ -195,7 +208,12 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 			printf ("\tPUSH AX\n");
 			break ;
 
-		case TK_NUM : case TK_RNUM :
+		case TK_RNUM :
+			printf ("NO RNUM ALLOWED!\n") ;
+			exit (0) ;
+			break ;
+
+		case TK_NUM : 
 			if (node->prev == NULL)
 			{
 				printf ("\tMOV AX, %s\n",node->tok->lexeme);
@@ -360,7 +378,7 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 				else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
 				{
 					printf ("\tPOP AX\n");
-					printf ("\tMOV [rbp - %d],AX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
+					printf ("\tMOV [rbp - %d],AX\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
 				}
 				else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
 				{
@@ -396,62 +414,135 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 				}
 			}
 			break ;
-
+		
 		case TK_FOR :
 			node=node->next;
 
-			codeGeneration(node, realBase, lst, vst, fp);
-			codeGeneration(node->next->next, realBase, lst, vst, fp);
+			moduleGeneration(node, rbpDepth, rspDepth, lst, vst, fp);		// ID
+			moduleGeneration(node->next->next, rbpDepth, rspDepth, lst, vst, fp);	// Right lim
 
 			printf ("\tMOV AX,%s\n", node->next->tok->lexeme);
-			printf ("\tMOV [%s_cb], AX\n",node->tok->lexeme );
+			printf ("\tMOV [rbp - %d], AX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset );
 
 
-			int start_label = get_label();
-			int end_label = get_label();
+			start_label = get_label();
+			end_label = get_label();
 			printf ("\t\n\n\nLABEL%d:\n",start_label);
 
-			printf ("\tPOP AX\n"); //4
+			printf ("\tPOP AX\t\t\t\t;Initial check\n"); //4
 			printf ("\tPUSH AX\n");
 			
-			printf ("\tMOV BX, [%s_cb]\n",node->tok->lexeme);//variable
+			printf ("\tMOV BX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);//variable
 			printf ("\tCMP BX,AX\n");
-			printf ("\tJG LABEL%d\n",end_label);
+			printf ("\tJG LABEL%d\n\n",end_label);
 
-			codeGeneration(node->next->next->next, realBase, lst, vst, fp);
+			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst, fp);		// Statements
 
-			printf ("\tMOV BX, [%s_cb]\n",node->tok->lexeme);
+			printf ("\n\tMOV BX, [rbp - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
 			printf ("\tINC BX\n");
-			printf ("\tMOV [%s_cb],BX\n",node->tok->lexeme);
+			printf ("\tMOV [rbp - %d],BX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
 			printf ("\tJMP LABEL%d",start_label);
 			printf ("\t\n\n\n\nLABEL%d:\n",end_label);
 			printf ("\tPOP AX\n");
 			printf ("\tPOP AX\n");
-			printf ("\tMOV [%s_cb],AX\n",node->tok->lexeme);
+			printf ("\tMOV [rbp - %d],AX\n", searchVar(realBase, lst ,node->tok->lexeme)->offset);
+			break ;
+
+		
+		case TK_WHILE :
+			node=node->next;
+			start_label = get_label();
+			end_label =  get_label();
+			printf ("\t\nLABEL%d:\n",start_label);
+
+			moduleGeneration(node, rbpDepth, rspDepth, lst, vst, fp);	// expression
+
+			printf ("\tPOP AX\n");
+			printf ("\tCMP AX,00000001h\n");
+			printf ("\tJNE LABEL%d\n",end_label);
+
+			moduleGeneration(node->next, rspDepth, rspDepth, lst, vst, fp);		// statements
+
+			printf ("\tJMP LABEL%d\n",start_label);
+			printf ("\nLABEL%d:\n",end_label);
+
+			break ;
+
+		// else if(node->id == TK_LT || node->id == TK_GT || node->id == TK_LE ||node->id == TK_GE ||node->id == TK_NE ||node->id == TK_EQ)  //all correct
+		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
+			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
+
+			printf ("\tPOP BX\n");
+			printf ("\tPOP AX\n");
+
+			start_label=get_label();
+			end_label=get_label();
+			printf ("\tCMP AX,BX\n\n");
+
+			switch (node->id)
+			{
+				case TK_LT :
+					printf ("\tJL LABEL%d\n",start_label);
+					break ;
+				case TK_GT :
+					printf ("\tJG LABEL%d\n",start_label);
+					break ;
+				case TK_LE :
+					printf ("\tJLE LABEL%d\n",start_label);
+					break ;
+				case TK_GE :
+					printf ("\tJGE KAR%d\n",start_label);
+					break ;
+				case TK_NE :
+					printf ("\tJNE KAR%d\n",start_label);
+					break ;
+				case TK_EQ :
+					printf ("\tJE KAR%d\n",start_label);
+					break ;
+			}
+
+
+			printf ("\tMOV AX,0\n");
+			printf ("\tPUSH AX\n");
+			printf ("\tJMP LABEL%d\n\n",end_label);
+			printf ("LABEL%d:\n\n",start_label);
+			printf ("\tMOV AX,1\n");
+			printf ("\tPUSH AX\n\n\n");
+			printf ("LABEL%d:\n\n",end_label);
+
+			break ;
+
+	}
+
+	return rspDepth ;
+}
+
+
+void codeGeneration(astNode *node, FILE* fp)
+{
+	if (node == NULL)
+		return;
+
+	switch (node->id)
+	{
+		case program :
+			codeGeneration (node->child->next, fp) ;		// <otherModules>
+			break ;
+
+		case otherModules :
+			codeGeneration (node->child, fp) ;				// Do module definitions
+			codeGeneration (node->next, fp) ;					// <driverModule> or NULL
+			break ;
+
+		case driverModule :
+			moduleGeneration(node->child, 0, 0, NULL, NULL, fp); 				// <statements>
+			codeGeneration(node->next, fp); 				// Move to the next child of program
 			break ;
 	}
 
 	/*
-	if(node->id == TK_FOR) //checked restoring original value of k
-	{
 
-
-	}
-	else if(node->id == TK_WHILE)  //checked
-	{
-		node=node->next;
-		int start=get_label();
-		int end=  get_label();
-		printf ("\t\nLABEL%d:\n",start);
-		codeGeneration(node,fp);
-		printf ("\tPOP AX\n");
-		printf ("\tCMP AX,00000001h\n");
-		printf ("\tJNE LABEL%d\n",end);
-		codeGeneration(node->next,fp);
-		printf ("\tJMP LABEL%d\n",start);
-		printf ("\t\nLABEL%d:\n",end);
-
-	}
 	else if(node->id == TK_PRINT) //DYNAMIC ARRAYS IS LEFT
 	{
 		node=node->next;
@@ -484,22 +575,22 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 		else if(vst->datatype == TK_ARRAY)
 		{
 			
-				int size;
-				if(vst->arrayIndices->type == TK_BOOLEAN)
-				{
-					size=1;
-				//strcpy(reg,"R9B");
-				}
-				else if(vst->arrayIndices->type == TK_INTEGER)
-				{
-					size=2;
-					//strcpy(reg,"R9W");
-				}
-				else if(vst->arrayIndices->type == TK_REAL)
-				{
-					size=4;
-					//strcpy(reg,"R9");
-				}
+			int size;
+			if(vst->arrayIndices->type == TK_BOOLEAN)
+			{
+				size=1;
+			//strcpy(reg,"R9B");
+			}
+			else if(vst->arrayIndices->type == TK_INTEGER)
+			{
+				size=2;
+				//strcpy(reg,"R9W");
+			}
+			else if(vst->arrayIndices->type == TK_REAL)
+			{
+				size=4;
+				//strcpy(reg,"R9");
+			}
 
 			if(vst->offset == 0)     //static array
 			{
@@ -609,70 +700,6 @@ void codeGeneration(astNode *node, baseST *realBase, moduleST *lst, varST *vst, 
 		}
 	}
 	
-	else if(node->id == TK_LT || node->id == TK_GT || node->id == TK_LE ||node->id == TK_GE ||node->id == TK_NE ||node->id == TK_EQ)  //all correct
-	{
-		codeGeneration(node->child,fp);
-		codeGeneration(node->child->next,fp);
-		printf ("\tPOP BX\n");
-		printf ("\tPOP AX\n");
-		int start=get_label();
-		int end=get_label();
-		printf ("\tCMP AX,BX\n\n");
-		if(node->id == TK_LT)
-		{
-			printf ("\tJL LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		else if(node->id == TK_LE)
-		{
-			printf ("\tJLE LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		else if(node->id == TK_GT)
-		{
-			printf ("\tJG LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		else if(node->id == TK_GE)
-		{
-			printf ("\tJGE LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		else if(node->id == TK_EQ)
-		{
-			printf ("\tJE LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		else if(node->id == TK_EQ)
-		{
-			printf ("\tJNE LABEL%d\n",start);
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end);
-		}
-
-		printf ("\tLABEL%d:\n\n",start);
-		printf ("\tMOV AX,1\n");
-		printf ("\tPUSH AX\n\n\n");
-
-		printf ("\tLABEL%d:\n\n",end);
-
-	}
 	*/
 }
 
@@ -691,7 +718,7 @@ int main(int argc, char *argv[])
 	treeNode *root = parseTree (argv[1]) ;
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
-	baseST* base = fillSymbolTable(astRoot,0);
+	realBase = fillSymbolTable(astRoot,0);
 
 	if (argc == 3)
 	{
@@ -706,7 +733,7 @@ int main(int argc, char *argv[])
 
 	printf ("\n----------------------------------------------\n") ;
 
-	if (!base->semanticError)
+	if (!realBase->semanticError)
 	{
 		printf ("global main\n") ;
 		printf ("extern printf\n\n") ;
@@ -715,9 +742,7 @@ int main(int argc, char *argv[])
 		printf ("main:\n") ;
 		printf ("\tPUSH RBP\n") ;
 		printf ("\tMOV RBP, RSP\n") ;
-		codeGeneration (astRoot , base, NULL, NULL, NULL) ;
-		printf ("\tPOP RBP\n") ;
-		printf ("\tret\n") ;
+		codeGeneration (astRoot, NULL) ;
 	}
 	else
 		printf ("Semantic errors found. Please check the above messages\n") ;

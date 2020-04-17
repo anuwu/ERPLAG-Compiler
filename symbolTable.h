@@ -47,7 +47,7 @@ struct _moduleST {
 	struct _varSTentry *inputVars[IO_BIN_COUNT] ;
 	struct _varSTentry *outputVars[IO_BIN_COUNT] ;
 	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;
-	void * parent ; // DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
+	void * parent ; 		// DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int filledMod ;
 	int declUse ;
