@@ -513,6 +513,47 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 
 			break ;
 
+		case TK_AND : case TK_OR :
+			int start,mid,end;
+			codeGeneration(node->child,fp);
+			codeGeneration(node->child->next,fp);
+
+			start_label = get_label();
+			int mid_label = get_label();
+			end_label = get_label();
+
+			printf ("\tPOP BX\n");
+			printf ("\tPOP AX\n"); 
+
+			printf ("\tCMP AX,00000001h\n");
+			if (node->id == TK_AND)
+			{
+				printf ("\tJE LABEL%d\n",start_label);
+				printf ("\tMOV AX,00000000h\n");
+			}
+			else
+			{
+				printf ("\tJNE LABEL%d\n",start_label);
+				printf ("\tMOV AX,00000001h\n");
+			}
+
+			printf ("\tPUSH AX\n");
+			printf ("\tJMP LABEL%d\n",end_label);
+
+
+			printf ("\t\n\nLABEL%d:\n",start_label);
+			printf ("\tCMP BX,00000001h\n");
+			printf ("\tJNE LABEL%d\n",mid_label);
+			printf ("\tMOV AX,00000001h\n");
+			printf ("\tPUSH AX\n");
+			printf ("\tJMP LABEL%d\n",end_label);
+			printf ("LABEL%d:\n",mid_label);
+			printf ("\tMOV AX,00000000h\n");
+			printf ("\tPUSH AX\n");
+			printf ("LABEL%d:\n",end_label);
+
+			break ;
+
 	}
 
 	return rspDepth ;
@@ -644,62 +685,6 @@ void codeGeneration(astNode *node, FILE* fp)
 			printf ("\tMOV [%s_cb],EAX\n",node->tok->lexeme);
 		}
 	}
-
-	else if(node->id == TK_AND || node->id == TK_OR) //checked
-	{
-		int start,mid,end;
-		codeGeneration(node->child,fp);
-		codeGeneration(node->child->next,fp);
-
-		start=get_label();
-		mid=get_label();
-		end=get_label();
-
-		printf ("\tPOP BX\n");
-		printf ("\tPOP AX\n"); 
-		if(node->id == TK_AND)
-		{
-			printf ("\tCMP AX,00000001h\n");
-			printf ("\tJE LABEL%d\n",start);
-			printf ("\tMOV AX,00000000h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end);
-
-			printf ("\t\n\nLABEL%d:\n",start);
-			printf ("\tCMP BX,00000001h\n");
-			printf ("\tJNE LABEL%d\n",mid);
-			printf ("\tMOV AX,00000001h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end);
-			printf ("\t\n\nLABEL%d:\n",mid);
-			printf ("\tMOV AX,00000000h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\t\n\nLABEL%d:\n",end);
-
-		}
-
-		else
-		{
-			printf ("\tCMP AX,00000001h\n");
-			printf ("\tJNE LABEL%d\n",start);
-			printf ("\tMOV AX,00000001h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end);
-
-			printf ("\t\n\nLABEL%d:\n",start);
-			printf ("\tCMP BX,00000001h\n");
-			printf ("\tJNE LABEL%d\n",mid);
-			printf ("\tMOV AX,00000001h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end);
-			printf ("\t\n\nLABEL%d:\n",mid);
-			printf ("\tMOV AX,00000000h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\t\n\nLABEL%d:\n",end);
-
-		}
-	}
-	
 	*/
 }
 
