@@ -1,13 +1,9 @@
-<<module mod>>
-takes input [a:integer, b:boolean, c:real] ;
-returns [x:integer] ;
-start
-	declare i,j : integer ;
-end
-
-
 <<<driver program>>>
 start
-	declare i:integer ;
-	i := 4 ;
+	declare i, j, k :integer ;
+	k := 0 ;
+	for (i in 0 .. 10)
+	start
+		k := k + i ;
+	end
 end
