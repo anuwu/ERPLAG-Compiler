@@ -14,6 +14,9 @@ extern char* tokenIDToString (tokenID id) ;
 
 int hashFunction ( char* lexeme , int size ) 
 {
+	if (lexeme == NULL)
+		return 0 ;
+
 	int sm = 0 ;
 	int i = 0 ;
 
@@ -109,11 +112,12 @@ moduleST * createScopeST ( moduleST * parent , stType scopeType) {
 	return tmp ;
 }
 
-varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) {
+varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID datatype) 
+{
 	varST * tmp = (varST *) malloc ( sizeof(varST)) ;
 
-	tmp->lexeme = thisASTnode->tok->lexeme ;
-	tmp->datatype = thisASTnode->tok->id ;
+	tmp->lexeme = lexeme ;
+	tmp->datatype = datatype ;
 	tmp->offset = -9999 ; //default value
 	tmp->tinker = 0 ;
 	tmp->arrayIndices = NULL ;
@@ -652,7 +656,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 int getSize(baseST * realBase, varST * thisVar) 
 {
-	if(thisVar->datatype== TK_INTEGER)
+	if(thisVar->datatype == TK_INTEGER)
 		return 2 ;
 	else if (thisVar->datatype == TK_BOOLEAN)
 		return 2 ;
@@ -684,13 +688,15 @@ int getSize(baseST * realBase, varST * thisVar)
 			{
 				printf ("ERROR : In \"%s\" at line %d, the declaration of array \"%s\" must have left index <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
 				realBase->semanticError = 1 ;
-				return -2 ;
+				return -1 ;
 			}
 			else
 				return sz  ;
 		}
-		else if (thisVar->varType != VAR_INPUT)
+		else if (thisVar->varType != VAR_INPUT)		//dynamic array but not input to a module
 		{
+			//printf ("Dynamic input array!!!\n") ;
+
 			// dynamic array index checks
 			int indexErrorFlag = 0 ;
 			varST *searchedVarLeft, *searchedVarRight ;
@@ -728,13 +734,68 @@ int getSize(baseST * realBase, varST * thisVar)
 			if (indexErrorFlag)
 			{
 				realBase->semanticError = 1 ;
-				return -3 ;		// incorect dynamic array
+				return -2 ;		// incorect dynamic array
 			}
 
-			return -2 ;		// correct dynamic array
+			return 12 ;		// correct dynamic array
 		}
-		else
-			return -1 ;
+		else		// dynamic array and in`put to a module
+		{
+			//printf ("Dynamic non-input array!!!\n") ;
+
+			int indexErrorFlag = 0 ;
+			varST *searchedVarLeft, *searchedVarRight ;
+			int leftDigit , rightDigit ;
+
+			leftDigit = isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) ;
+			rightDigit = isdigit (thisVar->arrayIndices->tokRight->lexeme[0]) ;
+
+			// Left limit
+			if (!leftDigit)
+			{
+				searchedVarLeft = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) ;
+				if (searchedVarLeft != NULL)
+				{
+					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+			}
+
+			if (leftDigit || (!leftDigit && searchedVarLeft == NULL))
+			{
+				varST *leftVar = createVarST (leftDigit?NULL:thisVar->arrayIndices->tokLeft->lexeme, thisVar->scope, VAR_INPUT, TK_INTEGER) ;
+				leftVar->offset = ((moduleST *)leftVar->scope)->currOffset + 2 ;
+				((moduleST *)leftVar->scope)->currOffset += 2 ;
+				insertInputVarST ((moduleST *)leftVar->scope , leftVar) ;
+			}
+
+			// Right limit
+			if (!rightDigit)
+			{
+				searchedVarRight = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) ;
+				if (searchedVarRight != NULL)
+				{
+					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+			}
+
+			if (rightDigit || (!rightDigit && searchedVarRight == NULL))
+			{
+				varST *rightVar = createVarST (rightDigit?NULL:thisVar->arrayIndices->tokRight->lexeme, thisVar->scope, VAR_INPUT, TK_INTEGER) ;
+				rightVar->offset = ((moduleST *)rightVar->scope)->currOffset + 2 ;
+				((moduleST *)rightVar->scope)->currOffset += 2 ;
+				insertInputVarST (rightVar->scope , rightVar) ;
+			}
+
+			if (indexErrorFlag)
+			{
+				realBase->semanticError = 1 ;
+				return -2 ;
+			}
+			else
+				return 8 ;
+		}
 	}
 }
 
@@ -919,7 +980,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				}
 				else		// if input variable, or a local variable in some parent scope, or not found at all
 				{
-					varST * tmp = createVarST ( idAST , baseModule , VAR_LOCAL) ;
+					varST * tmp = createVarST (idAST->tok->lexeme , baseModule , VAR_LOCAL, -9999) ;
 
 					if (dataTypeAST->dtTag  == ARRAY)
 					{
@@ -998,8 +1059,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			}
 
 			moduleST *forScope = createScopeST (baseModule, FOR_ST) ;
-			varST *loopVar = createVarST (statementAST->child->next, forScope, VAR_LOOP) ;
-			loopVar->datatype = TK_INTEGER ;
+			varST *loopVar = createVarST (statementAST->child->next->tok->lexeme, forScope, VAR_LOOP, TK_INTEGER) ;
 
 			if (searchedVar == NULL)
 				loopVar->offset = -2 ;		// VAR_LOOP with offset of -2 is undeclared loop counter
@@ -1176,7 +1236,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			base->semanticError = 1 ;
 		}
 		else {
-			varST * tmp = createVarST ( currentASTNode , base , VAR_MODULE) ;
+			varST * tmp = createVarST (currentASTNode->tok->lexeme , base , VAR_MODULE, TK_ID) ;
 			insertVarSTInbaseST ( base , tmp ) ;
 		}
 
@@ -1216,12 +1276,13 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				while (iplAST) 
 				{
 
-					if ( searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) {
+					if (searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
+					{
 						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else{
-						varST * tmp = createVarST (iplAST->child , moduleToInsert , VAR_INPUT) ;
+						varST * tmp = createVarST (iplAST->child->tok->lexeme, moduleToInsert , VAR_INPUT, -9999) ;
 						int retSize ;
 					
 						if ( iplAST->child->next->dtTag == PRIMITIVE) 
@@ -1272,9 +1333,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 					}
 					else{
-						varST * tmp = createVarST ( oplAST->child , moduleToInsert, VAR_OUTPUT) ;
+						varST * tmp = createVarST ( oplAST->child->tok->lexeme , moduleToInsert, VAR_OUTPUT, oplAST->child->next->id) ;
 						//array can't be here
-						tmp->datatype = oplAST->child->next->id ;
 						insertOutputVarST ( moduleToInsert , tmp ) ;
 
 						int retSize = getSize (base, tmp) ;

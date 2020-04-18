@@ -56,7 +56,6 @@ struct _moduleST {
 	int hasReturns ;
 } ;
 
-
 struct _moduleSTentry {
 	struct _moduleST * thisModuleST ;
 	struct _moduleSTentry * next ;
@@ -104,7 +103,7 @@ baseST * createBaseST () ;
 moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) ;
 moduleST * createDriverST ( baseST * parent ) ;
 moduleST * createScopeST ( moduleST * parent , stType scopeType ) ;
-varST * createVarST ( astNode * thisASTnode, void *scope, variableType varType ) ;
+varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID datatype) ;
 
 // Insertion
 void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;

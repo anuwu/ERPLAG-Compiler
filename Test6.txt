@@ -1,4 +1,12 @@
+<<module m>>
+takes input [C : array [low .. high] of integer, low:real] ;
+start
+
+end
+
 <<<driver program>>>
 start
 	declare A : array [2 .. 4] of integer ;
+	declare i,j : integer ;
+	declare B : array [i .. j] of boolean ;
 end
