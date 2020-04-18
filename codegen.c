@@ -702,13 +702,14 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_GET_VALUE :
 			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			int rspAlign ;
 			if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 			{
-				int rspAlign = 16 - (rspDepth % 16) ;
+				rspAlign = 32 - (rspDepth % 16) ;
 
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				if (searchedVar->datatype == TK_INTEGER)
 					fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
-				else if (searchedVar->arrayIndices->type == TK_BOOLEAN)
+				else if (searchedVar->datatype == TK_BOOLEAN)
 					fprintf (fp , "\n\tMOV RDI, inputBoolPrompt\t\t;get_value\n") ;
 				fprintf (fp, "\tXOR RSI, RSI\n") ;
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -717,11 +718,11 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
 				fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
 				fprintf (fp, "\tMOV RSI, RSP\n") ;
-				fprintf (fp, "\tSUB RSI, 4\n") ;
+				//fprintf (fp, "\tSUB RSI, 4\n") ;
 				fprintf (fp, "\tPUSH RSI\n") ;
 				fprintf (fp, "\tCALL scanf\n") ;
 				fprintf (fp, "\tPOP RSI\n") ;
-				fprintf (fp, "\tMOV AX, WORD [RSP-4]\n") ;
+				fprintf (fp, "\tMOV AX, WORD [RSP]\n") ;
 				fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
 				fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
 			}
@@ -736,50 +737,33 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					printGetValueArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
 					reserveLabel[0] = get_label () ;
 
-					/*
+					rspAlign = 32 - (rspDepth % 16) ;
 
+
+					fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
 					fprintf (fp, "\tMOV RCX, 0\n") ;
-					fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
+					fprintf (fp, "LABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
 					fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
 					fprintf (fp, "\tADD RBX, RCX\n\n") ;
 					fprintf (fp, "\tNEG RBX\n") ;
-					fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
-					if (searchedVar->arrayIndices->type == TK_INTEGER)
-					{
-						fprintf (fp, "\tMOV RDI, printInt\n") ;
-						fprintf (fp, "\tMOVSX RSI, AX\n") ;
-					}
-					else
-					{
-						start_label = get_label () ;
-						end_label = get_label () ;
 
-						fprintf (fp, "\n\tCMP AX, 01\n") ;
-						fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-						fprintf (fp, "\tMOV RDI, false\n") ;
-						fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-						fprintf (fp, "LABEL%d:\n", start_label) ;
-						fprintf (fp, "\tMOV RDI, true\n") ;
-						fprintf (fp, "\nLABEL%d:\n", end_label) ;
-					}
-
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tPUSH RCX\n") ;
+					fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
+					fprintf (fp, "\tMOV RSI, RSP\n") ;
 					fprintf (fp, "\tPUSH RBX\n") ;
-					fprintf (fp, "\tCALL printf\n") ;
+					fprintf (fp, "\tPUSH RCX\n") ;
+					fprintf (fp, "\tPUSH RSI\n") ;
+					fprintf (fp, "\tCALL scanf\n") ;
+					fprintf (fp, "\tPOP RSI\n") ;
+					fprintf (fp, "\tPOP RCX\n") ;
 					fprintf (fp, "\tPOP RBX\n") ;
-					fprintf (fp, "\tPOP RCX\n\n") ;
+
+					fprintf (fp, "\tMOV AX, [RSP]\n") ;
+					fprintf (fp, "\tMOV [RBP+RBX], AX\n") ;
 
 					fprintf (fp, "\tADD RCX, 2\n") ;
 					fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
 					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-
-					fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
-					fprintf (fp, "\tXOR RSI, RSI\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp , "\tCALL printf\n") ;
-					*/
+					fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
 				}
 			}
 			break ;
@@ -964,7 +948,7 @@ int main(int argc, char *argv[])
 		fprintf (fp, "db \"%%d to \" , 0\n") ;
 
 		fprintf (fp, "\trightRange : ") ;
-		fprintf (fp, "db \"%%d\" , 0\n") ;
+		fprintf (fp, "db \"%%d\" ,10, 0\n") ;
 
 		fprintf (fp, "\tinputInt : ") ;
 		fprintf (fp, "db \"%%d\", 0\n") ;
