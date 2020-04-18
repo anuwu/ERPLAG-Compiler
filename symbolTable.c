@@ -431,6 +431,12 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 	printf("\n**************************************\n") ;
 }
 
+int isInputStaticArr (varST *inputVar)
+{
+	if (isdigit(inputVar->arrayIndices->tokLeft->lexeme[0]) && isdigit(inputVar->arrayIndices->tokRight->lexeme[0]))
+		return 1 ;
+}
+
 varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModule, astNode * inputNode)
 {	
 	varSTentry * varEntry = targetModule->inputVars[0] ;	
@@ -455,12 +461,22 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 			if(varEntry->thisVarST->datatype == searchedVar->datatype)
 			{
 				// Correct it
-				if (varEntry->thisVarST->datatype == TK_ARRAY && isVarStaticArr (searchedVar))
+				if (varEntry->thisVarST->datatype == TK_ARRAY) 
 				{
-					if (strcmp(varEntry->thisVarST->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme) || strcmp(varEntry->thisVarST->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
+					if (varEntry->thisVarST->arrayIndices->type != searchedVar->arrayIndices->type)
 					{
-						printf ("ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" do not have matching array limits\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+						printf ("ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 						realBase->semanticError = 1 ;
+					}
+
+
+					if (isVarStaticArr (searchedVar) && isInputStaticArr (varEntry->thisVarST))
+					{
+						if (strcmp(varEntry->thisVarST->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme) || strcmp(varEntry->thisVarST->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
+						{
+							printf ("ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" do not have matching array limits\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+							realBase->semanticError = 1 ;
+						}
 					}
 				}
 			}
@@ -691,7 +707,12 @@ int getSize(baseST * realBase, varST * thisVar)
 				return -1 ;
 			}
 			else
-				return sz  ;
+			{
+				if (thisVar->varType != VAR_INPUT)
+					return sz  ;
+				else
+					return 8 ;
+			}
 		}
 		else if (thisVar->varType != VAR_INPUT)		//dynamic array but not input to a module
 		{

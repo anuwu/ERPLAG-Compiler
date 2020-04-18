@@ -7,7 +7,7 @@
 #define VAR_BIN_COUNT 13
 #define MODULE_BIN_COUNT 13
 #define SCOPE_BIN_COUNT 13
-#define IO_BIN_COUNT 13
+#define IO_BIN_COUNT 1
 
 
 enum _stType {
