@@ -460,34 +460,25 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		
 		case TK_FOR :
 			node=node->next;
-
-			moduleGeneration(node, localBase, rspDepth, lst, vst, fp);		// ID
-			moduleGeneration(node->next->next, localBase, rspDepth, lst, vst, fp);	// Right lim
-
-			fprintf (fp, "\tMOV AX,%s\n", node->next->tok->lexeme);
-			fprintf (fp, "\tMOV [RBP - %d], AX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset);
+			
+			fprintf (fp, "\tMOV CX,%s\n", node->next->tok->lexeme);
+			fprintf (fp, "\tMOV [RBP - %d], CX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset);
 
 			start_label = get_label();
 			end_label = get_label();
-			fprintf (fp, "\t\n\n\nLABEL%d:\n",start_label);
+			fprintf (fp, "\nLABEL%d:\n",start_label);
 
-			fprintf (fp, "\tPOP AX\t\t\t\t;Initial check\n"); //4
-			fprintf (fp, "\tPUSH AX\n");
-			
-			fprintf (fp, "\tMOV BX, [RBP - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);//variable
-			fprintf (fp, "\tCMP BX,AX\n");
-			fprintf (fp, "\tJG LABEL%d\n\n",end_label);
+			fprintf (fp, "\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
+			fprintf (fp, "\tCMP CX,AX\n");
+			fprintf (fp, "\tJG LABEL%d\n",end_label);
 
 			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst, fp);		// Statements
 
-			fprintf (fp, "\n\tMOV BX, [RBP - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			fprintf (fp, "\tINC BX\n");
-			fprintf (fp, "\tMOV [rbp - %d],BX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\n\tMOV CX, [RBP - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\tINC CX\n");
+			fprintf (fp, "\tMOV [RBP - %d],CX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
 			fprintf (fp, "\tJMP LABEL%d",start_label);
-			fprintf (fp, "\t\n\n\n\nLABEL%d:\n",end_label);
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tMOV [RBP - %d],AX\n", searchVar(realBase, lst ,node->tok->lexeme)->offset);
+			fprintf (fp, "\n\nLABEL%d:\n",end_label);
 			break ;
 
 		
@@ -739,7 +730,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 					rspAlign = 32 - (rspDepth % 16) ;
 
-
 					fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
 					fprintf (fp, "\tMOV RCX, 0\n") ;
 					fprintf (fp, "LABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
@@ -860,17 +850,6 @@ void codeGeneration(astNode *node, FILE* fp)
 			}
 			 
 		}        
-	}
-
-	else if(node->id == TK_GET_VALUE) //BOOLEAN CHECK, ARRAY
-	{
-		node=node->next;
-		if(node->child == NULL)//if not an array
-		{
-			fprintf (fp, "\tcall inPut\n");
-			fprintf (fp, "\tcall readInt\n");
-			fprintf (fp, "\tMOV [%s_cb],EAX\n",node->tok->lexeme);
-		}
 	}
 	*/
 }
