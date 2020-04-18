@@ -1,5 +1,5 @@
 <<module m>>
-takes input [C : array [low .. high] of integer, low:real] ;
+takes input [C : array [low .. high] of integer] ;
 start
 
 end
@@ -9,4 +9,6 @@ start
 	declare A : array [2 .. 4] of integer ;
 	declare i,j : integer ;
 	declare B : array [i .. j] of boolean ;
+
+	use module m with parameters A ;
 end
