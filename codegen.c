@@ -127,6 +127,27 @@ int getStaticOffset (varST *vst, astNode *node, int size)
 	return vst->offset - size*(atoi(vst->arrayIndices->tokRight->lexeme) - atoi(node->child->tok->lexeme)) ;
 }
 
+void printGetValueArrayPrompt (tokenID baseType , int leftLim, int rightLim, FILE* fp)
+{
+	if (baseType == TK_INTEGER)
+		fprintf (fp, "\tMOV RDI, inputIntArrPrompt\n") ;
+	else
+		fprintf (fp, "\tMOV RDI, inputBoolArrPrompt\n") ;
+
+	fprintf (fp, "\tMOV RSI, %d\n", rightLim - leftLim + 1) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
+	fprintf (fp, "\tMOV RSI, %d\n", leftLim) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
+	fprintf (fp, "\tMOV RSI, %d\n", rightLim) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+}
 
 
 int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
@@ -620,7 +641,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					}	
 					else if (node->next->child == NULL)
 					{
-
 						int leftLim, rightLim ;
 						leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
 						rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
@@ -686,9 +706,12 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			{
 				int rspAlign = 16 - (rspDepth % 16) ;
 
-				fprintf (fp, "\n\tMOV RDI, inputPrompt\t\t;get_value prompt\n") ;
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+					fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
+				else if (searchedVar->arrayIndices->type == TK_BOOLEAN)
+					fprintf (fp , "\n\tMOV RDI, inputBoolPrompt\t\t;get_value\n") ;
+				fprintf (fp, "\tXOR RSI, RSI\n") ;
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
-				fprintf (fp, "\tMOV RSI, RAX\n") ;
 				fprintf (fp, "\tCALL printf\n") ;
 
 				fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
@@ -701,6 +724,63 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				fprintf (fp, "\tMOV AX, WORD [RSP-4]\n") ;
 				fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
 				fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
+			}
+			else // Array type
+			{	
+				if (isVarStaticArr (searchedVar))
+				{
+					int leftLim, rightLim ;
+					leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
+					rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
+
+					printGetValueArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
+					reserveLabel[0] = get_label () ;
+
+					/*
+
+					fprintf (fp, "\tMOV RCX, 0\n") ;
+					fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
+					fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
+					fprintf (fp, "\tADD RBX, RCX\n\n") ;
+					fprintf (fp, "\tNEG RBX\n") ;
+					fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
+					if (searchedVar->arrayIndices->type == TK_INTEGER)
+					{
+						fprintf (fp, "\tMOV RDI, printInt\n") ;
+						fprintf (fp, "\tMOVSX RSI, AX\n") ;
+					}
+					else
+					{
+						start_label = get_label () ;
+						end_label = get_label () ;
+
+						fprintf (fp, "\n\tCMP AX, 01\n") ;
+						fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+						fprintf (fp, "\tMOV RDI, false\n") ;
+						fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+						fprintf (fp, "LABEL%d:\n", start_label) ;
+						fprintf (fp, "\tMOV RDI, true\n") ;
+						fprintf (fp, "\nLABEL%d:\n", end_label) ;
+					}
+
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tPUSH RCX\n") ;
+					fprintf (fp, "\tPUSH RBX\n") ;
+					fprintf (fp, "\tCALL printf\n") ;
+					fprintf (fp, "\tPOP RBX\n") ;
+					fprintf (fp, "\tPOP RCX\n\n") ;
+
+					fprintf (fp, "\tADD RCX, 2\n") ;
+					fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
+					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+
+					fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
+					fprintf (fp, "\tXOR RSI, RSI\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp , "\tCALL printf\n") ;
+					*/
+				}
 			}
 			break ;
 
@@ -868,8 +948,23 @@ int main(int argc, char *argv[])
 		fprintf (fp, "\tfalse : ") ;
 		fprintf (fp, "db \"false \" , 0\n") ;
 
-		fprintf (fp, "\tinputPrompt : ") ;
+		fprintf (fp, "\tinputIntPrompt : ") ;
 		fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
+
+		fprintf (fp, "\tinputBoolPrompt : ") ;
+		fprintf (fp, "db \"Enter a boolean (0 or 1) : \" , 0\n") ;
+
+		fprintf (fp, "\tinputIntArrPrompt : ") ;
+		fprintf (fp, "db \"Enter %%d array elements of integer type for range \", 0\n") ;
+
+		fprintf (fp, "\tinputBoolArrPrompt : ") ;
+		fprintf (fp, "db \"Enter %%d array elements of boolean type for range \", 0\n") ;
+
+		fprintf (fp, "\tleftRange : ") ;
+		fprintf (fp, "db \"%%d to \" , 0\n") ;
+
+		fprintf (fp, "\trightRange : ") ;
+		fprintf (fp, "db \"%%d\" , 0\n") ;
 
 		fprintf (fp, "\tinputInt : ") ;
 		fprintf (fp, "db \"%%d\", 0\n") ;

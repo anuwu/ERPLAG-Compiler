@@ -7,7 +7,12 @@ section .data
 	printFalse : db "Output : false" , 10, 0
 	true : db "true " , 0
 	false : db "false " , 0
-	inputPrompt : db "Enter an integer : " , 0
+	inputIntPrompt : db "Enter an integer : " , 0
+	inputBoolPrompt : db "Enter a boolean (0 or 1) : " , 0
+	inputIntArrPrompt : db "Enter %d array elements of integer type for range ", 0
+	inputBoolArrPrompt : db "Enter %d array elements of boolean type for range ", 0
+	leftRange : db "%d to " , 0
+	rightRange : db "%d" , 0
 	inputInt : db "%d", 0
 global main
 extern scanf
@@ -22,72 +27,18 @@ main:
 
 	SUB RSP, 12			;Updating RSP
 
-	MOV BX,00000001H
-	PUSH BX
-	POP AX
-	MOV [RBP - 4], AX		;Store
-
-	MOV BX,00000000H
-	PUSH BX
-	POP AX
-	MOV [RBP - 6], AX		;Store
-
-	MOV BX,00000001H
-	PUSH BX
-	POP AX
-	MOV [RBP - 8], AX		;Store
-
-	MOV BX,00000000H
-	PUSH BX
-	POP AX
-	MOV [RBP - 10], AX		;Store
-
-	MOV BX,00000001H
-	PUSH BX
-	POP AX
-	MOV [RBP - 12], AX		;Store
-
-	MOV BX,00000000H
-	PUSH BX
-	POP AX
-	MOV [RBP - 14], AX		;Store
-
-
-	MOV RDI, printFormatArray		;printing array output prompt
-	XOR RSI, RSI
+	MOV RDI, inputIntArrPrompt
+	MOV RSI, 6
 	XOR RAX, RAX
 	CALL printf
 
-	MOV RCX, 0
-LABEL1:			;printing array
-	MOV RBX, 4
-	ADD RBX, RCX
-
-	NEG RBX
-	MOV AX, [RBP + RBX]
-
-	CMP AX, 01
-	JE LABEL2
-	MOV RDI, false
-	JMP LABEL3
-LABEL2:
-	MOV RDI, true
-
-LABEL3:
+	MOV RDI, leftRange
+	MOV RSI, 10
 	XOR RAX, RAX
-	PUSH RCX
-	PUSH RBX
 	CALL printf
-	POP RBX
-	POP RCX
 
-	ADD RCX, 2
-	CMP RCX, 12
-	JNE LABEL1
-
-
-	MOV RDI, printNewLine		; newline after array print
-	XOR RSI, RSI
+	MOV RDI, rightRange
+	MOV RSI, 15
 	XOR RAX, RAX
 	CALL printf
 	MOV RSP, RBP
