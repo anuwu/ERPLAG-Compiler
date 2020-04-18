@@ -1,11 +1,4 @@
 <<<driver program>>>
 start
-	declare i, j, k :integer ;
-	k := 45 ;
-	while (k <= 45)
-	start
-		k := k + 1 ;
-	end
+	declare A : array [2 .. 4] of integer ;
 end
-
-	

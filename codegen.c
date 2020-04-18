@@ -7,8 +7,6 @@
 
 
 int x = 0 ;
-
-
 int get_label()
 {
 	x++;
@@ -21,234 +19,243 @@ baseST *realBase ;
 void boundCheck(astNode* node, varST *vst, FILE* fp)
 {
 	// Case 1 : Static array
+	/*
 	if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_NUM)
 	{
-	 	printf ("\tPUSH AX\n");
+	 	fprintf (fp, "\tPUSH AX\n");
 	 	if(node->child->id == TK_ID) // variable index
-	 		printf ("\tMOV AX,[%s_cb]\n", node->child->tok->lexeme);
+	 		fprintf (fp, "\tMOV AX,[%s_cb]\n", node->child->tok->lexeme);
 	 	else //static index
-	 		printf ("\tMOV AX,%d\n", atoi(node->child->tok->lexeme));
+	 		fprintf (fp, "\tMOV AX,%d\n", atoi(node->child->tok->lexeme));
 
-	 	printf ("\tCMP AX,%d\n", atoi(vst->arrayIndices->tokRight->lexeme));
+	 	fprintf (fp, "\tCMP AX,%d\n", atoi(vst->arrayIndices->tokRight->lexeme));
 
 	 	int l1 = get_label();
 	 	int l2 = get_label();
-	 	printf ("\tJG LABEL%d\n", l1);//It will give error
-	 	printf ("\tCMP AX,%d\n", atoi(vst->arrayIndices->tokLeft->lexeme));
-	 	printf ("\tJL LABEL%d\n", l1);
-	 	printf ("\tJMP LABEL%d\n", l2);
-	 	printf ("\tLABEL%d:\n", l1);
+	 	fprintf (fp, "\tJG LABEL%d\n", l1);//It will give error
+	 	fprintf (fp, "\tCMP AX,%d\n", atoi(vst->arrayIndices->tokLeft->lexeme));
+	 	fprintf (fp, "\tJL LABEL%d\n", l1);
+	 	fprintf (fp, "\tJMP LABEL%d\n", l2);
+	 	fprintf (fp, "\tLABEL%d:\n", l1);
 
-	 	printf ("\tcall exit\n");
-	 	printf ("\tLABEL%d:\n", l2);
-	 	printf ("\tPOP AX\n");
+	 	fprintf (fp, "\tcall exit\n");
+	 	fprintf (fp, "\tLABEL%d:\n", l2);
+	 	fprintf (fp, "\tPOP AX\n");
 	}
-	else if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_NUM) // Left bound is variable
+	*/
+	if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_NUM) // Left bound is variable
 	{
    		int l1=get_label();
 	 	int l2=get_label();
 
-   		printf ("\tPUSH AX\n");
+   		fprintf (fp, "\tPUSH AX\n");
 
 	 	if(node->child->id == TK_ID) // variable index
-	 		printf ("\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
+	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
 	 	else //static index
-	 		printf ("\tMOV AX,%d\n",atoi(node->child->tok->lexeme));
+	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));
 
-	 	printf ("\tCMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
-	 	printf ("\tJG LABEL%d\n",l1);//It will give error
-	 	printf ("\tPUSH BX\n");
-	 	printf ("\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-	 	printf ("\tCMP AX,BX\n");
-	 	printf ("\tJL LABEL%d\n",l1);
-	 	printf ("\tJMP LABEL%d\n",l2);
-	 	printf ("\tLABEL%d:\n",l1);
-	 	printf ("\tcall exit\n");
-	 	printf ("\tLABEL%d:\n",l2);
-	 	printf ("\tPOP BX\n");
-	 	printf ("\tPOP AX\n");
+	 	fprintf (fp, "\tCMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
+	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
+	 	fprintf (fp, "\tPUSH BX\n");
+	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
+	 	fprintf (fp, "\tCMP AX,BX\n");
+	 	fprintf (fp, "\tJL LABEL%d\n",l1);
+	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
+	 	fprintf (fp, "\tLABEL%d:\n",l1);
+	 	fprintf (fp, "\tcall exit\n");
+	 	fprintf (fp, "\tLABEL%d:\n",l2);
+	 	fprintf (fp, "\tPOP BX\n");
+	 	fprintf (fp, "\tPOP AX\n");
 	}
 	else if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_ID) // Right bound is variable   
 	{
    		int l1=get_label();
 	 	int l2=get_label();
-   		printf ("\tPUSH AX\n");
-   		printf ("\tPUSH BX\n");
+   		fprintf (fp, "\tPUSH AX\n");
+   		fprintf (fp, "\tPUSH BX\n");
 
    		if(node->child->id == TK_ID) // variable index
-	 		printf ("\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
+	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
 	 	else //static index
-	 		printf ("\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
+	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
 
-	 	printf ("\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-	 	printf ("\tCMP AX,BX\n");
-	 	printf ("\tJG LABEL%d\n",l1);//It will give error
-	 	printf ("\tCMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-	 	printf ("\tJL LABEL%d\n",l1);// It will give an error
-	 	printf ("\tJMP LABEL%d\n",l2);
-	 	printf ("\tLABEL%d:\n",l1);
-	 	printf ("\tcall exit\n");
-	 	printf ("\tLABEL%d:\n",l2);
-	 	printf ("\tPOP BX\n");
-	 	printf ("\tPOP AX\n"); 
+	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
+	 	fprintf (fp, "\tCMP AX,BX\n");
+	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
+	 	fprintf (fp, "\tCMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+	 	fprintf (fp, "\tJL LABEL%d\n",l1);// It will give an error
+	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
+	 	fprintf (fp, "\tLABEL%d:\n",l1);
+	 	fprintf (fp, "\tcall exit\n");
+	 	fprintf (fp, "\tLABEL%d:\n",l2);
+	 	fprintf (fp, "\tPOP BX\n");
+	 	fprintf (fp, "\tPOP AX\n"); 
 	}
 	else if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_ID) // Both bounds are variable    		
     {
    		int l1=get_label();
 	 	int l2=get_label();
-   		printf ("\tPUSH AX\n");
-   		printf ("\tPUSH BX\n");
+   		fprintf (fp, "\tPUSH AX\n");
+   		fprintf (fp, "\tPUSH BX\n");
 
 	 	if(node->child->id == TK_ID) // variable index
-	 		printf ("\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
+	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
 	 	else //static index
-	 		printf ("\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
+	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
 
-	 	printf ("\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-	 	printf ("\tCMP AX,BX\n");
-	 	printf ("\tJG LABEL%d\n",l1);//It will give error
-	 	printf ("\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-	 	printf ("\tCMP AX,BX\n");
-	 	printf ("\tJL LABEL%d\n",l1);// It will give an error
-	 	printf ("\tJMP LABEL%d\n",l2);
-	 	printf ("\tLABEL%d:\n",l1);
-	 	printf ("\tcall exit\n");
-	 	printf ("\tLABEL%d:\n",l2);
-	 	printf ("\tPOP BX\n");
-	 	printf ("\tPOP AX\n");
+	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
+	 	fprintf (fp, "\tCMP AX,BX\n");
+	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
+	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
+	 	fprintf (fp, "\tCMP AX,BX\n");
+	 	fprintf (fp, "\tJL LABEL%d\n",l1);// It will give an error
+	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
+	 	fprintf (fp, "\tLABEL%d:\n",l1);
+	 	fprintf (fp, "\tcall exit\n");
+	 	fprintf (fp, "\tLABEL%d:\n",l2);
+	 	fprintf (fp, "\tPOP BX\n");
+	 	fprintf (fp, "\tPOP AX\n");
    }
 }
 
-int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
 {
-
 	if (node == NULL)
 		return 0 ;
 
 	switch (node->id)
 	{
 		int start_label, end_label ;
+		varST *searchedVar ;
 
 		case statements :
-			moduleGeneration (node->child, rbpDepth, rspDepth, node->localST, vst, fp);		// Access local scope and move below
+			moduleGeneration (node->child, localBase, rspDepth, node->localST, vst, fp);		// Access local scope and move below
 			break ;
 
 		case statement :
-			rspDepth = moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
+			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			if (node->next == NULL)
 			{
-				if (rspDepth - rbpDepth > 0)
-					printf ("\tADD RSP, %d\t\t\t;Restoring RSP to previous scope\n", (rspDepth-rbpDepth)) ;
 				if (lst->parent == realBase)
 				{
-					printf ("\tPOP RBP\n") ;
-					printf ("\tret\n") ;
+					fprintf (fp, "\tMOV RSP, RBP\n") ;
+					fprintf (fp, "\tPOP RBP\n") ;
+					fprintf (fp, "\tPOP RBP\n") ;
+					fprintf (fp, "\tret\n") ;
 				}
+				else if (rspDepth - localBase > 0)
+					fprintf (fp, "\tADD RSP, %d\t\t\t;Restoring RSP to previous scope\n", (rspDepth-localBase)) ;
 			}
 			else
-				moduleGeneration(node->next, rbpDepth, rspDepth, lst, vst, fp);
+				moduleGeneration(node->next, localBase, rspDepth, lst, vst, fp);
 			break ;
 
 		case TK_DECLARE :
 			;
 			int endOffset ;
 			astNode *idListHead = node->next->child ;
+			astNode *dtNode = node->next->next ;
 			while (idListHead->next != NULL)
 				idListHead = idListHead->next ;
 
 			endOffset = searchVar (realBase, lst, idListHead->tok->lexeme)->offset ;
-			printf ("\tSUB RSP, %d\t\t\t;Updating RSP\n", (endOffset - rspDepth)) ;
-			rspDepth = endOffset ;
+
+			if (endOffset > 0)
+			{		
+				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n\n", (endOffset - rspDepth)) ;
+				rspDepth = endOffset ;
+			}
 			
 			break ;											
 
 		case TK_ASSIGNOP :
-			moduleGeneration(node->child->next, rbpDepth, rspDepth,  lst, vst, fp);
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			printf ("\n") ;
+			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			fprintf (fp, "\n") ;
 			break ;
 
 		case TK_PLUS :
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, rbpDepth, rspDepth,  lst, vst, fp);
-			printf ("\tPOP AX\n");
-			printf ("\tPOP BX\n");
-			printf ("\tADD AX,BX\n");
-			printf ("\tPUSH AX\n");
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tADD AX,BX\n");
+			fprintf (fp, "\tPUSH AX\n");
 
 			break ;
 
 		case TK_MINUS :
-			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			printf ("\tPOP AX\n");
-			printf ("\tPOP BX\n");
-			printf ("\tSUB AX,BX\n");
-			printf ("\tPUSH AX\n");
+			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tSUB AX,BX\n");
+			fprintf (fp, "\tPUSH AX\n");
 
 			break ;
 
 		case TK_MUL :
-			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			printf ("\tPOP AX\n");
-			printf ("\tPOP BX\n");
-			printf ("\tIMUL BX\n");
-			printf ("\tPUSH AX\n");
+			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tIMUL BX\n");
+			fprintf (fp, "\tPUSH AX\n");
 
 			break ;
 
 		case TK_DIV :
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
-			printf ("\tPOP BX\n");
-			printf ("\tPOP AX\n\n");
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tPOP AX\n\n");
 
-			printf ("\tIDIV BX\n");
-			printf ("\tPUSH AX\n");
+			fprintf (fp, "\tIDIV BX\n");
+			fprintf (fp, "\tPUSH AX\n");
 			break ;
 
 		case TK_RNUM :
-			printf ("NO RNUM ALLOWED!\n") ;
+			fprintf (fp, "NO RNUM ALLOWED!\n") ;
 			exit (0) ;
 			break ;
 
 		case TK_NUM : 
 			if (node->prev == NULL)
 			{
-				printf ("\tMOV AX, %s\n",node->tok->lexeme);
-				printf ("\tPUSH AX\n");	
+				fprintf (fp, "\tMOV AX, %s\n",node->tok->lexeme);
+				fprintf (fp, "\tPUSH AX\n");	
 			}
 			else
 			{
-				printf ("\tMOV BX, %s\n",node->tok->lexeme);
-				printf ("\tPUSH BX\n");	
+				fprintf (fp, "\tMOV BX, %s\n",node->tok->lexeme);
+				fprintf (fp, "\tPUSH BX\n");	
 			}
 			break ;
 
 		case TK_TRUE :
 			if (node->prev == NULL)
 			{
-				printf ("\tMOV AX,00000001H\n");
-				printf ("\tPUSH AX\n");	
+				fprintf (fp, "\tMOV AX,00000001H\n");
+				fprintf (fp, "\tPUSH AX\n");	
 			}
 			else
 			{
-				printf ("\tMOV BX,00000001H\n");
-				printf ("\tPUSH BX\n");	
+				fprintf (fp, "\tMOV BX,00000001H\n");
+				fprintf (fp, "\tPUSH BX\n");	
 			}
 			break ;
 
 		case TK_FALSE :
 			if (node->prev == NULL)
 			{
-				printf ("\tMOV AX,00000000H\n");
-				printf ("\tPUSH AX\n");	
+				fprintf (fp, "\tMOV AX,00000000H\n");
+				fprintf (fp, "\tPUSH AX\n");	
 			}
 			else
 			{
-				printf ("\tMOV BX,00000000H\n");
-				printf ("\tPUSH BX\n");	
+				fprintf (fp, "\tMOV BX,00000000H\n");
+				fprintf (fp, "\tPUSH BX\n");	
 			}
 			break ;
 
@@ -260,8 +267,8 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 				{
 					if(node->id == TK_ID && node->child==NULL)
 					{
-						printf ("\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-						printf ("\tPUSH AX\n");	
+						fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+						fprintf (fp, "\tPUSH AX\n");	
 					}
 
 					else if(node->id == TK_ID && node->child!=NULL) // var:=A[i]+j;
@@ -270,37 +277,38 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 						vst = searchVar (realBase, lst,node->tok->lexeme);
 						int size;
 						if(vst->arrayIndices->type == TK_BOOLEAN)
-							size=1;
+							size=2;
 						else if(vst->arrayIndices->type == TK_INTEGER)
 							size=2;
 						else if(vst->arrayIndices->type == TK_REAL)
 							size=4;
 
-						boundCheck(node,vst,fp);
+						if (vst->offset)
+							boundCheck(node,vst,fp);
 
 						if(node->child->id == TK_ID) // For dynamic index
 						{
-							printf ("\tMOV EAX,%s_cb\n",node->tok->lexeme);
-							printf ("\tPUSH EBX\n");
-							printf ("\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
-							printf ("\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-							printf ("\tIMUL BX,%d\n",size);
-							printf ("\tADD EBX,EAX\n");
-							printf ("\tMOV AX,[EBX]\n");
-							printf ("\tPOP EBX\n");
+							fprintf (fp, "\tMOV EAX,%s_cb\n",node->tok->lexeme);
+							fprintf (fp, "\tPUSH EBX\n");
+							fprintf (fp, "\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
+							fprintf (fp, "\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+							fprintf (fp, "\tIMUL BX,%d\n",size);
+							fprintf (fp, "\tADD EBX,EAX\n");
+							fprintf (fp, "\tMOV AX,[EBX]\n");
+							fprintf (fp, "\tPOP EBX\n");
 						}
 						else
-							printf ("\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+							fprintf (fp, "\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
 						
-						printf ("\tPUSH AX\n");	
+						fprintf (fp, "\tPUSH AX\n");	
 					}
 				}
 				else
 				{
 					if(node->id == TK_ID && node->child==NULL)
 					{
-						printf ("\tMOV BX, [rbp - %d]\n",searchVar(realBase, lst, node->tok->lexeme)->offset);
-						printf ("\tPUSH BX\n");	
+						fprintf (fp, "\tMOV BX, [rbp - %d]\n",searchVar(realBase, lst, node->tok->lexeme)->offset);
+						fprintf (fp, "\tPUSH BX\n");	
 					}
 
 					else if(node->id == TK_ID && node->child!=NULL) // var:=j+A[i];
@@ -309,30 +317,31 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 						vst=searchVar (realBase, lst,node->tok->lexeme);
 						int size;
 						if(vst->arrayIndices->type == TK_BOOLEAN)
-							size=1;
+							size=2;
 						else if(vst->arrayIndices->type == TK_INTEGER)
 							size=2;
 						else if(vst->arrayIndices->type == TK_REAL)
 							size=4;
 
-						boundCheck(node,vst,fp);
+						if (vst->offset > 0)
+							boundCheck(node,vst,fp);
 
 						if(node->child->id == TK_ID) // For dynamic index
 						{
-							printf ("\tMOV EBX,%s_cb\n",node->tok->lexeme);
-							printf ("\tPUSH EAX\n");
-							printf ("\tAND EAX,00000000H\n");
-							printf ("\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
-							printf ("\tSUB AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-							printf ("\tIMUL AX,%d\n",size);
-							printf ("\tADD EAX,EBX\n");
-							printf ("\tMOV BX,[EAX]\n");
-							printf ("\tPOP EAX\n");
+							fprintf (fp, "\tMOV EBX,%s_cb\n",node->tok->lexeme);
+							fprintf (fp, "\tPUSH EAX\n");
+							fprintf (fp, "\tAND EAX,00000000H\n");
+							fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
+							fprintf (fp, "\tSUB AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+							fprintf (fp, "\tIMUL AX,%d\n",size);
+							fprintf (fp, "\tADD EAX,EBX\n");
+							fprintf (fp, "\tMOV BX,[EAX]\n");
+							fprintf (fp, "\tPOP EAX\n");
 						}
 						else
-							printf ("\tMOV BX, [%s_cb+%d]\n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+							fprintf (fp, "\tMOV BX, [%s_cb+%d]\n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
 							
-						printf ("\tPUSH BX\n");	
+						fprintf (fp, "\tPUSH BX\n");	
 					}
 				}
 			}
@@ -340,8 +349,8 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 			{
 				if(node->id == TK_ID && node->child==NULL && node->prev!=NULL)
 				{
-					printf ("\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-					printf ("\tPUSH AX\n");	
+					fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+					fprintf (fp, "\tPUSH AX\n");	
 				}
 				else if(node->id == TK_ID && node->child!=NULL && node->prev!=NULL) //type checking required i:=A[j]
 				{
@@ -349,68 +358,70 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 					vst = searchVar (realBase, lst,node->tok->lexeme);
 					int size;
 					if(vst->arrayIndices->type == TK_BOOLEAN)
-						size=1;
+						size=2;
 					else if(vst->arrayIndices->type == TK_INTEGER)
 						size=2;
 					else if(vst->arrayIndices->type == TK_REAL)
 						size=4;
 
-					boundCheck(node,vst,fp);	
+					if (vst->offset > 0)
+						boundCheck(node,vst,fp);	
 					if(node->child->id == TK_ID)
 					{
-						printf ("\tPUSH AX\n");
-						printf ("\tMOV EAX,%s_cb\n",node->tok->lexeme);
-						printf ("\tPUSH EBX\n");
-						printf ("\tAND EBX,00000000H\n");
-						printf ("\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
-						printf ("\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf ("\tIMUL BX,%d\n",size);
-						printf ("\tADD EBX,EAX\n");
-						printf ("\tMOV AX,[EBX]\n");
-						printf ("\tPOP EBX\n");
+						fprintf (fp, "\tPUSH AX\n");
+						fprintf (fp, "\tMOV EAX,%s_cb\n",node->tok->lexeme);
+						fprintf (fp, "\tPUSH EBX\n");
+						fprintf (fp, "\tAND EBX,00000000H\n");
+						fprintf (fp, "\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
+						fprintf (fp, "\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf (fp, "\tIMUL BX,%d\n",size);
+						fprintf (fp, "\tADD EBX,EAX\n");
+						fprintf (fp, "\tMOV AX,[EBX]\n");
+						fprintf (fp, "\tPOP EBX\n");
 					}
 					else
-						printf ("\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+						fprintf (fp, "\tMOV AX, [RBP - %d]\n",vst->offset - size*(atoi(vst->arrayIndices->tokRight->lexeme) - atoi(node->child->tok->lexeme))) ;
 					
-					printf ("\tPUSH AX\n");	
+					fprintf (fp, "\tPUSH AX\n");	
 					
 				}
 				else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
 				{
-					printf ("\tPOP AX\n");
-					printf ("\tMOV [rbp - %d],AX\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
+					fprintf (fp, "\tPOP AX\n");
+					fprintf (fp, "\tMOV [rbp - %d],AX\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
 				}
 				else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
 				{
-					printf ("\tPOP AX\n");	
+					fprintf (fp, "\tPOP AX\n");	
 
 					varST* vst ;
 					vst = searchVar(realBase, lst,node->tok->lexeme);
 					int size;
 					if(vst->arrayIndices->type == TK_BOOLEAN)
-						size=1;
+						size=2;
 					else if(vst->arrayIndices->type == TK_INTEGER)
 						size=2;
 					else if(vst->arrayIndices->type == TK_REAL)
 						size=4;
 
-					boundCheck(node,vst,fp);	
+					if (vst->offset < 0)
+						boundCheck(node,vst,fp);	
 					if(node->child->id == TK_ID)
 					{
-						printf ("\tPUSH EBX\n");
-						printf ("\tPUSH AX\n");
-						printf ("\tMOV EAX,%s_cb\n",node->tok->lexeme);
-						printf ("\tAND EBX,00000000H\n");
-						printf ("\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
-						printf ("\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-						printf ("\tIMUL BX,%d\n",size);
-						printf ("\tADD EBX,EAX\n");
-						printf ("\tPOP AX\n");
-						printf ("\tMOV [EBX],AX\n");
-						printf ("\tPOP EBX\n");
+						fprintf (fp, "\tPUSH EBX\n");
+						fprintf (fp, "\tPUSH AX\n");
+						fprintf (fp, "\tMOV EAX,%s_cb\n",node->tok->lexeme);
+						fprintf (fp, "\tAND EBX,00000000H\n");
+						fprintf (fp, "\tMOV BX,[%s_cb]\n",node->child->tok->lexeme);
+						fprintf (fp, "\tSUB BX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
+						fprintf (fp, "\tIMUL BX,%d\n",size);
+						fprintf (fp, "\tADD EBX,EAX\n");
+						fprintf (fp, "\tPOP AX\n");
+						fprintf (fp, "\tMOV [EBX],AX\n");
+						fprintf (fp, "\tPOP EBX\n");
 					}
 					else
-						printf ("\tMOV [%s_cb+%d],AX \n",node->tok->lexeme, (atoi(node->child->tok->lexeme)-atoi(vst->arrayIndices->tokLeft->lexeme))*size);
+						fprintf (fp, "\tMOV [RBP - %d],AX \n" , vst->offset - size*(atoi(vst->arrayIndices->tokRight->lexeme) - atoi(node->child->tok->lexeme))) ;
 				}
 			}
 			break ;
@@ -418,34 +429,34 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 		case TK_FOR :
 			node=node->next;
 
-			moduleGeneration(node, rbpDepth, rspDepth, lst, vst, fp);		// ID
-			moduleGeneration(node->next->next, rbpDepth, rspDepth, lst, vst, fp);	// Right lim
+			moduleGeneration(node, localBase, rspDepth, lst, vst, fp);		// ID
+			moduleGeneration(node->next->next, localBase, rspDepth, lst, vst, fp);	// Right lim
 
-			printf ("\tMOV AX,%s\n", node->next->tok->lexeme);
-			printf ("\tMOV [rbp - %d], AX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset );
+			fprintf (fp, "\tMOV AX,%s\n", node->next->tok->lexeme);
+			fprintf (fp, "\tMOV [rbp - %d], AX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset );
 
 
 			start_label = get_label();
 			end_label = get_label();
-			printf ("\t\n\n\nLABEL%d:\n",start_label);
+			fprintf (fp, "\t\n\n\nLABEL%d:\n",start_label);
 
-			printf ("\tPOP AX\t\t\t\t;Initial check\n"); //4
-			printf ("\tPUSH AX\n");
+			fprintf (fp, "\tPOP AX\t\t\t\t;Initial check\n"); //4
+			fprintf (fp, "\tPUSH AX\n");
 			
-			printf ("\tMOV BX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);//variable
-			printf ("\tCMP BX,AX\n");
-			printf ("\tJG LABEL%d\n\n",end_label);
+			fprintf (fp, "\tMOV BX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);//variable
+			fprintf (fp, "\tCMP BX,AX\n");
+			fprintf (fp, "\tJG LABEL%d\n\n",end_label);
 
 			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst, fp);		// Statements
 
-			printf ("\n\tMOV BX, [rbp - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			printf ("\tINC BX\n");
-			printf ("\tMOV [rbp - %d],BX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			printf ("\tJMP LABEL%d",start_label);
-			printf ("\t\n\n\n\nLABEL%d:\n",end_label);
-			printf ("\tPOP AX\n");
-			printf ("\tPOP AX\n");
-			printf ("\tMOV [rbp - %d],AX\n", searchVar(realBase, lst ,node->tok->lexeme)->offset);
+			fprintf (fp, "\n\tMOV BX, [rbp - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\tINC BX\n");
+			fprintf (fp, "\tMOV [rbp - %d],BX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\tJMP LABEL%d",start_label);
+			fprintf (fp, "\t\n\n\n\nLABEL%d:\n",end_label);
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tMOV [rbp - %d],AX\n", searchVar(realBase, lst ,node->tok->lexeme)->offset);
 			break ;
 
 		
@@ -453,105 +464,167 @@ int moduleGeneration (astNode *node, int rbpDepth, int rspDepth, moduleST *lst, 
 			node=node->next;
 			start_label = get_label();
 			end_label =  get_label();
-			printf ("\t\nLABEL%d:\n",start_label);
+			fprintf (fp, "\t\nLABEL%d:\n",start_label);
 
-			moduleGeneration(node, rbpDepth, rspDepth, lst, vst, fp);	// expression
+			moduleGeneration(node, localBase, rspDepth, lst, vst, fp);	// expression
 
-			printf ("\tPOP AX\n");
-			printf ("\tCMP AX,00000001h\n");
-			printf ("\tJNE LABEL%d\n",end_label);
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tCMP AX,00000001h\n");
+			fprintf (fp, "\tJNE LABEL%d\n",end_label);
 
 			moduleGeneration(node->next, rspDepth, rspDepth, lst, vst, fp);		// statements
 
-			printf ("\tJMP LABEL%d\n",start_label);
-			printf ("\nLABEL%d:\n",end_label);
+			fprintf (fp, "\tJMP LABEL%d\n",start_label);
+			fprintf (fp, "\nLABEL%d:\n",end_label);
 
 			break ;
 
 		// else if(node->id == TK_LT || node->id == TK_GT || node->id == TK_LE ||node->id == TK_GE ||node->id == TK_NE ||node->id == TK_EQ)  //all correct
 		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
-			moduleGeneration(node->child, rbpDepth, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, rbpDepth, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 
-			printf ("\tPOP BX\n");
-			printf ("\tPOP AX\n");
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tPOP AX\n");
 
 			start_label=get_label();
 			end_label=get_label();
-			printf ("\tCMP AX,BX\n\n");
+			fprintf (fp, "\tCMP AX,BX\n\n");
 
 			switch (node->id)
 			{
 				case TK_LT :
-					printf ("\tJL LABEL%d\n",start_label);
+					fprintf (fp, "\tJL LABEL%d\n",start_label);
 					break ;
 				case TK_GT :
-					printf ("\tJG LABEL%d\n",start_label);
+					fprintf (fp, "\tJG LABEL%d\n",start_label);
 					break ;
 				case TK_LE :
-					printf ("\tJLE LABEL%d\n",start_label);
+					fprintf (fp, "\tJLE LABEL%d\n",start_label);
 					break ;
 				case TK_GE :
-					printf ("\tJGE KAR%d\n",start_label);
+					fprintf (fp, "\tJGE LABEL%d\n",start_label);
 					break ;
 				case TK_NE :
-					printf ("\tJNE KAR%d\n",start_label);
+					fprintf (fp, "\tJNE LABEL%d\n",start_label);
 					break ;
 				case TK_EQ :
-					printf ("\tJE KAR%d\n",start_label);
+					fprintf (fp, "\tJE LABEL%d\n",start_label);
 					break ;
 			}
 
 
-			printf ("\tMOV AX,0\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n\n",end_label);
-			printf ("LABEL%d:\n\n",start_label);
-			printf ("\tMOV AX,1\n");
-			printf ("\tPUSH AX\n\n\n");
-			printf ("LABEL%d:\n\n",end_label);
+			fprintf (fp, "\tMOV AX,0\n");
+			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\tJMP LABEL%d\n\n",end_label);
+			fprintf (fp, "LABEL%d:\n\n",start_label);
+			fprintf (fp, "\tMOV AX,1\n");
+			fprintf (fp, "\tPUSH AX\n\n\n");
+			fprintf (fp, "LABEL%d:\n\n",end_label);
 
 			break ;
 
 		case TK_AND : case TK_OR :
-			int start,mid,end;
-			codeGeneration(node->child,fp);
-			codeGeneration(node->child->next,fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 
 			start_label = get_label();
 			int mid_label = get_label();
 			end_label = get_label();
 
-			printf ("\tPOP BX\n");
-			printf ("\tPOP AX\n"); 
+			fprintf (fp, "\tPOP BX\n");
+			fprintf (fp, "\tPOP AX\n"); 
 
-			printf ("\tCMP AX,00000001h\n");
+			fprintf (fp, "\tCMP AX,00000001h\n");
 			if (node->id == TK_AND)
 			{
-				printf ("\tJE LABEL%d\n",start_label);
-				printf ("\tMOV AX,00000000h\n");
+				fprintf (fp, "\tJE LABEL%d\n",start_label);
+				fprintf (fp, "\tMOV AX,00000000h\n");
 			}
 			else
 			{
-				printf ("\tJNE LABEL%d\n",start_label);
-				printf ("\tMOV AX,00000001h\n");
+				fprintf (fp, "\tJNE LABEL%d\n",start_label);
+				fprintf (fp, "\tMOV AX,00000001h\n");
 			}
 
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end_label);
+			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\tJMP LABEL%d\n",end_label);
 
 
-			printf ("\t\n\nLABEL%d:\n",start_label);
-			printf ("\tCMP BX,00000001h\n");
-			printf ("\tJNE LABEL%d\n",mid_label);
-			printf ("\tMOV AX,00000001h\n");
-			printf ("\tPUSH AX\n");
-			printf ("\tJMP LABEL%d\n",end_label);
-			printf ("LABEL%d:\n",mid_label);
-			printf ("\tMOV AX,00000000h\n");
-			printf ("\tPUSH AX\n");
-			printf ("LABEL%d:\n",end_label);
+			fprintf (fp, "\t\n\nLABEL%d:\n",start_label);
+			fprintf (fp, "\tCMP BX,00000001h\n");
+			fprintf (fp, "\tJNE LABEL%d\n",mid_label);
+			fprintf (fp, "\tMOV AX,00000001h\n");
+			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\tJMP LABEL%d\n",end_label);
+			fprintf (fp, "LABEL%d:\n",mid_label);
+			fprintf (fp, "\tMOV AX,00000000h\n");
+			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "LABEL%d:\n",end_label);
 
+			break ;
+
+		case TK_PRINT :
+			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			if (searchedVar->datatype == TK_INTEGER)
+			{
+				fprintf (fp, "\tMOV AX, [rbp - %d]\t\t;printing integer\n", searchedVar->offset) ;
+				fprintf (fp, "\tMOV RDI, printFormat\n") ;
+				fprintf (fp, "\tMOVSX RSI, AX\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tCALL printf\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n\n") ;
+			}
+			else if (searchedVar->datatype == TK_BOOLEAN)
+			{
+				start_label = get_label () ;
+				end_label = get_label () ;
+
+				fprintf (fp, "\tMOV AX, [rbp - %d]\t\t;printing boolean\n", searchedVar->offset) ;
+				fprintf (fp, "\tCMP AX, 01\n") ;
+				fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+				fprintf (fp, "\tMOV RDI, printFalse\n") ;
+				fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+				fprintf (fp, "LABEL%d:\n", start_label) ;
+				fprintf (fp, "\tMOV RDI, printTrue\n") ;
+				fprintf (fp, "LABEL%d:\n", end_label) ;
+
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tMOV RSI, RAX\n") ;
+				fprintf (fp, "\tCALL printf\n\n") ;
+			}
+			else // Array type
+			{
+				if (searchedVar->offset > 0)
+				{
+
+				}
+			}
+			break ;
+
+		case TK_GET_VALUE :
+			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
+			{
+				int rspAlign = 16 - (rspDepth % 16) ;
+
+				fprintf (fp, "\n\tMOV RDI, inputPrompt\t\t;get_value prompt\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tMOV RSI, RAX\n") ;
+				fprintf (fp, "\tCALL printf\n") ;
+
+				fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
+				fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
+				fprintf (fp, "\tMOV RSI, RSP\n") ;
+				fprintf (fp, "\tSUB RSI, 4\n") ;
+				fprintf (fp, "\tPUSH RSI\n") ;
+				fprintf (fp, "\tCALL scanf\n") ;
+				fprintf (fp, "\tPOP RSI\n") ;
+				fprintf (fp, "\tMOV AX, WORD [RSP-4]\n") ;
+				fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
+				fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
+			}
 			break ;
 
 	}
@@ -572,7 +645,7 @@ void codeGeneration(astNode *node, FILE* fp)
 			break ;
 
 		case otherModules :
-			codeGeneration (node->child, fp) ;				// Do module definitions
+			codeGeneration (node->child, fp) ;					// Do module definitions
 			codeGeneration (node->next, fp) ;					// <driverModule> or NULL
 			break ;
 
@@ -588,30 +661,8 @@ void codeGeneration(astNode *node, FILE* fp)
 	{
 		node=node->next;
 		vst=searchVarInCurrentModule (lst,node->tok->lexeme);
-		if(vst->datatype == TK_INTEGER || vst->datatype == TK_REAL )
-		{
-			codeGeneration(node,fp);
-			printf ("\tPOP AX\n");
-			printf ("\tcall outPut\n");
-			printf ("\tcall printInt\n");
-		}
-		//check for boolean using ST			
-		else if(vst->datatype == TK_BOOLEAN)
-		{
-			int start=get_label();
-			int end=get_label();
-			codeGeneration(node,fp);
-			printf ("\tPOP AX\n");
-			printf ("\tCMP AX,00000000h\n");
-			printf ( "JNE LABEL%d\n",start);
-			printf ("\tcall outPut\n");
-			printf ("\tcall faLSE\n");
-			printf ( "JMP LABEL%d\n",end);
-			printf ( "\nLABEL%d:\n",start);
-			printf ("\tcall outPut\n");
-			printf ("\tcall trUE\n");
-			printf ( "\nLABEL%d:\n",end);
-		}
+
+		//check for boolean using ST
 
 		else if(vst->datatype == TK_ARRAY)
 		{
@@ -627,35 +678,30 @@ void codeGeneration(astNode *node, FILE* fp)
 				size=2;
 				//strcpy(reg,"R9W");
 			}
-			else if(vst->arrayIndices->type == TK_REAL)
-			{
-				size=4;
-				//strcpy(reg,"R9");
-			}
 
 			if(vst->offset == 0)     //static array
 			{
 				int lb=atoi(vst->arrayIndices->tokLeft->lexeme);
 				int ub=atoi(vst->arrayIndices->tokRight->lexeme);
-				printf ("\tcall outPut\n");
+				fprintf (fp, "\tcall outPut\n");
 				if(vst->arrayIndices->type == TK_BOOLEAN)  //static array of type boolean
 				{
 					for(int i=lb;i<=ub;i++)
 					{	
 						int start=get_label();
 						int end=get_label();
-						printf ("\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (i-lb)*size);
-						printf ("\tPUSH AX\n");
-						printf ("\tPOP AX\n");
-						printf ("\tCMP AX,00000000h\n");
-						printf ( "JNE LABEL%d\n",start);
-						//printf ("\tcall outPut\n");
-						printf ("\tcall faLSE\n");
-						printf ( "JMP LABEL%d\n",end);
-						printf ( "\nLABEL%d:\n",start);
-						//printf ("\tcall outPut\n");
-						printf ("\tcall trUE\n");
-						printf ( "\nLABEL%d:\n",end);
+						fprintf (fp, "\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (i-lb)*size);
+						fprintf (fp, "\tPUSH AX\n");
+						fprintf (fp, "\tPOP AX\n");
+						fprintf (fp, "\tCMP AX,00000000h\n");
+						fprintf (fp,  "JNE LABEL%d\n",start);
+						//fprintf (fp, "\tcall outPut\n");
+						fprintf (fp, "\tcall faLSE\n");
+						fprintf (fp,  "JMP LABEL%d\n",end);
+						fprintf (fp,  "\nLABEL%d:\n",start);
+						//fprintf (fp, "\tcall outPut\n");
+						fprintf (fp, "\tcall trUE\n");
+						fprintf (fp,  "\nLABEL%d:\n",end);
 					}
 				}
 
@@ -664,10 +710,10 @@ void codeGeneration(astNode *node, FILE* fp)
 				{
 					for(int i=lb;i<=ub;i++) //static array of type num
 					{
-						printf ("\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (i-lb)*size);
-						printf ("\tPUSH AX\n");
-						printf ("\tPOP AX\n");
-						printf ("\tcall printInt\n");
+						fprintf (fp, "\tMOV AX, [%s_cb+%d]\n",node->tok->lexeme, (i-lb)*size);
+						fprintf (fp, "\tPUSH AX\n");
+						fprintf (fp, "\tPOP AX\n");
+						fprintf (fp, "\tcall printInt\n");
 					}
 				}
 			}
@@ -680,16 +726,13 @@ void codeGeneration(astNode *node, FILE* fp)
 		node=node->next;
 		if(node->child == NULL)//if not an array
 		{
-			printf ("\tcall inPut\n");
-			printf ("\tcall readInt\n");
-			printf ("\tMOV [%s_cb],EAX\n",node->tok->lexeme);
+			fprintf (fp, "\tcall inPut\n");
+			fprintf (fp, "\tcall readInt\n");
+			fprintf (fp, "\tMOV [%s_cb],EAX\n",node->tok->lexeme);
 		}
 	}
 	*/
 }
-
-
-
 
 
 int main(int argc, char *argv[])
@@ -720,14 +763,35 @@ int main(int argc, char *argv[])
 
 	if (!realBase->semanticError)
 	{
-		printf ("global main\n") ;
-		printf ("extern printf\n\n") ;
-		printf ("section .text\n") ;
+		FILE *fp = fopen ("code.asm", "w") ;
 
-		printf ("main:\n") ;
-		printf ("\tPUSH RBP\n") ;
-		printf ("\tMOV RBP, RSP\n") ;
-		codeGeneration (astRoot, NULL) ;
+		fprintf (fp, "section .data\n") ;
+		fprintf (fp, "\tprintFormat : ") ;
+		fprintf (fp, "db \"Output :  %%d\" , 10, 0\n") ;
+
+		fprintf (fp, "\tprintTrue : ") ;
+		fprintf (fp, "db \"Output : true\" , 10, 0\n") ;
+
+		fprintf (fp, "\tprintFalse : ") ;
+		fprintf (fp, "db \"Output : false\" , 10, 0\n") ;
+
+		fprintf (fp, "\tinputPrompt : ") ;
+		fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
+
+		fprintf (fp, "\tinputInt : ") ;
+		fprintf (fp, "db \"%%d\", 0\n") ;
+
+		fprintf (fp, "global main\n") ;
+		fprintf (fp, "extern scanf\n") ;
+		fprintf (fp, "extern printf\n\n") ;
+
+		fprintf (fp, "section .text\n") ;
+
+		fprintf (fp, "main:\n") ;
+		fprintf (fp, "\tPUSH RBP\n") ;
+		fprintf (fp, "\tPUSH RBP\n") ;
+		fprintf (fp, "\tMOV RBP, RSP\n") ;
+		codeGeneration (astRoot, fp) ;
 	}
 	else
 		printf ("Semantic errors found. Please check the above messages\n") ;

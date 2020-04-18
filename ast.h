@@ -14,7 +14,7 @@ typedef struct _arrayTypeInfo
 
 typedef enum _datTag
 {
-	PRIMITIVE, ARRAY
+	PRIMITIVE, ARRAY, DARRAY
 } datTag ;
 
 typedef tokenID primitive ;

@@ -689,7 +689,7 @@ int getSize(baseST * realBase, varST * thisVar)
 			else
 				return sz  ;
 		}
-		else
+		else if (thisVar->varType != VAR_INPUT)
 		{
 			// dynamic array index checks
 			int indexErrorFlag = 0 ;
@@ -731,8 +731,10 @@ int getSize(baseST * realBase, varST * thisVar)
 				return -3 ;		// incorect dynamic array
 			}
 
-			return -1 ;		// correct dynamic array
+			return -2 ;		// correct dynamic array
 		}
+		else
+			return -1 ;
 	}
 }
 
@@ -1219,7 +1221,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 						base->semanticError = 1 ;
 					}
 					else{
-						varST * tmp = createVarST (iplAST->child , moduleToInsert , VAR_INPUT ) ;
+						varST * tmp = createVarST (iplAST->child , moduleToInsert , VAR_INPUT) ;
 						int retSize ;
 					
 						if ( iplAST->child->next->dtTag == PRIMITIVE) 
