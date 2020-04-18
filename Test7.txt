@@ -1,10 +1,16 @@
 <<<driver program>>>
 start
-	declare i:integer ;
-	for (i in 0 .. 5)
+	declare i,j:integer ;
+	declare A:array[4..10] of integer ;
+	
+	A[4] := 4 ;
+
+	for (i in 5 .. 10)
 	start
-		declare j:integer ;
-		get_value (j) ;
-		print (j) ;
+		j := i - 1 ;
+		A[i] := i + A[j] ;
 	end
+
+	print (A) ;
+	print (A[j]) ;
 end
