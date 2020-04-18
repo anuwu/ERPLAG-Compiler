@@ -761,14 +761,6 @@ int getSize(baseST * realBase, varST * thisVar)
 				}
 			}
 
-			if (leftDigit || (!leftDigit && searchedVarLeft == NULL))
-			{
-				varST *leftVar = createVarST (leftDigit?NULL:thisVar->arrayIndices->tokLeft->lexeme, thisVar->scope, VAR_INPUT, TK_INTEGER) ;
-				leftVar->offset = ((moduleST *)leftVar->scope)->currOffset + 2 ;
-				((moduleST *)leftVar->scope)->currOffset += 2 ;
-				insertInputVarST ((moduleST *)leftVar->scope , leftVar) ;
-			}
-
 			// Right limit
 			if (!rightDigit)
 			{
@@ -780,21 +772,13 @@ int getSize(baseST * realBase, varST * thisVar)
 				}
 			}
 
-			if (rightDigit || (!rightDigit && searchedVarRight == NULL))
-			{
-				varST *rightVar = createVarST (rightDigit?NULL:thisVar->arrayIndices->tokRight->lexeme, thisVar->scope, VAR_INPUT, TK_INTEGER) ;
-				rightVar->offset = ((moduleST *)rightVar->scope)->currOffset + 2 ;
-				((moduleST *)rightVar->scope)->currOffset += 2 ;
-				insertInputVarST (rightVar->scope , rightVar) ;
-			}
-
 			if (indexErrorFlag)
 			{
 				realBase->semanticError = 1 ;
 				return -2 ;
 			}
 			else
-				return 8 ;
+				return 12 ;
 		}
 	}
 }

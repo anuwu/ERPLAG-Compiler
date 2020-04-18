@@ -1,5 +1,5 @@
 <<module m>>
-takes input [C : array [low .. high] of integer] ;
+takes input [C : array [2 .. 4] of integer] ;
 start
 
 end
