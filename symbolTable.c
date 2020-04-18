@@ -431,14 +431,6 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 	printf("\n**************************************\n") ;
 }
 
-int isInputStaticArr (varST *inputVar)
-{
-	if (isdigit(inputVar->arrayIndices->tokLeft->lexeme[0]) && isdigit(inputVar->arrayIndices->tokRight->lexeme[0]))
-		return 1 ;
-	else
-		return 0 ;
-}
-
 varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModule, astNode * inputNode)
 {	
 	varSTentry * varEntry = targetModule->inputVars[0] ;	
@@ -470,7 +462,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 						realBase->semanticError = 1 ;
 					}
 
-					if (isVarStaticArr (searchedVar) && isInputStaticArr (varEntry->thisVarST))
+					if (isVarStaticArr (searchedVar) && isVarStaticArr (varEntry->thisVarST))
 					{
 						if (strcmp(varEntry->thisVarST->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme) || strcmp(varEntry->thisVarST->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
 						{
