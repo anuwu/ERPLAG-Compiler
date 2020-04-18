@@ -435,6 +435,8 @@ int isInputStaticArr (varST *inputVar)
 {
 	if (isdigit(inputVar->arrayIndices->tokLeft->lexeme[0]) && isdigit(inputVar->arrayIndices->tokRight->lexeme[0]))
 		return 1 ;
+	else
+		return 0 ;
 }
 
 varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModule, astNode * inputNode)
@@ -460,7 +462,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 		else {
 			if(varEntry->thisVarST->datatype == searchedVar->datatype)
 			{
-				// Correct it
 				if (varEntry->thisVarST->datatype == TK_ARRAY) 
 				{
 					if (varEntry->thisVarST->arrayIndices->type != searchedVar->arrayIndices->type)
@@ -468,7 +469,6 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 						printf ("ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
-
 
 					if (isVarStaticArr (searchedVar) && isInputStaticArr (varEntry->thisVarST))
 					{

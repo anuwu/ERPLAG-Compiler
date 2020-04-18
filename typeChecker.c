@@ -9,7 +9,10 @@ extern char* tokenIDToString (tokenID id) ;
 
 int isVarStaticArr (varST *arrayVar)
 {
-	return (arrayVar->offset >= 0 || arrayVar->offset == -1) ;
+	if (isdigit(arrayVar->arrayIndices->tokLeft->lexeme[0]) && isdigit(arrayVar->arrayIndices->tokRight->lexeme[0]))
+		return 1 ;
+	else
+		return 0 ;
 }
 
 int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode)	// Returns TK_NUM for static index, 0 for invalid dynamic index, TK_ID for valid dynamic index
