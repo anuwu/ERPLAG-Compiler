@@ -686,7 +686,7 @@ int getSize(baseST * realBase, varST * thisVar)
 			if (thisVar->arrayIndices->type == TK_INTEGER)
 				sz = 2 ;
 			else if (thisVar->arrayIndices->type == TK_BOOLEAN)
-				sz = 1 ;
+				sz = 2 ;
 			else if (thisVar->arrayIndices->type == TK_REAL)
 				sz = 4 ;
 
@@ -708,8 +708,6 @@ int getSize(baseST * realBase, varST * thisVar)
 		}
 		else if (thisVar->varType != VAR_INPUT)		//dynamic array but not input to a module
 		{
-			//printf ("Dynamic input array!!!\n") ;
-
 			// dynamic array index checks
 			int indexErrorFlag = 0 ;
 			varST *searchedVarLeft, *searchedVarRight ;
@@ -754,7 +752,6 @@ int getSize(baseST * realBase, varST * thisVar)
 		}
 		else		// dynamic array and in`put to a module
 		{
-			//printf ("Dynamic non-input array!!!\n") ;
 
 			int indexErrorFlag = 0 ;
 			varST *searchedVarLeft, *searchedVarRight ;

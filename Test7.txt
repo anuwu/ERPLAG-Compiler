@@ -1,0 +1,14 @@
+<<<driver program>>>
+start
+	declare i:integer ;
+	declare A:array [10 .. 15] of boolean ;
+
+	A[10] := true ;
+	A[11] := false ;	
+	A[12] := true ;
+	A[13] := false ;
+	A[14] := true ;
+	A[15] := false ;
+
+	print (A) ;
+end

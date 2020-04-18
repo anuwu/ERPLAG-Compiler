@@ -1,7 +1,12 @@
 section .data
+	printFormatArray : db "Output : " , 0
+	printInt : db "%d ", 0
+	printNewLine : db 10, 0
 	printFormat : db "Output :  %d" , 10, 0
 	printTrue : db "Output : true" , 10, 0
 	printFalse : db "Output : false" , 10, 0
+	true : db "true " , 0
+	false : db "false " , 0
 	inputPrompt : db "Enter an integer : " , 0
 	inputInt : db "%d", 0
 global main
@@ -13,120 +18,78 @@ main:
 	PUSH RBP
 	PUSH RBP
 	MOV RBP, RSP
-	SUB RSP, 6			;Updating RSP
+	SUB RSP, 2			;Updating RSP
 
-	SUB RSP, 6			;Updating RSP
+	SUB RSP, 12			;Updating RSP
 
-	MOV BX, 5
+	MOV BX,00000001H
 	PUSH BX
 	POP AX
-	MOV [rbp - 8],AX		;Store
+	MOV [RBP - 4], AX		;Store
 
-	MOV BX, 9
+	MOV BX,00000000H
 	PUSH BX
 	POP AX
-	MOV [rbp - 10],AX		;Store
+	MOV [RBP - 6], AX		;Store
 
-
-	MOV RDI, inputPrompt		;get_value prompt
-	XOR RAX, RAX
-	MOV RSI, RAX
-	CALL printf
-
-	MOV RDI, inputInt		;get_value
-	SUB RSP, 4
-	MOV RSI, RSP
-	SUB RSI, 4
-	PUSH RSI
-	CALL scanf
-	POP RSI
-	MOV AX, WORD [RSP-4]
-	MOV [RBP - 2], AX
-	ADD RSP, 4
-
-
-	MOV RDI, inputPrompt		;get_value prompt
-	XOR RAX, RAX
-	MOV RSI, RAX
-	CALL printf
-
-	MOV RDI, inputInt		;get_value
-	SUB RSP, 4
-	MOV RSI, RSP
-	SUB RSI, 4
-	PUSH RSI
-	CALL scanf
-	POP RSI
-	MOV AX, WORD [RSP-4]
-	MOV [RBP - 4], AX
-	ADD RSP, 4
-
-	MOV BX, [rbp - 2]
+	MOV BX,00000001H
 	PUSH BX
-	MOV AX, [rbp - 10]
-	PUSH AX
 	POP AX
-	POP BX
-	IMUL BX
-	PUSH AX
-	MOV AX, [rbp - 2]
-	PUSH AX
-	MOV BX, [rbp - 10]
-	PUSH BX
-	MOV AX, [rbp - 4]
-	PUSH AX
-	POP AX
-	POP BX
-	IMUL BX
-	PUSH AX
-	POP AX
-	POP BX
-	ADD AX,BX
-	PUSH AX
-	MOV BX, [rbp - 4]
-	PUSH BX
-	MOV BX, [rbp - 10]
-	PUSH BX
-	MOV AX, [rbp - 8]
-	PUSH AX
-	POP AX
-	POP BX
-	SUB AX,BX
-	PUSH AX
-	POP AX
-	POP BX
-	IMUL BX
-	PUSH AX
-	POP AX
-	POP BX
-	ADD AX,BX
-	PUSH AX
-	MOV BX, 2
-	PUSH BX
-	MOV AX, [rbp - 8]
-	PUSH AX
-	POP AX
-	POP BX
-	IMUL BX
-	PUSH AX
-	POP AX
-	POP BX
-	ADD AX,BX
-	PUSH AX
-	POP AX
-	POP BX
-	SUB AX,BX
-	PUSH AX
-	POP AX
-	MOV [rbp - 6],AX		;Store
+	MOV [RBP - 8], AX		;Store
 
-	MOV AX, [rbp - 6]		;printing integer
-	MOV RDI, printFormat
-	MOVSX RSI, AX
+	MOV BX,00000000H
+	PUSH BX
+	POP AX
+	MOV [RBP - 10], AX		;Store
+
+	MOV BX,00000001H
+	PUSH BX
+	POP AX
+	MOV [RBP - 12], AX		;Store
+
+	MOV BX,00000000H
+	PUSH BX
+	POP AX
+	MOV [RBP - 14], AX		;Store
+
+
+	MOV RDI, printFormatArray		;printing array output prompt
+	XOR RSI, RSI
 	XOR RAX, RAX
 	CALL printf
-	XOR RAX, RAX
 
+	MOV RCX, 0
+LABEL1:			;printing array
+	MOV RBX, 4
+	ADD RBX, RCX
+
+	NEG RBX
+	MOV AX, [RBP + RBX]
+
+	CMP AX, 01
+	JE LABEL2
+	MOV RDI, false
+	JMP LABEL3
+LABEL2:
+	MOV RDI, true
+
+LABEL3:
+	XOR RAX, RAX
+	PUSH RCX
+	PUSH RBX
+	CALL printf
+	POP RBX
+	POP RCX
+
+	ADD RCX, 2
+	CMP RCX, 12
+	JNE LABEL1
+
+
+	MOV RDI, printNewLine		; newline after array print
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
 	MOV RSP, RBP
 	POP RBP
 	POP RBP
