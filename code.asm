@@ -97,6 +97,28 @@ LABEL1:
 	CALL malloc
 	MOV [RBP-16], RAX
 
+	MOV RDI, inputIntArrPrompt
+	MOV AX, [RBP-6]
+	MOV BX, [RBP-8]
+	MOV SI, BX
+	SUB SI, AX
+	ADD SI, 1
+	MOVSX RSI, SI
+	PUSH AX
+	XOR RAX, RAX
+	CALL printf
+	POP AX
+
+	MOV RDI, leftRange
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+
+	MOV RDI, rightRange
+	MOVSX RSI, BX
+	XOR RAX, RAX
+	CALL printf
+
 	MOV RSP, RBP
 	POP RBP
 	POP RBP

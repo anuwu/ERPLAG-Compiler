@@ -102,29 +102,6 @@ int getStaticOffset (varST *vst, astNode *node, int size)
 	return vst->offset - size*(atoi(vst->arrayIndices->tokRight->lexeme) - atoi(node->child->tok->lexeme)) ;
 }
 
-void printGetValueArrayPrompt (tokenID baseType , int leftLim, int rightLim, FILE* fp)
-{
-	if (baseType == TK_INTEGER)
-		fprintf (fp, "\tMOV RDI, inputIntArrPrompt\n") ;
-	else
-		fprintf (fp, "\tMOV RDI, inputBoolArrPrompt\n") ;
-
-	fprintf (fp, "\tMOV RSI, %d\n", rightLim - leftLim + 1) ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-
-	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
-	fprintf (fp, "\tMOV RSI, %d\n", leftLim) ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-
-	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
-	fprintf (fp, "\tMOV RSI, %d\n", rightLim) ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-}
-
-
 void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
 	int leftLim, rightLim, start_label, end_label ;
@@ -155,6 +132,67 @@ void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	fprintf (fp, "\tADD BX, AX\n") ;
 	fprintf (fp ,"\tNEG BX\n") ;
 	fprintf (fp, "\tMOVSX RBX, BX\n") ;
+}
+
+void printGetValueStaticArrayPrompt (tokenID baseType , int leftLim, int rightLim, FILE* fp)
+{
+	if (baseType == TK_INTEGER)
+		fprintf (fp, "\tMOV RDI, inputIntArrPrompt\n") ;
+	else
+		fprintf (fp, "\tMOV RDI, inputBoolArrPrompt\n") ;
+
+	fprintf (fp, "\tMOV RSI, %d\n", rightLim - leftLim + 1) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
+	fprintf (fp, "\tMOV RSI, %d\n", leftLim) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
+	fprintf (fp, "\tMOV RSI, %d\n", rightLim) ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+}
+
+
+void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
+{
+
+	if (vst->arrayIndices->type == TK_INTEGER)
+		fprintf (fp, "\n\tMOV RDI, inputIntArrPrompt\n") ;
+	else
+		fprintf (fp, "\n\tMOV RDI, inputBoolArrPrompt\n") ;
+
+	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
+		fprintf (fp, "\tMOV AX, %s", vst->arrayIndices->tokLeft->lexeme) ;
+	else
+		fprintf (fp, "\tMOV AX, [RBP-%d]\n", vst->offset-10) ;
+
+	if (isdigit(vst->arrayIndices->tokRight->lexeme[0]))
+		fprintf (fp, "\tMOV BX, %s", vst->arrayIndices->tokRight->lexeme) ;		
+	else
+		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-8) ;
+
+	fprintf (fp, "\tMOV SI, BX\n") ;
+	fprintf (fp, "\tSUB SI, AX\n") ;
+	fprintf (fp, "\tADD SI, 1\n") ;
+	fprintf (fp, "\tMOVSX RSI, SI\n") ;
+	fprintf (fp, "\tPUSH AX\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+	fprintf (fp, "\tPOP AX\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
+	fprintf (fp, "\tMOVSX RSI, AX\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+
+	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
+	fprintf (fp, "\tMOVSX RSI, BX\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
 }
 
 int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
@@ -781,7 +819,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
 					rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
 
-					printGetValueArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
+					printGetValueStaticArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
 					reserveLabel[0] = get_label () ;
 
 					rspAlign = 32 - (rspDepth % 16) ;
@@ -810,6 +848,10 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
 					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
 					fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
+				}
+				else
+				{
+					printGetValueDynArrayPrompt (searchedVar, fp) ;
 				}
 			}
 			break ;

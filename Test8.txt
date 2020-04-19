@@ -5,4 +5,5 @@ start
 	get_value (j) ;
 
 	declare A:array [i .. j] of integer ;
+	get_value (A) ;
 end
