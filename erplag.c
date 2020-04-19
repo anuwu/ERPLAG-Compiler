@@ -65,10 +65,25 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				dynamicDeclare (lst, searchedVar, fp) ;
 
 				if (declCount > 1)
-					;
+				{
+					/*
+					start_label = get_label () ;
+					fprintf (fp, "\n\tMOV CX, 0\n") ;
+					fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset) ;
+					fprintf (fp, "\tNEG RBX\n") ;
+					fprintf (fp, "\nLABEL%d:\n", start_label) ;
+
+					fprintf (fp, "\tCALL malloc\n") ;
+					fprintf (fp, "\tMOV [RBP+RBX], RAX\n") ;
+					fprintf (fp, "\tADD RBX, 12\n") ;
+					fprintf (fp, "\tINC CX\n") ;
+					fprintf (fp, "\tCMP CX, %d\n", declCount) ;
+					fprintf (fp, "\tJL LABEL%d\n", start_label) ;
+					*/
+				}
 				else
 				{
-					fprintf (fp, "\tCALL malloc\n") ;
+					fprintf (fp, "\n\tCALL malloc\n") ;
 					fprintf (fp, "\tMOV [RBP-%d], RAX\n", searchedVar->offset) ;
 				}
 			}

@@ -117,7 +117,6 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;
 //search
 varST * searchVarInbaseST (baseST * base ,char * lexeme) ;
 moduleST * searchModuleInbaseST (baseST * base, char * lexeme) ;
-moduleST * searchDriverInbaseST (baseST * base ) ;
 varST * searchlocalVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
 varST * searchInputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
 varST * searchOutputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;

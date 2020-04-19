@@ -754,14 +754,14 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tinputInt : ") ;
 	fprintf (fp, "db \"%%d\", 0\n") ;
 
-	fprintf (fp, "global main\n") ;
+	fprintf (fp, "\nglobal main\n") ;
 	fprintf (fp, "extern scanf\n") ;
 	fprintf (fp, "extern exit\n") ;
 	fprintf (fp, "extern malloc\n") ;
 	fprintf (fp, "extern printf\n\n") ;
 
 	fprintf (fp, "section .text\n") ;
-	fprintf (fp, "boundERROR:\n") ;
+	fprintf (fp, "\nboundERROR:\n") ;
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 	fprintf (fp, "\tMOV RDI, boundPrint\n") ;
@@ -771,7 +771,7 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tMOV EDI, 0\n") ;
 	fprintf (fp, "\tcall exit\n") ;
 
-	fprintf (fp, "declERROR:\n") ;
+	fprintf (fp, "\ndeclERROR:\n") ;
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 	fprintf (fp, "\tMOV RDI, declPrint\n") ;
@@ -781,7 +781,7 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tMOV EDI, 0\n") ;
 	fprintf (fp, "\tcall exit\n") ;
 
-	fprintf (fp, "declNegERROR:\n") ;
+	fprintf (fp, "\ndeclNegERROR:\n") ;
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 	fprintf (fp, "\tMOV RDI, declNeg\n") ;
@@ -797,4 +797,3 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 }
-

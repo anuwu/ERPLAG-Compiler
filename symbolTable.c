@@ -6,7 +6,6 @@
 #include "ast.h"
 #include "typeChecker.h"
 
-
 // make a global initial lexeme
 char current_lexeme[20] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" ;
 
@@ -28,7 +27,8 @@ int hashFunction ( char* lexeme , int size )
 }
 
 
-char * generateString () {
+char * generateString () 
+{
 	int i=0 ; 
 
 	while ( 1 ) {	
@@ -53,7 +53,8 @@ char * generateString () {
 }
 
 
-baseST * createBaseST () {
+baseST * createBaseST () 
+{
 	baseST * tmp = ( baseST *) malloc ( sizeof(baseST)) ;
 	tmp->driverST =  NULL ;
 	tmp->semanticError = 0 ;
@@ -68,7 +69,8 @@ baseST * createBaseST () {
 }
 
 /////////////////////////////////////////////////////////////////////////
-moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) {
+moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) 
+{
 	moduleST * tmp = ( moduleST *) malloc ( sizeof(moduleST)) ;
 
 	tmp->lexeme = lexeme ;
@@ -127,7 +129,8 @@ varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID da
 	return tmp ;
 }
 ///////////////////////////////////////////////////////////////////////////
-void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) {
+void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) 
+{
 
 	int index = hashFunction ( thisModule->lexeme , MODULE_BIN_COUNT ) ;
 
@@ -146,12 +149,14 @@ void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) {
 	base->vars[index] = tmp ;
 }
 
-void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) {
+void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) 
+{
 	base->driverST = thisDriverModule ;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
+void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) 
+{
 	int index = hashFunction ( thisScopeST->lexeme , MODULE_BIN_COUNT ) ;
 
 	moduleSTentry * tmp = ( moduleSTentry * ) malloc ( sizeof ( moduleSTentry )) ;
@@ -162,7 +167,8 @@ void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) {
 }
 
 
-void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) {
+void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) 
+{
 	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
@@ -171,7 +177,8 @@ void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) {
 	thisModule->localVars[index] = tmp ;
 }
 
-void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
+void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) 
+{
 	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
@@ -180,7 +187,8 @@ void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) {
 	thisModule->inputVars[index] = tmp ;
 }
 
-void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
+void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) 
+{
 	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
@@ -196,7 +204,8 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) {
 ///////////////////////////////////////////////////////////////////////
 
 
-varST * searchVarInbaseST ( baseST * base ,char * lexeme ) {
+varST * searchVarInbaseST ( baseST * base ,char * lexeme ) 
+{
 	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = base->vars[index] ;
@@ -210,7 +219,8 @@ varST * searchVarInbaseST ( baseST * base ,char * lexeme ) {
 }
 
 
-moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) {
+moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) 
+{
 	int index = hashFunction ( lexeme , MODULE_BIN_COUNT ) ;
 
 	moduleSTentry * tmp = base->modules[index] ;
@@ -223,14 +233,10 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme ) {
 	return NULL ;
 }
 
-moduleST * searchDriverInbaseST ( baseST * base ) {
-	return base->driverST ;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 
-varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
+varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+{
 	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
 
 	varSTentry * tmp = thisModule->localVars[index] ;
@@ -243,7 +249,8 @@ varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 	return NULL ;
 }
 
-varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
+varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+{
 	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = thisModule->inputVars[index] ;
@@ -255,7 +262,8 @@ varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 	}
 	return NULL ;
 }
-varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
+varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+{
 	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
 
 	varSTentry * tmp = thisModule->outputVars[index] ;
@@ -269,7 +277,8 @@ varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme )
 }
 
 
-varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) {
+varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+{
 	varST * tmp ;
 	if( tmp = searchlocalVarInCurrentModule ( thisModule , lexeme ) )
 		return tmp ;
@@ -314,7 +323,8 @@ char* varTypeToString (variableType varType)
 
 
 ////////////////////////////////////////////////////////////////////////////
-void printBaseST ( baseST * base ) {
+void printBaseST ( baseST * base ) 
+{
 	
 	printf("************ printBaseST **************\n") ;
 
@@ -347,7 +357,8 @@ void printBaseST ( baseST * base ) {
 
 
 
-void printModuleST ( moduleST * thisModuleST, int printParam ) {
+void printModuleST ( moduleST * thisModuleST, int printParam ) 
+{
 
 	if (!printParam)
 		return ;
@@ -363,7 +374,8 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 	
 	moduleSTentry * tt ;
 	printf("Modules :\n" ) ;
-	for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ){
+	for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ )
+	{
 		
 		tt = thisModuleST->scopeVars[i] ;
 		while ( tt != NULL ) {
@@ -373,7 +385,8 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 	}
 
 	printf("\nINPUT Variables :\n" ) ;
-	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ ){
+	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ )
+	{
 		
 		varSTentry * vv = thisModuleST->inputVars[i] ;
 
@@ -389,7 +402,8 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 		}
 	}
 	printf("\nOUTPUT Variables :\n" ) ;
-	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ ){
+	for ( int i = 0 ; i<IO_BIN_COUNT ; i++ )
+	{
 		
 		varSTentry * vv = thisModuleST->outputVars[i] ;
 
@@ -405,8 +419,8 @@ void printModuleST ( moduleST * thisModuleST, int printParam ) {
 		}
 	}
 	printf("\nLOCAL Variables :\n" ) ;
-	for ( int i = 0 ; i<VAR_BIN_COUNT ; i++ ){
-		
+	for ( int i = 0 ; i<VAR_BIN_COUNT ; i++ )
+	{	
 		varSTentry * vv = thisModuleST->localVars[i] ;
 
 		while ( vv ) 
@@ -435,9 +449,8 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 {	
 	varSTentry * varEntry = targetModule->inputVars[0] ;	
 	astNode * inputIter = inputNode ;
-	while(inputIter->next) {
+	while(inputIter->next) 
 		inputIter = inputIter->next ;
-	}
 
 	int sameArgNoErr = 0 ;
 	
@@ -451,7 +464,8 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 			realBase->semanticError = 1 ;
 			sameArgNoErr = 1 ;
 		}
-		else {
+		else 
+		{
 			if(varEntry->thisVarST->datatype == searchedVar->datatype)
 			{
 				if (varEntry->thisVarST->datatype == TK_ARRAY) 
@@ -499,8 +513,8 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 
 		return (varST *) malloc (sizeof(varST)) ;
 	}
-	else{
-
+	else
+	{
 		if (sameArgNoErr)
 		{
 			realBase->semanticError = 1 ;
@@ -517,7 +531,6 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	varSTentry * varEntry = targetModule->outputVars[0] ;
 	int sameArgNoErr = 0 ;
 
-	
 	astNode * outputIter = outputNode ;
 	while(outputIter->next) {
 		outputIter = outputIter->next ;
@@ -533,7 +546,8 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 			sameArgNoErr = 1 ;
 			realBase->semanticError = 1 ;
 		}
-		else {
+		else 
+		{
 			if(varEntry->thisVarST->datatype != searchedVar->datatype)
 			{
 				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
@@ -546,12 +560,14 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		outputIter = outputIter->prev ;
 	}
 
-	if (varEntry==NULL && outputIter){
+	if (varEntry==NULL && outputIter)
+	{
 		printf("ERROR : In \"%s\" at line %d, more parameters passed\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 	}
-	else if (varEntry && outputIter==NULL) {
+	else if (varEntry && outputIter==NULL) 
+	{
 		printf("ERROR : In \"%s\" at line %d, Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return varEntry->thisVarST ;
