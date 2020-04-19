@@ -595,7 +595,7 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 {		
 	int rspAlign ;
 	int reserveLabel[2] ;
-	
+
 	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 	{
 		rspAlign = 32 - (rspDepth % 16) ;
@@ -1027,6 +1027,107 @@ void codeGeneration(astNode *node, FILE* fp)
 	}
 }
 
+void preamble (FILE *fp)
+{
+	fprintf (fp, "section .data\n") ;
+
+	fprintf (fp, "\tboundPrint : ") ;
+	fprintf (fp, "db \"Array out of bounds\" , 10, 0\n") ;
+
+	fprintf (fp, "\tdeclPrint : ") ;
+	fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;	
+
+	fprintf (fp, "\tdeclNeg : ") ;
+	fprintf (fp, "db \"Negative bound in dynamic array declaration\" , 10, 0\n") ;	
+
+	fprintf (fp, "\tprintFormatArray : ") ;
+	fprintf (fp, "db \"Output : \" , 0\n") ;
+
+	fprintf (fp , "\tprintInt : ") ;
+	fprintf (fp, "db \"%%d \", 0\n") ;
+
+	fprintf (fp, "\tprintNewLine : ") ;
+	fprintf (fp, "db 10, 0\n") ;
+
+	fprintf (fp, "\tprintFormat : ") ;
+	fprintf (fp, "db \"Output :  %%d\" , 10, 0\n") ;
+
+	fprintf (fp, "\tprintTrue : ") ;
+	fprintf (fp, "db \"Output : true\" , 10, 0\n") ;
+
+	fprintf (fp, "\tprintFalse : ") ;
+	fprintf (fp, "db \"Output : false\" , 10, 0\n") ;
+
+	fprintf (fp, "\ttrue : ") ;
+	fprintf (fp, "db \"true \" , 0\n") ;
+
+	fprintf (fp, "\tfalse : ") ;
+	fprintf (fp, "db \"false \" , 0\n") ;
+
+	fprintf (fp, "\tinputIntPrompt : ") ;
+	fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
+
+	fprintf (fp, "\tinputBoolPrompt : ") ;
+	fprintf (fp, "db \"Enter a boolean (0 or 1) : \" , 0\n") ;
+
+	fprintf (fp, "\tinputIntArrPrompt : ") ;
+	fprintf (fp, "db \"Enter %%d array elements of integer type for range \", 0\n") ;
+
+	fprintf (fp, "\tinputBoolArrPrompt : ") ;
+	fprintf (fp, "db \"Enter %%d array elements of boolean type for range \", 0\n") ;
+
+	fprintf (fp, "\tleftRange : ") ;
+	fprintf (fp, "db \"%%d to \" , 0\n") ;
+
+	fprintf (fp, "\trightRange : ") ;
+	fprintf (fp, "db \"%%d\" ,10, 0\n") ;
+
+	fprintf (fp, "\tinputInt : ") ;
+	fprintf (fp, "db \"%%d\", 0\n") ;
+
+	fprintf (fp, "global main\n") ;
+	fprintf (fp, "extern scanf\n") ;
+	fprintf (fp, "extern exit\n") ;
+	fprintf (fp, "extern malloc\n") ;
+	fprintf (fp, "extern printf\n\n") ;
+
+	fprintf (fp, "section .text\n") ;
+	fprintf (fp, "boundERROR:\n") ;
+	fprintf (fp, "\tPUSH RBP\n") ;
+	fprintf (fp, "\tMOV RBP, RSP\n") ;
+	fprintf (fp, "\tMOV RDI, boundPrint\n") ;
+	fprintf (fp, "\tXOR RSI, RSI\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+	fprintf (fp, "\tMOV EDI, 0\n") ;
+	fprintf (fp, "\tcall exit\n") ;
+
+	fprintf (fp, "declERROR:\n") ;
+	fprintf (fp, "\tPUSH RBP\n") ;
+	fprintf (fp, "\tMOV RBP, RSP\n") ;
+	fprintf (fp, "\tMOV RDI, declPrint\n") ;
+	fprintf (fp, "\tXOR RSI, RSI\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+	fprintf (fp, "\tMOV EDI, 0\n") ;
+	fprintf (fp, "\tcall exit\n") ;
+
+	fprintf (fp, "declNegERROR:\n") ;
+	fprintf (fp, "\tPUSH RBP\n") ;
+	fprintf (fp, "\tMOV RBP, RSP\n") ;
+	fprintf (fp, "\tMOV RDI, declNeg\n") ;
+	fprintf (fp, "\tXOR RSI, RSI\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+	fprintf (fp, "\tMOV EDI, 0\n") ;
+	fprintf (fp, "\tcall exit\n") ;
+
+
+	fprintf (fp, "main:\n") ;
+	fprintf (fp, "\tPUSH RBP\n") ;
+	fprintf (fp, "\tPUSH RBP\n") ;
+	fprintf (fp, "\tMOV RBP, RSP\n") ;
+}
 
 int main(int argc, char *argv[])
 {
@@ -1058,104 +1159,7 @@ int main(int argc, char *argv[])
 	{
 		FILE *fp = fopen ("code.asm", "w") ;
 
-		fprintf (fp, "section .data\n") ;
-
-		fprintf (fp, "\tboundPrint : ") ;
-		fprintf (fp, "db \"Array out of bounds\" , 10, 0\n") ;
-
-		fprintf (fp, "\tdeclPrint : ") ;
-		fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;	
-
-		fprintf (fp, "\tdeclNeg : ") ;
-		fprintf (fp, "db \"Negative bound in dynamic array declaration\" , 10, 0\n") ;	
-
-		fprintf (fp, "\tprintFormatArray : ") ;
-		fprintf (fp, "db \"Output : \" , 0\n") ;
-
-		fprintf (fp , "\tprintInt : ") ;
-		fprintf (fp, "db \"%%d \", 0\n") ;
-
-		fprintf (fp, "\tprintNewLine : ") ;
-		fprintf (fp, "db 10, 0\n") ;
-
-		fprintf (fp, "\tprintFormat : ") ;
-		fprintf (fp, "db \"Output :  %%d\" , 10, 0\n") ;
-
-		fprintf (fp, "\tprintTrue : ") ;
-		fprintf (fp, "db \"Output : true\" , 10, 0\n") ;
-
-		fprintf (fp, "\tprintFalse : ") ;
-		fprintf (fp, "db \"Output : false\" , 10, 0\n") ;
-
-		fprintf (fp, "\ttrue : ") ;
-		fprintf (fp, "db \"true \" , 0\n") ;
-
-		fprintf (fp, "\tfalse : ") ;
-		fprintf (fp, "db \"false \" , 0\n") ;
-
-		fprintf (fp, "\tinputIntPrompt : ") ;
-		fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
-
-		fprintf (fp, "\tinputBoolPrompt : ") ;
-		fprintf (fp, "db \"Enter a boolean (0 or 1) : \" , 0\n") ;
-
-		fprintf (fp, "\tinputIntArrPrompt : ") ;
-		fprintf (fp, "db \"Enter %%d array elements of integer type for range \", 0\n") ;
-
-		fprintf (fp, "\tinputBoolArrPrompt : ") ;
-		fprintf (fp, "db \"Enter %%d array elements of boolean type for range \", 0\n") ;
-
-		fprintf (fp, "\tleftRange : ") ;
-		fprintf (fp, "db \"%%d to \" , 0\n") ;
-
-		fprintf (fp, "\trightRange : ") ;
-		fprintf (fp, "db \"%%d\" ,10, 0\n") ;
-
-		fprintf (fp, "\tinputInt : ") ;
-		fprintf (fp, "db \"%%d\", 0\n") ;
-
-		fprintf (fp, "global main\n") ;
-		fprintf (fp, "extern scanf\n") ;
-		fprintf (fp, "extern exit\n") ;
-		fprintf (fp, "extern malloc\n") ;
-		fprintf (fp, "extern printf\n\n") ;
-
-		fprintf (fp, "section .text\n") ;
-		fprintf (fp, "boundERROR:\n") ;
-		fprintf (fp, "\tPUSH RBP\n") ;
-		fprintf (fp, "\tMOV RBP, RSP\n") ;
-		fprintf (fp, "\tMOV RDI, boundPrint\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tcall exit\n") ;
-
-		fprintf (fp, "declERROR:\n") ;
-		fprintf (fp, "\tPUSH RBP\n") ;
-		fprintf (fp, "\tMOV RBP, RSP\n") ;
-		fprintf (fp, "\tMOV RDI, declPrint\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tcall exit\n") ;
-
-		fprintf (fp, "declNegERROR:\n") ;
-		fprintf (fp, "\tPUSH RBP\n") ;
-		fprintf (fp, "\tMOV RBP, RSP\n") ;
-		fprintf (fp, "\tMOV RDI, declNeg\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tcall exit\n") ;
-
-
-		fprintf (fp, "main:\n") ;
-		fprintf (fp, "\tPUSH RBP\n") ;
-		fprintf (fp, "\tPUSH RBP\n") ;
-		fprintf (fp, "\tMOV RBP, RSP\n") ;
+		preamble (fp) ;
 		codeGeneration (astRoot, fp) ;
 	}
 	else
