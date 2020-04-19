@@ -14,7 +14,7 @@ void printGetValueStaticArrayPrompt (tokenID baseType , int leftLim, int rightLi
 void printGetValueDynArrayPrompt (varST *vst, FILE *fp) ;
 
 void dynamicArrDX (varST *vst, FILE *fp) ;
-void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp) ;
+void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
 
 void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp) ;
 void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp) ;

@@ -61,37 +61,15 @@ main:
 	MOV RBP, RSP
 	SUB RSP, 4			;Updating RSP
 
+	MOV BX, 3
+	PUSH BX
+	POP AX
+	MOV [rbp - 2],AX		;Store
 
-	MOV RDI, inputIntPrompt		;get_value
-	XOR RSI, RSI
-	XOR RAX, RAX
-	CALL printf
-
-	MOV RDI, inputInt		;get_value
-	SUB RSP, 28
-	MOV RSI, RSP
-	PUSH RSI
-	CALL scanf
-	POP RSI
-	MOV AX, WORD [RSP]
-	MOV [RBP - 2], AX
-	ADD RSP, 28
-
-
-	MOV RDI, inputIntPrompt		;get_value
-	XOR RSI, RSI
-	XOR RAX, RAX
-	CALL printf
-
-	MOV RDI, inputInt		;get_value
-	SUB RSP, 28
-	MOV RSI, RSP
-	PUSH RSI
-	CALL scanf
-	POP RSI
-	MOV AX, WORD [RSP]
-	MOV [RBP - 4], AX
-	ADD RSP, 28
+	MOV BX, 6
+	PUSH BX
+	POP AX
+	MOV [rbp - 4],AX		;Store
 
 	SUB RSP, 36			;Updating RSP
 
@@ -101,19 +79,19 @@ main:
 	CALL declNegERROR
 
 LABEL1:
-	MOV [RBP-30], AX
 	MOV BX, [RBP-4]
 	CMP BX, 0
 	JGE LABEL2
 	CALL declNegERROR
 
 LABEL2:
-	MOV [RBP-32], BX
 	CMP BX, AX
 	JGE LABEL3
 	CALL declERROR
 
 LABEL3:
+	PUSH BX
+	PUSH AX
 	SUB BX, AX
 	ADD BX, 1
 	ADD BX, BX
@@ -124,12 +102,25 @@ LABEL3:
 	NEG RBX
 
 LABEL4:
+	PUSH CX
+	PUSH RBX
+	PUSH RDI
 	CALL malloc
+	POP RDI
+	POP RBX
+	POP CX
 	MOV [RBP+RBX], RAX
+	POP AX
+	MOV [RBP + RBX + 10], AX
+	POP DX
+	MOV [RBP + RBX + 8], DX
+	PUSH DX
+	PUSH AX
 	ADD RBX, 12
 	INC CX
 	CMP CX, 3
 	JL LABEL4
+	ADD RSP, 4
 
 	MOV RDI, inputIntArrPrompt
 	MOV AX, [RBP-6]

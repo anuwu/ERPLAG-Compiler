@@ -1,11 +1,10 @@
 <<<driver program>>>
 start
 	declare i,j:integer ;
-
-	get_value (i) ;
-	get_value (j) ;
-
+	i := 3 ;
+	j := 6 ;
 	declare A,B,C:array [i .. j] of integer ;
+
 	get_value (A) ;
 	get_value (B) ;
 	get_value (C) ;

@@ -177,7 +177,7 @@ void dynamicArrDX (varST *vst, FILE *fp)
 
 }
 
-void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
+void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 {
 	int start_label , end_label ;
 	varST *leftVar , *rightVar ;
@@ -185,7 +185,7 @@ void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
 	if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
 	{
 		fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+		//fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
 	}
 	else
 	{
@@ -198,13 +198,13 @@ void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
 		fprintf (fp, "\tCALL declNegERROR\n") ;
 
 		fprintf (fp, "\nLABEL%d:\n", start_label) ;
-		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+		//fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
 	}
 
 	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
 	{
 		fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+		//fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 	}
 	else
 	{
@@ -217,7 +217,7 @@ void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
 		fprintf (fp, "\tCALL declNegERROR\n") ;
 		
 		fprintf (fp, "\nLABEL%d:\n", end_label) ;
-		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+		//fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 	}
 
 	int lab ;
@@ -227,6 +227,8 @@ void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
 	fprintf (fp, "\tJGE LABEL%d\n", lab) ;
 	fprintf (fp, "\tCALL declERROR\n") ;
 	fprintf (fp, "\nLABEL%d:\n", lab) ;
+	fprintf (fp, "\tPUSH BX\n") ;
+	fprintf (fp, "\tPUSH AX\n") ;
 	fprintf (fp, "\tSUB BX, AX\n") ;
 	fprintf (fp, "\tADD BX, 1\n") ;
 	fprintf (fp, "\tADD BX, BX\n") ;

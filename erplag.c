@@ -62,29 +62,47 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar))	
 			{
-				dynamicDeclare (lst, searchedVar, fp) ;
+				dynamicDeclareCheck (lst, searchedVar, fp) ;
 
 				if (declCount > 1)
 				{
-					/*
 					start_label = get_label () ;
 					fprintf (fp, "\n\tMOV CX, 0\n") ;
 					fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset) ;
 					fprintf (fp, "\tNEG RBX\n") ;
 					fprintf (fp, "\nLABEL%d:\n", start_label) ;
 
+					fprintf (fp, "\tPUSH CX\n") ;
+					fprintf (fp, "\tPUSH RBX\n") ;
+					fprintf (fp, "\tPUSH RDI\n") ;
 					fprintf (fp, "\tCALL malloc\n") ;
+					fprintf (fp, "\tPOP RDI\n") ;
+					fprintf (fp, "\tPOP RBX\n") ;
+					fprintf (fp, "\tPOP CX\n") ;
 					fprintf (fp, "\tMOV [RBP+RBX], RAX\n") ;
+
+					fprintf (fp, "\tPOP AX\n") ;
+					fprintf (fp, "\tMOV [RBP + RBX + 10], AX\n") ;
+					fprintf (fp, "\tPOP DX\n") ;
+					fprintf (fp, "\tMOV [RBP + RBX + 8], DX\n") ;
+
+					fprintf (fp, "\tPUSH DX\n") ;
+					fprintf (fp, "\tPUSH AX\n") ;
 					fprintf (fp, "\tADD RBX, 12\n") ;
 					fprintf (fp, "\tINC CX\n") ;
 					fprintf (fp, "\tCMP CX, %d\n", declCount) ;
 					fprintf (fp, "\tJL LABEL%d\n", start_label) ;
-					*/
+
+					fprintf (fp, "\tADD RSP, 4\n");
 				}
 				else
 				{
 					fprintf (fp, "\n\tCALL malloc\n") ;
 					fprintf (fp, "\tMOV [RBP-%d], RAX\n", searchedVar->offset) ;
+					fprintf (fp, "\tPOP AX\n") ;
+					fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+					fprintf (fp, "\tPOP BX\n") ;
+					fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 				}
 			}
 
