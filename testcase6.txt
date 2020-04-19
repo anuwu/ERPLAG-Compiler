@@ -1,5 +1,0 @@
-<<<driver program>>>
-start
-	b := +(a[4]*b[7]+9*c[patil]/pai) ;
-	print (b[9]) ;
-end
