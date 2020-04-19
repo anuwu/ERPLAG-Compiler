@@ -45,6 +45,8 @@ main:
 	PUSH RBP
 	PUSH RBP
 	MOV RBP, RSP
+	SUB RSP, 14			;Updating RSP
+
 	SUB RSP, 4			;Updating RSP
 
 
@@ -54,14 +56,14 @@ main:
 	CALL printf
 
 	MOV RDI, inputInt		;get_value
-	SUB RSP, 28
+	SUB RSP, 30
 	MOV RSI, RSP
 	PUSH RSI
 	CALL scanf
 	POP RSI
 	MOV AX, WORD [RSP]
-	MOV [RBP - 2], AX
-	ADD RSP, 28
+	MOV [RBP - 16], AX
+	ADD RSP, 30
 
 
 	MOV RDI, inputIntPrompt		;get_value
@@ -70,36 +72,21 @@ main:
 	CALL printf
 
 	MOV RDI, inputInt		;get_value
-	SUB RSP, 28
+	SUB RSP, 30
 	MOV RSI, RSP
 	PUSH RSI
 	CALL scanf
 	POP RSI
 	MOV AX, WORD [RSP]
-	MOV [RBP - 4], AX
-	ADD RSP, 28
+	MOV [RBP - 18], AX
+	ADD RSP, 30
 
-	SUB RSP, 12			;Updating RSP
+	SUB RSP, 36			;Updating RSP
 
-	MOV AX, [RBP-2]
-	MOV [RBP-6], AX
-	MOV BX, [RBP-4]
-	MOV [RBP-8], BX
-	CMP BX, AX
-	JGE LABEL1
-	CALL declERROR
-
-LABEL1:
-	SUB BX, AX
-	ADD BX, 1
-	ADD BX, BX
-	MOVSX RDI, BX
-	CALL malloc
-	MOV [RBP-16], RAX
 
 	MOV RDI, inputIntArrPrompt
-	MOV AX, [RBP-6]
-	MOV BX, [RBP-8]
+	MOV AX, [RBP-20]
+	MOV BX, [RBP-22]
 	MOV SI, BX
 	SUB SI, AX
 	ADD SI, 1
@@ -118,6 +105,181 @@ LABEL1:
 	MOVSX RSI, BX
 	XOR RAX, RAX
 	CALL printf
+	SUB RSP, 26
+	MOV RCX, 0
+
+LABEL1:			;getting array
+	MOV RBX, RCX
+
+	MOV RDI, inputInt		;get_value
+	MOV RSI, RSP
+	PUSH RBX
+	PUSH RCX
+	PUSH RSI
+	CALL scanf
+	POP RSI
+	POP RCX
+	POP RBX
+	MOV AX, [RSP]
+	MOV RDI, [RBP-30]
+	MOV [RDI + RBX], AX
+	ADD RCX, 2
+	MOV AX, [RBP-20]
+	MOV BX, [RBP-22]
+	MOV DX, BX
+	SUB DX, AX
+	ADD DX, 1
+	ADD DX, DX
+	MOVSX RDX, DX
+	CMP RCX, RDX
+	JNE LABEL1
+
+	ADD RSP, 26
+
+	MOV RDI, inputIntArrPrompt
+	MOV AX, [RBP-32]
+	MOV BX, [RBP-34]
+	MOV SI, BX
+	SUB SI, AX
+	ADD SI, 1
+	MOVSX RSI, SI
+	PUSH AX
+	XOR RAX, RAX
+	CALL printf
+	POP AX
+
+	MOV RDI, leftRange
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+
+	MOV RDI, rightRange
+	MOVSX RSI, BX
+	XOR RAX, RAX
+	CALL printf
+	SUB RSP, 26
+	MOV RCX, 0
+
+LABEL2:			;getting array
+	MOV RBX, RCX
+
+	MOV RDI, inputInt		;get_value
+	MOV RSI, RSP
+	PUSH RBX
+	PUSH RCX
+	PUSH RSI
+	CALL scanf
+	POP RSI
+	POP RCX
+	POP RBX
+	MOV AX, [RSP]
+	MOV RDI, [RBP-42]
+	MOV [RDI + RBX], AX
+	ADD RCX, 2
+	MOV AX, [RBP-32]
+	MOV BX, [RBP-34]
+	MOV DX, BX
+	SUB DX, AX
+	ADD DX, 1
+	ADD DX, DX
+	MOVSX RDX, DX
+	CMP RCX, RDX
+	JNE LABEL2
+
+	ADD RSP, 26
+	MOV BX, 7
+	PUSH BX
+	POP AX
+	MOV [rbp - 6],AX		;Store
+
+	MOV CX,1
+	MOV [RBP - 8], CX		;for loop lower lim
+
+LABEL3:
+	MOV AX, 3
+	CMP CX,AX
+	JG LABEL4
+
+	MOV RDI, inputIntPrompt		;get_value
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
+
+	MOV RDI, inputInt		;get_value
+	SUB RSP, 26
+	MOV RSI, RSP
+	PUSH RSI
+	CALL scanf
+	POP RSI
+	MOV AX, WORD [RSP]
+	MOV [RBP - 2], AX
+	ADD RSP, 26
+
+
+	MOV RDI, inputIntPrompt		;get_value
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
+
+	MOV RDI, inputInt		;get_value
+	SUB RSP, 26
+	MOV RSI, RSP
+	PUSH RSI
+	CALL scanf
+	POP RSI
+	MOV AX, WORD [RSP]
+	MOV [RBP - 4], AX
+	ADD RSP, 26
+
+	PUSH AX
+	PUSH BX
+	POP AX
+	POP BX
+	ADD AX,BX
+	PUSH AX
+	POP AX
+	MOV [rbp - 10],AX		;Store
+
+	PUSH AX
+	PUSH BX
+	POP AX
+	POP BX
+	ADD AX,BX
+	PUSH AX
+	POP AX
+	MOV [rbp - 12],AX		;Store
+
+	PUSH AX
+	PUSH BX
+	POP AX
+	POP BX
+	ADD AX,BX
+	PUSH AX
+	POP AX
+	MOV [rbp - 14],AX		;Store
+
+	MOV AX, [RBP - 10]		;printing integer
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+	MOV AX, [RBP - 12]		;printing integer
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+	MOV AX, [RBP - 14]		;printing integer
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+
+	MOV CX, [RBP - 8]		;Ending increment
+	INC CX
+	MOV [RBP - 8],CX
+	JMP LABEL3
+
+LABEL4:
 
 	MOV RSP, RBP
 	POP RBP

@@ -1,9 +1,13 @@
 <<<driver program>>>
 start
 	declare i,j:integer ;
-	get_value (i) ;
-	get_value (j) ;
+	i := 3 ;
+	j := 7 ;
 
 	declare A:array [i .. j] of integer ;
 	get_value (A) ;
+
+	declare k:integer ;
+	get_value (k) ;
+	print (A[k]) ;
 end
