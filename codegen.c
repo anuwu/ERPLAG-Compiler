@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <sys/time.h>
 #include "ast.h"
 #include "symbolTable.h"
 #include "typeChecker.h"
-
-
 
 int x = 0 ;
 int get_label()
@@ -17,34 +16,9 @@ int get_label()
 
 baseST *realBase ;
 
-
+/*
 void boundCheck(astNode* node, varST *vst, FILE* fp)
 {
-	// Case 1 : Static array
-	/*
-	if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_NUM)
-	{
-	 	fprintf (fp, "\tPUSH AX\n");
-	 	if(node->child->id == TK_ID) // variable index
-	 		fprintf (fp, "\tMOV AX,[%s_cb]\n", node->child->tok->lexeme);
-	 	else //static index
-	 		fprintf (fp, "\tMOV AX,%d\n", atoi(node->child->tok->lexeme));
-
-	 	fprintf (fp, "\tCMP AX,%d\n", atoi(vst->arrayIndices->tokRight->lexeme));
-
-	 	int l1 = get_label();
-	 	int l2 = get_label();
-	 	fprintf (fp, "\tJG LABEL%d\n", l1);//It will give error
-	 	fprintf (fp, "\tCMP AX,%d\n", atoi(vst->arrayIndices->tokLeft->lexeme));
-	 	fprintf (fp, "\tJL LABEL%d\n", l1);
-	 	fprintf (fp, "\tJMP LABEL%d\n", l2);
-	 	fprintf (fp, "\tLABEL%d:\n", l1);
-
-	 	fprintf (fp, "\tcall exit\n");
-	 	fprintf (fp, "\tLABEL%d:\n", l2);
-	 	fprintf (fp, "\tPOP AX\n");
-	}
-	*/
 	if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_NUM) // Left bound is variable
 	{
    		int l1=get_label();
@@ -120,6 +94,7 @@ void boundCheck(astNode* node, varST *vst, FILE* fp)
 	 	fprintf (fp, "\tPOP AX\n");
    }
 }
+*/
 
 
 int getStaticOffset (varST *vst, astNode *node, int size)
@@ -164,13 +139,13 @@ void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	fprintf (fp, "\tMOV BX, %d\n", leftLim) ;
 	fprintf (fp, "\tCMP AX, BX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-	fprintf (fp, "\tCALL boundError\n") ;
+	fprintf (fp, "\tCALL boundERROR\n") ;
 
 	fprintf (fp, "\nLABEL%d:\n", start_label) ;
 	fprintf (fp, "\tMOV BX, %d\n", rightLim) ;
 	fprintf (fp, "\tCMP BX, AX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-	fprintf (fp, "\tCALL boundError\n") ;
+	fprintf (fp, "\tCALL boundERROR\n") ;
 
 	fprintf (fp, "\nLABEL%d:\n", end_label) ;
 	fprintf (fp, "\tMOV BX, %d\n", vst->offset - 2*(rightLim-leftLim)) ;
@@ -203,7 +178,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			{
 				if (lst->parent == realBase)
 				{
-					fprintf (fp, "\tMOV RSP, RBP\n") ;
+					fprintf (fp, "\n\tMOV RSP, RBP\n") ;
 					fprintf (fp, "\tPOP RBP\n") ;
 					fprintf (fp, "\tPOP RBP\n") ;
 					fprintf (fp, "\tret\n") ;
@@ -217,19 +192,71 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_DECLARE :
 			;
-			int endOffset ;
+			int endOffset, declCount = 1 ;
 			astNode *idListHead = node->next->child ;
 			astNode *dtNode = node->next->next ;
+
 			while (idListHead->next != NULL)
+			{
+				declCount++ ;
 				idListHead = idListHead->next ;
+			}
 
-			endOffset = searchVar (realBase, lst, idListHead->tok->lexeme)->offset ;
-
+			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+			endOffset = searchedVar->offset ;
 			if (endOffset > 0)
 			{		
 				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n\n", (endOffset - rspDepth)) ;
 				rspDepth = endOffset ;
 			}
+
+			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar))	
+			{
+				if (declCount > 1)
+					;
+				else
+				{
+					varST *leftVar , *rightVar ;
+
+					if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
+					{
+						fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
+						fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+					}
+					else
+					{
+						leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
+						fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
+						fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+					}
+
+					if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
+					{
+						fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+						fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+					}
+					else
+					{
+						rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
+						fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
+						fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+					}
+
+					start_label = get_label () ;
+
+					fprintf (fp, "\tCMP BX, AX\n") ;
+					fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tCALL declERROR\n") ;
+					fprintf (fp, "\nLABEL%d:\n", start_label) ;
+					fprintf (fp, "\tSUB BX, AX\n") ;
+					fprintf (fp, "\tADD BX, 1\n") ;
+					fprintf (fp, "\tADD BX, BX\n") ;
+					fprintf (fp, "\tMOVSX RDI, BX\n") ;
+					fprintf (fp, "\tCALL malloc\n") ;
+					fprintf (fp, "\tMOV [RBP-%d], RAX\n", searchedVar->offset) ;
+				}
+			}
+
 			
 			break ;											
 
@@ -849,8 +876,11 @@ int main(int argc, char *argv[])
 
 		fprintf (fp, "section .data\n") ;
 
-		fprintf (fp, "\tboundEPrint : ") ;
+		fprintf (fp, "\tboundPrint : ") ;
 		fprintf (fp, "db \"Array out of bounds\" , 10, 0\n") ;
+
+		fprintf (fp, "\tdeclPrint : ") ;
+		fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;	
 
 		fprintf (fp, "\tprintFormatArray : ") ;
 		fprintf (fp, "db \"Output : \" , 0\n") ;
@@ -900,13 +930,24 @@ int main(int argc, char *argv[])
 		fprintf (fp, "global main\n") ;
 		fprintf (fp, "extern scanf\n") ;
 		fprintf (fp, "extern exit\n") ;
+		fprintf (fp, "extern malloc\n") ;
 		fprintf (fp, "extern printf\n\n") ;
 
 		fprintf (fp, "section .text\n") ;
-		fprintf (fp, "boundError:\n") ;
+		fprintf (fp, "boundERROR:\n") ;
 		fprintf (fp, "\tPUSH RBP\n") ;
 		fprintf (fp, "\tMOV RBP, RSP\n") ;
-		fprintf (fp, "\tMOV RDI, boundEPrint\n") ;
+		fprintf (fp, "\tMOV RDI, boundPrint\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tcall exit\n") ;
+
+		fprintf (fp, "declERROR:\n") ;
+		fprintf (fp, "\tPUSH RBP\n") ;
+		fprintf (fp, "\tMOV RBP, RSP\n") ;
+		fprintf (fp, "\tMOV RDI, declPrint\n") ;
 		fprintf (fp, "\tXOR RSI, RSI\n") ;
 		fprintf (fp, "\tXOR RAX, RAX\n") ;
 		fprintf (fp, "\tCALL printf\n") ;

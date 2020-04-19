@@ -1,0 +1,8 @@
+<<<driver program>>>
+start
+	declare i,j:integer ;
+	get_value (i) ;
+	get_value (j) ;
+
+	declare A:array [i .. j] of integer ;
+end

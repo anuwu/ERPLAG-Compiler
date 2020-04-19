@@ -8,7 +8,7 @@ start
 	for (i in 5 .. 10)
 	start
 		j := i - 1 ;
-		A[i] := i + A[j] ;
+		A[i] := (i + A[j] - 6) * 3 ;
 	end
 
 	print (A) ;
