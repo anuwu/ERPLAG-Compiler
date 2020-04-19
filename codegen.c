@@ -3,8 +3,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <sys/time.h>
-//#include "ast.h"
-//#include "symbolTable.h"
 #include "typeChecker.h"
 #include "codegen.h"
 
@@ -749,7 +747,7 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 		fprintf (fp, "\tPOP AX\n") ;
 		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
 		fprintf (fp, "\tPOP BX\n") ;
-		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+		fprintf (fp, "\tMOV [RBP-%d], BX\n\n", searchedVar->offset - 8) ;
 	}
 }
 

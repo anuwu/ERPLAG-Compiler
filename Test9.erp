@@ -1,15 +1,25 @@
 <<<driver program>>>
 start
-	declare i,j:integer ;
-	i := 3 ;
-	j := 6 ;
-	declare A,B,C:array [i .. j] of integer ;
+	declare i : integer ;
 
-	get_value (A) ;
-	get_value (B) ;
-	get_value (C) ;
-
-	print (A) ;
-	print (B) ;
-	print (C) ;
+	switch (i)
+	start
+		case 1 :
+			declare j1, j2 : integer ;
+			get_value (j1) ;
+			get_value (j2) ;
+			break ;
+		case 2 :
+			j2 := 9 ;
+			declare k1,k2,k3 : integer ;
+			k1 := 4 ;
+			declare C1, C2 : array [4 .. 10] of integer ;
+			break ;
+		case 3 :
+			declare A : array[j1 .. j2] of integer ;
+			break ;
+		default :
+			declare B1, B2 : array [k1 .. k3] of integer ;
+			break ;
+	end
 end

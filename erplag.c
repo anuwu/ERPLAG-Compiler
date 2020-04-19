@@ -26,6 +26,9 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			if (node->next == NULL)
 			{
+				if (lst->tableType == SWITCH_ST)
+					break ;
+
 				if (lst->parent == realBase)
 				{
 					fprintf (fp, "\n\tMOV RSP, RBP\n") ;
@@ -38,10 +41,16 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			}
 			else
 				moduleGeneration(node->next, localBase, rspDepth, lst, vst, fp);
+
 			break ;
 
 		case TK_DECLARE :
-			;
+			if (lst->tableType == SWITCH_ST && node->parent == node)
+			{
+				node->parent = node->next->parent ;
+				break ;
+			}
+
 			int endOffset, declCount = 1 ;
 			astNode *idListHead = node->next->child ;
 			astNode *dtNode = node->next->next ;
@@ -302,6 +311,54 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			getValueGeneration (lst, searchedVar, rspDepth, fp) ;
 			break ;
 
+		case TK_SWITCH :
+			;
+			astNode *statementsNode = node->next->next->next->next ;
+			astNode *statementNode ;
+
+			int savedRspDepth = rspDepth ;
+
+			while (statementsNode != NULL)
+			{
+				statementNode = statementsNode->child ;
+				while (statementNode != NULL)
+				{
+					if (statementNode->child->id == TK_DECLARE)
+					{
+						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
+						statementNode->child->parent = statementNode->child ;		// tieing a knot
+					}
+					statementNode = statementNode->next ;
+				}
+
+				if (statementsNode->next != NULL)
+				{
+					if (statementsNode->next->id == TK_DEFAULT)
+					{
+						statementsNode = statementsNode->next->next ;
+						statementNode = statementsNode->child ;
+						while (statementNode != NULL)
+						{
+							if (statementNode->child->id == TK_DECLARE)
+							{
+								rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
+								statementNode->child->parent = statementNode->child ;		// tieing a knot
+							}
+							statementNode = statementNode->next ;
+						}
+
+						break ;
+					}
+					statementsNode = statementsNode->next->next->next ;
+				}
+				else
+					statementsNode = NULL ;
+			}
+
+			fprintf (fp, "\n\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
+			rspDepth = savedRspDepth ;
+
+			break ;
 	}
 
 	return rspDepth ;
