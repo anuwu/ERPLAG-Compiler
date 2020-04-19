@@ -238,6 +238,25 @@ void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
 	fprintf (fp, "\tCALL printf\n") ;
 }
 
+void dynamicArrDX (varST *vst, FILE *fp)
+{
+	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
+		fprintf (fp, "\tMOV AX, %s", vst->arrayIndices->tokLeft->lexeme) ;
+	else
+		fprintf (fp, "\tMOV AX, [RBP-%d]\n", vst->offset-10) ;
+
+	if (isdigit(vst->arrayIndices->tokRight->lexeme[0]))
+		fprintf (fp, "\tMOV BX, %s", vst->arrayIndices->tokRight->lexeme) ;
+	else
+		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-8) ;
+
+	fprintf (fp, "\tMOV DX, BX\n") ;
+	fprintf (fp, "\tSUB DX, AX\n") ;
+	fprintf (fp, "\tADD DX, 1\n") ;
+	fprintf (fp, "\tADD DX, DX\n") ;
+
+}
+
 int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
 {
 	if (node == NULL)
@@ -306,8 +325,15 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					}
 					else
 					{
+						reserveLabel[0] = get_label () ;
+
 						leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
 						fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
+						fprintf (fp, "\tCMP AX, 0\n") ;
+						fprintf (fp, "\tJGE LABEL%d\n", reserveLabel[0]) ;
+						fprintf (fp, "\tCALL declNegERROR\n") ;
+
+						fprintf (fp, "\nLABEL%d:\n", reserveLabel[0]) ;
 						fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
 					}
 
@@ -318,8 +344,15 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					}
 					else
 					{
+						reserveLabel[1] = get_label () ;
+
 						rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
 						fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
+						fprintf (fp, "\tCMP BX, 0\n") ;
+						fprintf (fp, "\tJGE LABEL%d\n", reserveLabel[1]) ;
+						fprintf (fp, "\tCALL declNegERROR\n") ;
+						
+						fprintf (fp, "\nLABEL%d:\n", reserveLabel[1]) ;
 						fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 					}
 
@@ -801,6 +834,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 							start_label = get_label () ;
 							end_label = get_label () ;
 
+							fprintf (fp, "\tXOR RSI, RSI\n") ;
 							fprintf (fp, "\n\tCMP AX, 01\n") ;
 							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
 							fprintf (fp, "\tMOV RDI, false\n") ;
@@ -862,6 +896,55 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					}
 					else 						// Print the whole array
 					{
+						reserveLabel[0] = get_label () ;
+
+						fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
+						fprintf (fp, "\tXOR RSI, RSI\n") ;
+						fprintf (fp, "\tXOR RAX, RAX\n") ;
+						fprintf (fp , "\tCALL printf\n\n") ;
+
+						fprintf (fp, "\tMOV CX, 0\n") ;
+						fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
+
+						fprintf (fp, "\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
+						fprintf (fp, "\tMOVSX RBX, CX\n") ;
+						fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+						if (searchedVar->arrayIndices->type == TK_INTEGER)
+						{
+							fprintf (fp, "\tMOV RDI, printInt\n") ;
+							fprintf (fp, "\tMOVSX RSI, AX\n") ;
+						}
+						else
+						{
+							start_label = get_label () ;
+							end_label = get_label () ;
+
+							fprintf (fp, "\n\tCMP AX, 01\n") ;
+							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+							fprintf (fp, "\tMOV RDI, false\n") ;
+							fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+							fprintf (fp, "LABEL%d:\n", start_label) ;
+							fprintf (fp, "\tMOV RDI, true\n") ;
+							fprintf (fp, "\nLABEL%d:\n", end_label) ;
+						}
+
+						fprintf (fp, "\tXOR RAX, RAX\n") ;
+						fprintf (fp, "\tPUSH CX\n") ;
+						fprintf (fp, "\tCALL printf\n") ;
+						fprintf (fp, "\tPOP CX\n\n") ;
+
+						fprintf (fp, "\tADD CX, 2\n") ;
+						
+						dynamicArrDX (searchedVar, fp) ;
+						fprintf (fp, "\tCMP CX, DX\n") ;
+						fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+
+						fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
+						fprintf (fp, "\tXOR RSI, RSI\n") ;
+						fprintf (fp, "\tXOR RAX, RAX\n") ;
+						fprintf (fp , "\tCALL printf\n") ;
+
 					}
 				}
 			}
@@ -956,22 +1039,9 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					fprintf (fp, "\tADD RCX, 2\n") ;	// Incrementing counter
 
 					// Finding (rightLim - leftLim + 1) 
-					if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
-						fprintf (fp, "\tMOV AX, %s", searchedVar->arrayIndices->tokLeft->lexeme) ;
-					else
-						fprintf (fp, "\tMOV AX, [RBP-%d]\n", searchedVar->offset-10) ;
+					dynamicArrDX (searchedVar, fp) ;
 
-					if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
-						fprintf (fp, "\tMOV BX, %s", searchedVar->arrayIndices->tokRight->lexeme) ;
-					else
-						fprintf (fp, "\tMOV BX, [RBP-%d]\n", searchedVar->offset-8) ;
-
-					fprintf (fp, "\tMOV DX, BX\n") ;
-					fprintf (fp, "\tSUB DX, AX\n") ;
-					fprintf (fp, "\tADD DX, 1\n") ;
-					fprintf (fp, "\tADD DX, DX\n") ;
 					fprintf (fp, "\tMOVSX RDX, DX\n") ;
-
 					fprintf (fp, "\tCMP RCX, RDX\n"/*, 2*(rightLim-leftLim+1)*/) ;
 					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
 
@@ -1048,6 +1118,9 @@ int main(int argc, char *argv[])
 		fprintf (fp, "\tdeclPrint : ") ;
 		fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;	
 
+		fprintf (fp, "\tdeclNeg : ") ;
+		fprintf (fp, "db \"Negative bound in dynamic array declaration\" , 10, 0\n") ;	
+
 		fprintf (fp, "\tprintFormatArray : ") ;
 		fprintf (fp, "db \"Output : \" , 0\n") ;
 
@@ -1119,6 +1192,17 @@ int main(int argc, char *argv[])
 		fprintf (fp, "\tCALL printf\n") ;
 		fprintf (fp, "\tMOV EDI, 0\n") ;
 		fprintf (fp, "\tcall exit\n") ;
+
+		fprintf (fp, "declNegERROR:\n") ;
+		fprintf (fp, "\tPUSH RBP\n") ;
+		fprintf (fp, "\tMOV RBP, RSP\n") ;
+		fprintf (fp, "\tMOV RDI, declNeg\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tcall exit\n") ;
+
 
 		fprintf (fp, "main:\n") ;
 		fprintf (fp, "\tPUSH RBP\n") ;
