@@ -15,8 +15,9 @@ void printGetValueDynArrayPrompt (varST *vst, FILE *fp) ;
 
 void dynamicArrDX (varST *vst, FILE *fp) ;
 void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
+void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp) ;
 
-void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp) ;
+void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
 void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp) ;
 
 void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp) ;

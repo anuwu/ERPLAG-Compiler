@@ -72,7 +72,7 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	}
 
 	if (isdigit(vst->arrayIndices->tokRight->lexeme[0]))
-		fprintf (fp, "\tMOV BX, %s", vst->arrayIndices->tokRight->lexeme) ;		
+		fprintf (fp, "\tMOV BX, %s\n", vst->arrayIndices->tokRight->lexeme) ;		
 	else
 		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-8) ;
 
@@ -82,7 +82,7 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 
 	fprintf (fp, "\nLABEL%d:\n", start_label) ;
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
-		fprintf (fp, "\tMOV BX, %s", vst->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV BX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
 		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-10) ;
 
@@ -129,7 +129,7 @@ void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
 		fprintf (fp, "\n\tMOV RDI, inputBoolArrPrompt\n") ;
 
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
-		fprintf (fp, "\tMOV AX, %s", vst->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
 		fprintf (fp, "\tMOV AX, [RBP-%d]\n", vst->offset-10) ;
 
@@ -161,7 +161,7 @@ void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
 void dynamicArrDX (varST *vst, FILE *fp)
 {
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
-		fprintf (fp, "\tMOV AX, %s", vst->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
 		fprintf (fp, "\tMOV AX, [RBP-%d]\n", vst->offset-10) ;
 
@@ -183,10 +183,7 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	varST *leftVar , *rightVar ;
 
 	if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
-	{
 		fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-		//fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
-	}
 	else
 	{
 	 	start_label = get_label () ;
@@ -198,14 +195,10 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 		fprintf (fp, "\tCALL declNegERROR\n") ;
 
 		fprintf (fp, "\nLABEL%d:\n", start_label) ;
-		//fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
 	}
 
 	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
-	{
 		fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-		//fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
-	}
 	else
 	{
 		end_label = get_label () ;
@@ -217,7 +210,6 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 		fprintf (fp, "\tCALL declNegERROR\n") ;
 		
 		fprintf (fp, "\nLABEL%d:\n", end_label) ;
-		//fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 	}
 
 	int lab ;
@@ -235,7 +227,7 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	fprintf (fp, "\tMOVSX RDI, BX\n") ;
 }
 
-void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
+void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 {
 	if (node->parent->id!=TK_ASSIGNOP)
 	{
@@ -252,21 +244,21 @@ void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
 				varST *vst ;
 				vst = searchVar (realBase, lst,node->tok->lexeme);
 
-				if(node->child->id == TK_ID) // For dynamic index
+				if (isVarStaticArr(vst))
 				{
-					if (isVarStaticArr(vst))
+					if (node->child->id == TK_ID)
 					{
 						staticArrBoundCheck (node, lst, vst, fp) ;
 						fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
 					}
 					else
-					{
-						dynamicArrBoundCheck (node, lst, vst, fp) ;
-						fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-					}
+						fprintf (fp, "\tMOV AX, [RBP-%d]\n", getStaticOffset (vst, node, 2)) ;
 				}
 				else
-					fprintf (fp, "\tMOV AX, [RBP-%d]\n", getStaticOffset (vst, node, 2)) ;
+				{
+					dynamicArrBoundCheck (node, lst, vst, fp) ;
+					fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+				}
 				
 				fprintf (fp, "\tPUSH AX\n");	
 			}
@@ -284,21 +276,21 @@ void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
 				varST *vst ;
 				vst=searchVar (realBase, lst,node->tok->lexeme);
 
-				if(node->child->id == TK_ID) // For dynamic index
+				if (isVarStaticArr(vst))
 				{
-					if (isVarStaticArr(vst))
+					if (node->child->id == TK_ID)
 					{
 						staticArrBoundCheck (node, lst, vst, fp) ;
 						fprintf (fp, "\tMOV BX, [RBP + RBX]\n") ;
 					}
 					else
-					{
-						dynamicArrBoundCheck (node, lst, vst, fp) ;
-						fprintf (fp, "\tMOV BX, [RDI + RBX]\n") ;
-					}
+						fprintf (fp, "\tMOV BX, [RBP - %d]\n",getStaticOffset(vst,node,2)) ;
 				}
 				else
-					fprintf (fp, "\tMOV BX, [RBP - %d]\n",getStaticOffset(vst,node,2)) ;
+				{
+					dynamicArrBoundCheck (node, lst, vst, fp) ;
+					fprintf (fp, "\tMOV BX, [RDI + RBX]\n") ;
+				}
 					
 				fprintf (fp, "\tPUSH BX\n");	
 			}
@@ -315,23 +307,22 @@ void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
 		{
 			varST *vst ;
 			vst = searchVar (realBase, lst,node->tok->lexeme);
-			int size ;
 
-			if(node->child->id == TK_ID)
+			if (isVarStaticArr(vst))
 			{
-				if (isVarStaticArr(vst))
+				if (node->child->id == TK_ID)
 				{
 					staticArrBoundCheck (node, lst, vst, fp) ;
 					fprintf (fp , "\tMOV AX, [RBP + RBX]\n") ;
 				}
 				else
-				{
-					dynamicArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-				}
+					fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(vst, node, 2)) ;
 			}
 			else
-				fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(vst, node, 2)) ;
+			{
+				dynamicArrBoundCheck (node, lst, vst, fp) ;
+				fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+			}
 			
 			fprintf (fp, "\tPUSH AX\n");	
 			
@@ -346,27 +337,25 @@ void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
 			varST* vst ;
 			vst = searchVar(realBase, lst,node->tok->lexeme);
 
-			if(node->child->id == TK_ID)
+			if (isVarStaticArr(vst))
 			{
-				if (isVarStaticArr (vst))
+				if(node->child->id == TK_ID)
 				{
 					staticArrBoundCheck (node, lst, vst, fp) ;
-
 					fprintf (fp, "\n\tPOP AX\n") ;
 					fprintf (fp, "\tMOV[RBP + RBX], AX\n") ;
 				}
 				else
 				{
-					dynamicArrBoundCheck (node, lst, vst, fp) ;
-
-					fprintf (fp, "\n\tPOP AX\n") ;
-					fprintf (fp, "\tMOV[RDI + RBX], AX\n") ;
+					fprintf (fp, "\tPOP AX\n");	
+					fprintf (fp, "\tMOV [RBP - %d], AX\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
 				}
 			}
 			else
 			{
-				fprintf (fp, "\tPOP AX\n");	
-				fprintf (fp, "\tMOV [RBP - %d], AX\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
+				dynamicArrBoundCheck (node, lst, vst, fp) ;
+				fprintf (fp, "\n\tPOP AX\n") ;
+				fprintf (fp, "\tMOV[RDI + RBX], AX\n") ;
 			}
 		}
 	}
@@ -377,9 +366,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 	int start_label, end_label ;
 	int reserveLabel[2] ;
 
+	fprintf (fp, "\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
 	if (searchedVar->datatype == TK_INTEGER)
 	{
-		fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", searchedVar->offset) ;
 		fprintf (fp, "\tMOV RDI, printFormat\n") ;
 		fprintf (fp, "\tMOVSX RSI, AX\n") ;
 		fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -390,7 +379,6 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 		start_label = get_label () ;
 		end_label = get_label () ;
 
-		fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", searchedVar->offset) ;
 		fprintf (fp, "\tCMP AX, 01\n") ;
 		fprintf (fp, "\tJE LABEL%d\n", start_label) ;
 		fprintf (fp, "\tMOV RDI, printFalse\n") ;
@@ -410,9 +398,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 		{
 			if (node->child != NULL && node->child->id == TK_NUM)	// Static array, static index
 			{
+				fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(searchedVar,node,2)) ;
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
 				{
-					fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", getStaticOffset(searchedVar,node,2)) ;
 					fprintf (fp, "\tMOV RDI, printFormat\n") ;
 					fprintf (fp, "\tMOVSX RSI, AX\n") ;
 					fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -423,7 +411,6 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 					start_label = get_label () ;
 					end_label = get_label () ;
 
-					fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", getStaticOffset(searchedVar,node,2)) ;
 					fprintf (fp, "\tCMP AX, 01\n") ;
 					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
 					fprintf (fp, "\tMOV RDI, printFalse\n") ;
@@ -441,12 +428,33 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 			else if (node->child != NULL && node->child->id == TK_ID)
 			{
 				staticArrBoundCheck (node, lst, searchedVar, fp) ;
+				fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
 
-				fprintf (fp, "\tMOV AX, [RBP + RBX]\t\t;printing integer\n") ;
-				fprintf (fp, "\tMOV RDI, printFormat\n") ;
-				fprintf (fp, "\tMOVSX RSI, AX\n") ;
-				fprintf (fp, "\tXOR RAX, RAX\n") ;
-				fprintf (fp, "\tCALL printf\n") ;
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				{
+					fprintf (fp, "\tMOV RDI, printFormat\n") ;
+					fprintf (fp, "\tMOVSX RSI, AX\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n") ;
+				}
+				else
+				{
+					start_label = get_label () ;
+					end_label = get_label () ;
+
+					fprintf (fp, "\tCMP AX, 01\n") ;
+					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, printFalse\n") ;
+					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+					fprintf (fp, "LABEL%d:\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, printTrue\n") ;
+					fprintf (fp, "LABEL%d:\n", end_label) ;
+
+					fprintf (fp, "\tXOR RSI, RSI\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n\n") ;
+				}
 			}
 			else if (node->child == NULL)
 			{
@@ -509,9 +517,10 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 		}
 		else
 		{
-			if (node->child != NULL)	// Dynamic array, static index
+			if (node->child != NULL)	// Dynamic array, static/dynamic index
 			{
 				dynamicArrBoundCheck (node, lst, searchedVar, fp) ;
+				fprintf (fp, "\tMOV AX, [RDI+RBX]\n") ;
 
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
 				{
@@ -694,6 +703,53 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 
 			fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
 		}
+	}
+}
+
+void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp)
+{
+	int start_label ;
+	dynamicDeclareCheck (lst, searchedVar, fp) ;
+
+	if (declCount > 1)
+	{
+		start_label = get_label () ;
+		fprintf (fp, "\n\tMOV CX, 0\n") ;
+		fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset) ;
+		fprintf (fp, "\tNEG RBX\n") ;
+		fprintf (fp, "\nLABEL%d:\n", start_label) ;
+
+		fprintf (fp, "\tPUSH CX\n") ;
+		fprintf (fp, "\tPUSH RBX\n") ;
+		fprintf (fp, "\tPUSH RDI\n") ;
+		fprintf (fp, "\tCALL malloc\n") ;
+		fprintf (fp, "\tPOP RDI\n") ;
+		fprintf (fp, "\tPOP RBX\n") ;
+		fprintf (fp, "\tPOP CX\n") ;
+		fprintf (fp, "\tMOV [RBP+RBX], RAX\n") ;
+
+		fprintf (fp, "\tPOP AX\n") ;
+		fprintf (fp, "\tMOV [RBP + RBX + 10], AX\n") ;
+		fprintf (fp, "\tPOP DX\n") ;
+		fprintf (fp, "\tMOV [RBP + RBX + 8], DX\n") ;
+
+		fprintf (fp, "\tPUSH DX\n") ;
+		fprintf (fp, "\tPUSH AX\n") ;
+		fprintf (fp, "\tADD RBX, 12\n") ;
+		fprintf (fp, "\tINC CX\n") ;
+		fprintf (fp, "\tCMP CX, %d\n", declCount) ;
+		fprintf (fp, "\tJL LABEL%d\n", start_label) ;
+
+		fprintf (fp, "\tADD RSP, 4\n");
+	}
+	else
+	{
+		fprintf (fp, "\n\tCALL malloc\n") ;
+		fprintf (fp, "\tMOV [RBP-%d], RAX\n", searchedVar->offset) ;
+		fprintf (fp, "\tPOP AX\n") ;
+		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+		fprintf (fp, "\tPOP BX\n") ;
+		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
 	}
 }
 
