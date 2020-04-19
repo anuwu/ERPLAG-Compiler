@@ -7,95 +7,13 @@
 #include "symbolTable.h"
 #include "typeChecker.h"
 
+baseST *realBase ;
 int x = 0 ;
 int get_label()
 {
 	x++;
 	return x;
 }
-
-baseST *realBase ;
-
-/*
-void boundCheck(astNode* node, varST *vst, FILE* fp)
-{
-	if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_NUM) // Left bound is variable
-	{
-   		int l1=get_label();
-	 	int l2=get_label();
-
-   		fprintf (fp, "\tPUSH AX\n");
-
-	 	if(node->child->id == TK_ID) // variable index
-	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
-	 	else //static index
-	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));
-
-	 	fprintf (fp, "\tCMP AX,%d\n",atoi(vst->arrayIndices->tokRight->lexeme));
-	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
-	 	fprintf (fp, "\tPUSH BX\n");
-	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-	 	fprintf (fp, "\tCMP AX,BX\n");
-	 	fprintf (fp, "\tJL LABEL%d\n",l1);
-	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
-	 	fprintf (fp, "\tLABEL%d:\n",l1);
-	 	fprintf (fp, "\tcall exit\n");
-	 	fprintf (fp, "\tLABEL%d:\n",l2);
-	 	fprintf (fp, "\tPOP BX\n");
-	 	fprintf (fp, "\tPOP AX\n");
-	}
-	else if(vst->arrayIndices->tokLeft->id == TK_NUM && vst->arrayIndices->tokRight->id == TK_ID) // Right bound is variable   
-	{
-   		int l1=get_label();
-	 	int l2=get_label();
-   		fprintf (fp, "\tPUSH AX\n");
-   		fprintf (fp, "\tPUSH BX\n");
-
-   		if(node->child->id == TK_ID) // variable index
-	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
-	 	else //static index
-	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
-
-	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-	 	fprintf (fp, "\tCMP AX,BX\n");
-	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
-	 	fprintf (fp, "\tCMP AX,%d\n",atoi(vst->arrayIndices->tokLeft->lexeme));
-	 	fprintf (fp, "\tJL LABEL%d\n",l1);// It will give an error
-	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
-	 	fprintf (fp, "\tLABEL%d:\n",l1);
-	 	fprintf (fp, "\tcall exit\n");
-	 	fprintf (fp, "\tLABEL%d:\n",l2);
-	 	fprintf (fp, "\tPOP BX\n");
-	 	fprintf (fp, "\tPOP AX\n"); 
-	}
-	else if(vst->arrayIndices->tokLeft->id == TK_ID && vst->arrayIndices->tokRight->id == TK_ID) // Both bounds are variable    		
-    {
-   		int l1=get_label();
-	 	int l2=get_label();
-   		fprintf (fp, "\tPUSH AX\n");
-   		fprintf (fp, "\tPUSH BX\n");
-
-	 	if(node->child->id == TK_ID) // variable index
-	 		fprintf (fp, "\tMOV AX,[%s_cb]\n",node->child->tok->lexeme);
-	 	else //static index
-	 		fprintf (fp, "\tMOV AX,%d\n",atoi(node->child->tok->lexeme));	
-
-	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokRight->lexeme);
-	 	fprintf (fp, "\tCMP AX,BX\n");
-	 	fprintf (fp, "\tJG LABEL%d\n",l1);//It will give error
-	 	fprintf (fp, "\tMOV BX,[%s_cb]\n",vst->arrayIndices->tokLeft->lexeme);
-	 	fprintf (fp, "\tCMP AX,BX\n");
-	 	fprintf (fp, "\tJL LABEL%d\n",l1);// It will give an error
-	 	fprintf (fp, "\tJMP LABEL%d\n",l2);
-	 	fprintf (fp, "\tLABEL%d:\n",l1);
-	 	fprintf (fp, "\tcall exit\n");
-	 	fprintf (fp, "\tLABEL%d:\n",l2);
-	 	fprintf (fp, "\tPOP BX\n");
-	 	fprintf (fp, "\tPOP AX\n");
-   }
-}
-*/
-
 
 int getStaticOffset (varST *vst, astNode *node, int size)
 {
@@ -257,6 +175,524 @@ void dynamicArrDX (varST *vst, FILE *fp)
 
 }
 
+void dynamicDeclare (moduleST *lst, varST *searchedVar, FILE *fp)
+{
+	int start_label , end_label ;
+	varST *leftVar , *rightVar ;
+
+	if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
+	{
+		fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+	}
+	else
+	{
+	 	start_label = get_label () ;
+
+		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
+		fprintf (fp, "\tCMP AX, 0\n") ;
+		fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
+		fprintf (fp, "\tCALL declNegERROR\n") ;
+
+		fprintf (fp, "\nLABEL%d:\n", start_label) ;
+		fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
+	}
+
+	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
+	{
+		fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+	}
+	else
+	{
+		end_label = get_label () ;
+
+		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
+		fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
+		fprintf (fp, "\tCMP BX, 0\n") ;
+		fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
+		fprintf (fp, "\tCALL declNegERROR\n") ;
+		
+		fprintf (fp, "\nLABEL%d:\n", end_label) ;
+		fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
+	}
+
+	int lab ;
+	lab = get_label () ;
+
+	fprintf (fp, "\tCMP BX, AX\n") ;
+	fprintf (fp, "\tJGE LABEL%d\n", lab) ;
+	fprintf (fp, "\tCALL declERROR\n") ;
+	fprintf (fp, "\nLABEL%d:\n", lab) ;
+	fprintf (fp, "\tSUB BX, AX\n") ;
+	fprintf (fp, "\tADD BX, 1\n") ;
+	fprintf (fp, "\tADD BX, BX\n") ;
+	fprintf (fp, "\tMOVSX RDI, BX\n") ;
+}
+
+void IDGeneration (astNode *node, moduleST *lst, varST *vst, FILE* fp)
+{
+	if (node->parent->id!=TK_ASSIGNOP)
+	{
+		if (node->prev == NULL)
+		{
+			if(node->id == TK_ID && node->child==NULL)
+			{
+				fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+				fprintf (fp, "\tPUSH AX\n");	
+			}
+
+			else if(node->id == TK_ID && node->child!=NULL) // var:=A[i]+j;
+			{
+				varST *vst ;
+				vst = searchVar (realBase, lst,node->tok->lexeme);
+
+				if(node->child->id == TK_ID) // For dynamic index
+				{
+					if (isVarStaticArr(vst))
+					{
+						staticArrBoundCheck (node, lst, vst, fp) ;
+						fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
+					}
+					else
+					{
+						dynamicArrBoundCheck (node, lst, vst, fp) ;
+						fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+					}
+				}
+				else
+					fprintf (fp, "\tMOV AX, [RBP-%d]\n", getStaticOffset (vst, node, 2)) ;
+				
+				fprintf (fp, "\tPUSH AX\n");	
+			}
+		}
+		else
+		{
+			if(node->id == TK_ID && node->child==NULL)
+			{
+				fprintf (fp, "\tMOV BX, [RBP - %d]\n",searchVar(realBase, lst, node->tok->lexeme)->offset);
+				fprintf (fp, "\tPUSH BX\n");	
+			}
+
+			else if(node->id == TK_ID && node->child!=NULL) // var:=j+A[i];
+			{
+				varST *vst ;
+				vst=searchVar (realBase, lst,node->tok->lexeme);
+
+				if(node->child->id == TK_ID) // For dynamic index
+				{
+					if (isVarStaticArr(vst))
+					{
+						staticArrBoundCheck (node, lst, vst, fp) ;
+						fprintf (fp, "\tMOV BX, [RBP + RBX]\n") ;
+					}
+					else
+					{
+						dynamicArrBoundCheck (node, lst, vst, fp) ;
+						fprintf (fp, "\tMOV BX, [RDI + RBX]\n") ;
+					}
+				}
+				else
+					fprintf (fp, "\tMOV BX, [RBP - %d]\n",getStaticOffset(vst,node,2)) ;
+					
+				fprintf (fp, "\tPUSH BX\n");	
+			}
+		}
+	}
+	else
+	{
+		if(node->id == TK_ID && node->child==NULL && node->prev!=NULL)
+		{
+			fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\tPUSH AX\n");	
+		}
+		else if(node->id == TK_ID && node->child!=NULL && node->prev!=NULL) //type checking required i:=A[j]
+		{
+			varST *vst ;
+			vst = searchVar (realBase, lst,node->tok->lexeme);
+			int size ;
+
+			if(node->child->id == TK_ID)
+			{
+				if (isVarStaticArr(vst))
+				{
+					staticArrBoundCheck (node, lst, vst, fp) ;
+					fprintf (fp , "\tMOV AX, [RBP + RBX]\n") ;
+				}
+				else
+				{
+					dynamicArrBoundCheck (node, lst, vst, fp) ;
+					fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+				}
+			}
+			else
+				fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(vst, node, 2)) ;
+			
+			fprintf (fp, "\tPUSH AX\n");	
+			
+		}
+		else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
+		{
+			fprintf (fp, "\tPOP AX\n");
+			fprintf (fp, "\tMOV [rbp - %d],AX\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
+		}
+		else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
+		{
+			varST* vst ;
+			vst = searchVar(realBase, lst,node->tok->lexeme);
+
+			if(node->child->id == TK_ID)
+			{
+				if (isVarStaticArr (vst))
+				{
+					staticArrBoundCheck (node, lst, vst, fp) ;
+
+					fprintf (fp, "\n\tPOP AX\n") ;
+					fprintf (fp, "\tMOV[RBP + RBX], AX\n") ;
+				}
+				else
+				{
+					dynamicArrBoundCheck (node, lst, vst, fp) ;
+
+					fprintf (fp, "\n\tPOP AX\n") ;
+					fprintf (fp, "\tMOV[RDI + RBX], AX\n") ;
+				}
+			}
+			else
+			{
+				fprintf (fp, "\tPOP AX\n");	
+				fprintf (fp, "\tMOV [RBP - %d], AX\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
+			}
+		}
+	}
+}
+
+void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp)
+{
+	int start_label, end_label ;
+	int reserveLabel[2] ;
+
+	if (searchedVar->datatype == TK_INTEGER)
+	{
+		fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", searchedVar->offset) ;
+		fprintf (fp, "\tMOV RDI, printFormat\n") ;
+		fprintf (fp, "\tMOVSX RSI, AX\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+	}
+	else if (searchedVar->datatype == TK_BOOLEAN)
+	{
+		start_label = get_label () ;
+		end_label = get_label () ;
+
+		fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", searchedVar->offset) ;
+		fprintf (fp, "\tCMP AX, 01\n") ;
+		fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+		fprintf (fp, "\tMOV RDI, printFalse\n") ;
+		fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+		fprintf (fp, "LABEL%d:\n", start_label) ;
+		fprintf (fp, "\tMOV RDI, printTrue\n") ;
+		fprintf (fp, "LABEL%d:\n", end_label) ;
+
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n\n") ;
+	}
+	else // Array type
+	{	
+		if (isVarStaticArr (searchedVar))
+		{
+			if (node->child != NULL && node->child->id == TK_NUM)	// Static array, static index
+			{
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				{
+					fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", getStaticOffset(searchedVar,node,2)) ;
+					fprintf (fp, "\tMOV RDI, printFormat\n") ;
+					fprintf (fp, "\tMOVSX RSI, AX\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n") ;
+				}
+				else
+				{
+					start_label = get_label () ;
+					end_label = get_label () ;
+
+					fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", getStaticOffset(searchedVar,node,2)) ;
+					fprintf (fp, "\tCMP AX, 01\n") ;
+					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, printFalse\n") ;
+					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+					fprintf (fp, "LABEL%d:\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, printTrue\n") ;
+					fprintf (fp, "LABEL%d:\n", end_label) ;
+
+					fprintf (fp, "\tXOR RSI, RSI\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n\n") ;
+				}
+			}	
+			else if (node->child != NULL && node->child->id == TK_ID)
+			{
+				staticArrBoundCheck (node, lst, searchedVar, fp) ;
+
+				fprintf (fp, "\tMOV AX, [RBP + RBX]\t\t;printing integer\n") ;
+				fprintf (fp, "\tMOV RDI, printFormat\n") ;
+				fprintf (fp, "\tMOVSX RSI, AX\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tCALL printf\n") ;
+			}
+			else if (node->child == NULL)
+			{
+				int leftLim, rightLim ;
+				leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
+				rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
+
+				reserveLabel[0] = get_label () ;
+
+				fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
+				fprintf (fp, "\tXOR RSI, RSI\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp , "\tCALL printf\n\n") ;
+
+				fprintf (fp, "\tMOV RCX, 0\n") ;
+				fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
+
+				fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
+				fprintf (fp, "\tADD RBX, RCX\n\n") ;
+				fprintf (fp, "\tNEG RBX\n") ;
+
+				fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				{
+					fprintf (fp, "\tMOV RDI, printInt\n") ;
+					fprintf (fp, "\tMOVSX RSI, AX\n") ;
+				}
+				else
+				{
+					start_label = get_label () ;
+					end_label = get_label () ;
+
+					fprintf (fp, "\tXOR RSI, RSI\n") ;
+					fprintf (fp, "\n\tCMP AX, 01\n") ;
+					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, false\n") ;
+					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+					fprintf (fp, "LABEL%d:\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, true\n") ;
+					fprintf (fp, "\nLABEL%d:\n", end_label) ;
+				}
+
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tPUSH RCX\n") ;
+				fprintf (fp, "\tPUSH RBX\n") ;
+				fprintf (fp, "\tCALL printf\n") ;
+				fprintf (fp, "\tPOP RBX\n") ;
+				fprintf (fp, "\tPOP RCX\n\n") ;
+
+				fprintf (fp, "\tADD RCX, 2\n") ;
+				fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
+				fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+
+				fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
+				fprintf (fp, "\tXOR RSI, RSI\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp , "\tCALL printf\n") ;
+			}
+		}
+		else
+		{
+			if (node->child != NULL)	// Dynamic array, static index
+			{
+				dynamicArrBoundCheck (node, lst, searchedVar, fp) ;
+
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				{
+					fprintf (fp, "\tMOV RDI, printFormat\n") ;
+					fprintf (fp, "\tMOVSX RSI, AX\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n") ;
+				}
+				else
+				{
+					start_label = get_label () ;
+					end_label = get_label () ;
+
+					fprintf (fp, "\n\tCMP AX, 01\n") ;
+					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, false\n") ;
+					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+					fprintf (fp, "LABEL%d:\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, true\n") ;
+					fprintf (fp, "\nLABEL%d\n", end_label) ;
+
+					fprintf (fp, "\tXOR RSI, RSI\n") ;
+					fprintf (fp, "\tXOR RAX, RAX\n") ;
+					fprintf (fp, "\tCALL printf\n\n") ;
+				}
+			}
+			else 						// Print the whole array
+			{
+				reserveLabel[0] = get_label () ;
+
+				fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
+				fprintf (fp, "\tXOR RSI, RSI\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp , "\tCALL printf\n\n") ;
+
+				fprintf (fp, "\tMOV CX, 0\n") ;
+				fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
+
+				fprintf (fp, "\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
+				fprintf (fp, "\tMOVSX RBX, CX\n") ;
+				fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
+				if (searchedVar->arrayIndices->type == TK_INTEGER)
+				{
+					fprintf (fp, "\tMOV RDI, printInt\n") ;
+					fprintf (fp, "\tMOVSX RSI, AX\n") ;
+				}
+				else
+				{
+					start_label = get_label () ;
+					end_label = get_label () ;
+
+					fprintf (fp, "\n\tCMP AX, 01\n") ;
+					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, false\n") ;
+					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+					fprintf (fp, "LABEL%d:\n", start_label) ;
+					fprintf (fp, "\tMOV RDI, true\n") ;
+					fprintf (fp, "\nLABEL%d:\n", end_label) ;
+				}
+
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp, "\tPUSH CX\n") ;
+				fprintf (fp, "\tCALL printf\n") ;
+				fprintf (fp, "\tPOP CX\n\n") ;
+
+				fprintf (fp, "\tADD CX, 2\n") ;
+				
+				dynamicArrDX (searchedVar, fp) ;
+				fprintf (fp, "\tCMP CX, DX\n") ;
+				fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+
+				fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
+				fprintf (fp, "\tXOR RSI, RSI\n") ;
+				fprintf (fp, "\tXOR RAX, RAX\n") ;
+				fprintf (fp , "\tCALL printf\n") ;
+
+			}
+		}
+	}
+}
+
+void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp)
+{		
+	int rspAlign ;
+	int reserveLabel[2] ;
+	
+	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
+	{
+		rspAlign = 32 - (rspDepth % 16) ;
+
+		if (searchedVar->datatype == TK_INTEGER)
+			fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
+		else if (searchedVar->datatype == TK_BOOLEAN)
+			fprintf (fp , "\n\tMOV RDI, inputBoolPrompt\t\t;get_value\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+
+		fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
+		fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
+		fprintf (fp, "\tMOV RSI, RSP\n") ;
+		fprintf (fp, "\tPUSH RSI\n") ;
+		fprintf (fp, "\tCALL scanf\n") ;
+		fprintf (fp, "\tPOP RSI\n") ;
+		fprintf (fp, "\tMOV AX, WORD [RSP]\n") ;
+		fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
+		fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
+	}
+	else // Array type
+	{	
+		reserveLabel[0] = get_label () ;
+		rspAlign = 32 - (rspDepth % 16) ;
+
+		if (isVarStaticArr (searchedVar))
+		{
+			int leftLim, rightLim ;
+			leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
+			rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
+
+			printGetValueStaticArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
+
+			fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
+			fprintf (fp, "\tMOV RCX, 0\n") ;
+			fprintf (fp, "LABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
+			fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
+			fprintf (fp, "\tADD RBX, RCX\n\n") ;
+			fprintf (fp, "\tNEG RBX\n") ;
+
+			fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
+			fprintf (fp, "\tMOV RSI, RSP\n") ;
+			fprintf (fp, "\tPUSH RBX\n") ;
+			fprintf (fp, "\tPUSH RCX\n") ;
+			fprintf (fp, "\tPUSH RSI\n") ;
+			fprintf (fp, "\tCALL scanf\n") ;
+			fprintf (fp, "\tPOP RSI\n") ;
+			fprintf (fp, "\tPOP RCX\n") ;
+			fprintf (fp, "\tPOP RBX\n") ;
+
+			fprintf (fp, "\tMOV AX, [RSP]\n") ;
+			fprintf (fp, "\tMOV [RBP+RBX], AX\n") ;
+
+			fprintf (fp, "\tADD RCX, 2\n") ;
+			fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
+			fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+			fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
+		}
+		else
+		{
+			printGetValueDynArrayPrompt (searchedVar, fp) ;
+
+			fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
+			fprintf (fp, "\tMOV RCX, 0\n") ;
+			fprintf (fp, "\nLABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
+
+			fprintf (fp, "\tMOV RBX, RCX\n") ;
+			fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
+			fprintf (fp, "\tMOV RSI, RSP\n") ;
+			fprintf (fp, "\tPUSH RBX\n") ;
+			fprintf (fp, "\tPUSH RCX\n") ;
+			fprintf (fp, "\tPUSH RSI\n") ;
+			fprintf (fp, "\tCALL scanf\n") ;
+			fprintf (fp, "\tPOP RSI\n") ;
+			fprintf (fp, "\tPOP RCX\n") ;
+			fprintf (fp, "\tPOP RBX\n") ;
+
+			fprintf (fp, "\tMOV AX, [RSP]\n") ;
+			fprintf (fp, "\tMOV RDI, [RBP-%d]\n", searchedVar->offset) ;
+			fprintf (fp, "\tMOV [RDI + RBX], AX\n") ;
+
+			fprintf (fp, "\tADD RCX, 2\n") ;	// Incrementing counter
+
+			// Finding (rightLim - leftLim + 1) 
+			dynamicArrDX (searchedVar, fp) ;
+
+			fprintf (fp, "\tMOVSX RDX, DX\n") ;
+			fprintf (fp, "\tCMP RCX, RDX\n"/*, 2*(rightLim-leftLim+1)*/) ;
+			fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
+
+			fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
+		}
+	}
+}
+
 int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
 {
 	if (node == NULL)
@@ -312,60 +748,12 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar))	
 			{
+				dynamicDeclare (lst, searchedVar, fp) ;
+
 				if (declCount > 1)
 					;
 				else
 				{
-					varST *leftVar , *rightVar ;
-
-					if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
-					{
-						fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-						fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
-					}
-					else
-					{
-						reserveLabel[0] = get_label () ;
-
-						leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
-						fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
-						fprintf (fp, "\tCMP AX, 0\n") ;
-						fprintf (fp, "\tJGE LABEL%d\n", reserveLabel[0]) ;
-						fprintf (fp, "\tCALL declNegERROR\n") ;
-
-						fprintf (fp, "\nLABEL%d:\n", reserveLabel[0]) ;
-						fprintf (fp, "\tMOV [RBP-%d], AX\n", searchedVar->offset - 10) ;
-					}
-
-					if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
-					{
-						fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-						fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
-					}
-					else
-					{
-						reserveLabel[1] = get_label () ;
-
-						rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
-						fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
-						fprintf (fp, "\tCMP BX, 0\n") ;
-						fprintf (fp, "\tJGE LABEL%d\n", reserveLabel[1]) ;
-						fprintf (fp, "\tCALL declNegERROR\n") ;
-						
-						fprintf (fp, "\nLABEL%d:\n", reserveLabel[1]) ;
-						fprintf (fp, "\tMOV [RBP-%d], BX\n", searchedVar->offset - 8) ;
-					}
-
-					start_label = get_label () ;
-
-					fprintf (fp, "\tCMP BX, AX\n") ;
-					fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tCALL declERROR\n") ;
-					fprintf (fp, "\nLABEL%d:\n", start_label) ;
-					fprintf (fp, "\tSUB BX, AX\n") ;
-					fprintf (fp, "\tADD BX, 1\n") ;
-					fprintf (fp, "\tADD BX, BX\n") ;
-					fprintf (fp, "\tMOVSX RDI, BX\n") ;
 					fprintf (fp, "\tCALL malloc\n") ;
 					fprintf (fp, "\tMOV [RBP-%d], RAX\n", searchedVar->offset) ;
 				}
@@ -466,139 +854,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 
 		case TK_ID :
-			if (node->parent->id!=TK_ASSIGNOP)
-			{
-				if (node->prev == NULL)
-				{
-					if(node->id == TK_ID && node->child==NULL)
-					{
-						fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-						fprintf (fp, "\tPUSH AX\n");	
-					}
-
-					else if(node->id == TK_ID && node->child!=NULL) // var:=A[i]+j;
-					{
-						varST *vst ;
-						vst = searchVar (realBase, lst,node->tok->lexeme);
-
-						if(node->child->id == TK_ID) // For dynamic index
-						{
-							if (isVarStaticArr(vst))
-							{
-								staticArrBoundCheck (node, lst, vst, fp) ;
-								fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
-							}
-							else
-							{
-								dynamicArrBoundCheck (node, lst, vst, fp) ;
-								fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-							}
-						}
-						else
-							fprintf (fp, "\tMOV AX, [RBP-%d]\n", getStaticOffset (vst, node, 2)) ;
-						
-						fprintf (fp, "\tPUSH AX\n");	
-					}
-				}
-				else
-				{
-					if(node->id == TK_ID && node->child==NULL)
-					{
-						fprintf (fp, "\tMOV BX, [RBP - %d]\n",searchVar(realBase, lst, node->tok->lexeme)->offset);
-						fprintf (fp, "\tPUSH BX\n");	
-					}
-
-					else if(node->id == TK_ID && node->child!=NULL) // var:=j+A[i];
-					{
-						varST *vst ;
-						vst=searchVar (realBase, lst,node->tok->lexeme);
-
-						if(node->child->id == TK_ID) // For dynamic index
-						{
-							if (isVarStaticArr(vst))
-							{
-								staticArrBoundCheck (node, lst, vst, fp) ;
-								fprintf (fp, "\tMOV BX, [RBP + RBX]\n") ;
-							}
-							else
-							{
-								dynamicArrBoundCheck (node, lst, vst, fp) ;
-								fprintf (fp, "\tMOV BX, [RDI + RBX]\n") ;
-							}
-						}
-						else
-							fprintf (fp, "\tMOV BX, [RBP - %d]\n",getStaticOffset(vst,node,2)) ;
-							
-						fprintf (fp, "\tPUSH BX\n");	
-					}
-				}
-			}
-			else
-			{
-				if(node->id == TK_ID && node->child==NULL && node->prev!=NULL)
-				{
-					fprintf (fp, "\tMOV AX, [rbp - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-					fprintf (fp, "\tPUSH AX\n");	
-				}
-				else if(node->id == TK_ID && node->child!=NULL && node->prev!=NULL) //type checking required i:=A[j]
-				{
-					varST *vst ;
-					vst = searchVar (realBase, lst,node->tok->lexeme);
-					int size ;
-
-					if(node->child->id == TK_ID)
-					{
-						if (isVarStaticArr(vst))
-						{
-							staticArrBoundCheck (node, lst, vst, fp) ;
-							fprintf (fp , "\tMOV AX, [RBP + RBX]\n") ;
-						}
-						else
-						{
-							dynamicArrBoundCheck (node, lst, vst, fp) ;
-							fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-						}
-					}
-					else
-						fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(vst, node, 2)) ;
-					
-					fprintf (fp, "\tPUSH AX\n");	
-					
-				}
-				else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
-				{
-					fprintf (fp, "\tPOP AX\n");
-					fprintf (fp, "\tMOV [rbp - %d],AX\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
-				}
-				else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
-				{
-					varST* vst ;
-					vst = searchVar(realBase, lst,node->tok->lexeme);
-
-					if(node->child->id == TK_ID)
-					{
-						if (isVarStaticArr (vst))
-						{
-							staticArrBoundCheck (node, lst, vst, fp) ;
-
-							fprintf (fp, "\n\tPOP AX\n") ;
-							fprintf (fp, "\tMOV[RBP + RBX], AX\n") ;
-						}
-						else
-						{
-							dynamicArrBoundCheck (node, lst, vst, fp) ;
-
-							fprintf (fp, "\n\tPOP AX\n") ;
-							fprintf (fp, "\tMOV[RDI + RBX], AX\n") ;
-						}
-					}
-					else
-					{
-						fprintf (fp, "\tPOP AX\n");	
-						fprintf (fp, "\tMOV [RBP - %d], AX\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
-					}
-				}
-			}
+			IDGeneration (node, lst, vst, fp) ;
 			break ;
 		
 		case TK_FOR :
@@ -732,322 +988,14 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		case TK_PRINT :
 			node = node->next ;
 			searchedVar = searchVar (realBase, lst, node->tok->lexeme) ;
-			if (searchedVar->datatype == TK_INTEGER)
-			{
-				fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", searchedVar->offset) ;
-				fprintf (fp, "\tMOV RDI, printFormat\n") ;
-				fprintf (fp, "\tMOVSX RSI, AX\n") ;
-				fprintf (fp, "\tXOR RAX, RAX\n") ;
-				fprintf (fp, "\tCALL printf\n") ;
-			}
-			else if (searchedVar->datatype == TK_BOOLEAN)
-			{
-				start_label = get_label () ;
-				end_label = get_label () ;
 
-				fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", searchedVar->offset) ;
-				fprintf (fp, "\tCMP AX, 01\n") ;
-				fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-				fprintf (fp, "\tMOV RDI, printFalse\n") ;
-				fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-				fprintf (fp, "LABEL%d:\n", start_label) ;
-				fprintf (fp, "\tMOV RDI, printTrue\n") ;
-				fprintf (fp, "LABEL%d:\n", end_label) ;
-
-				fprintf (fp, "\tXOR RSI, RSI\n") ;
-				fprintf (fp, "\tXOR RAX, RAX\n") ;
-				fprintf (fp, "\tCALL printf\n\n") ;
-			}
-			else // Array type
-			{	
-				if (isVarStaticArr (searchedVar))
-				{
-					if (node->child != NULL && node->child->id == TK_NUM)	// Static array, static index
-					{
-						if (searchedVar->arrayIndices->type == TK_INTEGER)
-						{
-							fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing integer\n", getStaticOffset(searchedVar,node,2)) ;
-							fprintf (fp, "\tMOV RDI, printFormat\n") ;
-							fprintf (fp, "\tMOVSX RSI, AX\n") ;
-							fprintf (fp, "\tXOR RAX, RAX\n") ;
-							fprintf (fp, "\tCALL printf\n") ;
-						}
-						else
-						{
-							start_label = get_label () ;
-							end_label = get_label () ;
-
-							fprintf (fp, "\tMOV AX, [RBP - %d]\t\t;printing boolean\n", getStaticOffset(searchedVar,node,2)) ;
-							fprintf (fp, "\tCMP AX, 01\n") ;
-							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, printFalse\n") ;
-							fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-							fprintf (fp, "LABEL%d:\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, printTrue\n") ;
-							fprintf (fp, "LABEL%d:\n", end_label) ;
-
-							fprintf (fp, "\tXOR RSI, RSI\n") ;
-							fprintf (fp, "\tXOR RAX, RAX\n") ;
-							fprintf (fp, "\tCALL printf\n\n") ;
-						}
-					}	
-					else if (node->child != NULL && node->child->id == TK_ID)
-					{
-						staticArrBoundCheck (node, lst, searchedVar, fp) ;
-
-						fprintf (fp, "\tMOV AX, [RBP + RBX]\t\t;printing integer\n") ;
-						fprintf (fp, "\tMOV RDI, printFormat\n") ;
-						fprintf (fp, "\tMOVSX RSI, AX\n") ;
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp, "\tCALL printf\n") ;
-					}
-					else if (node->child == NULL)
-					{
-						int leftLim, rightLim ;
-						leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
-						rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
-
-						reserveLabel[0] = get_label () ;
-
-						fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
-						fprintf (fp, "\tXOR RSI, RSI\n") ;
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp , "\tCALL printf\n\n") ;
-
-						fprintf (fp, "\tMOV RCX, 0\n") ;
-						fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
-
-						fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
-						fprintf (fp, "\tADD RBX, RCX\n\n") ;
-						fprintf (fp, "\tNEG RBX\n") ;
-
-						fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
-						if (searchedVar->arrayIndices->type == TK_INTEGER)
-						{
-							fprintf (fp, "\tMOV RDI, printInt\n") ;
-							fprintf (fp, "\tMOVSX RSI, AX\n") ;
-						}
-						else
-						{
-							start_label = get_label () ;
-							end_label = get_label () ;
-
-							fprintf (fp, "\tXOR RSI, RSI\n") ;
-							fprintf (fp, "\n\tCMP AX, 01\n") ;
-							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, false\n") ;
-							fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-							fprintf (fp, "LABEL%d:\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, true\n") ;
-							fprintf (fp, "\nLABEL%d:\n", end_label) ;
-						}
-
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp, "\tPUSH RCX\n") ;
-						fprintf (fp, "\tPUSH RBX\n") ;
-						fprintf (fp, "\tCALL printf\n") ;
-						fprintf (fp, "\tPOP RBX\n") ;
-						fprintf (fp, "\tPOP RCX\n\n") ;
-
-						fprintf (fp, "\tADD RCX, 2\n") ;
-						fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
-						fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-
-						fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
-						fprintf (fp, "\tXOR RSI, RSI\n") ;
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp , "\tCALL printf\n") ;
-					}
-				}
-				else
-				{
-					if (node->child != NULL)	// Dynamic array, static index
-					{
-						dynamicArrBoundCheck (node, lst, searchedVar, fp) ;
-
-						if (searchedVar->arrayIndices->type == TK_INTEGER)
-						{
-							fprintf (fp, "\tMOV RDI, printFormat\n") ;
-							fprintf (fp, "\tMOVSX RSI, AX\n") ;
-							fprintf (fp, "\tXOR RAX, RAX\n") ;
-							fprintf (fp, "\tCALL printf\n") ;
-						}
-						else
-						{
-							start_label = get_label () ;
-							end_label = get_label () ;
-
-							fprintf (fp, "\n\tCMP AX, 01\n") ;
-							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, false\n") ;
-							fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-							fprintf (fp, "LABEL%d:\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, true\n") ;
-							fprintf (fp, "\nLABEL%d\n", end_label) ;
-
-							fprintf (fp, "\tXOR RSI, RSI\n") ;
-							fprintf (fp, "\tXOR RAX, RAX\n") ;
-							fprintf (fp, "\tCALL printf\n\n") ;
-						}
-					}
-					else 						// Print the whole array
-					{
-						reserveLabel[0] = get_label () ;
-
-						fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
-						fprintf (fp, "\tXOR RSI, RSI\n") ;
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp , "\tCALL printf\n\n") ;
-
-						fprintf (fp, "\tMOV CX, 0\n") ;
-						fprintf (fp, "LABEL%d:\t\t\t;printing array\n" , reserveLabel[0]) ;
-
-						fprintf (fp, "\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
-						fprintf (fp, "\tMOVSX RBX, CX\n") ;
-						fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-						if (searchedVar->arrayIndices->type == TK_INTEGER)
-						{
-							fprintf (fp, "\tMOV RDI, printInt\n") ;
-							fprintf (fp, "\tMOVSX RSI, AX\n") ;
-						}
-						else
-						{
-							start_label = get_label () ;
-							end_label = get_label () ;
-
-							fprintf (fp, "\n\tCMP AX, 01\n") ;
-							fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, false\n") ;
-							fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-							fprintf (fp, "LABEL%d:\n", start_label) ;
-							fprintf (fp, "\tMOV RDI, true\n") ;
-							fprintf (fp, "\nLABEL%d:\n", end_label) ;
-						}
-
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp, "\tPUSH CX\n") ;
-						fprintf (fp, "\tCALL printf\n") ;
-						fprintf (fp, "\tPOP CX\n\n") ;
-
-						fprintf (fp, "\tADD CX, 2\n") ;
-						
-						dynamicArrDX (searchedVar, fp) ;
-						fprintf (fp, "\tCMP CX, DX\n") ;
-						fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-
-						fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
-						fprintf (fp, "\tXOR RSI, RSI\n") ;
-						fprintf (fp, "\tXOR RAX, RAX\n") ;
-						fprintf (fp , "\tCALL printf\n") ;
-
-					}
-				}
-			}
+			printGeneration (node, lst, searchedVar, fp) ;
 			break ;
 
 		case TK_GET_VALUE :
 			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-			int rspAlign ;
-			if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
-			{
-				rspAlign = 32 - (rspDepth % 16) ;
 
-				if (searchedVar->datatype == TK_INTEGER)
-					fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
-				else if (searchedVar->datatype == TK_BOOLEAN)
-					fprintf (fp , "\n\tMOV RDI, inputBoolPrompt\t\t;get_value\n") ;
-				fprintf (fp, "\tXOR RSI, RSI\n") ;
-				fprintf (fp, "\tXOR RAX, RAX\n") ;
-				fprintf (fp, "\tCALL printf\n") ;
-
-				fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-				fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
-				fprintf (fp, "\tMOV RSI, RSP\n") ;
-				fprintf (fp, "\tPUSH RSI\n") ;
-				fprintf (fp, "\tCALL scanf\n") ;
-				fprintf (fp, "\tPOP RSI\n") ;
-				fprintf (fp, "\tMOV AX, WORD [RSP]\n") ;
-				fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
-				fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
-			}
-			else // Array type
-			{	
-				reserveLabel[0] = get_label () ;
-				rspAlign = 32 - (rspDepth % 16) ;
-
-				if (isVarStaticArr (searchedVar))
-				{
-					int leftLim, rightLim ;
-					leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
-					rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
-
-					printGetValueStaticArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
-
-					fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
-					fprintf (fp, "\tMOV RCX, 0\n") ;
-					fprintf (fp, "LABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
-					fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
-					fprintf (fp, "\tADD RBX, RCX\n\n") ;
-					fprintf (fp, "\tNEG RBX\n") ;
-
-					fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-					fprintf (fp, "\tMOV RSI, RSP\n") ;
-					fprintf (fp, "\tPUSH RBX\n") ;
-					fprintf (fp, "\tPUSH RCX\n") ;
-					fprintf (fp, "\tPUSH RSI\n") ;
-					fprintf (fp, "\tCALL scanf\n") ;
-					fprintf (fp, "\tPOP RSI\n") ;
-					fprintf (fp, "\tPOP RCX\n") ;
-					fprintf (fp, "\tPOP RBX\n") ;
-
-					fprintf (fp, "\tMOV AX, [RSP]\n") ;
-					fprintf (fp, "\tMOV [RBP+RBX], AX\n") ;
-
-					fprintf (fp, "\tADD RCX, 2\n") ;
-					fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
-					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-					fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
-				}
-				else
-				{
-					printGetValueDynArrayPrompt (searchedVar, fp) ;
-
-					fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
-					fprintf (fp, "\tMOV RCX, 0\n") ;
-					fprintf (fp, "\nLABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
-
-					fprintf (fp, "\tMOV RBX, RCX\n") ;
-					fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-					fprintf (fp, "\tMOV RSI, RSP\n") ;
-					fprintf (fp, "\tPUSH RBX\n") ;
-					fprintf (fp, "\tPUSH RCX\n") ;
-					fprintf (fp, "\tPUSH RSI\n") ;
-					fprintf (fp, "\tCALL scanf\n") ;
-					fprintf (fp, "\tPOP RSI\n") ;
-					fprintf (fp, "\tPOP RCX\n") ;
-					fprintf (fp, "\tPOP RBX\n") ;
-
-					fprintf (fp, "\tMOV AX, [RSP]\n") ;
-					fprintf (fp, "\tMOV RDI, [RBP-%d]\n", searchedVar->offset) ;
-					fprintf (fp, "\tMOV [RDI + RBX], AX\n") ;
-
-					fprintf (fp, "\tADD RCX, 2\n") ;	// Incrementing counter
-
-					// Finding (rightLim - leftLim + 1) 
-					dynamicArrDX (searchedVar, fp) ;
-
-					fprintf (fp, "\tMOVSX RDX, DX\n") ;
-					fprintf (fp, "\tCMP RCX, RDX\n"/*, 2*(rightLim-leftLim+1)*/) ;
-					fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-
-					fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
-				}
-			}
+			getValueGeneration (lst, searchedVar, rspDepth, fp) ;
 			break ;
 
 	}

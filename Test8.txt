@@ -6,6 +6,7 @@ start
 
 	declare A:array [i .. j] of integer ;
 	declare B:array [i .. j] of integer ;
+
 	get_value (A) ;
 
 	while (i <= j)

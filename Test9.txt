@@ -1,0 +1,5 @@
+<<<driver program>>>
+start
+	declare i,j:integer ;
+	declare A :array [3 .. j] of integer ;
+end
