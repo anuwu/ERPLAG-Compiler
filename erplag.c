@@ -419,6 +419,8 @@ int main(int argc, char *argv[])
 
 		preamble (fp) ;
 		codeGeneration (astRoot, fp) ;
+
+		fclose (fp) ;
 	}
 	else
 		printf ("Semantic errors found. Please check the above messages\n") ;

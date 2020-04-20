@@ -418,7 +418,6 @@ int main(int argc, char *argv[]){
     twinBuffer * thisBuff ;
     treeNode * PTRoot ;
     astNode * ASTRoot ;
-    baseST * thisbase ;
     int numberPTNode, numberASTNode, sizePT, sizeAST ;
     double compression ;
 
@@ -497,7 +496,7 @@ int main(int argc, char *argv[]){
 
                 setDone(4) ;
                 break ;
-            case 5:
+            case 5:     // Deepak will edit
                 if ( isDone[2] == 0 ) {
                     PTRoot = parseTree ( argv[1] ) ;
                 }
@@ -506,20 +505,79 @@ int main(int argc, char *argv[]){
                     ASTRoot = applyASTRule ( PTRoot ) ;
                 }
 
-                thisbase = fillSymbolTable(ASTRoot , 0 ) ;
-
-                printVars (thisbase) ;
+                realBase = fillSymbolTable(ASTRoot , 0) ;
+                printVars (realBase) ;
 
                 setDone(5) ;
                 break ;                
-            case 6:
+            case 6:     // Deepak
                 break ;
-            case 7:
+            case 7:     // Deepak
                 break ;  
             case 8:
+                if (PTRoot != NULL)
+                    deletePT (PTRoot) ;
+                if (ASTRoot != NULL)
+                    deleteAST (ASTRoot) ;
+
+                    struct timeval t1, t2;
+                    double elapsedTime;
+
+                /* ---------- put between timer ---------- */
+
+                gettimeofday(&t1, NULL);
+
+                PTRoot = parseTree (argv[1]) ;
+                if (PTRoot->syntax_error)
+                    printf ("Please rectify the above syntax/lexical errors\n") ;
+                else
+                {
+                    ASTRoot = applyASTRule (PTRoot) ;
+                    realBase = fillSymbolTable (ASTRoot, 0) ;
+
+                    if (realBase->semanticError)
+                        printf ("Please rectify the above semantic errors\n") ;
+                }
+
+                gettimeofday(&t2, NULL);
+                
+                /* ---------- put between timer ---------- */
+
+                elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;
+                elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;
+                printf("Compilaton time = %lf ms.\n",elapsedTime);
+                
+
                 break ;
             case 9:
-                break ;  
+            	if (PTRoot != NULL)
+                    deletePT (PTRoot) ;
+                if (ASTRoot != NULL)
+                    deleteAST (ASTRoot) ;
+
+                printf ("LEVEL 4 : Symbol Table, Type Checking, Semantic Analysis, Static/Dynamic Arrays in Code Generation\n")
+
+                PTRoot = parseTree (argv[1]) ;
+                if (PTRoot->syntax_error)
+                    printf ("Please rectify the above syntax/lexical errors\nCode generation failed!\n") ;
+                else
+                {
+                    ASTRoot = applyASTRule (PTRoot) ;
+                    realBase = fillSymbolTable (ASTRoot, 0) ;
+
+                    if (realBase->semanticError)
+                        printf ("Please rectify the above semantic errors\n") ;
+                    else
+                    {
+                        FILE *fp = fopen (argv[2], "w") ;
+                        preamble (fp) ;
+                        codeGeneration (ASTRoot, fp) ;
+
+                        fclose (fp) ;
+                    }
+                }
+
+   		        break ;  
             
             default :
                 printf ( "Please Enter a valid Command\n") ;

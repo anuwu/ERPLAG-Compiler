@@ -1,3 +1,6 @@
+finalDriver : finalDriver.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTable.o parser.h parserDef.h symbolTable.h codegen.h lexer.h typeChecker.h lexerDef.h 
+	gcc -o compiler finalDriver.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTable.o
+
 erplag : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o erplag.exe erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
 	./erplag.exe $(FILE).erp
@@ -9,9 +12,6 @@ allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexTest.o lexer.o p
 	gcc -o ast.exe astDriver.o ast.o lexTest.o lexer.o parser.o
 	gcc -o ST.exe symbolTableDriver.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
 	gcc -o erplag.exe erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
-
-finalDriver : finalDriver.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTable.o parser.h parserDef.h symbolTable.h codegen.h lexer.h typeChecker.h lexerDef.h 
-	gcc -o finalDriver.exe finalDriver.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTable.o
 
 erplag.o : erplag.c
 	gcc -c erplag.c
