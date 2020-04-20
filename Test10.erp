@@ -1,0 +1,33 @@
+<<<driver program>>>
+start
+	declare i : boolean ;
+	get_value (i) ;
+
+	switch (i)
+	start
+		case true :
+			declare j1, j2 : integer ; 
+			get_value (j1) ;
+			get_value (j2) ;
+			print (j1) ;
+			print (j2) ;
+			break ;
+		case false :
+			get_value (j1) ;
+			j2 := 9 ;
+			declare C1, C2 : array [j1 .. j2] of integer ;
+			get_value (C1) ;
+
+			while (j1 <= j2)
+			start
+				declare i : integer ;
+				get_value (i) ;
+				C2[j1] := C1[j1]*i ;
+
+				j1 := j1 + 1 ;
+			end
+
+			print (C2) ;
+			break ;
+	end
+end

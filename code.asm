@@ -59,99 +59,147 @@ main:
 	PUSH RBP
 	PUSH RBP
 	MOV RBP, RSP
-	SUB RSP, 2			;Updating RSP
-
-	SUB RSP, 4			;Updating RSP
-
 	SUB RSP, 6			;Updating RSP
 
-	SUB RSP, 28			;Updating RSP
+	SUB RSP, 2			;Updating RSP
 
-	SUB RSP, 12			;Updating RSP
+	SUB RSP, 2			;Updating RSP
 
-	MOV AX, [RBP-4]
-	CMP AX, 0
-	JGE LABEL1
-	CALL declNegERROR
+	MOV BX, 19
+	PUSH BX
+	POP AX
+	MOV [rbp - 4],AX		;Store
+
+	MOV BX, 56
+	PUSH BX
+	POP AX
+	MOV [rbp - 6],AX		;Store
+
+	MOV CX,3
+	MOV [RBP - 10], CX		;for loop lower lim
 
 LABEL1:
-	MOV BX, [RBP-6]
-	CMP BX, 0
-	JGE LABEL2
-	CALL declNegERROR
+	MOV AX, 6
+	CMP CX,AX
+	JG LABEL2
 
-LABEL2:
-	CMP BX, AX
-	JGE LABEL3
-	CALL declERROR
+	MOV RDI, inputIntPrompt		;get_value
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
+
+	MOV RDI, inputInt		;get_value
+	SUB RSP, 22
+	MOV RSI, RSP
+	PUSH RSI
+	CALL scanf
+	POP RSI
+	MOV AX, WORD [RSP]
+	MOV [RBP - 2], AX
+	ADD RSP, 22
+
+
+	MOV AX, [RBP - 2]
+
+	CMP AX, 1
+	JE LABEL3
+
+	CMP AX, 2
+	JE LABEL4
+
+	JMP LABEL5
 
 LABEL3:
+	MOV BX, [RBP - 4]
 	PUSH BX
+	MOV BX, 2
+	PUSH BX
+	MOV AX, [rbp - 2]
 	PUSH AX
-	SUB BX, AX
-	ADD BX, 1
-	ADD BX, BX
-	MOVSX RDI, BX
-
-	CALL malloc
-	MOV [RBP-52], RAX
 	POP AX
-	MOV [RBP-42], AX
 	POP BX
-	MOV [RBP-44], BX
+	IMUL BX
+	PUSH AX
+	POP AX
+	POP BX
+	SUB AX,BX
+	PUSH AX
+	MOV BX, [RBP - 10]
+	PUSH BX
+	POP AX
+	POP BX
+	ADD AX,BX
+	PUSH AX
+	POP AX
+	MOV [rbp - 4],AX		;Store
 
-	SUB RSP, 24			;Updating RSP
+	MOV AX, [RBP - 4]
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
 
-	MOV AX, [RBP-8]
-	CMP AX, 0
-	JGE LABEL4
-	CALL declNegERROR
+	JMP LABEL6
 
 LABEL4:
-	MOV BX, [RBP-12]
-	CMP BX, 0
-	JGE LABEL5
-	CALL declNegERROR
+	MOV BX, [RBP - 6]
+	PUSH BX
+	MOV BX, 3
+	PUSH BX
+	MOV AX, [rbp - 2]
+	PUSH AX
+	POP AX
+	POP BX
+	IMUL BX
+	PUSH AX
+	POP AX
+	POP BX
+	SUB AX,BX
+	PUSH AX
+	MOV BX, [RBP - 10]
+	PUSH BX
+	POP AX
+	POP BX
+	ADD AX,BX
+	PUSH AX
+	POP AX
+	MOV [rbp - 6],AX		;Store
+
+	MOV AX, [RBP - 6]
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+
+	JMP LABEL6
 
 LABEL5:
-	CMP BX, AX
-	JGE LABEL6
-	CALL declERROR
+	MOV AX, [RBP - 2]
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
 
 LABEL6:
-	PUSH BX
-	PUSH AX
-	SUB BX, AX
-	ADD BX, 1
-	ADD BX, BX
-	MOVSX RDI, BX
 
-	MOV CX, 0
-	MOV RBX, 76
-	NEG RBX
+	ADD RSP, 0
+	MOV AX, [RBP - 4]
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
+	MOV AX, [RBP - 6]
+	MOV RDI, printFormat
+	MOVSX RSI, AX
+	XOR RAX, RAX
+	CALL printf
 
-LABEL7:
-	PUSH CX
-	PUSH RBX
-	PUSH RDI
-	CALL malloc
-	POP RDI
-	POP RBX
-	POP CX
-	MOV [RBP+RBX], RAX
-	POP AX
-	MOV [RBP + RBX + 10], AX
-	POP DX
-	MOV [RBP + RBX + 8], DX
-	PUSH DX
-	PUSH AX
-	ADD RBX, 12
+	MOV CX, [RBP - 10]		;Ending increment
 	INC CX
-	CMP CX, 2
-	JL LABEL7
-	ADD RSP, 4
+	MOV [RBP - 10],CX
+	JMP LABEL1
 
-	ADD RSP, 74
+LABEL2:
 
 	MOV RSP, RBP
 	POP RBP

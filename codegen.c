@@ -9,6 +9,8 @@
 baseST *realBase ;
 int x = 0 ;
 
+extern int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp) ;
+
 int get_label()
 {
 	x++;
@@ -852,4 +854,109 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
+}
+
+int getCaseCount (astNode *statementsNode)
+{
+	int cnt = 0 ;
+
+	while (statementsNode != NULL)
+	{
+		cnt++ ;
+
+		if (statementsNode->next != NULL)
+		{
+			if (statementsNode->child->id == TK_DECLARE)
+				return cnt ;
+
+			statementsNode = statementsNode->next->next->next ;
+		}
+		else
+			statementsNode = NULL ;
+	}
+
+	return cnt ;
+}
+
+
+int switchDeclareVars (astNode *statementsNode, varST *vst , int rspDepth, FILE* fp)
+{
+	astNode *statementNode ;
+
+	// Reserving space for switch scope variables
+	while (statementsNode != NULL)
+	{
+		statementNode = statementsNode->child ;
+		while (statementNode != NULL)
+		{
+			if (statementNode->child->id == TK_DECLARE)
+			{
+				rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
+				statementNode->child->parent = statementNode->child ;		// tieing a knot
+			}
+			statementNode = statementNode->next ;
+		}
+
+		if (statementsNode->next != NULL)
+		{
+			if (statementsNode->next->id == TK_DEFAULT)
+			{
+				statementsNode = statementsNode->next->next ;
+				statementNode = statementsNode->child ;
+				while (statementNode != NULL)
+				{
+					if (statementNode->child->id == TK_DECLARE)
+					{
+						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
+						statementNode->child->parent = statementNode->child ;		// tieing a knot
+					}
+					statementNode = statementNode->next ;
+				}
+
+				break ;
+			}
+			statementsNode = statementsNode->next->next->next ;
+		}
+		else
+			statementsNode = NULL ;
+	}
+
+	return rspDepth ;
+}
+
+int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels, FILE* fp)
+{
+	int i, def_label = -1 ;
+
+	for (i = 0 ; i < caseCount ; i++)
+		caseLabels[i] = get_label() ;
+
+	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+	fprintf (fp, "\n\tMOV AX, [RBP - %d]\n", switchVar->offset) ;
+
+	astNode *caseValNode =  node->next->next->next ;
+	i = 0 ;
+
+	while (caseValNode != NULL)
+	{
+		fprintf (fp, "\n\tCMP AX, %s\n", (switchVar->datatype == TK_INTEGER)?caseValNode->tok->lexeme:((caseValNode->tok->lexeme[0] == 't')?"1":"0")) ;
+		fprintf (fp, "\tJE LABEL%d\n", caseLabels[i]) ;
+
+		if (caseValNode->next->next != NULL)
+		{
+			if (caseValNode->next->next->id == TK_DEFAULT)		
+			{
+				def_label = get_label () ;
+				fprintf (fp, "\n\tJMP LABEL%d\n", def_label) ;
+				break ;
+			}
+
+			i++ ;
+			caseValNode = caseValNode->next->next->next ;
+		}
+		else
+			caseValNode = NULL ;
+	}
+
+	return def_label ;
 }

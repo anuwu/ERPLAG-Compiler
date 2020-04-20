@@ -30,7 +30,7 @@ enum _variableType
 struct _varST {
 	char * lexeme ; // variable name
 
-	tokenID datatype ; // TK_INTEGER, TK_REAL, TK_BOOL, TK_ARRAY
+	tokenID datatype ; // TK_INTEGER, TK_REAL, TK_BOOLEAN, TK_ARRAY
 	arrayTypeInfo *arrayIndices ; // if TK_ARRAY 
 
 	int offset ;

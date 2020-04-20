@@ -23,5 +23,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp) ;
 void preamble (FILE *fp) ;
 
+int getCaseCount (astNode *statementsNode) ;
+int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth, FILE* fp) ;
+int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels, FILE* fp) ;
+
 
 #endif

@@ -45,10 +45,24 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			break ;
 
 		case TK_DECLARE :
+			/*
 			if (lst->tableType == SWITCH_ST && node->parent == node)
 			{
 				node->parent = node->next->parent ;
 				break ;
+			}
+			*/
+
+			;
+			int switchPass = 0 ;
+			if (lst->tableType != SWITCH_ST)
+				; // Subtract RSP, and allocate memory if dynamic
+			else if (node->parent != node)
+				switchPass = 1 ; // Subtract RSP only, and do not allocate memory for dynamic
+			else
+			{
+				switchPass = 2 ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
+				node->parent = node->next->parent ;
 			}
 
 			int endOffset, declCount = 1 ;
@@ -63,13 +77,13 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
 			endOffset = searchedVar->offset ;
-			if (endOffset > 0)
-			{		
+			if (endOffset > 0 && (switchPass == 0 || switchPass == 1))
+			{	
 				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n\n", (endOffset - rspDepth)) ;
 				rspDepth = endOffset ;
 			}
 
-			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar))	
+			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && (switchPass == 0 || switchPass == 2))
 				dynamicDeclareGeneration (lst, searchedVar, declCount, fp) ;
 
 			
@@ -313,39 +327,33 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_SWITCH :
 			;
+			int i, caseCount, savedRspDepth, def_label ;
+			int *caseLabels ;
 			astNode *statementsNode = node->next->next->next->next ;
-			astNode *statementNode ;
 
-			int savedRspDepth = rspDepth ;
+			savedRspDepth = rspDepth ;
 
+			rspDepth = switchDeclareVars (node->next->next->next->next, vst, rspDepth, fp) ;
+			caseCount = getCaseCount (node->next->next->next->next) ;
+			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
+			def_label = switchCaseLabels (node , lst, caseCount, caseLabels, fp) ;
+
+			end_label = get_label () ;
+			i = 0 ;
 			while (statementsNode != NULL)
 			{
-				statementNode = statementsNode->child ;
-				while (statementNode != NULL)
-				{
-					if (statementNode->child->id == TK_DECLARE)
-					{
-						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
-						statementNode->child->parent = statementNode->child ;		// tieing a knot
-					}
-					statementNode = statementNode->next ;
-				}
+				fprintf (fp, "\nLABEL%d:\n", caseLabels[i]) ;
+				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst, fp) ;
+				fprintf (fp ,"\n\tJMP LABEL%d\n", end_label) ;
 
+				i++ ;
 				if (statementsNode->next != NULL)
 				{
 					if (statementsNode->next->id == TK_DEFAULT)
 					{
 						statementsNode = statementsNode->next->next ;
-						statementNode = statementsNode->child ;
-						while (statementNode != NULL)
-						{
-							if (statementNode->child->id == TK_DECLARE)
-							{
-								rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst, fp) ;
-								statementNode->child->parent = statementNode->child ;		// tieing a knot
-							}
-							statementNode = statementNode->next ;
-						}
+						fprintf (fp, "\nLABEL%d:\n", def_label) ;
+						moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst, fp) ;
 
 						break ;
 					}
@@ -355,6 +363,8 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					statementsNode = NULL ;
 			}
 
+
+			fprintf (fp ,"\nLABEL%d:\n", end_label) ;
 			fprintf (fp, "\n\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
 			rspDepth = savedRspDepth ;
 
