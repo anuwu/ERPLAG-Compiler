@@ -120,7 +120,7 @@ varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID da
 
 	tmp->lexeme = lexeme ;
 	tmp->datatype = datatype ;
-	tmp->offset = -9999 ; //default value
+	tmp->offset = 0 ; //default value
 	tmp->tinker = 0 ;
 	tmp->arrayIndices = NULL ;
 	tmp->scope = scope ;
@@ -1105,26 +1105,17 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  		else if (statementAST->child->id == idList) 
  		{
 			// [a] = use module with parameters [ d ] ;
+			int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
 
-			if (strcmp(baseModule->lexeme, statementAST->child->next->next->tok->lexeme) == 0)
-			{
-				printf ("ERROR : In \"%s\" at line %d, recursion is not allowed!\n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber) ;
+			if (validCallFlag == -1 )	{
+				printf("ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
-			else
-			{
-				int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
-
-				if (validCallFlag == -1 )	{
-					printf("ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
-					realBase->semanticError = 1 ;
-				}
-				else if( validCallFlag == -2 ) {
-					printf( "ERROR : In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
-					realBase->semanticError = 1 ;
-				}
-				// else error messages is printed in internal functions
+			else if( validCallFlag == -2 ) {
+				printf( "ERROR : In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
+			// else error messages is printed in internal functions
 
 			idListTinker (realBase, baseModule, statementAST->child->child) ;
 		}
@@ -1132,25 +1123,16 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		{
 			// use module with parameters ... (no return)
 
-			if (strcmp(baseModule->lexeme, statementAST->child->tok->lexeme) == 0)
+			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
+			if (validCallFlag == -1 )	
 			{
-				printf ("ERROR : In \"%s\" at line %d, recursion is not allowed!\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
+				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
-			else
-			{
-				int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
-
-				if (validCallFlag == -1 )	{
-					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
-					realBase->semanticError = 1 ;
-				}
-				else if( validCallFlag == -2 ) {
-					printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
-					realBase->semanticError = 1 ;
-				}
+			else if( validCallFlag == -2 ) {
+				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
-			// else error messages is printed in internal functions
 		}
  		else if (statementAST->child->id == TK_SWITCH)
 		{
@@ -1277,7 +1259,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			
 			if (searchCond == NULL) {
 				// need to create and insert
-				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme, 0) ;
+				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme, 16) ;
 
 				// filling input_plist and output_plist
 				astNode * input_plistAST = currentASTNode->child->next ;
@@ -1301,7 +1283,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 							// Setting and increasing offset
 							retSize = getSize (base, tmp) ;
-							tmp->offset = moduleToInsert->currOffset + retSize ;
+							tmp->offset = -moduleToInsert->currOffset ;
 							moduleToInsert->currOffset += retSize ;
 
 						}
@@ -1314,7 +1296,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 							if (retSize > 0)
 							{
-								tmp->offset = moduleToInsert->currOffset + retSize ;
+								tmp->offset = -moduleToInsert->currOffset ;
 								moduleToInsert->currOffset += retSize ;
 							}
 							else
@@ -1329,11 +1311,11 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 				astNode * retAST = input_plistAST->next ;
 				astNode * oplAST = retAST->child ;
-				moduleToInsert->currOffset = 0 ;
+				
 
 				// Handle exact offsets later
 
-				while ( oplAST ) 
+				while (oplAST) 
 				{
 					// Input and output parameters CANNOT share identifiers
 					if (searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id)) 
@@ -1349,14 +1331,15 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 						int retSize = getSize (base, tmp) ;
 
-						tmp->offset = moduleToInsert->currOffset + retSize ;
+						tmp->offset = -moduleToInsert->currOffset ;
 						moduleToInsert->currOffset += retSize ;
 					}
 					
 					oplAST = oplAST->next ;
 				}
 
-				insertModuleSTInbaseST ( base , moduleToInsert ) ;
+				moduleToInsert->currOffset = 0 ;	//resetting for input values
+				insertModuleSTInbaseST (base , moduleToInsert) ;
 
 			}
 			else {
