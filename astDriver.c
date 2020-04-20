@@ -25,10 +25,17 @@ int main(int argc, char *argv[])
 	treeNode *root = parseTree (argv[1]) ;
 
 	astNode *astRoot ;
-	astRoot = applyASTRule (root) ;
-	inorderAST (astRoot, 0) ;
 
-	printf ("No of parse tree nodes = %d\n", root->no_of_nodes) ;
+	if (root->syntax_error)
+		printf ("There are lexical/syntactical errors\n") ;
+	else
+	{
+		astRoot = applyASTRule (root) ;
+		inorderAST (astRoot, 0) ;
+
+		printf ("No of parse tree nodes = %d and size = %d\n", root->no_of_nodes, (int)sizeof(treeNode) * root->no_of_nodes) ;
+	}
+	
 
 	return 0;
 }

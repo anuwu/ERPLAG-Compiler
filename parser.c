@@ -1686,6 +1686,7 @@ treeNode * nextTreeNode(treeNode* current_node)
 	
 }
 
+/*
 treeNode* parseTree(char *inFile)
 {
 	fillUtilityArray();
@@ -1845,5 +1846,193 @@ treeNode* parseTree(char *inFile)
 		
 	//inorderTraversal(root,ptr);
 	//fclose(ptr);
+	return root ;
+}
+*/
+
+
+treeNode* parseTree(char *inFile)
+{
+	fillUtilityArray();
+	//printf ("Filled utility_array\n") ;
+	init_parser () ;
+	//FILE* ptr=fopen(outFile,"w");
+ 	int rule_index , while_count = 1 ;
+	twinBuffer *twinBuf = lexer_init (inFile) ;
+	token* tk ;
+ 
+	stacknode* stack = initStack () ;
+	stack = push (stack, program) ;
+	treeNode *root = create_root () ;
+ 	root->no_of_nodes=1;
+ 	treeNode* current_node ;
+	current_node = root ;
+	tk = getNextToken (twinBuf) ;int flag=0;
+	int current=-1;
+	while (1)
+	{		
+		if(tk->id == TK_LEXERROR)
+		{
+			root->syntax_error=1;
+			printf("LEXICAL ERROR DETECTED AT %d\n",tk->lineNumber);
+		}
+		
+		if(stack!=NULL && stack->key<0)
+		{
+			flag=1;
+			root->syntax_error=1;
+			printf("Invalid symbol on stack\n");
+			break;
+		}
+
+		if (tk->id == TK_EOF)
+		{
+			if(stack!= NULL && stack->key==TK_EOF)
+			{
+				break;
+			}
+			
+				if(stack==NULL)
+				{
+					printf("STACK IS EMPTY");
+					break;
+				}
+		}
+ 
+		if (isTerminal(stack->key)) // We are getting a terminal on top of the stack
+		{
+			if (stack->key == tk->id) // If top of the stack matches with the input symbol
+			{
+				stack = pop (stack); // Pop the element from top of the stack and move ahead
+				if(flag==0) // No error has been encountered yet
+				{
+					//Add the terminal to the parse tree
+				current_node->tnt.term->lexeme =  tk->lexeme ; 
+				current_node->tnt.term->lineNumber = tk->lineNumber ;
+				current_node=nextTreeNode(current_node);
+				}
+				// Get the new look-ahead symbol
+				tk = getNextToken (twinBuf) ;
+				if(tk->id == TK_LEXERROR)
+				{
+					printf("LEXICAL ERROR DETECTED AT %d\n",tk->lineNumber);
+					root->syntax_error=1;
+				}
+			}
+			else   // The top of stack is a terminal but doesn't match with the input symbol
+			{
+				root->syntax_error=1;
+				if(current != tk->lineNumber)
+				{
+					if(stack->key!= TK_SEMICOL && stack->key!= TK_ENDDEF && stack->key!= TK_DRIVERENDDEF)
+					{
+						printf ("This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber);
+						current=tk->lineNumber;
+					}
+
+					else
+					{
+						printf ("This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber-1);
+						current=tk->lineNumber-1;
+					}
+					
+				}
+				stacknode* temp=stack;
+				// printSL(stack);
+				if(stack==NULL)
+				{
+					printf("STACK IS EMPTY");
+					break;
+				}
+				 stack=stack->next;
+
+				free(temp); // Poping the stack
+				flag=1; // There is an error
+				
+			}
+		}
+		else if (isNonTerminal(stack->key))
+		{
+			
+			rule_index = parsetable[stack->key][tk->id] ;
+ 
+			if (rule_index != -1)
+			{
+				stack = pushRule (stack , allRules, rule_index) ;
+				if(flag==0)
+				{
+					current_node->gcode = rule_index ;
+
+					addRulesParseTree (current_node , allRules, rule_index,root);
+					current_node = current_node->child ;
+ 
+					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)
+					{
+						current_node->tnt.term->lineNumber = tk->lineNumber ;
+						current_node=nextTreeNode(current_node);
+					}
+				}
+			}
+			else
+			{
+				root->syntax_error=1;
+				if(current != tk->lineNumber)
+				{
+					printf ("Error at line number %d\n",tk->lineNumber);
+					current=tk->lineNumber;
+				}
+
+				if(stack==NULL)
+				{
+					printf("STACK IS EMPTY");
+					break;
+				}
+				flag=1;
+					while(1)
+					{
+						node* temp=NULL;
+						temp=follows[stack->key];
+						while(temp != NULL && temp->key != tk->id)
+						{
+							temp=temp->next;
+						}
+
+						if(stack!=NULL && temp!=NULL)
+						{
+							stack=pop(stack);
+							break;
+						}
+
+						else
+						{
+							if(tk->id != TK_EOF)
+							{
+								tk=getNextToken(twinBuf);
+								if(tk->id == TK_LEXERROR)
+								{
+									root->syntax_error=1;
+									printf("LEXICAL ERROR DETECTED AT %d",tk->lineNumber);
+								}
+								break;
+							}
+
+							if(tk->id == TK_EOF)
+							{
+								goto labelabc;
+							}
+							
+						}
+					}
+			}
+		}
+ 
+		while_count++ ;
+	}
+ 	labelabc:;
+	endl; 
+		
+	//inorderTraversal(root,ptr);
+	//fclose(ptr);
+	//printf("No of nodes in parse tree %d\n",root->no_of_nodes);
 	return root ;
 }
