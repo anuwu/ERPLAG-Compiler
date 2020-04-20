@@ -972,7 +972,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 	statementsAST->localST = baseModule ;
 	astNode * statementAST = statementsAST->child ;
 
-	while (statementAST) {
+	while (statementAST) 
+	{
 		if(statementAST->child->id == TK_DECLARE) 
 		{
 			// declare statement
