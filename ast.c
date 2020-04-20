@@ -97,6 +97,38 @@ void connectChildren (astNode *parent, astNode **siblings, int num)
 		siblings[i]->prev = siblings[i-1] ;
 }
 
+int getNumberASTNodes (astNode *node)
+{
+	if (node == NULL)
+		return 0 ;
+
+	int sum = 0 ;
+	node = node->child ;
+
+	while (node != NULL)
+	{
+		sum += getNumberASTNodes (node) ;
+		node = node->next ;
+	}
+
+	return sum + 1 ;
+}
+
+void deleteAST (astNode *node)
+{
+	if (node == NULL)
+		return ;
+
+	node = node->child ;
+	while (node != NULL)
+	{
+		deleteAST (node) ;
+		node = node->next ;
+	}
+
+	free (node) ;
+}
+
 astNode* applyASTRule (treeNode *PTNode)
 {
 	if (PTNode == NULL)

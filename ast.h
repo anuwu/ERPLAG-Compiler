@@ -25,16 +25,6 @@ typedef union _datType
 	arrayTypeInfo *arrType ;
 } datType ;
 
-
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-*/
-
 struct _moduleST ;
 typedef struct _moduleST moduleST ;
 
@@ -51,6 +41,9 @@ typedef struct _astNode
 
 	struct _astNode *parent , *child , *next, *prev ;
 } astNode ;
+
+int getNumberASTNodes (astNode *node) ;
+void deleteAST (astNode *node) ;
 
 astNode* applyASTRule (treeNode *PTNode) ;
 void inorderAST (astNode *node, int space) ;

@@ -1625,7 +1625,7 @@ void test_tree ()
 }
  
 
-void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root)
+void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index)
 {
 	node* ptr = allRules[rule_index].RHS ;
 	treeNode* child ; 
@@ -1650,7 +1650,6 @@ void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNo
 		}
  
 		child = create_node (tag, tnt) ;
-		root->no_of_nodes += 1;
 		add_child (parent, child) ;
 		
 		ptr = ptr->next ;
@@ -1686,170 +1685,37 @@ treeNode * nextTreeNode(treeNode* current_node)
 	
 }
 
-/*
-treeNode* parseTree(char *inFile)
+int getNumberPTNodes (treeNode *node)
 {
-	fillUtilityArray();
-	//printf ("Filled utility_array\n") ;
-	init_parser () ;
-	//FILE* ptr=fopen(outFile,"w");
- 	int rule_index , while_count = 1 ;
-	twinBuffer *twinBuf = lexer_init (inFile) ;
-	token* tk ;
+	if (node == NULL)
+		return 0 ;
 
-	stacknode* stack = initStack () ;
-	stack = push (stack, program) ;
-	treeNode *root = create_root () ;
+	int sum = 0 ;
+	node = node->child ;
 
-	root->no_of_nodes=1;
- 
- 	treeNode* current_node ;
-	current_node = root ;
-	tk = getNextToken (twinBuf) ;int flag=0;
-	int current=-1;
-	while (1)
-	{		
-
-		if(stack!=NULL && stack->key<0)
-		{
-			flag=1;
-			//fprintf("Invalid symbol on stack\n");
-			break;
-		}
-
-		if (tk->id == TK_EOF)
-		{
-			if(stack!= NULL && stack->key==TK_EOF)
-			{
-				//printf(" FUCK NICE\n");
-				break;
-			}
-			
-				if(stack==NULL)
-				{
-					//fprintf(ptr,"STACK IS EMPTY");
-					break;
-				}
-		}
- 
-		if (isTerminal(stack->key)) // We are getting a terminal on top of the stack
-		{
-			if (stack->key == tk->id) // If top of the stack matches with the input symbol
-			{
-				stack = pop (stack); // Pop the element from top of the stack and move ahead
-				if(flag==0) // No error has been encountered yet
-				{
-					//Add the terminal to the parse tree
-				current_node->tnt.term->lexeme =  tk->lexeme ; 
-				current_node->tnt.term->lineNumber = tk->lineNumber ;
-				current_node=nextTreeNode(current_node);
-				}
-				// Get the new look-ahead symbol
-				tk = getNextToken (twinBuf) ;
-			}
-			else   // The top of stack is a terminal but doesn't match with the input symbol
-			{
-				if(current != tk->lineNumber)
-				{
-					//fprintf (ptr,"This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber);
-					current=tk->lineNumber;
-				}
-				stacknode* temp=stack;
-				// printSL(stack);
-				if(stack==NULL)
-				{
-					//fprintf(ptr,"STACK IS EMPTY");
-					break;
-				}
-				 stack=stack->next;
-
-				free(temp); // Poping the stack
-				flag=1; // There is an error
-				
-			}
-		}
-		else if (isNonTerminal(stack->key))
-		{
-			
-			rule_index = parsetable[stack->key][tk->id] ;
- 
-			if (rule_index != -1)
-			{
-				stack = pushRule (stack , allRules, rule_index) ;
-				if(flag==0)
-				{
-					// this carries info to be used for ast.c
-					current_node->gcode = rule_index ;
-
-					addRulesParseTree (current_node , allRules, rule_index, root) ;
-					current_node = current_node->child ;
- 
-					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)
-					{
-						current_node->tnt.term->lineNumber = tk->lineNumber ;
-						current_node=nextTreeNode(current_node);
-					}
-				}
-			}
-			else
-			{
-				
-				if(current != tk->lineNumber)
-				{
-					//fprintf (ptr,"Error at line number %d\n",tk->lineNumber);
-					current=tk->lineNumber;
-				}
-
-				if(stack==NULL)
-				{
-					//fprintf(ptr,"STACK IS EMPTY");
-					break;
-				}
-				flag=1;
-					while(1)
-					{
-						node* temp=NULL;
-						temp=follows[stack->key];
-						while(temp != NULL && temp->key != tk->id)
-						{
-							temp=temp->next;
-						}
-
-						if(stack!=NULL && temp!=NULL)
-						{
-							stack=pop(stack);
-							break;
-						}
-
-						else
-						{
-							if(tk->id != TK_EOF)
-							{
-								tk=getNextToken(twinBuf);
-								break;
-							}
-
-							if(tk->id == TK_EOF)
-							{
-								goto labelabc;
-							}
-							
-						}
-					}
-			}
-		}
- 
-		while_count++ ;
+	while (node != NULL)
+	{
+		sum += getNumberPTNodes (node) ;
+		node = node->next ;
 	}
- 	labelabc:;
-	endl; 
-		
-	//inorderTraversal(root,ptr);
-	//fclose(ptr);
-	return root ;
-}
-*/
 
+	return sum + 1 ;
+}
+
+void deletePT (treeNode *node)
+{
+	if (node == NULL)
+		return ;
+
+	node = node->child ;
+	while (node != NULL)
+	{
+		deletePT (node) ;
+		node = node->next ;
+	}
+
+	free (node) ;
+}
 
 treeNode* parseTree(char *inFile)
 {
@@ -1864,7 +1730,6 @@ treeNode* parseTree(char *inFile)
 	stacknode* stack = initStack () ;
 	stack = push (stack, program) ;
 	treeNode *root = create_root () ;
- 	root->no_of_nodes=1;
  	treeNode* current_node ;
 	current_node = root ;
 	tk = getNextToken (twinBuf) ;int flag=0;
@@ -1915,7 +1780,7 @@ treeNode* parseTree(char *inFile)
 				tk = getNextToken (twinBuf) ;
 				if(tk->id == TK_LEXERROR)
 				{
-					printf("LEXICAL ERROR DETECTED AT %d\n",tk->lineNumber);
+					printf("LEXICAL ERROR DETECTED AT LINE %d\n",tk->lineNumber);
 					root->syntax_error=1;
 				}
 			}
@@ -1963,7 +1828,7 @@ treeNode* parseTree(char *inFile)
 				{
 					current_node->gcode = rule_index ;
 
-					addRulesParseTree (current_node , allRules, rule_index,root);
+					addRulesParseTree (current_node , allRules, rule_index);
 					current_node = current_node->child ;
  
 					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)
@@ -2011,7 +1876,7 @@ treeNode* parseTree(char *inFile)
 								if(tk->id == TK_LEXERROR)
 								{
 									root->syntax_error=1;
-									printf("LEXICAL ERROR DETECTED AT %d",tk->lineNumber);
+									printf("LEXICAL ERROR DETECTED AT LINE %d\n",tk->lineNumber);
 								}
 								break;
 							}
@@ -2035,4 +1900,39 @@ treeNode* parseTree(char *inFile)
 	//fclose(ptr);
 	//printf("No of nodes in parse tree %d\n",root->no_of_nodes);
 	return root ;
+}
+
+void inorderTraversalonConsole(treeNode * root)
+{
+	// EPS is sorted by not reassigning the lexeme as it originally had lexeme and it shouldn't be replaced by DRIVERDEFF or whatever
+
+
+	if(root != NULL){
+		inorderTraversalonConsole(root->child );
+		
+		//print this node
+		
+		if(root->tag == NON_TERMINAL){
+			printf ("%20s%20s%20s%20s%20s%20s%20s\n" , "", "", "", "", nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
+		}
+		else{
+			// terminal
+			token * tk = root->tnt.term;
+			printf ("%20s%20d%20s%20s%20s%20s%20s\n",(tk->lexeme)==NULL?"EPS":tk->lexeme, tk->lineNumber, utility_array[tk->id], (tk->lexeme)==NULL?"EPS":tk->lexeme, nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
+		}
+ 
+ 
+		treeNode * tmp;
+		tmp=root->child;
+		if(tmp!=NULL && tmp->next!=NULL)
+		{
+			tmp = tmp->next;
+ 
+			while(tmp!=NULL)
+			{	
+			inorderTraversalonConsole(tmp);
+			tmp = tmp->next;
+			}
+		}		
+	}
 }

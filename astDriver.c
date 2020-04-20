@@ -4,16 +4,6 @@
 #include <sys/time.h>
 #include "ast.h"
 
-#define SIZE 200
-#define TNTLENGTH 40
-
-#define isTerminal(x) x>=TK_EPS && x<=TK_RNUM
-#define isNonTerminal(x) x>=program && x<=idL
-#define endl printf("\n")
-#define allRules rule
-
-twinBuffer *twinBuf ;
-
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
@@ -30,10 +20,23 @@ int main(int argc, char *argv[])
 		printf ("There are lexical/syntactical errors\n") ;
 	else
 	{
+		int numberPTNode, numberASTNode, sizePT, sizeAST ;
 		astRoot = applyASTRule (root) ;
 		inorderAST (astRoot, 0) ;
 
-		printf ("No of parse tree nodes = %d and size = %d\n", root->no_of_nodes, (int)sizeof(treeNode) * root->no_of_nodes) ;
+		numberPTNode = getNumberPTNodes (root) ;
+		sizePT = (int)sizeof(treeNode)*numberPTNode ;
+		printf ("\nNo of parse tree nodes = %d and size = %d\n", numberPTNode, sizePT) ;
+
+		numberASTNode = getNumberASTNodes (astRoot) ;
+		sizeAST = (int)sizeof(astNode)*numberASTNode ;
+		printf ("No of AST Nodes = %d and size = %d\n", numberASTNode , sizeAST) ;
+
+		double compression = (sizePT - sizeAST)/(1.0*sizePT) * 100.0 ;
+		printf ("Compresson percentage = %lf%%\n", compression) ;
+
+		deletePT (root) ;
+		deleteAST (astRoot) ;
 	}
 	
 

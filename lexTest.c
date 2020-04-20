@@ -15,7 +15,7 @@ int printNextToken (twinBuffer* twinBuf)
 {
 	token* tk ;
 	int ret = 1 ;
-	tk = getNextTok (twinBuf) ;
+	tk = getNextToken (twinBuf) ;
 
 	if (tk == NULL)
 	{
@@ -34,7 +34,7 @@ int printNextToken (twinBuffer* twinBuf)
 		; 
 		//printf ("Comment ending at line number %d\n" , tk->lineNumber) ;
 	else
-		printf ("%d\t%s\t%s\n", tk->lineNumber, tk->lexeme, tokenIDToString(tk->id)) ;
+		printf ("%15d\t%15s\t%15s\n", tk->lineNumber, tk->lexeme, tokenIDToString(tk->id)) ;
 
 	return ret ;
 }

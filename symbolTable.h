@@ -152,4 +152,7 @@ int getSize(baseST * realBase, varST * thisVar) ;
 char *getParentModuleName (baseST* realBase, moduleST *scope) ;
 char *typeIDToString (tokenID id) ;
 
+void printModuleVars (moduleST * thisModule ,int level ) ;
+void printVars ( baseST * base) ;
+
 #endif

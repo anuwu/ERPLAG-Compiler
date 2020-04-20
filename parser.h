@@ -24,7 +24,6 @@ typedef struct treeNode
 	astNode *syn, *inh ;
 	int gcode ; // which rule was used 
 
-	int no_of_nodes;
 	int syntax_error;
 
 	struct treeNode *child ;
@@ -54,6 +53,8 @@ extern int rule_count;
 extern char utility_array[150][40] ; 
 static int counter = 0 ;
 
+int getNumberPTNodes (treeNode *node) ;
+void deletePT (treeNode *node) ;
 
 char* nodeSymbol (treeNode* node) ;
 char* isLeafNode (treeNode* node) ;
@@ -71,11 +72,12 @@ stacknode * pop(stacknode * stc) ;
 stacknode * pushRule(stacknode * stc,Rule *allRules, int rule_index) ;
 void printSL(stacknode * stc) ;
 void test_tree () ;
-//void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
-void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root) ;
+void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
+//void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
 treeNode* parseTree (char *inFile) ;
+void inorderTraversalonConsole(treeNode * root) ;
 
 
 #endif

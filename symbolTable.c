@@ -1426,3 +1426,117 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			
 	return base ;
 }
+
+void printModuleVars (moduleST * thisModule ,int level ) 
+{
+	if ( thisModule ) {
+		
+		varSTentry * vmp ;
+		for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) {
+			vmp = thisModule->inputVars[i] ;
+			
+			while ( vmp ) {
+				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
+				
+				if ( vmp->thisVarST->datatype == TK_ARRAY ){
+					;
+				}
+				else if( vmp->thisVarST->datatype == TK_INTEGER ){
+					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_REAL ) {
+					printf("%d\tno\t---\t---\treal\t",4) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
+					printf("%d\tno\t---\t---\tboolean\t",1) ;
+				}
+
+				printf("%d\t",vmp->thisVarST->offset) ;
+				printf("0\n") ;
+				
+
+				vmp = vmp->next ;
+			}
+		}
+		for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) {
+			vmp = thisModule->outputVars[i] ;
+			
+			while ( vmp ) {
+				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
+				
+				if ( vmp->thisVarST->datatype == TK_ARRAY ){
+					;
+				}
+				else if( vmp->thisVarST->datatype == TK_INTEGER ){
+					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_REAL ) {
+					printf("%d\tno\t---\t---\treal\t",4) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
+					printf("%d\tno\t---\t---\tboolean\t",1) ;
+				}
+
+				printf("%d\t",vmp->thisVarST->offset) ;
+				printf("0\n") ;
+				
+
+				vmp = vmp->next ;
+			}
+		}
+		for ( int i =0 ; i<VAR_BIN_COUNT ; i++ ) {
+			vmp = thisModule->localVars[i] ;
+			
+			while ( vmp ) {
+				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
+				
+				if ( vmp->thisVarST->datatype == TK_ARRAY ){
+					;
+				}
+				else if( vmp->thisVarST->datatype == TK_INTEGER ){
+					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_REAL ) {
+					printf("%d\tno\t---\t---\treal\t",4) ;
+				}
+				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
+					printf("%d\tno\t---\t---\tboolean\t",1) ;
+				}
+
+				printf("%d\t",vmp->thisVarST->offset) ;
+				printf("%d\n",level) ;
+				
+
+				vmp = vmp->next ;
+			}
+		}
+
+		for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ) {
+			moduleSTentry * mmp = thisModule->scopeVars[i] ;
+
+			while ( mmp ) {
+				printModuleVars ( mmp->thisModuleST , level+1 ) ;
+				mmp = mmp->next ;
+			}
+		}
+
+	}
+}
+
+void printVars ( baseST * base) 
+{
+	
+	if ( base->semanticError == 0) {
+		printModuleVars ( base->driverST , 1 ) ;
+	}
+	
+	for ( int i = 0 ; i<MODULE_BIN_COUNT ; i++ ) {
+		moduleSTentry * tmp = base->modules[i] ;
+
+		while ( tmp ) {
+			printModuleVars ( tmp->thisModuleST ,1) ;
+
+			tmp = tmp->next ;
+		}
+	}
+}
