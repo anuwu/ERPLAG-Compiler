@@ -82,6 +82,8 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			break ;											
 
 		case TK_ASSIGNOP :
+			if (node->child->next == NULL)
+				printf ("Unary\n") ;
 			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			fprintf (fp, "\n") ;
@@ -306,9 +308,8 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_PRINT :
 			node = node->next ;
-			searchedVar = searchVar (realBase, lst, node->tok->lexeme) ;
-
-			printGeneration (node, lst, searchedVar, fp) ;
+			//printf ("here\n") ;
+			printGeneration (node, lst, fp) ;
 			break ;
 
 		case TK_GET_VALUE :

@@ -361,37 +361,90 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 	}
 }
 
-void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp)
+void printInteger (FILE *fp)
+{
+	fprintf (fp, "\tMOV RDI, printFormat\n") ;
+	fprintf (fp, "\tMOVSX RSI, AX\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n") ;
+}
+
+void printBoolean (FILE *fp)
+{
+	int start_label, end_label ;
+
+	start_label = get_label () ;
+	end_label = get_label () ;
+
+	fprintf (fp, "\tCMP AX, 01\n") ;
+	fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+	fprintf (fp, "\tMOV RDI, printFalse\n") ;
+	fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+	fprintf (fp, "LABEL%d:\n", start_label) ;
+	fprintf (fp, "\tMOV RDI, printTrue\n") ;
+	fprintf (fp, "LABEL%d:\n", end_label) ;
+
+	fprintf (fp, "\tXOR RSI, RSI\n") ;
+	fprintf (fp, "\tXOR RAX, RAX\n") ;
+	fprintf (fp, "\tCALL printf\n\n") ;
+}
+
+void printArrayIntBool (tokenID baseType, FILE *fp)
+{
+	if (baseType == TK_INTEGER)
+	{
+		fprintf (fp, "\tMOV RDI, printInt\n") ;
+		fprintf (fp, "\tMOVSX RSI, AX\n") ;
+	}
+	else
+	{
+		int start_label, end_label ;
+
+		start_label = get_label () ;
+		end_label = get_label () ;
+
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\n\tCMP AX, 01\n") ;
+		fprintf (fp, "\tJE LABEL%d\n", start_label) ;
+		fprintf (fp, "\tMOV RDI, false\n") ;
+		fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
+
+		fprintf (fp, "LABEL%d:\n", start_label) ;
+		fprintf (fp, "\tMOV RDI, true\n") ;
+		fprintf (fp, "\nLABEL%d:\n", end_label) ;
+	}
+}
+
+void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 {
 	int start_label, end_label ;
 	int reserveLabel[2] ;
 
+	varST *searchedVar ;
+	if (node->id == TK_ID)
+		searchedVar = searchVar (realBase, lst, node->tok->lexeme) ;
+	else
+	{
+		if (node->id == TK_NUM)
+		{
+			fprintf (fp, "\tMOV AX, %s\n", node->tok->lexeme) ;
+			printInteger (fp) ;
+		}
+		else
+		{
+			fprintf (fp, "\tMOV AX, %d\n", node->tok->lexeme[0]=='t'?1:0) ;
+			printBoolean (fp) ;
+		}
+
+		return ;
+	}
+
 	fprintf (fp, "\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
 	if (searchedVar->datatype == TK_INTEGER)
-	{
-		fprintf (fp, "\tMOV RDI, printFormat\n") ;
-		fprintf (fp, "\tMOVSX RSI, AX\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-	}
+		printInteger (fp) ;
 	else if (searchedVar->datatype == TK_BOOLEAN)
-	{
-		start_label = get_label () ;
-		end_label = get_label () ;
-
-		fprintf (fp, "\tCMP AX, 01\n") ;
-		fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-		fprintf (fp, "\tMOV RDI, printFalse\n") ;
-		fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-		fprintf (fp, "LABEL%d:\n", start_label) ;
-		fprintf (fp, "\tMOV RDI, printTrue\n") ;
-		fprintf (fp, "LABEL%d:\n", end_label) ;
-
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n\n") ;
-	}
+		printBoolean (fp) ;
 	else // Array type
 	{	
 		if (isVarStaticArr (searchedVar))
@@ -400,30 +453,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 			{
 				fprintf (fp, "\tMOV AX, [RBP - %d]\n", getStaticOffset(searchedVar,node,2)) ;
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					fprintf (fp, "\tMOV RDI, printFormat\n") ;
-					fprintf (fp, "\tMOVSX RSI, AX\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n") ;
-				}
+					printInteger (fp) ;
 				else
-				{
-					start_label = get_label () ;
-					end_label = get_label () ;
-
-					fprintf (fp, "\tCMP AX, 01\n") ;
-					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, printFalse\n") ;
-					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-					fprintf (fp, "LABEL%d:\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, printTrue\n") ;
-					fprintf (fp, "LABEL%d:\n", end_label) ;
-
-					fprintf (fp, "\tXOR RSI, RSI\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n\n") ;
-				}
+					printBoolean (fp) ;
 			}	
 			else if (node->child != NULL && node->child->id == TK_ID)
 			{
@@ -431,30 +463,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 				fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
 
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					fprintf (fp, "\tMOV RDI, printFormat\n") ;
-					fprintf (fp, "\tMOVSX RSI, AX\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n") ;
-				}
+					printInteger (fp) ;
 				else
-				{
-					start_label = get_label () ;
-					end_label = get_label () ;
-
-					fprintf (fp, "\tCMP AX, 01\n") ;
-					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, printFalse\n") ;
-					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-					fprintf (fp, "LABEL%d:\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, printTrue\n") ;
-					fprintf (fp, "LABEL%d:\n", end_label) ;
-
-					fprintf (fp, "\tXOR RSI, RSI\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n\n") ;
-				}
+					printBoolean (fp) ;
 			}
 			else if (node->child == NULL)
 			{
@@ -477,27 +488,8 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 				fprintf (fp, "\tNEG RBX\n") ;
 
 				fprintf (fp, "\tMOV AX, [RBP + RBX]\n") ;
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					fprintf (fp, "\tMOV RDI, printInt\n") ;
-					fprintf (fp, "\tMOVSX RSI, AX\n") ;
-				}
-				else
-				{
-					start_label = get_label () ;
-					end_label = get_label () ;
-
-					fprintf (fp, "\tXOR RSI, RSI\n") ;
-					fprintf (fp, "\n\tCMP AX, 01\n") ;
-					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, false\n") ;
-					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-					fprintf (fp, "LABEL%d:\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, true\n") ;
-					fprintf (fp, "\nLABEL%d:\n", end_label) ;
-				}
-
+				printArrayIntBool (searchedVar->arrayIndices->type, fp) ;
+				
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
 				fprintf (fp, "\tPUSH RCX\n") ;
 				fprintf (fp, "\tPUSH RBX\n") ;
@@ -523,30 +515,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 				fprintf (fp, "\tMOV AX, [RDI+RBX]\n") ;
 
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					fprintf (fp, "\tMOV RDI, printFormat\n") ;
-					fprintf (fp, "\tMOVSX RSI, AX\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n") ;
-				}
+					printInteger (fp) ;
 				else
-				{
-					start_label = get_label () ;
-					end_label = get_label () ;
-
-					fprintf (fp, "\n\tCMP AX, 01\n") ;
-					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, false\n") ;
-					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-					fprintf (fp, "LABEL%d:\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, true\n") ;
-					fprintf (fp, "\nLABEL%d\n", end_label) ;
-
-					fprintf (fp, "\tXOR RSI, RSI\n") ;
-					fprintf (fp, "\tXOR RAX, RAX\n") ;
-					fprintf (fp, "\tCALL printf\n\n") ;
-				}
+					printBoolean (fp) ;
 			}
 			else 						// Print the whole array
 			{
@@ -562,26 +533,9 @@ void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp
 
 				fprintf (fp, "\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
 				fprintf (fp, "\tMOVSX RBX, CX\n") ;
+
 				fprintf (fp, "\tMOV AX, [RDI + RBX]\n") ;
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					fprintf (fp, "\tMOV RDI, printInt\n") ;
-					fprintf (fp, "\tMOVSX RSI, AX\n") ;
-				}
-				else
-				{
-					start_label = get_label () ;
-					end_label = get_label () ;
-
-					fprintf (fp, "\n\tCMP AX, 01\n") ;
-					fprintf (fp, "\tJE LABEL%d\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, false\n") ;
-					fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
-
-					fprintf (fp, "LABEL%d:\n", start_label) ;
-					fprintf (fp, "\tMOV RDI, true\n") ;
-					fprintf (fp, "\nLABEL%d:\n", end_label) ;
-				}
+				printArrayIntBool (searchedVar->arrayIndices->type, fp) ;
 
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
 				fprintf (fp, "\tPUSH CX\n") ;

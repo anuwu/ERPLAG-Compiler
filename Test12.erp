@@ -1,0 +1,8 @@
+<<<driver program>>>
+start
+	declare i : boolean ;
+	i := false ;
+
+	print (true) ;
+	print (false) ;
+end

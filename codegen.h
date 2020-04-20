@@ -18,7 +18,11 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
 void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp) ;
 
 void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
-void printGeneration (astNode *node, moduleST *lst, varST *searchedVar, FILE *fp) ;
+
+void printInteger (FILE *fp) ;
+void printBoolean (FILE *fp) ;
+void printArrayIntBool (tokenID baseType, FILE *fp) ;
+void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
 
 void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp) ;
 void preamble (FILE *fp) ;

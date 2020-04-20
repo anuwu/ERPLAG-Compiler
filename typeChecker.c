@@ -269,7 +269,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 
 		return ;
 	}
-	else if (assignopASTNode->child->next->child != NULL && assignopASTNode->child->next->child->next == NULL) // <U>
+	else if (assignopASTNode->child->next->child != NULL && assignopASTNode->child->next->child->next == NULL && (assignopASTNode->child->next->id == TK_PLUS || assignopASTNode->child->next->id == TK_MINUS)) // <U>
 		typeRight = getExpressionType (realBase, baseModule, assignopASTNode->child->next->child) ;
 	else	// expression_new
 		typeRight = getExpressionType (realBase, baseModule, assignopASTNode->child->next) ;
@@ -292,7 +292,6 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 
 	if (!typeRight)
 	{
-		//printf ("ERROR : In \"%s\" at line %d, the RHS expression has unknown/badly formed type\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return ;
 	}
