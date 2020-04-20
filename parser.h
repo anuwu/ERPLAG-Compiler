@@ -71,19 +71,11 @@ stacknode * pop(stacknode * stc) ;
 stacknode * pushRule(stacknode * stc,Rule *allRules, int rule_index) ;
 void printSL(stacknode * stc) ;
 void test_tree () ;
-void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
-//void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root) ;
+//void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
+void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
 treeNode* parseTree (char *inFile) ;
 
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-*/
 
 #endif

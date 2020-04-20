@@ -1625,7 +1625,7 @@ void test_tree ()
 }
  
 
-void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index/*, treeNode *root*/)
+void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root)
 {
 	node* ptr = allRules[rule_index].RHS ;
 	treeNode* child ; 
@@ -1650,7 +1650,7 @@ void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index/*, tree
 		}
  
 		child = create_node (tag, tnt) ;
-		//root->no_of_nodes += 1;
+		root->no_of_nodes += 1;
 		add_child (parent, child) ;
 		
 		ptr = ptr->next ;
@@ -1780,7 +1780,7 @@ treeNode* parseTree(char *inFile)
 					// this carries info to be used for ast.c
 					current_node->gcode = rule_index ;
 
-					addRulesParseTree (current_node , allRules, rule_index/* , root*/) ;
+					addRulesParseTree (current_node , allRules, rule_index, root) ;
 					current_node = current_node->child ;
  
 					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)
