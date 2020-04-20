@@ -52,6 +52,7 @@ struct _moduleST {
 	int filledMod ;
 	int declUse ;
 
+	int maxOffset ;
 	int currOffset ;
 	int hasReturns ;
 } ;
@@ -154,5 +155,14 @@ char *typeIDToString (tokenID id) ;
 
 void printModuleVars (moduleST * thisModule ,int level ) ;
 void printVars ( baseST * base) ;
+
+/*
+int varOFFSETandsize ( varST * thisVar ) ;
+int getACTModule ( moduleST * thisModule ) ;
+int getActivationSize ( baseST * base ) ;
+*/
+
+void propagateMaxOffset (baseST *realBase, moduleST *baseModule, int off) ;
+void printACT (baseST *realBase) ;
 
 #endif

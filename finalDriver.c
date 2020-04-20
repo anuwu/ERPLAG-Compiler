@@ -511,6 +511,21 @@ int main(int argc, char *argv[]){
                 setDone(5) ;
                 break ;                
             case 6:     // Deepak
+            	if ( isDone[2] == 0 ) {
+                    PTRoot = parseTree ( argv[1] ) ;
+                }
+                
+                if ( isDone[3] == 0 ) {
+                    ASTRoot = applyASTRule ( PTRoot ) ;
+                }
+
+                realBase = fillSymbolTable(ASTRoot , 0) ;
+
+                printf ("%15s%15s%20s", "Module Name", "", "Activation Record Size\n") ;
+                printf ("---------------------------------------------------\n") ;
+                printACT (realBase) ;
+
+
                 break ;
             case 7:     // Deepak
                 break ;  
@@ -520,8 +535,8 @@ int main(int argc, char *argv[]){
                 if (ASTRoot != NULL)
                     deleteAST (ASTRoot) ;
 
-                    struct timeval t1, t2;
-                    double elapsedTime;
+                struct timeval t1, t2;
+                double elapsedTime;
 
                 /* ---------- put between timer ---------- */
 
@@ -555,7 +570,7 @@ int main(int argc, char *argv[]){
                 if (ASTRoot != NULL)
                     deleteAST (ASTRoot) ;
 
-                printf ("LEVEL 4 : Symbol Table, Type Checking, Semantic Analysis, Static/Dynamic Arrays in Code Generation\n")
+                printf ("LEVEL 4 : Symbol Table, Type Checking, Semantic Analysis, Static/Dynamic Arrays in Code Generation\n") ;
 
                 PTRoot = parseTree (argv[1]) ;
                 if (PTRoot->syntax_error)

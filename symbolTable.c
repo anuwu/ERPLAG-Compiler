@@ -92,6 +92,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = currOffset ;
+	tmp->maxOffset = 0 ;
 	tmp->hasReturns = 0 ;
 	tmp->filledMod = 0 ;
 
@@ -964,6 +965,13 @@ int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *ti
 	return 0 ;
 }
 
+void propagateMaxOffset (baseST *realBase, moduleST *baseModule, int off)
+{
+	if (baseModule->parent == realBase)	
+		baseModule->maxOffset = off ;	
+	else
+		propagateMaxOffset (realBase, baseModule->parent, off) ;
+}
 
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
@@ -1008,6 +1016,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					{
 						tmp->offset = baseModule->currOffset + retSize ;
 						baseModule->currOffset += retSize ;
+
+						propagateMaxOffset (realBase, baseModule, baseModule->currOffset) ;
 					}
 					else	// correct dynamic array, or invalid static/dynamic array
 						tmp->offset = retSize ;
@@ -1537,6 +1547,24 @@ void printVars ( baseST * base)
 			printModuleVars ( tmp->thisModuleST ,1) ;
 
 			tmp = tmp->next ;
+		}
+	}
+}
+
+void printACT (baseST *realBase)
+{
+	int i ;
+	moduleST *mod = realBase->driverST ;
+
+	printf ("%15s%15s%20d\n", "DRIVER", "", mod->maxOffset) ;
+
+	for (int i = 0 ; i < MODULE_BIN_COUNT ; i++)
+	{
+		moduleSTentry *thisEntry = realBase->modules[i] ;
+		while (thisEntry)
+		{
+			printf ("%15s%15s%20d\n", thisEntry->thisModuleST->lexeme, "", thisEntry->thisModuleST->maxOffset) ;
+			thisEntry = thisEntry->next ;
 		}
 	}
 }
