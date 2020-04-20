@@ -217,6 +217,9 @@ token *handleLexError (DFAError err, twinBuffer *twinBuf)
 			break ;
  
 	}
+
+	nextChar (twinBuf) ;
+	resetBeginPointer (twinBuf) ;
  
 	return tk ;
 }
