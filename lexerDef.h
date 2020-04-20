@@ -1,8 +1,13 @@
+/*
+Group #52 -
+Anwesh Bhattacharya (2016B5A70590P)
+Deepak Chahar (2017A7PS0147P)
+Rohan Kela (2016B1A70822P)
+Komal Vasudeva (2017A7PS0103P)
+*/
+
 #ifndef _lexerDef
 #define _lexerDef
-
-
-
 typedef enum _tokenID
 {
 	program, moduleDeclarations, otherModules, moduleDeclaration, IPL, input_plist, ret, moduleDef, module, 

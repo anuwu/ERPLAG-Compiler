@@ -1,35 +1,16 @@
+/*
+Group #52 -
+Anwesh Bhattacharya (2016B5A70590P)
+Deepak Chahar (2017A7PS0147P)
+Rohan Kela (2016B1A70822P)
+Komal Vasudeva (2017A7PS0103P)
+*/
+
+
 #ifndef _parserDef
 #define _parserDef
 #include "lexerDef.h"
 
-/*
-extern typedef enum _tag
-{
-	TERMINAL, NON_TERMINAL
-} nodeTag ;
-
-extern typedef union _TNT {
-	token* term ;
-	tokenID nonTerm ;
-} TNT ;
-
-extern typedef struct treeNode
-{
-	nodeTag tag ;
-	TNT tnt ;
-	struct treeNode *child ;
-	struct treeNode *next ;
-	struct treeNode *parent ;
-} treeNode ;
-
-extern typedef struct _stacknode{
-	int key;
-	struct _stacknode* next;
-} stacknode;
-*/
-
-
-/////////////////////////////////////////////////////////////////////////////////
 
 typedef struct Node{
 	tokenID key ;

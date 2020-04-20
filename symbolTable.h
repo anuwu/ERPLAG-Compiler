@@ -1,3 +1,12 @@
+/*
+Group #52 -
+Anwesh Bhattacharya (2016B5A70590P)
+Deepak Chahar (2017A7PS0147P)
+Rohan Kela (2016B1A70822P)
+Komal Vasudeva (2017A7PS0103P)
+*/
+
+
 #ifndef _SYMBOLTable
 #define _SYMBOLTable
 
@@ -153,14 +162,11 @@ int getSize(baseST * realBase, varST * thisVar) ;
 char *getParentModuleName (baseST* realBase, moduleST *scope) ;
 char *typeIDToString (tokenID id) ;
 
-void printModuleVars (moduleST * thisModule ,int level ) ;
+// Option 5
+void printTHISvar (varST * thisVar , baseST * base , moduleST *thismodule,int level) ;
+void printModuleVars (moduleST * thisModule ,int level , baseST * base) ;
 void printVars ( baseST * base) ;
 
-/*
-int varOFFSETandsize ( varST * thisVar ) ;
-int getACTModule ( moduleST * thisModule ) ;
-int getActivationSize ( baseST * base ) ;
-*/
 
 // Option 6
 void propagateMaxOffset (baseST *realBase, moduleST *baseModule, int off) ;

@@ -1,3 +1,12 @@
+/*
+Group #52 -
+Anwesh Bhattacharya (2016B5A70590P)
+Deepak Chahar (2017A7PS0147P)
+Rohan Kela (2016B1A70822P)
+Komal Vasudeva (2017A7PS0103P)
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -1437,119 +1446,123 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	return base ;
 }
 
-void printModuleVars (moduleST * thisModule ,int level ) 
+
+/*  ----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+*/
+
+
+void printTHISvar (varST * thisVar , baseST * base , moduleST *thismodule,int level) 
 {
-	if ( thisModule ) {
-		
-		varSTentry * vmp ;
-		for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) {
+
+	printf ("%20s%20s",thisVar->lexeme , getParentModuleName(base,thismodule)) ;
+	
+
+	if ( thisVar->datatype == TK_ARRAY ) {
+		if ( isVarStaticArr(thisVar) ) {
+			printf ("%10d",1 + (thisVar->datatype == TK_INTEGER ? 2 : (thisVar->datatype == TK_REAL ? 4 : (thisVar->datatype == TK_BOOLEAN ? 2 : 0 )  )*(1 + atoi(thisVar->arrayIndices->tokRight->lexeme) - atoi(thisVar->arrayIndices->tokLeft->lexeme)))  ) ;
+			printf ("%5s","yes") ;
+			printf ("%20s","static array") ;
+		}
+		else {
+			printf("%10d",1) ;
+			printf ("%5s","yes") ;
+			printf ("%20s","dynamic array") ;
+		}
+		printf("[%d,%d]",atoi(thisVar->arrayIndices->tokLeft->lexeme),atoi(thisVar->arrayIndices->tokRight->lexeme)) ;
+		printf("%10d%10d%10d\n",thisVar->arrayIndices->type,thisVar->offset,level) ;
+	}
+	else {
+		printf ("%10d",thisVar->datatype == TK_INTEGER ? 2 : (thisVar->datatype == TK_REAL ? 4 : (thisVar->datatype == TK_BOOLEAN ? 2 : 1 )  )) ;
+		printf ("%5s","no") ;
+		printf ("%20s","---") ;
+		printf ("%20s","---") ;
+		printf("%10d%10d%10d\n",thisVar->datatype,thisVar->offset,level) ;
+
+	}
+
+}
+
+void printModuleVars (moduleST * thisModule ,int level , baseST * base) 
+{
+	varSTentry * vmp ;
+
+	if (thisModule->parent == base)
+	{
+		for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) 
+		{
 			vmp = thisModule->inputVars[i] ;
 			
 			while ( vmp ) {
-				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
 				
-				if ( vmp->thisVarST->datatype == TK_ARRAY ){
-					;
-				}
-				else if( vmp->thisVarST->datatype == TK_INTEGER ){
-					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_REAL ) {
-					printf("%d\tno\t---\t---\treal\t",4) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
-					printf("%d\tno\t---\t---\tboolean\t",1) ;
-				}
-
-				printf("%d\t",vmp->thisVarST->offset) ;
-				printf("0\n") ;
-				
+				printTHISvar ( vmp->thisVarST , base , thisModule , level ) ;
 
 				vmp = vmp->next ;
 			}
 		}
-		for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) {
+		for ( int i =0 ; i<IO_BIN_COUNT ; i++ )
+		{
 			vmp = thisModule->outputVars[i] ;
 			
 			while ( vmp ) {
-				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
-				
-				if ( vmp->thisVarST->datatype == TK_ARRAY ){
-					;
-				}
-				else if( vmp->thisVarST->datatype == TK_INTEGER ){
-					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_REAL ) {
-					printf("%d\tno\t---\t---\treal\t",4) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
-					printf("%d\tno\t---\t---\tboolean\t",1) ;
-				}
+				printTHISvar ( vmp->thisVarST , base , thisModule , level ) ;
 
-				printf("%d\t",vmp->thisVarST->offset) ;
-				printf("0\n") ;
 				
-
 				vmp = vmp->next ;
 			}
 		}
-		for ( int i =0 ; i<VAR_BIN_COUNT ; i++ ) {
-			vmp = thisModule->localVars[i] ;
-			
-			while ( vmp ) {
-				printf ( "%s\t%s\t||insert scope||\t",vmp->thisVarST->lexeme , vmp->thisVarST->lexeme ) ;	
-				
-				if ( vmp->thisVarST->datatype == TK_ARRAY ){
-					;
-				}
-				else if( vmp->thisVarST->datatype == TK_INTEGER ){
-					printf ("%d\tno\t---\t---\tinteger\t",2 ) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_REAL ) {
-					printf("%d\tno\t---\t---\treal\t",4) ;
-				}
-				else if ( vmp->thisVarST->datatype == TK_BOOLEAN ) {
-					printf("%d\tno\t---\t---\tboolean\t",1) ;
-				}
+	}
 
-				printf("%d\t",vmp->thisVarST->offset) ;
-				printf("%d\n",level) ;
-				
 
-				vmp = vmp->next ;
-			}
+	for ( int i =0 ; i<VAR_BIN_COUNT ; i++ ) 
+	{
+		vmp = thisModule->localVars[i] ;
+		
+		while ( vmp ) {
+			printTHISvar ( vmp->thisVarST , base , thisModule , level ) ;
+
+
+			vmp = vmp->next ;
 		}
+	}
 
-		for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ) {
-			moduleSTentry * mmp = thisModule->scopeVars[i] ;
+	for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ) 
+	{
+		moduleSTentry * mmp = thisModule->scopeVars[i] ;
 
-			while ( mmp ) {
-				printModuleVars ( mmp->thisModuleST , level+1 ) ;
-				mmp = mmp->next ;
-			}
+		while ( mmp ) {
+			printModuleVars ( mmp->thisModuleST , level+1 , base ) ;
+			mmp = mmp->next ;
 		}
-
 	}
 }
 
 void printVars ( baseST * base) 
 {
+	if ( base->semanticError == 0) 
+		printModuleVars ( base->driverST , 1 , base) ;
 	
-	if ( base->semanticError == 0) {
-		printModuleVars ( base->driverST , 1 ) ;
-	}
-	
-	for ( int i = 0 ; i<MODULE_BIN_COUNT ; i++ ) {
+	for ( int i = 0 ; i<MODULE_BIN_COUNT ; i++ ) 
+	{
 		moduleSTentry * tmp = base->modules[i] ;
 
-		while ( tmp ) {
-			printModuleVars ( tmp->thisModuleST ,1) ;
-
+		while ( tmp ) 
+		{
+			printModuleVars ( tmp->thisModuleST ,1 , base) ;
 			tmp = tmp->next ;
 		}
 	}
 }
+
+
+/*  ----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+*/
+
 
 void printACT (baseST *realBase)
 {
@@ -1585,7 +1598,13 @@ void printThisArr (varST * thisVar , baseST * base ,moduleST * thisModule)
 	}
 }
 
- 
+
+/*  ----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------
+*/
+
 
 void printModuleArrs(moduleST * thisModule , baseST * base ) 
 {

@@ -1,3 +1,12 @@
+/*
+Group #52 -
+Anwesh Bhattacharya (2016B5A70590P)
+Deepak Chahar (2017A7PS0147P)
+Rohan Kela (2016B1A70822P)
+Komal Vasudeva (2017A7PS0103P)
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -428,7 +437,7 @@ int main(int argc, char *argv[]){
 
     char chosen ;    
     do {
-        printf ( "Enter Option for :\n\t0 : Exit ( enjoy your next 24 hours )\n\t1 : Lexer - Print Token List\n\t2 : Parser - Printing in INORDER TRAVERSAL\n\t3 : AST - Print Abstrat Syntax Tree (Reverse Post-Order)\n\t4 : Memory\n\t5 : Symbol Table - Prints the symbol Table\n\t6 : Activation Record Size\n\t7 : Static and dynamic arrays\n\t8 : Errors reporting and total compiling time\n\t9 : Code generation\n") ;    
+        printf ( "Enter Option for :\n\t0 : Exit\n\t1 : Lexer - Print Token List\n\t2 : Parser - Printing in INORDER TRAVERSAL\n\t3 : AST - Print Abstrat Syntax Tree (Reverse Post-Order)\n\t4 : Memory\n\t5 : Symbol Table - Prints the symbol Table\n\t6 : Activation Record Size\n\t7 : Static and dynamic arrays\n\t8 : Errors reporting and total compiling time\n\t9 : Code generation\n") ;    
         chosen = getchar() ;
         getchar() ;
         printf ("We got option : %c \n", chosen) ;
@@ -600,7 +609,7 @@ int main(int argc, char *argv[]){
                         FILE *fp = fopen (argv[2], "w") ;
                         preamble (fp) ;
                         codeGeneration (ASTRoot, fp) ;
-
+                        printf ("Compilation done. Assembly code available in %s\n", argv[2]) ;
                         fclose (fp) ;
                     }
                 }
