@@ -162,7 +162,13 @@ int getACTModule ( moduleST * thisModule ) ;
 int getActivationSize ( baseST * base ) ;
 */
 
+// Option 6
 void propagateMaxOffset (baseST *realBase, moduleST *baseModule, int off) ;
 void printACT (baseST *realBase) ;
+
+// Option 7
+void printModuleArrs(moduleST * thisModule , baseST * base) ;
+void printArrVar (baseST * base) ;
+void printThisArr (varST * thisVar , baseST * base ,moduleST * thisModule) ;
 
 #endif

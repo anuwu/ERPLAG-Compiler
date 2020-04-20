@@ -1568,3 +1568,86 @@ void printACT (baseST *realBase)
 		}
 	}
 }
+
+void printThisArr (varST * thisVar , baseST * base ,moduleST * thisModule) 
+{
+
+	if (thisVar->datatype == TK_ARRAY)
+	{
+	    if ( isVarStaticArr ( thisVar ) ) 
+	    {
+	        printf("%20s%20s%20s[%5d,%5d]%s\n",getParentModuleName(base , thisModule) , thisVar->lexeme ,"static array" ,atoi(thisVar->arrayIndices->tokLeft->lexeme),atoi(thisVar->arrayIndices->tokRight->lexeme) , typeIDToString (thisVar->arrayIndices->type)  ) ;
+	    }
+	    else 
+	    {
+	        printf("%20s%20s%20s[%s,%s]%s\n",getParentModuleName(base , thisModule) , thisVar->lexeme ,"dynamic array" ,(thisVar->arrayIndices->tokLeft->lexeme),(thisVar->arrayIndices->tokRight->lexeme) , typeIDToString (thisVar->arrayIndices->type)  ) ;
+	    }
+	}
+}
+
+ 
+
+void printModuleArrs(moduleST * thisModule , baseST * base ) 
+{
+	varSTentry * vmp ;
+
+	if (thisModule->parent)
+	{
+        for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) 
+        {
+            vmp = thisModule->inputVars[i] ;
+            while ( vmp ) {
+                if ( vmp->thisVarST->datatype == TK_ARRAY )
+                    printThisArr ( vmp->thisVarST , base , thisModule ) ;
+                vmp = vmp->next ;
+            }
+        }
+
+        for ( int i =0 ; i<IO_BIN_COUNT ; i++ ) 
+        {
+            vmp = thisModule->outputVars[i] ;
+            while ( vmp ) {
+                if ( vmp->thisVarST->datatype == TK_ARRAY )
+                    printThisArr ( vmp->thisVarST , base , thisModule ) ;
+                vmp = vmp->next ;
+            }
+        }
+	}
+
+    for ( int i =0 ; i<VAR_BIN_COUNT ; i++ ) 
+    {
+        vmp = thisModule->localVars[i] ;
+        while ( vmp ) {
+            if ( vmp->thisVarST->datatype == TK_ARRAY )
+
+                printThisArr ( vmp->thisVarST , base , thisModule ) ;
+            vmp = vmp->next ;
+        }
+    }
+
+    for ( int i=0 ; i<MODULE_BIN_COUNT ; i++ ) 
+    {
+        moduleSTentry * mmp = thisModule->scopeVars[i] ;
+        while ( mmp ) {
+            printModuleArrs ( mmp->thisModuleST, base ) ;
+            mmp = mmp->next ;
+        }
+    }
+
+}
+
+
+void printArrVar ( baseST * base )  
+{
+    if ( base->semanticError == 0) 
+        printModuleArrs ( base->driverST , base ) ;
+
+    for ( int i = 0 ; i<MODULE_BIN_COUNT ; i++ ) 
+    {
+        moduleSTentry * tmp = base->modules[i] ;
+        while ( tmp ) {
+            printModuleArrs ( tmp->thisModuleST , base ) ;
+            tmp = tmp->next ;
+        }
+    }
+}

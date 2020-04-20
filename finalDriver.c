@@ -521,13 +521,26 @@ int main(int argc, char *argv[]){
 
                 realBase = fillSymbolTable(ASTRoot , 0) ;
 
-                printf ("%15s%15s%20s", "Module Name", "", "Activation Record Size\n") ;
+                printf ("%15s%15s%20s", "Module Name", "", "Activation Record Size\n") ;	
                 printf ("---------------------------------------------------\n") ;
                 printACT (realBase) ;
 
 
                 break ;
             case 7:     // Deepak
+            	if ( isDone[2] == 0 ) {
+                    PTRoot = parseTree ( argv[1] ) ;
+                }
+                
+                if ( isDone[3] == 0 ) {
+                    ASTRoot = applyASTRule ( PTRoot ) ;
+                }
+
+                realBase = fillSymbolTable(ASTRoot , 0) ;
+
+                printf ("\n") ;
+            	printArrVar (realBase) ;
+
                 break ;  
             case 8:
                 if (PTRoot != NULL)
