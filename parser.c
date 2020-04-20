@@ -1425,6 +1425,8 @@ treeNode* create_root ()
 	node->syn = NULL ;
 	node->inh = NULL ;
 
+	node->syntax_error=0;
+
 	return node ;
 }
  
@@ -1445,6 +1447,7 @@ treeNode* create_node (nodeTag tag, TNT tnt)
 	node->next = NULL ;
 	node->parent = NULL ;
 
+	node->syntax_error = 0 ;
 
 	node->gcode = -5 ; // default value ( should be replaced )
 	node->syn = NULL ;
@@ -1622,7 +1625,7 @@ void test_tree ()
 }
  
 
-void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index)
+void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index/*, treeNode *root*/)
 {
 	node* ptr = allRules[rule_index].RHS ;
 	treeNode* child ; 
@@ -1647,6 +1650,7 @@ void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index)
 		}
  
 		child = create_node (tag, tnt) ;
+		//root->no_of_nodes += 1;
 		add_child (parent, child) ;
 		
 		ptr = ptr->next ;
@@ -1655,7 +1659,8 @@ void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index)
  
  
  
-treeNode * nextTreeNode(treeNode* current_node){
+treeNode * nextTreeNode(treeNode* current_node)
+{
  
  
 	if(current_node->tag == TERMINAL)
@@ -1690,10 +1695,12 @@ treeNode* parseTree(char *inFile)
  	int rule_index , while_count = 1 ;
 	twinBuffer *twinBuf = lexer_init (inFile) ;
 	token* tk ;
- 
+
 	stacknode* stack = initStack () ;
 	stack = push (stack, program) ;
 	treeNode *root = create_root () ;
+
+	root->no_of_nodes=1;
  
  	treeNode* current_node ;
 	current_node = root ;
@@ -1773,7 +1780,7 @@ treeNode* parseTree(char *inFile)
 					// this carries info to be used for ast.c
 					current_node->gcode = rule_index ;
 
-					addRulesParseTree (current_node , allRules, rule_index) ;
+					addRulesParseTree (current_node , allRules, rule_index/* , root*/) ;
 					current_node = current_node->child ;
  
 					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)

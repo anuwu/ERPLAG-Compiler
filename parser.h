@@ -24,7 +24,8 @@ typedef struct treeNode
 	astNode *syn, *inh ;
 	int gcode ; // which rule was used 
 
-	// astNode *anode, *inh; 
+	int no_of_nodes;
+	int syntax_error;
 
 	struct treeNode *child ;
 	struct treeNode *next ;
@@ -71,6 +72,7 @@ stacknode * pushRule(stacknode * stc,Rule *allRules, int rule_index) ;
 void printSL(stacknode * stc) ;
 void test_tree () ;
 void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
+//void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index, treeNode *root) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
 treeNode* parseTree (char *inFile) ;
