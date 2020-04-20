@@ -1739,7 +1739,8 @@ treeNode* parseTree(char *inFile)
 		if(tk->id == TK_LEXERROR)
 		{
 			root->syntax_error=1;
-			printf("LEXICAL ERROR DETECTED AT %d\n",tk->lineNumber);
+			printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+			//printf("LEXICAL ERROR DETECTED AT LINE%d\n",tk->lineNumber);
 		}
 		
 		if(stack!=NULL && stack->key<0)
@@ -1780,7 +1781,8 @@ treeNode* parseTree(char *inFile)
 				tk = getNextToken (twinBuf) ;
 				if(tk->id == TK_LEXERROR)
 				{
-					printf("LEXICAL ERROR DETECTED AT LINE %d\n",tk->lineNumber);
+					printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+					//printf("LEXICAL ERROR DETECTED AT LINE %d\n",tk->lineNumber);
 					root->syntax_error=1;
 				}
 			}
@@ -1876,7 +1878,8 @@ treeNode* parseTree(char *inFile)
 								if(tk->id == TK_LEXERROR)
 								{
 									root->syntax_error=1;
-									printf("LEXICAL ERROR DETECTED AT LINE %d\n",tk->lineNumber);
+									printf ("%s\n", tk->lexeme) ;
+									printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
 								}
 								break;
 							}

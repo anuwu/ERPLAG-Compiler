@@ -453,9 +453,14 @@ int main(int argc, char *argv[]){
                 init_parser() ;
                 PTRoot = parseTree ( argv[1] ) ;
 
-                printf ("%20s%20s%20s%20s%20s%20s%20s\n", "Lexeme", "Line Number", "Token", "Value", "Parent Symbol", "isLeaf", "Node Symbol") ;
-                printf ("----------------------------------------------------------------------------------------------------------------------------------------------------------\n") ;
-                inorderTraversalonConsole(PTRoot) ;
+                if (PTRoot->syntax_error == 0)
+                {
+                    printf ("%20s%20s%20s%20s%20s%20s%20s\n", "Lexeme", "Line Number", "Token", "Value", "Parent Symbol", "isLeaf", "Node Symbol") ;
+                    printf ("----------------------------------------------------------------------------------------------------------------------------------------------------------\n") ;
+                    inorderTraversalonConsole(PTRoot) ;
+                }
+                else
+                    printf ("Please rectify the above lexical/syntax errors\n") ;
                 
                 setDone(2) ;
                 break ;
