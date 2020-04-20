@@ -1,0 +1,74 @@
+<<<driver program>>>
+start
+	declare i : boolean ;
+	get_value (i) ;
+
+	switch (i)
+	start
+		case true :
+			declare j1, j2 : integer ; 
+			get_value (j1) ;
+			get_value (j2) ;
+			print (j1) ;
+			print (j2) ;
+			break ;
+		case false :
+			get_value (j1) ;
+			j2 := 9 ;
+			declare C1, C2 : array [j1 .. j2] of integer ;
+			get_value (C1) ;
+
+			
+			while (j1 <= j2)
+			start
+				declare i : integer ;
+				get_value (i);
+
+				C2[j1] := C1[j1]*i ;
+
+				j1 := j1 + 1 ;
+			end
+
+			print (C2) ;
+			break ;
+	end
+
+	declare B:array[0..9] of boolean ;
+	get_value (B) ;
+	print (B) ;
+
+	declare K,K1,K2:boolean ;
+	declare index, lim1, lim2 : integer ;
+	lim1 := 0 ;
+	lim2 := 10 ;
+
+	for (index in 0 .. 9)
+	start
+		K := B[index] ;
+		switch (K)
+		start
+			case true:
+				lim1 := lim1 + 1 ;
+				break ;
+			case false :
+				break ;
+		end
+	end
+
+	declare C1,C2 : array [lim1 .. lim2] of boolean ;
+	get_value (C1) ;
+	get_value (C2) ;
+
+	index := lim1 ;
+	while (index <= lim2)
+	start
+		K1 := C1[index] AND C2[index] ;
+		K2 := C1[index] OR C2[index] ;
+		C1[index] := K1 ;
+		C2[index] := K2 ;
+		index := index + 1;
+	end
+
+	print (C1) ;
+	print (C2) ;
+end

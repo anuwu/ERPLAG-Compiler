@@ -1,0 +1,20 @@
+<<<driver program>>>
+start
+	declare i,j:integer ;
+	get_value (i) ;
+	get_value (j) ;	
+
+	declare A:array [i .. j] of integer ;
+	declare B:array [i .. j] of integer ;
+
+	get_value (A) ;
+
+	while (i <= j)
+	start
+		B[i] := 2*A[i] ;
+		i := i + 1 ;
+	end
+
+	print (A) ;
+	print (B) ;
+end

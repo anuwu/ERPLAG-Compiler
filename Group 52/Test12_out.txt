@@ -1,0 +1,41 @@
+	SUB RSP, 2			;Updating RSP
+
+	SUB RSP, 44			;Updating RSP
+
+	MOV BX,00000000H
+	PUSH BX
+	POP AX
+	MOV [rbp - 2],AX		;Store
+
+	MOV AX, 1
+	CMP AX, 01
+	JE LABEL1
+	MOV RDI, printFalse
+	JMP LABEL2
+LABEL1:
+	MOV RDI, printTrue
+LABEL2:
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
+
+	MOV AX, 0
+	CMP AX, 01
+	JE LABEL3
+	MOV RDI, printFalse
+	JMP LABEL4
+LABEL3:
+	MOV RDI, printTrue
+LABEL4:
+	XOR RSI, RSI
+	XOR RAX, RAX
+	CALL printf
+
+
+	MOV RSP, RBP
+	POP RBP
+	POP RBP
+	ret
+
+	ret
+t

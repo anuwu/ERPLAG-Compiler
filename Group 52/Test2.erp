@@ -1,0 +1,36 @@
+declare module test ;
+
+
+<<module test>>
+takes input [a:integer, b:array[5..8] of boolean, c:real] ;
+returns [z:real, y:boolean, x:integer] ;
+start
+	declare k, i : integer ;
+	for (k in 0 .. 4)
+	start
+		declare z,k,i: real ;
+		for (i in 2 .. 5)
+		start
+			declare k:array[6 .. 8] of real ;
+			declare x : real ;
+		end
+
+		declare f :boolean ;
+	end
+
+	declare x : real ;
+	declare k,i : real ;
+
+	declare hello:boolean ;
+end
+
+<<<driver program>>>
+start
+	declare aF, xOut : integer ;
+	declare bF : array [5..8] of boolean ;
+
+	declare zOut : real ;
+	declare yOut : boolean ;
+
+	[xOut, yOut, zOut] := use module test with parameters aF, bF ;
+end
