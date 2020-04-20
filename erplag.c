@@ -45,14 +45,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			break ;
 
 		case TK_DECLARE :
-			/*
-			if (lst->tableType == SWITCH_ST && node->parent == node)
-			{
-				node->parent = node->next->parent ;
-				break ;
-			}
-			*/
-
 			;
 			int switchPass = 0 ;
 			if (lst->tableType != SWITCH_ST)
@@ -321,7 +313,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_GET_VALUE :
 			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-
 			getValueGeneration (lst, searchedVar, rspDepth, fp) ;
 			break ;
 
