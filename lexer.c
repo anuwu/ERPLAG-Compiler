@@ -215,8 +215,10 @@ token *handleLexError (DFAError err, twinBuffer *twinBuf)
 			tk->lexeme = (char *) malloc (sizeof(char) * (strlen("Digit or +/- expected in real number") + 1)) ;
 			strcpy (tk->lexeme, "Digit or +/- expected in real number") ;
 			break ;
- 
 	}
+
+	nextChar (twinBuf) ;
+	resetBeginPointer (twinBuf) ;
  
 	return tk ;
 }
