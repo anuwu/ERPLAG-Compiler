@@ -1,3 +1,10 @@
+<<module mod>>
+takes input [a:integer, A:array[low..2] of integer] ;
+returns [c:boolean] ;
+start
+
+end
+
 <<<driver program>>>
 start
 	declare i : boolean ;

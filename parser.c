@@ -657,57 +657,6 @@ void fillUtilityArray ()
 	strcpy(utility_array[TK_RNUM],"TK_RNUM");
 }
 
-
-void recur(node* root){
-	if(root){
-	printf(" %d",root->key);
-	recur(root->next);
-	}
-}
-
-void printrule(){
-	for(int i=0 ; i<rule_count ; i++){
-		printf("%d",rule[i].LHS);
-		recur(rule[i].RHS);
-		printf("\n");
-	}
-}
-
-void printfirst(){
-	for(int i=0; i<SIZE ; i++){
-		if(isTerminal(i)){
-			printf("%d : %d\n",i,i);
-		}
-		else if(isNonTerminal(i)){
-			node* tmp = firsts[i];
-			//printf("%d :",i);
-			 printf("%s :",utility_array[i]);
-			while(tmp != NULL){
-				//printf(" %d",tmp->key);
-				 printf(" %s",utility_array[tmp->key]);
-				tmp = tmp->next;
-			}
-			printf("\n");
-		}
-	}
-}
-
-void printfollow(){
-	for(int i=0; i<SIZE ; i++){
-		if(isNonTerminal(i)){
-			node* tmp = follows[i];
-			//printf("%d :",i);
-			printf("%s :",utility_array[i]);
-			while(tmp != NULL){
-				printf(" %s",utility_array[tmp->key]);
-				//printf(" %d",tmp->key);
-				tmp = tmp->next;
-			}
-			printf("\n");
-		}
-	}
-}
-
 void traverse_grammar()
 {
 	for(int i=0;i<150;i++)
@@ -717,7 +666,6 @@ void traverse_grammar()
 			parsetable[i][j]=-1;
 		}
 	}	
-
 
 	for(int i=0;i<rule_count;i++)
 	{
@@ -775,173 +723,9 @@ void traverse_grammar()
 	}	
 }
 
-void print_parse_table()
+
+void addUniquely(tokenID target, tokenID insert_it)
 {
-	FILE* ptr=fopen("parsetable.txt","w");
-
-	for(int i=0;i<150;i++)
-	{
-		for(int j=0;j<150;j++)
-		{
-			fprintf(ptr,"%d ",parsetable[i][j]);
-		}
-		fprintf(ptr,"\n");
-	}
-	fclose(ptr);
-	//printf("%d %d %d %d %d %d %d %d %d %d %d\n",parsetable[statements][TK_GET_VALUE],parsetable[statements][TK_PRINT],parsetable[statements][TK_ID],parsetable[statements][TK_USE],parsetable[statements][TK_SQBO],parsetable[statements][TK_SWITCH],parsetable[statements][TK_DECLARE],parsetable[statements][TK_FOR],parsetable[statements][TK_WHILE],parsetable[statements][TK_BREAK],parsetable[statements][TK_END]);
-	for(int i=0;i<150;i++)
-		printf(" %d",parsetable[declareStmt][i]);
-	printf("\n%d",declareStmt);
-}
-
-void testManualFF()
-	{
-	// GRAMMAR ///////////////////////////////////////////////////////////////////////////////////////////////////////
-	for(int i=0;i<SIZE;i++)
-	{
-		heads[i].ind=-1;
-		heads[i].next=NULL;
-	}
-	// initializtions
-	
-
-	rule_count =0;
-
-	// file handling
-	FILE* file_pointer=fopen("grammar.txt","r");
-	
-
-	int st=0; // 3 states 0-LHS 1-RHS_head 2-rests
-	char tempstr[TNTLENGTH];
-	node* tmp;
-	
-	while( fscanf(file_pointer,"%[^\n\r ])",tempstr) != EOF)
-	{
-		if(st==0){
-			rule[rule_count].LHS = grammarStringToTokenID(tempstr);
-			populate_hash(rule_count,grammarStringToTokenID(tempstr));
-			st++;
-		}
-		else if(st==1){
-			rule[rule_count].RHS = initnode(grammarStringToTokenID(tempstr));
-			tmp = rule[rule_count].RHS;
-			st++;
-		}
-		else if(st!=-1){
-			tmp->next = initnode(grammarStringToTokenID(tempstr));
-			tmp = tmp->next;
-		}
-
-		char ch;
-		ch=fgetc(file_pointer);
-		if(ch=='\r') st=-1;
-		else if(ch=='\n'){
-			rule_count++;
-			st=0;
-		}
-	}
-	rule_count++;
-	fclose(file_pointer);
-
-	// FIRST ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//initialization
-	
-
-	//FIRST file handling
-	file_pointer = fopen("first.txt","r");
-	// if(file_pointer==NULL){
-	// 	printf("Error opening file\n");
-	// 	exit(0);
-	// }
-	// else{
-	// 	printf("Opened first.txt\n");
-	// }
-
-	int indexy;
-	st=0;
-	for(int i=0 ; i<SIZE ; i++){
-		if(isTerminal(i)){
-			firsts[i] = initnode(i);
-		}
-	}
-	while(fscanf(file_pointer,"%[^\n\r ]",tempstr) != EOF){
-		if(st==0){
-			indexy = grammarStringToTokenID(tempstr);
-			st++;
-		}
-		else if(st==1){
-			firsts[indexy] = initnode(grammarStringToTokenID(tempstr));
-			tmp = firsts[indexy];
-			st++;
-		}
-		else if(st!=-1){
-			tmp->next = initnode(grammarStringToTokenID(tempstr));
-			tmp = tmp->next;
-		}
-
-		char ch;
-		ch = fgetc(file_pointer);
-		if(ch=='\r') st=-1;
-		else if(ch=='\n'){
-			st=0;
-		}
-	}
-
-
-	fclose(file_pointer);
-
-	// FOLLOW /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	st=0;
-	file_pointer = fopen("follow.txt","r");
-	while(fscanf(file_pointer,"%[^\r\n ]",tempstr) != EOF){
-		if(st==0){
-			indexy = grammarStringToTokenID(tempstr);
-			st++;
-		}
-		else if(st==1){
-			follows[indexy] = initnode(grammarStringToTokenID(tempstr));
-			tmp = follows[indexy];
-			st++;
-		}
-		else if(st!=-1){
-			tmp->next = initnode(grammarStringToTokenID(tempstr));
-			tmp = tmp->next;
-		}
-		char ch;
-		ch = fgetc(file_pointer);
-		if(ch=='\r')
-		   st=-1;
-		if(ch=='\n')
-		{
-			st=0;
-		}
-	}
-
-	fclose(file_pointer);
-
-
-	//printf(" %d",ret);
-	 // printrule();
-	 // endl;
-	 //printfirst();
-	 //endl;
-	  printfollow();
-	  endl;
-	 // location* tmpe=&heads[65];
-	 // printf(" %d",tmpe->ind);
-	 // tmpe=tmpe->next;
-	 // if(tmpe!=NULL)
-	 // {
-	 // 	printf(" %d",tmpe->ind);
-	 // }
-
-	 // printf(" %d",rule[10].LHS);
-	//traverse_grammar();
-	//print_parse_table();
-}
-
-void addUniquely(tokenID target, tokenID insert_it){
 	//Target linked list should never be empty
 	node * tmp_target = firsts[target];
 
@@ -1035,23 +819,6 @@ int containsEpsilon(tokenID id)
 	return 0;
 }
 
-void printFirstList (tokenID id)
-{
-	node* tmp = firsts[id] ;
-
-	if (tmp == NULL)
-		printf ("Empty list\n") ;
-	else
-	{
-		printf ("Not empty list\n") ;
-		while (tmp != NULL)
-		{
-			printf ("%d, ", tmp->key) ;
-			tmp = tmp->next ;
-		}
-		
-	}
-}
 
 void populateFirst (tokenID id)
 {
@@ -1063,8 +830,6 @@ void populateFirst (tokenID id)
 	Rule r ;
 	int rule_index ;
 	ruleLoc = &heads[id] ;
-
-	//printf ("Testing %d\n", id) ;
 
 	while (ruleLoc != NULL)
 	{		
@@ -1115,23 +880,17 @@ void populateFollow (tokenID id)
 
 	for (rule_index = 0 ; rule_index < rule_count ; rule_index++)
 	{
-		// for completely travesing rules
 
 		tokenID current_rule_lhs = rule[rule_index].LHS;
 		node * tmp_of_rhs_of_current_rule = rule[rule_index].RHS;
 
-		while(tmp_of_rhs_of_current_rule != NULL){		
-			if(tmp_of_rhs_of_current_rule->key == id){ // if my key is id
+		while(tmp_of_rhs_of_current_rule != NULL)
+		{		
+			if(tmp_of_rhs_of_current_rule->key == id)
+			{ // if my key is id
 
-				//printf ("%d : ", id) ;
-				//printf ("%d -> ", current_rule_lhs) ;
-				//recur (rule[rule_index].RHS) ;
-				//printf ("\n") ;
-
-				if(tmp_of_rhs_of_current_rule->next == NULL){ // i am last element of this rule
-					// printf ("\tnextNull %d -> ", current_rule_lhs) ;
-					// recur (rule[rule_index].RHS) ;
-					// printf ("\n") ;
+				if(tmp_of_rhs_of_current_rule->next == NULL)
+				{ // i am last element of this rule
 
 					if(follows[current_rule_lhs] == NULL)
 						populateFollow(current_rule_lhs);
@@ -1139,53 +898,35 @@ void populateFollow (tokenID id)
 					if (id != current_rule_lhs)
 						unionFollow (id, current_rule_lhs) ;
 				}
-				else{
-					// printf ("\tnextNotNull %d -> ", current_rule_lhs) ;
-					// recur (rule[rule_index].RHS) ;
-					// printf ("\n") ;
+				else
+				{
 
-					if(containsEpsilon(tmp_of_rhs_of_current_rule->next->key)){ // next can go to null firsts[next] contains eps
-						
-						
-						
+					if(containsEpsilon(tmp_of_rhs_of_current_rule->next->key))
+					{ // next can go to null firsts[next] contains eps
+		
 						node * tmp = tmp_of_rhs_of_current_rule->next;
-						// printf ("\t") ;
-						while(tmp!=NULL && containsEpsilon(tmp->key)){
-							// printf ("%d\n", tmp->key) ;
-							// printf ("\t\tDebugUFF:") ;
+						while(tmp!=NULL && containsEpsilon(tmp->key))
+						{
 							UnionFollowFirst(id,tmp->key);
-							// printf ("\t\t") ;
-							// printFollowSet (id) ;
 							tmp = tmp->next;
 						}
 						// while can exit either tmp == NULL
-						if(tmp == NULL){
-							// printf ("\tGoes to end\n") ;
+						if(tmp == NULL)
+						{
 							if(follows[current_rule_lhs] == NULL)
 								populateFollow(current_rule_lhs);
 
 							unionFollow(id,current_rule_lhs);
-							// printf ("\t\t") ;
-							// printFollowSet (id) ;
 						}
-						else{
-							//printf ("\tStops at %d\n" , tmp->key) ;
-							// tmp->key cannot go to epsilon
+						else
 							UnionFollowFirst(id,tmp->key);
-							// printf ("\t\t") ;
-							// printFollowSet (id) ;
-						}
+
 					}
-					else{
-						//printf ("\talsoNotEps %d\n", tmp_of_rhs_of_current_rule->next->key) ;
-						// next cannot go to eps
+					else
 						UnionFollowFirst(id,tmp_of_rhs_of_current_rule->next->key);
-						// printf ("\t\t") ;
-						// printFollowSet (id) ;
-					}
+					
 				}
 			}
-
 			tmp_of_rhs_of_current_rule = tmp_of_rhs_of_current_rule->next;
 		}
 	}
@@ -1201,7 +942,6 @@ void UnionFollowFirst (tokenID target, tokenID source)
 
 	// when target was initially empty
 	if(tmp_target == NULL){
-		//printf ("Initially empty\n") ;
 		follows[target] = initnode(sourceLL->key);
 
 		node * tmp = follows[target] ;
@@ -1217,7 +957,6 @@ void UnionFollowFirst (tokenID target, tokenID source)
 		}
 	}
 	else {
-		//printf ("Initially not empty\n") ;
 		// when target is initially not empty
 		while(sourceLL!=NULL){
 			tokenID need_to_insert = sourceLL->key;	
@@ -1417,6 +1156,7 @@ treeNode* create_root ()
 	node->tag = NON_TERMINAL ;
 	node->tnt.nonTerm = program ;
  
+ 	node->syntax_error = 0 ;
 	node->child = NULL ;
 	node->next = NULL ;
 	node->parent = NULL ;
@@ -1431,14 +1171,8 @@ treeNode* create_root ()
 treeNode* create_node (nodeTag tag, TNT tnt)
 {
 	treeNode *node = (treeNode *) malloc (sizeof(treeNode)) ;
- 
 
 	node->tag = tag ;
-
-	// if (tag == NON_TERMINAL)
-	// 	node->tag = NON_TERMINAL ;
-	// else if (tag == TERMINAL)
-	// 	node->tag = TERMINAL ;
  
 	node->tnt = tnt ;
 	node->child = NULL ;
@@ -1543,9 +1277,7 @@ stacknode * pushRule(stacknode * stc,Rule *allRules, int rule_index){
 	while(tmp!=NULL){ //pushing b then c
 		tmp_stack = push(tmp_stack,tmp->key);
 		tmp = tmp->next;
-	}
-	// tmp_stack->c->b->a->NULL
- 
+	} 
  
 	while(tmp_stack){
 		stc = push(stc,tmp_stack->key);
@@ -1565,63 +1297,6 @@ void printSL(stacknode * stc){
 	endl;
 }
  
- 
- 
-void test_tree ()
-{
-	treeNode *root, *node ;
- 
-	nodeTag tag = NON_TERMINAL ;
-	TNT t ;
- 
-	root = create_root () ; // gcode is -1
-	printf ("%d %d\n" , root->tag, root->tnt.nonTerm) ;
- 
-	////////////////////////////////////////
- 
-	tag = TERMINAL ;
-	t.term = (token *) malloc (sizeof(token)) ;
-	t.term->id = TK_ID ;
-	t.term->lexeme = (char *) malloc (sizeof(strlen("ruby") + 1)) ;
-	strcpy (t.term->lexeme , "ruby") ;
-	t.term->lineNumber = 44 ;
- 
-	node = create_node (tag, t) ;
-	add_child (root, node) ;
- 
-	printf ("%d %d %s %d\n", node->tag, node->tnt.term->id, node->tnt.term->lexeme, node->tnt.term->lineNumber) ;
-	printf ("%d %d %s %d\n", root->child->tag, root->child->tnt.term->id, root->child->tnt.term->lexeme, root->child->tnt.term->lineNumber) ;
- 
-	//////////////////////////////////////////
- 
-	tag = TERMINAL ;
-	t.term = (token *) malloc (sizeof(token)) ;
-	t.term->id = TK_RNUM ;
-	t.term->lexeme = (char *) malloc (sizeof(strlen("3.14159") + 1)) ;
-	strcpy (t.term->lexeme , "3.14159") ;
-	t.term->lineNumber = 314 ;
- 
-	node = create_node (tag, t) ;
-	add_child (root, node) ;
- 
-	/////////////////////////////////////////
- 
-	tag = TERMINAL ;
-	t.term = (token *) malloc (sizeof(token)) ;
-	t.term->id = TK_SQBO ;
-	t.term->lexeme = (char *) malloc (sizeof(strlen("[") + 1)) ;
-	strcpy (t.term->lexeme , "[") ;
-	t.term->lineNumber = 100 ;
- 
-	node = create_node (tag, t) ;
-	add_child (root, node) ;
- 
-	//////////////////////////////////////////
- 
-	print_siblings (root->child) ;
-}
- 
-
 void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index)
 {
 	node* ptr = allRules[rule_index].RHS ;
@@ -1684,9 +1359,8 @@ treeNode * nextTreeNode(treeNode* current_node){
 treeNode* parseTree(char *inFile)
 {
 	fillUtilityArray();
-	//printf ("Filled utility_array\n") ;
 	init_parser () ;
-	//FILE* ptr=fopen(outFile,"w");
+
  	int rule_index , while_count = 1 ;
 	twinBuffer *twinBuf = lexer_init (inFile) ;
 	token* tk ;
@@ -1694,18 +1368,26 @@ treeNode* parseTree(char *inFile)
 	stacknode* stack = initStack () ;
 	stack = push (stack, program) ;
 	treeNode *root = create_root () ;
- 
  	treeNode* current_node ;
 	current_node = root ;
-	tk = getNextToken (twinBuf) ;int flag=0;
+
+	tk = getNextToken (twinBuf) ;
+	int flag=0;
 	int current=-1;
+
 	while (1)
 	{		
-
+		if(tk->id == TK_LEXERROR)
+		{
+			root->syntax_error=1;
+			printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+		}
+		
 		if(stack!=NULL && stack->key<0)
 		{
 			flag=1;
-			//fprintf("Invalid symbol on stack\n");
+			root->syntax_error=1;
+			printf("PARSING ERROR : Invalid symbol on stack\n");
 			break;
 		}
 
@@ -1713,13 +1395,12 @@ treeNode* parseTree(char *inFile)
 		{
 			if(stack!= NULL && stack->key==TK_EOF)
 			{
-				//printf(" FUCK NICE\n");
 				break;
 			}
 			
 				if(stack==NULL)
 				{
-					//fprintf(ptr,"STACK IS EMPTY");
+					printf("PARSING ERROR : Stack is empty");
 					break;
 				}
 		}
@@ -1738,19 +1419,34 @@ treeNode* parseTree(char *inFile)
 				}
 				// Get the new look-ahead symbol
 				tk = getNextToken (twinBuf) ;
+				if(tk->id == TK_LEXERROR)
+				{
+					printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+					root->syntax_error=1;
+				}
 			}
 			else   // The top of stack is a terminal but doesn't match with the input symbol
 			{
+				root->syntax_error=1;
 				if(current != tk->lineNumber)
 				{
-					//fprintf (ptr,"This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber);
-					current=tk->lineNumber;
+					if(stack->key!= TK_SEMICOL && stack->key!= TK_ENDDEF && stack->key!= TK_DRIVERENDDEF)
+					{
+						printf ("PARSING ERROR : This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber);
+						current=tk->lineNumber;
+					}
+
+					else
+					{
+						printf ("PARSING ERROR : This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber-1);
+						current=tk->lineNumber-1;
+					}
+					
 				}
 				stacknode* temp=stack;
-				// printSL(stack);
 				if(stack==NULL)
 				{
-					//fprintf(ptr,"STACK IS EMPTY");
+					printf("STACK IS EMPTY");
 					break;
 				}
 				 stack=stack->next;
@@ -1770,10 +1466,9 @@ treeNode* parseTree(char *inFile)
 				stack = pushRule (stack , allRules, rule_index) ;
 				if(flag==0)
 				{
-					// this carries info to be used for ast.c
 					current_node->gcode = rule_index ;
 
-					addRulesParseTree (current_node , allRules, rule_index) ;
+					addRulesParseTree (current_node , allRules, rule_index);
 					current_node = current_node->child ;
  
 					if(current_node->tag == TERMINAL && current_node->tnt.term->id == TK_EPS)
@@ -1785,16 +1480,16 @@ treeNode* parseTree(char *inFile)
 			}
 			else
 			{
-				
+				root->syntax_error=1;
 				if(current != tk->lineNumber)
 				{
-					//fprintf (ptr,"Error at line number %d\n",tk->lineNumber);
+					printf ("PARSING ERROR : Error at line number %d\n",tk->lineNumber);
 					current=tk->lineNumber;
 				}
 
 				if(stack==NULL)
 				{
-					//fprintf(ptr,"STACK IS EMPTY");
+					printf("STACK IS EMPTY");
 					break;
 				}
 				flag=1;
@@ -1818,6 +1513,12 @@ treeNode* parseTree(char *inFile)
 							if(tk->id != TK_EOF)
 							{
 								tk=getNextToken(twinBuf);
+								if(tk->id == TK_LEXERROR)
+								{
+									root->syntax_error=1;
+									printf ("%s\n", tk->lexeme) ;
+									printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+								}
 								break;
 							}
 
@@ -1835,8 +1536,5 @@ treeNode* parseTree(char *inFile)
 	}
  	labelabc:;
 	endl; 
-		
-	//inorderTraversal(root,ptr);
-	//fclose(ptr);
 	return root ;
 }

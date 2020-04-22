@@ -691,7 +691,7 @@ int getSize(baseST * realBase, varST * thisVar)
 		int left, right ;
 		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
 
-		if (isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) && isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
+		if (isVarStaticArr(thisVar))
 		{
 			int sz ;
 
@@ -766,35 +766,50 @@ int getSize(baseST * realBase, varST * thisVar)
 
 			return 12 ;		// correct dynamic array
 		}
-		else		// dynamic array and in`put to a module
+		else		// dynamic array and input to a module
 		{
-
 			int indexErrorFlag = 0 ;
 			varST *searchedVarLeft, *searchedVarRight ;
 			int leftDigit , rightDigit ;
+			moduleST *scope ;
 
 			leftDigit = isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) ;
 			rightDigit = isdigit (thisVar->arrayIndices->tokRight->lexeme[0]) ;
+			scope = (moduleST *)thisVar->scope ;
 
 			// Left limit
 			if (!leftDigit)
 			{
-				searchedVarLeft = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) ;
+				searchedVarLeft = searchVar (realBase, scope, thisVar->arrayIndices->tokLeft->lexeme) ;
+				
 				if (searchedVarLeft != NULL)
 				{
 					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
+				}
+				else
+				{
+					searchedVarLeft = createVarST (thisVar->arrayIndices->tokLeft->lexeme, scope, VAR_INPUT, TK_INTEGER) ;
+					searchedVarLeft->offset = -(scope->currOffset + 10) ;
+					insertInputVarST (scope, searchedVarLeft) ;
 				}
 			}
 
 			// Right limit
 			if (!rightDigit)
 			{
-				searchedVarRight = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) ;
+				searchedVarRight = searchVar (realBase, scope, thisVar->arrayIndices->tokRight->lexeme) ;
+
 				if (searchedVarRight != NULL)
 				{
 					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
+				}
+				else
+				{
+					searchedVarRight = createVarST (thisVar->arrayIndices->tokRight->lexeme, scope, VAR_INPUT, TK_INTEGER) ;
+					searchedVarRight->offset = -(scope->currOffset + 8) ;
+					insertInputVarST (scope, searchedVarRight) ;
 				}
 			}
 

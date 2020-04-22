@@ -24,7 +24,7 @@ typedef struct treeNode
 	astNode *syn, *inh ;
 	int gcode ; // which rule was used 
 
-	// astNode *anode, *inh; 
+	int syntax_error ;
 
 	struct treeNode *child ;
 	struct treeNode *next ;
