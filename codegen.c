@@ -810,6 +810,8 @@ void preamble (FILE *fp)
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 }
 
+/*	---------------------------------- SWITCH CASE ------------------------------------- */
+
 int getCaseCount (astNode *statementsNode)
 {
 	int cnt = 0 ;
