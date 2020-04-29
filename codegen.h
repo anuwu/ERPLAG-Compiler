@@ -24,6 +24,7 @@ void printBoolean (FILE *fp) ;
 void printArrayIntBool (tokenID baseType, FILE *fp) ;
 void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
 
+void getValueRSPAlign (FILE *fp) ;
 void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp) ;
 void preamble (FILE *fp) ;
 

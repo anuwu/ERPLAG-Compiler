@@ -33,7 +33,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				{
 					fprintf (fp, "\n\tMOV RSP, RBP\n") ;
 					fprintf (fp, "\tPOP RBP\n") ;
-					fprintf (fp, "\tPOP RBP\n") ;
 					fprintf (fp, "\tret\n") ;
 				}
 				else if (rspDepth - localBase > 0)

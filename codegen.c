@@ -558,6 +558,15 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 	}
 }
 
+void getValueRSPAlign (FILE *fp)
+{
+	fprintf (fp, "\tMOV RAX, RSP\n") ;
+	fprintf (fp, "\tAND RAX, 15\n") ;
+	fprintf (fp, "\tADD RAX, 8\n") ;
+	fprintf (fp, "\tSUB RSP, RAX\n") ;
+	fprintf (fp, "\tPUSH RAX\n") ;
+}
+
 void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp)
 {		
 	int rspAlign ;
@@ -565,8 +574,6 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 
 	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 	{
-		rspAlign = 32 - (rspDepth % 16) ;
-
 		if (searchedVar->datatype == TK_INTEGER)
 			fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
 		else if (searchedVar->datatype == TK_BOOLEAN)
@@ -575,20 +582,26 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 		fprintf (fp, "\tXOR RAX, RAX\n") ;
 		fprintf (fp, "\tCALL printf\n") ;
 
+		getValueRSPAlign (fp) ;
+
 		fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-		fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
+		fprintf (fp, "\tPUSH RBX\n") ;
 		fprintf (fp, "\tMOV RSI, RSP\n") ;
+		fprintf (fp, "\tSUB RSI, 4\n") ;
 		fprintf (fp, "\tPUSH RSI\n") ;
 		fprintf (fp, "\tCALL scanf\n") ;
 		fprintf (fp, "\tPOP RSI\n") ;
-		fprintf (fp, "\tMOV AX, WORD [RSP]\n") ;
+		fprintf (fp, "\tMOV AX, [RSP - 4]\n") ;
 		fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
-		fprintf (fp, "\tADD RSP, %d\n\n", rspAlign) ;
+		fprintf (fp, "\tPOP RBX\n") ;
+
+
+		fprintf (fp, "\n\tPUSH RAX\n") ;
+		fprintf (fp, "\tADD RSP, RAX\n\n") ;
 	}
 	else // Array type
 	{	
 		reserveLabel[0] = get_label () ;
-		rspAlign = 32 - (rspDepth % 16) ;
 
 		if (isVarStaticArr (searchedVar))
 		{
@@ -597,54 +610,60 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 			rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
 
 			printGetValueStaticArrayPrompt (searchedVar->arrayIndices->type, leftLim, rightLim, fp) ;
+			getValueRSPAlign (fp) ;
 
-			fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
 			fprintf (fp, "\tMOV RCX, 0\n") ;
-			fprintf (fp, "LABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
+			fprintf (fp, "\nLABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
 			fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
 			fprintf (fp, "\tADD RBX, RCX\n\n") ;
 			fprintf (fp, "\tNEG RBX\n") ;
 
 			fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-			fprintf (fp, "\tMOV RSI, RSP\n") ;
+			
 			fprintf (fp, "\tPUSH RBX\n") ;
 			fprintf (fp, "\tPUSH RCX\n") ;
+			fprintf (fp, "\tPUSH RDX\n") ;
+			fprintf (fp, "\tMOV RSI, RSP\n") ;
+			fprintf (fp, "\tSUB RSI, 4\n") ;
 			fprintf (fp, "\tPUSH RSI\n") ;
 			fprintf (fp, "\tCALL scanf\n") ;
 			fprintf (fp, "\tPOP RSI\n") ;
+			fprintf (fp, "\tMOV AX, [RSP - 4]\n") ;
+			fprintf (fp, "\tMOV [RBP+RBX], AX\n") ;
+			fprintf (fp, "\tPOP RDX\n") ;
 			fprintf (fp, "\tPOP RCX\n") ;
 			fprintf (fp, "\tPOP RBX\n") ;
-
-			fprintf (fp, "\tMOV AX, [RSP]\n") ;
-			fprintf (fp, "\tMOV [RBP+RBX], AX\n") ;
 
 			fprintf (fp, "\tADD RCX, 2\n") ;
 			fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
 			fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
-			fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
+			fprintf (fp, "\tPOP RAX\n") ;
+			fprintf (fp, "\tADD RSP, RAX\n") ;
 		}
 		else
 		{
 			printGetValueDynArrayPrompt (searchedVar, fp) ;
+			getValueRSPAlign (fp) ;
 
-			fprintf (fp, "\tSUB RSP, %d\n", rspAlign) ;
 			fprintf (fp, "\tMOV RCX, 0\n") ;
 			fprintf (fp, "\nLABEL%d:\t\t\t;getting array\n" , reserveLabel[0]) ;
 
 			fprintf (fp, "\tMOV RBX, RCX\n") ;
 			fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-			fprintf (fp, "\tMOV RSI, RSP\n") ;
 			fprintf (fp, "\tPUSH RBX\n") ;
 			fprintf (fp, "\tPUSH RCX\n") ;
+			fprintf (fp, "\tPUSH RDX\n") ;
+			fprintf (fp, "\tMOV RSI, RSP\n") ;
+			fprintf (fp, "\tSUB RSI, 4\n") ;
 			fprintf (fp, "\tPUSH RSI\n") ;
 			fprintf (fp, "\tCALL scanf\n") ;
 			fprintf (fp, "\tPOP RSI\n") ;
-			fprintf (fp, "\tPOP RCX\n") ;
-			fprintf (fp, "\tPOP RBX\n") ;
-
-			fprintf (fp, "\tMOV AX, [RSP]\n") ;
+			fprintf (fp, "\tMOV AX, [RSP - 4]\n") ;
 			fprintf (fp, "\tMOV RDI, [RBP-%d]\n", searchedVar->offset) ;
 			fprintf (fp, "\tMOV [RDI + RBX], AX\n") ;
+			fprintf (fp, "\tPOP RDX\n") ;
+			fprintf (fp, "\tPOP RCX\n") ;
+			fprintf (fp, "\tPOP RBX\n") ;
 
 			fprintf (fp, "\tADD RCX, 2\n") ;	// Incrementing counter
 
@@ -655,7 +674,8 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 			fprintf (fp, "\tCMP RCX, RDX\n"/*, 2*(rightLim-leftLim+1)*/) ;
 			fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
 
-			fprintf (fp, "\tADD RSP, %d\n", rspAlign) ;
+			fprintf (fp, "\tPOP RAX\n") ;
+			fprintf (fp, "\tADD RSP, RAX\n") ;
 		}
 	}
 }
@@ -805,7 +825,6 @@ void preamble (FILE *fp)
 
 
 	fprintf (fp, "main:\n") ;
-	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tPUSH RBP\n") ;
 	fprintf (fp, "\tMOV RBP, RSP\n") ;
 }
