@@ -7,7 +7,7 @@
 extern baseST *realBase ;
 extern int x ;
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
+int moduleGeneration (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
 	if (node == NULL)
 		return 0 ;
@@ -19,7 +19,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		varST *searchedVar ;
 
 		case statements :
-			moduleGeneration (node->child, localBase, rspDepth, node->localST, vst, fp);		// Access local scope and move below
+			moduleGeneration (node->child, node->localST, vst, fp);		// Access local scope and move below
 			break ;
 
 		case statement :
