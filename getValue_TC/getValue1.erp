@@ -1,0 +1,6 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	get_value (i) ;
+	print (i) ;
+end
