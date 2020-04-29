@@ -3,7 +3,8 @@ start
 	declare i, j : integer ;
 	get_value (i) ;
 	get_value (j) ;
-	i := i + j ;
-	print (i) ;
-	print (j) ;
+	
+	declare A : array [i .. j] of integer ;
+	get_value (A) ;
+	print (A) ;
 end
