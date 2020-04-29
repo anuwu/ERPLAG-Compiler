@@ -1,13 +1,9 @@
-output : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
+erplag : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o erplag.exe erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
 	./erplag.exe $(FILE).erp
 	nasm -felf64 code.asm
 	gcc -no-pie code.o -o $(FILE).exe
 	rm code.o
-
-erplag : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
-	gcc -o erplag.exe erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
-	make objClean
 
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o ast.exe astDriver.o ast.o lexTest.o lexer.o parser.o
@@ -43,10 +39,8 @@ symbolTableDriver.o : symbolTableDriver.c
 
 asm :
 	make -f make.asm
+	make clean
 
 clean :
 	rm *.o
 	rm *.exe
-
-objClean :
-	rm *.o
