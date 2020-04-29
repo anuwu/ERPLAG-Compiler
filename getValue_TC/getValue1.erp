@@ -1,0 +1,9 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	get_value (i) ;
+	get_value (j) ;
+	i := i + j ;
+	print (i) ;
+	print (j) ;
+end
