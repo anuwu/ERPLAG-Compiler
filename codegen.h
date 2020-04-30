@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, printDynamicIntegerArr, printDynamicBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags
@@ -21,13 +21,10 @@ int getStaticOffset (varST *vst, astNode *node, int size) ;
 void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 
-void dynamicArrDX (varST *vst, FILE *fp) ;
 void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
 void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp) ;
 
 void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
-
-void printArrayIntBool (tokenID baseType, FILE *fp) ;
 void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
 
 void getValueRSPAlign (FILE *fp) ;
