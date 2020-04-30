@@ -1,0 +1,39 @@
+<<<driver program>>>
+start
+	declare i, j, k, cnt  : integer ;
+	declare even : boolean ;
+
+	get_value (i) ;
+	get_value (j) ;
+
+	cnt := 0 ;
+	while (i <= j)
+	start
+		declare l : integer ;
+		
+		even := false ;
+		k := i ;
+		l := 1 ;
+
+		while (l <= k)
+		start
+			even := 2*l == k ;
+			switch (even)
+			start
+				case true :
+					l := k ;
+					print (i) ;
+					cnt := cnt + 1 ;
+					break ;
+				case false :
+					break ;
+			end
+			
+			l := l + 1 ;
+		end
+
+		i := i + 1 ;
+	end
+
+	print (cnt) ;
+end

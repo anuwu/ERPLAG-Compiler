@@ -282,6 +282,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_SWITCH :
 			;
+
 			int i, caseCount, savedRspDepth, def_label ;
 			int *caseLabels ;
 			astNode *statementsNode = node->next->next->next->next ;

@@ -1139,7 +1139,7 @@ int getCaseCount (astNode *statementsNode)
 
 		if (statementsNode->next != NULL)
 		{
-			if (statementsNode->child->id == TK_DECLARE)
+			if (statementsNode->next->id == TK_DEFAULT)
 				return cnt ;
 
 			statementsNode = statementsNode->next->next->next ;
