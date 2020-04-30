@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, 
+	boundERROR, declERROR, declNegERROR, getValuePrimitive, printInteger
 } textFlag ;
 
 typedef enum _dataFlags
@@ -30,7 +30,7 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 
 void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
 
-void printInteger (FILE *fp) ;
+//void printInteger (FILE *fp) ;
 void printBoolean (FILE *fp) ;
 void printArrayIntBool (tokenID baseType, FILE *fp) ;
 void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
