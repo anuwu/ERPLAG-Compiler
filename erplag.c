@@ -70,7 +70,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			endOffset = searchedVar->offset ;
 			if (endOffset > 0 && (switchPass == 0 || switchPass == 1))
 			{	
-				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n\n", (endOffset - rspDepth)) ;
+				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n", (endOffset - rspDepth)) ;
 				rspDepth = endOffset ;
 			}
 
@@ -373,6 +373,9 @@ void codeGeneration(astNode *node, FILE* fp)
 	switch (node->id)
 	{
 		case program :
+			fprintf (fp, "\nmain:\n") ;
+			fprintf (fp, "\tPUSH RBP\n") ;
+			fprintf (fp, "\tMOV RBP, RSP\n\n") ;
 			codeGeneration (node->child->next, fp) ;		// <otherModules>
 			break ;
 
@@ -425,6 +428,7 @@ int main(int argc, char *argv[])
 
 		preamble (fp) ;
 		codeGeneration (astRoot, fp) ;
+		postamble (fp) ;
 	}
 	else
 		printf ("Semantic errors found. Please check the above messages\n") ;

@@ -1,6 +1,7 @@
 <<<driver program>>>
 start
 	declare i : integer ;
+	get_value (i) ;
 
 	switch (i)
 	start

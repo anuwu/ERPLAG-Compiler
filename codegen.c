@@ -8,6 +8,8 @@
 
 baseST *realBase ;
 int x = 0 ;
+int tf = 0 ;
+int df = 0 ;
 
 extern int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp) ;
 
@@ -32,17 +34,19 @@ void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	leftLim = atoi (vst->arrayIndices->tokLeft->lexeme) ;
 	rightLim = atoi (vst->arrayIndices->tokRight->lexeme) ;
 
+	tf |= 1 << boundERROR ;
+
 	fprintf (fp, "\tMOV AX, [RBP-%d]\n", indexVar->offset) ;
 	fprintf (fp, "\tMOV BX, %d\n", leftLim) ;
 	fprintf (fp, "\tCMP AX, BX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-	fprintf (fp, "\tCALL boundERROR\n") ;
+	fprintf (fp, "\tJMP boundERROR\n") ;
 
 	fprintf (fp, "\nLABEL%d:\n", start_label) ;
 	fprintf (fp, "\tMOV BX, %d\n", rightLim) ;
 	fprintf (fp, "\tCMP BX, AX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-	fprintf (fp, "\tCALL boundERROR\n") ;
+	fprintf (fp, "\tJMP boundERROR\n") ;
 
 	fprintf (fp, "\nLABEL%d:\n", end_label) ;
 	fprintf (fp, "\tMOV BX, %d\n", vst->offset - 2*(rightLim-leftLim)) ;
@@ -76,9 +80,11 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	else
 		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-8) ;
 
+	tf |= 1 << boundERROR ;
+
 	fprintf (fp, "\tCMP BX, AX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-	fprintf (fp, "\tCALL boundERROR\n") ;
+	fprintf (fp, "\tJMP boundERROR\n") ;
 
 	fprintf (fp, "\nLABEL%d:\n", start_label) ;
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
@@ -88,7 +94,7 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 
 	fprintf (fp, "\tCMP AX, BX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-	fprintf (fp, "\tCALL boundERROR\n") ;
+	fprintf (fp, "\tJMP boundERROR\n") ;
 	
 	fprintf (fp, "\nLABEL%d:\n", end_label) ;
 	fprintf (fp, "\tMOV RDI, [RBP-%d]\n", vst->offset) ;
@@ -101,19 +107,27 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 void printGetValueStaticArrayPrompt (tokenID baseType , int leftLim, int rightLim, FILE* fp)
 {
 	if (baseType == TK_INTEGER)
+	{
+		df |= 1 << inputIntArrPrompt ;
 		fprintf (fp, "\tMOV RDI, inputIntArrPrompt\n") ;
+	}
 	else
+	{
+		df |= 1 << inputBoolArrPrompt ;
 		fprintf (fp, "\tMOV RDI, inputBoolArrPrompt\n") ;
+	}
 
 	fprintf (fp, "\tMOV RSI, %d\n", rightLim - leftLim + 1) ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
 	fprintf (fp, "\tCALL printf\n") ;
 
+	df |= 1 << leftRange ;
 	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
 	fprintf (fp, "\tMOV RSI, %d\n", leftLim) ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
 	fprintf (fp, "\tCALL printf\n") ;
 
+	df |= 1 << rightRange ;
 	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
 	fprintf (fp, "\tMOV RSI, %d\n", rightLim) ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -124,9 +138,15 @@ void printGetValueStaticArrayPrompt (tokenID baseType , int leftLim, int rightLi
 void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
 {
 	if (vst->arrayIndices->type == TK_INTEGER)
+	{
+		df |= 1 << inputIntArrPrompt ;
 		fprintf (fp, "\n\tMOV RDI, inputIntArrPrompt\n") ;
+	}
 	else
+	{
+		df |= 1 << inputBoolArrPrompt ;
 		fprintf (fp, "\n\tMOV RDI, inputBoolArrPrompt\n") ;
+	}
 
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
 		fprintf (fp, "\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
@@ -147,11 +167,13 @@ void printGetValueDynArrayPrompt (varST *vst, FILE *fp)
 	fprintf (fp, "\tCALL printf\n") ;
 	fprintf (fp, "\tPOP AX\n") ;
 
+	df |= 1 << leftRange ;
 	fprintf (fp, "\n\tMOV RDI, leftRange\n") ;
 	fprintf (fp, "\tMOVSX RSI, AX\n") ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
 	fprintf (fp, "\tCALL printf\n") ;
 
+	df |= 1 << rightRange ;
 	fprintf (fp, "\n\tMOV RDI, rightRange\n") ;
 	fprintf (fp, "\tMOVSX RSI, BX\n") ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -187,12 +209,14 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	else
 	{
 	 	start_label = get_label () ;
-
 		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
+
+		tf |= 1 << declNegERROR ;
+
 		fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
 		fprintf (fp, "\tCMP AX, 0\n") ;
 		fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-		fprintf (fp, "\tCALL declNegERROR\n") ;
+		fprintf (fp, "\tJMP declNegERROR\n") ;
 
 		fprintf (fp, "\nLABEL%d:\n", start_label) ;
 	}
@@ -203,11 +227,13 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	{
 		end_label = get_label () ;
 
+		tf |= 1 << declNegERROR ;
+
 		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
 		fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
 		fprintf (fp, "\tCMP BX, 0\n") ;
 		fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-		fprintf (fp, "\tCALL declNegERROR\n") ;
+		fprintf (fp, "\tJMP declNegERROR\n") ;
 		
 		fprintf (fp, "\nLABEL%d:\n", end_label) ;
 	}
@@ -215,9 +241,11 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	int lab ;
 	lab = get_label () ;
 
+	tf |= 1 << declERROR ;
+
 	fprintf (fp, "\tCMP BX, AX\n") ;
 	fprintf (fp, "\tJGE LABEL%d\n", lab) ;
-	fprintf (fp, "\tCALL declERROR\n") ;
+	fprintf (fp, "\tJMP declERROR\n") ;
 	fprintf (fp, "\nLABEL%d:\n", lab) ;
 	fprintf (fp, "\tPUSH BX\n") ;
 	fprintf (fp, "\tPUSH AX\n") ;
@@ -363,6 +391,8 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 
 void printInteger (FILE *fp)
 {
+	df |= 1 << printFormat ;
+
 	fprintf (fp, "\tMOV RDI, printFormat\n") ;
 	fprintf (fp, "\tMOVSX RSI, AX\n") ;
 	fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -376,11 +406,13 @@ void printBoolean (FILE *fp)
 	start_label = get_label () ;
 	end_label = get_label () ;
 
+	df |= 1 << printFalse ;
 	fprintf (fp, "\tCMP AX, 01\n") ;
 	fprintf (fp, "\tJE LABEL%d\n", start_label) ;
 	fprintf (fp, "\tMOV RDI, printFalse\n") ;
 	fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
 
+	df |= 1 << printTrue ;
 	fprintf (fp, "LABEL%d:\n", start_label) ;
 	fprintf (fp, "\tMOV RDI, printTrue\n") ;
 	fprintf (fp, "LABEL%d:\n", end_label) ;
@@ -394,6 +426,8 @@ void printArrayIntBool (tokenID baseType, FILE *fp)
 {
 	if (baseType == TK_INTEGER)
 	{
+		df |= 1 << printInt ;
+
 		fprintf (fp, "\tMOV RDI, printInt\n") ;
 		fprintf (fp, "\tMOVSX RSI, AX\n") ;
 	}
@@ -404,12 +438,14 @@ void printArrayIntBool (tokenID baseType, FILE *fp)
 		start_label = get_label () ;
 		end_label = get_label () ;
 
+		df |= 1 << DATA_false ;
 		fprintf (fp, "\tXOR RSI, RSI\n") ;
 		fprintf (fp, "\n\tCMP AX, 01\n") ;
 		fprintf (fp, "\tJE LABEL%d\n", start_label) ;
 		fprintf (fp, "\tMOV RDI, false\n") ;
 		fprintf (fp, "\tJMP LABEL%d\n", end_label) ;
 
+		df |= 1 << DATA_true ;
 		fprintf (fp, "LABEL%d:\n", start_label) ;
 		fprintf (fp, "\tMOV RDI, true\n") ;
 		fprintf (fp, "\nLABEL%d:\n", end_label) ;
@@ -474,6 +510,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 				rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
 
 				reserveLabel[0] = get_label () ;
+				df |= 1 << printFormatArray ;
 
 				fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
 				fprintf (fp, "\tXOR RSI, RSI\n") ;
@@ -501,6 +538,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 				fprintf (fp, "\tCMP RCX, %d\n", 2*(rightLim-leftLim+1)) ;
 				fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
 
+				df |= 1 << printNewLine ;
 				fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
 				fprintf (fp, "\tXOR RSI, RSI\n") ;
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -522,6 +560,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 			else 						// Print the whole array
 			{
 				reserveLabel[0] = get_label () ;
+				df |= 1 << printFormatArray ;
 
 				fprintf (fp, "\n\tMOV RDI, printFormatArray\t\t;printing array output prompt\n") ;
 				fprintf (fp, "\tXOR RSI, RSI\n") ;
@@ -548,6 +587,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 				fprintf (fp, "\tCMP CX, DX\n") ;
 				fprintf (fp, "\tJNE LABEL%d\n\n", reserveLabel[0]) ;
 
+				df |= 1 << printNewLine ;
 				fprintf (fp, "\n\tMOV RDI, printNewLine\t\t; newline after array print\n") ;
 				fprintf (fp, "\tXOR RSI, RSI\n") ;
 				fprintf (fp, "\tXOR RAX, RAX\n") ;
@@ -571,16 +611,24 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 {		
 	int rspAlign ;
 	int reserveLabel[2] ;
+	df |= 1 << inputInt ;
 
 	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 	{
+
 		if (searchedVar->datatype == TK_INTEGER)
+		{
+			df |= 1 << inputIntPrompt ;
 			fprintf (fp, "\n\tMOV RDI, inputIntPrompt\t\t;get_value\n") ;
+		}
 		else if (searchedVar->datatype == TK_BOOLEAN)
+		{
+			df |= 1 << inputBoolPrompt ;
 			fprintf (fp , "\n\tMOV RDI, inputBoolPrompt\t\t;get_value\n") ;
+		}
 		fprintf (fp, "\tXOR RSI, RSI\n") ;
 		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tCALL printf\n\n") ;
 
 		getValueRSPAlign (fp) ;
 
@@ -727,106 +775,185 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 	}
 }
 
-
 void preamble (FILE *fp)
 {
-	fprintf (fp, "section .data\n") ;
-
-	fprintf (fp, "\tboundPrint : ") ;
-	fprintf (fp, "db \"Array out of bounds\" , 10, 0\n") ;
-
-	fprintf (fp, "\tdeclPrint : ") ;
-	fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;	
-
-	fprintf (fp, "\tdeclNeg : ") ;
-	fprintf (fp, "db \"Negative bound in dynamic array declaration\" , 10, 0\n") ;	
-
-	fprintf (fp, "\tprintFormatArray : ") ;
-	fprintf (fp, "db \"Output : \" , 0\n") ;
-
-	fprintf (fp , "\tprintInt : ") ;
-	fprintf (fp, "db \"%%d \", 0\n") ;
-
-	fprintf (fp, "\tprintNewLine : ") ;
-	fprintf (fp, "db 10, 0\n") ;
-
-	fprintf (fp, "\tprintFormat : ") ;
-	fprintf (fp, "db \"Output :  %%d\" , 10, 0\n") ;
-
-	fprintf (fp, "\tprintTrue : ") ;
-	fprintf (fp, "db \"Output : true\" , 10, 0\n") ;
-
-	fprintf (fp, "\tprintFalse : ") ;
-	fprintf (fp, "db \"Output : false\" , 10, 0\n") ;
-
-	fprintf (fp, "\ttrue : ") ;
-	fprintf (fp, "db \"true \" , 0\n") ;
-
-	fprintf (fp, "\tfalse : ") ;
-	fprintf (fp, "db \"false \" , 0\n") ;
-
-	fprintf (fp, "\tinputIntPrompt : ") ;
-	fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
-
-	fprintf (fp, "\tinputBoolPrompt : ") ;
-	fprintf (fp, "db \"Enter a boolean (0 or 1) : \" , 0\n") ;
-
-	fprintf (fp, "\tinputIntArrPrompt : ") ;
-	fprintf (fp, "db \"Enter %%d array elements of integer type for range \", 0\n") ;
-
-	fprintf (fp, "\tinputBoolArrPrompt : ") ;
-	fprintf (fp, "db \"Enter %%d array elements of boolean type for range \", 0\n") ;
-
-	fprintf (fp, "\tleftRange : ") ;
-	fprintf (fp, "db \"%%d to \" , 0\n") ;
-
-	fprintf (fp, "\trightRange : ") ;
-	fprintf (fp, "db \"%%d\" ,10, 0\n") ;
-
-	fprintf (fp, "\tinputInt : ") ;
-	fprintf (fp, "db \"%%d\", 0\n") ;
+	fprintf (fp, "extern printf\n") ;
+	fprintf (fp, "extern scanf\n") ;
+	fprintf (fp, "extern malloc\n") ;
+	fprintf (fp, "extern exit\n") ;
 
 	fprintf (fp, "\nglobal main\n") ;
-	fprintf (fp, "extern scanf\n") ;
-	fprintf (fp, "extern exit\n") ;
-	fprintf (fp, "extern malloc\n") ;
-	fprintf (fp, "extern printf\n\n") ;
-
 	fprintf (fp, "section .text\n") ;
-	fprintf (fp, "\nboundERROR:\n") ;
-	fprintf (fp, "\tPUSH RBP\n") ;
-	fprintf (fp, "\tMOV RBP, RSP\n") ;
-	fprintf (fp, "\tMOV RDI, boundPrint\n") ;
-	fprintf (fp, "\tXOR RSI, RSI\n") ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-	fprintf (fp, "\tMOV EDI, 0\n") ;
-	fprintf (fp, "\tcall exit\n") ;
-
-	fprintf (fp, "\ndeclERROR:\n") ;
-	fprintf (fp, "\tPUSH RBP\n") ;
-	fprintf (fp, "\tMOV RBP, RSP\n") ;
-	fprintf (fp, "\tMOV RDI, declPrint\n") ;
-	fprintf (fp, "\tXOR RSI, RSI\n") ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-	fprintf (fp, "\tMOV EDI, 0\n") ;
-	fprintf (fp, "\tcall exit\n") ;
-
-	fprintf (fp, "\ndeclNegERROR:\n") ;
-	fprintf (fp, "\tPUSH RBP\n") ;
-	fprintf (fp, "\tMOV RBP, RSP\n") ;
-	fprintf (fp, "\tMOV RDI, declNeg\n") ;
-	fprintf (fp, "\tXOR RSI, RSI\n") ;
-	fprintf (fp, "\tXOR RAX, RAX\n") ;
-	fprintf (fp, "\tCALL printf\n") ;
-	fprintf (fp, "\tMOV EDI, 0\n") ;
-	fprintf (fp, "\tcall exit\n") ;
+}
 
 
-	fprintf (fp, "main:\n") ;
-	fprintf (fp, "\tPUSH RBP\n") ;
-	fprintf (fp, "\tMOV RBP, RSP\n") ;
+int isFlagSet (int flagInt , int id)
+{
+	int test = flagInt ;
+	test = test >> id ;
+
+	return test % 2 ? 1 : 0 ;
+}
+
+
+void postamble (FILE *fp)
+{
+	if (isFlagSet (tf, boundERROR))
+	{
+
+
+		df |= 1 << boundPrint ;
+
+		fprintf (fp, "\nboundERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, boundPrint\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declERROR))
+	{
+
+
+		df |= 1 << declPrint ;
+
+		fprintf (fp, "\ndeclERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, declPrint\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declNegERROR))
+	{
+
+
+		df |= 1 << declNeg ;
+
+		fprintf (fp, "\ndeclNegERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, declNeg\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+
+	if (df)
+		fprintf (fp, "\nsection .data\n") ;
+
+	if (isFlagSet (df, boundPrint))
+	{
+		fprintf (fp, "\tboundPrint : ") ;
+		fprintf (fp, "db \"Array out of bounds\" , 10, 0\n") ;	
+	}
+	
+	if (isFlagSet (df, declPrint))
+	{
+		fprintf (fp, "\tdeclPrint : ") ;
+		fprintf (fp, "db \"Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;		
+	}
+	
+	if (isFlagSet (df, declNeg))
+	{
+		fprintf (fp, "\tdeclNeg : ") ;
+		fprintf (fp, "db \"Negative bound in dynamic array declaration\" , 10, 0\n") ;	
+	}
+
+	if (isFlagSet (df, printFormatArray))
+	{
+		fprintf (fp, "\tprintFormatArray : ") ;
+		fprintf (fp, "db \"Output : \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, printInt))
+	{
+		fprintf (fp , "\tprintInt : ") ;
+		fprintf (fp, "db \"%%d \", 0\n") ;
+	}
+
+	if (isFlagSet (df, printNewLine))
+	{
+		fprintf (fp, "\tprintNewLine : ") ;
+		fprintf (fp, "db 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, printFormat))
+	{
+		fprintf (fp, "\tprintFormat : ") ;
+		fprintf (fp, "db \"Output :  %%d\" , 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, printTrue))
+	{
+		fprintf (fp, "\tprintTrue : ") ;
+		fprintf (fp, "db \"Output : true\" , 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, printFalse))
+	{
+		fprintf (fp, "\tprintFalse : ") ;
+		fprintf (fp, "db \"Output : false\" , 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, DATA_true))
+	{
+		fprintf (fp, "\ttrue : ") ;
+		fprintf (fp, "db \"true \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, DATA_false))
+	{
+		fprintf (fp, "\tfalse : ") ;
+		fprintf (fp, "db \"false \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, inputIntPrompt))
+	{
+		fprintf (fp, "\tinputIntPrompt : ") ;
+		fprintf (fp, "db \"Enter an integer : \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, inputBoolPrompt))
+	{
+		fprintf (fp, "\tinputBoolPrompt : ") ;
+		fprintf (fp, "db \"Enter a boolean (0 or 1) : \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, inputIntArrPrompt))
+	{
+		fprintf (fp, "\tinputIntArrPrompt : ") ;
+		fprintf (fp, "db \"Enter %%d array elements of integer type for range \", 0\n") ;
+	}
+
+	if (isFlagSet (df, inputBoolArrPrompt))
+	{
+		fprintf (fp, "\tinputBoolArrPrompt : ") ;
+		fprintf (fp, "db \"Enter %%d array elements of boolean type for range \", 0\n") ;
+	}
+
+	if (isFlagSet (df, leftRange))
+	{
+		fprintf (fp, "\tleftRange : ") ;
+		fprintf (fp, "db \"%%d to \" , 0\n") ;
+	}
+
+	if (isFlagSet (df, rightRange))
+	{
+		fprintf (fp, "\trightRange : ") ;
+		fprintf (fp, "db \"%%d\" ,10, 0\n") ;
+	}
+
+	if (isFlagSet (df, inputInt))
+	{
+		fprintf (fp, "\tinputInt : ") ;
+		fprintf (fp, "db \"%%d\", 0\n") ;
+	}
 }
 
 /*	---------------------------------- SWITCH CASE ------------------------------------- */
