@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, getValuePrimitive, printInteger, printGetValueStaticArrPrompt, getValueStaticArr
+	boundERROR, declERROR, declNegERROR, getValuePrimitive, getValueStaticArr, printInteger, printBoolean, printGetValueStaticArrPrompt
 } textFlag ;
 
 typedef enum _dataFlags
@@ -21,7 +21,6 @@ int getStaticOffset (varST *vst, astNode *node, int size) ;
 void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 
-//void printGetValueStaticArrayPrompt (tokenID baseType , int leftLim, int rightLim, FILE* fp) ;
 void printGetValueDynArrayPrompt (varST *vst, FILE *fp) ;
 
 void dynamicArrDX (varST *vst, FILE *fp) ;
@@ -30,8 +29,6 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 
 void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
 
-//void printInteger (FILE *fp) ;
-void printBoolean (FILE *fp) ;
 void printArrayIntBool (tokenID baseType, FILE *fp) ;
 void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
 

@@ -74,14 +74,6 @@ struct _baseST {
 	int semanticError ;
 } ;
 
-struct _guardTinkerNode
-{
-	int tinker ;
-	struct _guardTinkerNode *next ;
-} ;
-
-
-
 typedef enum _stType stType ;
 typedef enum _variableType variableType ;
 typedef struct _baseST baseST ;
@@ -132,10 +124,6 @@ void printOutputsNotTinkered (moduleST *baseModule) ;
 int checkAllOutputsTinkered (moduleST *baseModule) ;
 void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) ;
 void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode) ;
-int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *tinkerHeadAfter) ;
-guardTinkerNode* getGuardTinkerList (baseST *realBase, moduleST *baseModule, astNode *exprNode) ;
-void getExprVars (baseST *realBase, moduleST *baseModule, guardTinkerNode *tinkerHead, astNode *exprNode) ;
-void addTinkerList (guardTinkerNode *tinkerHead, int tinker) ;
 
 // ST population
 baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint) ;
