@@ -632,19 +632,24 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 
 		getValueRSPAlign (fp) ;
 
-		fprintf (fp, "\n\tMOV RDI, inputInt\t\t;get_value\n") ;
-		fprintf (fp, "\tPUSH RBX\n") ;
+		fprintf (fp, "\n\tMOV RBX, -%d\n", searchedVar->offset) ;
+		//fprintf (fp, "\tNEG RBX\n") ;
+		fprintf (fp, "\tMOV RDI, inputInt\t\t;get_value\n") ;
 		fprintf (fp, "\tMOV RSI, RSP\n") ;
-		fprintf (fp, "\tSUB RSI, 4\n") ;
+		fprintf (fp, "\tSUB RSI, 16\n") ;
+		fprintf (fp, "\tPUSH RBX\n") ;
 		fprintf (fp, "\tPUSH RSI\n") ;
 		fprintf (fp, "\tCALL scanf\n") ;
 		fprintf (fp, "\tPOP RSI\n") ;
-		fprintf (fp, "\tMOV AX, [RSP - 4]\n") ;
-		fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
 		fprintf (fp, "\tPOP RBX\n") ;
-
-
-		fprintf (fp, "\n\tPUSH RAX\n") ;
+		fprintf (fp, "\tMOV AX, [RSP - 16]\n") ;
+		//fprintf (fp, "\tMOV [RBP + RBX], AX\n") ;
+		//fprintf (fp, "\tMOV [RBP - %d], AX\n", searchedVar->offset) ;
+		//fprintf (fp, "\tMOV RBX, -%d\n",searchedVar->offset) ;
+		fprintf (fp, "\tMOV [RBP + RBX], AX\n") ;
+		
+		
+		fprintf (fp, "\n\tPOP RAX\n") ;
 		fprintf (fp, "\tADD RSP, RAX\n\n") ;
 	}
 	else // Array type
