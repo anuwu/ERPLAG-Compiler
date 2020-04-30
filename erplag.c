@@ -390,6 +390,7 @@ int main(int argc, char *argv[])
 
 		preamble (fp) ;
 		codeGeneration (astRoot, fp) ;
+		printCommentLineNASM (fp) ;
 		postamble (fp) ;
 	}
 	else

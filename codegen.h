@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, getValuePrimitive, getValueStaticArr, printInteger, printBoolean, printGetValueStaticArrPrompt
+	boundERROR, declERROR, declNegERROR, getValuePrimitive, getValueStaticArr, printInteger, printBoolean, printGetValueStaticArrPrompt, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags
@@ -42,6 +42,8 @@ int isFlagSet (int flagInt, int id) ;
 int getCaseCount (astNode *statementsNode) ;
 int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth, FILE* fp) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels, FILE* fp) ;
+
+void printCommentLineNASM (FILE *fp) ;
 
 
 #endif

@@ -28,79 +28,45 @@ void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
 	int leftLim, rightLim, start_label, end_label ;
 	varST *indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
-	start_label = get_label () ;
-	end_label = get_label () ;
 
 	leftLim = atoi (vst->arrayIndices->tokLeft->lexeme) ;
 	rightLim = atoi (vst->arrayIndices->tokRight->lexeme) ;
+	tf |= 1 << staticBoundCheck ;
 
-	tf |= 1 << boundERROR ;
-
-	fprintf (fp, "\tMOV AX, [RBP-%d]\n", indexVar->offset) ;
-	fprintf (fp, "\tMOV BX, %d\n", leftLim) ;
-	fprintf (fp, "\tCMP AX, BX\n") ;
-	fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-	fprintf (fp, "\tJMP boundERROR\n") ;
-
-	fprintf (fp, "\nLABEL%d:\n", start_label) ;
-	fprintf (fp, "\tMOV BX, %d\n", rightLim) ;
-	fprintf (fp, "\tCMP BX, AX\n") ;
-	fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-	fprintf (fp, "\tJMP boundERROR\n") ;
-
-	fprintf (fp, "\nLABEL%d:\n", end_label) ;
-	fprintf (fp, "\tMOV BX, %d\n", vst->offset - 2*(rightLim-leftLim)) ;
-	fprintf (fp, "\tMOV AX, [RBP-%d]\n", indexVar->offset) ;
-	fprintf (fp, "\tSUB AX, %d\n", leftLim) ;
-	fprintf (fp, "\tADD AX, AX\n") ;
-	fprintf (fp, "\tADD BX, AX\n") ;
-	fprintf (fp ,"\tNEG BX\n") ;
-	fprintf (fp, "\tMOVSX RBX, BX\n") ;
+	fprintf (fp, "\tMOV AX, %d\n", leftLim) ;
+	fprintf (fp, "\tMOV BX, [RBP - %d]\n", indexVar->offset) ;
+	fprintf (fp, "\tMOV CX, %d\n", rightLim) ;
+	fprintf (fp, "\tMOV DX, %d\n", vst->offset) ;
+	fprintf (fp, "\tCALL staticBoundCheck\n\n") ;
 }
+
 
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
 	int start_label, end_label ;
 
-	start_label = get_label () ;
-	end_label = get_label () ;
+	fprintf (fp, "\tMOV RDI, [RBP-%d]\n", vst->offset) ;
+	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
+		fprintf (fp, "\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
+	else
+		fprintf (fp, "\tMOV AX, [RBP-%d]\n", vst->offset-10) ;
 
 	if (isdigit(node->child->tok->lexeme[0]))
-		fprintf (fp, "\n\tMOV AX, %s\n", node->child->tok->lexeme) ;
+		fprintf (fp, "\n\tMOV BX, %s\n", node->child->tok->lexeme) ;
 	else
 	{
 		varST *indexVar ;
 		indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
-
-		fprintf (fp, "\tMOV AX, [RBP-%d]\n", indexVar->offset) ;
+		fprintf (fp, "\tMOV BX, [RBP-%d]\n", indexVar->offset) ;
 	}
 
 	if (isdigit(vst->arrayIndices->tokRight->lexeme[0]))
-		fprintf (fp, "\tMOV BX, %s\n", vst->arrayIndices->tokRight->lexeme) ;		
+		fprintf (fp, "\tMOV CX, %s\n", vst->arrayIndices->tokRight->lexeme) ;		
 	else
-		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-8) ;
+		fprintf (fp, "\tMOV CX, [RBP-%d]\n", vst->offset-8) ;
 
-	tf |= 1 << boundERROR ;
-
-	fprintf (fp, "\tCMP BX, AX\n") ;
-	fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-	fprintf (fp, "\tJMP boundERROR\n") ;
-
-	fprintf (fp, "\nLABEL%d:\n", start_label) ;
-	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
-		fprintf (fp, "\tMOV BX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
-	else
-		fprintf (fp, "\tMOV BX, [RBP-%d]\n", vst->offset-10) ;
-
-	fprintf (fp, "\tCMP AX, BX\n") ;
-	fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-	fprintf (fp, "\tJMP boundERROR\n") ;
-	
-	fprintf (fp, "\nLABEL%d:\n", end_label) ;
-	fprintf (fp, "\tMOV RDI, [RBP-%d]\n", vst->offset) ;
-	fprintf (fp, "\tSUB AX, BX\n") ;
-	fprintf (fp, "\tADD AX, AX\n") ;
-	fprintf (fp, "\tMOVSX RBX, AX\n") ;
+	tf |= 1 << dynamicBoundCheck ;
+	fprintf (fp, "\tCALL dynamicBoundCheck\n\n") ;
 }
 
 
@@ -166,62 +132,6 @@ void dynamicArrDX (varST *vst, FILE *fp)
 	fprintf (fp, "\tADD DX, 1\n") ;
 	fprintf (fp, "\tADD DX, DX\n") ;
 
-}
-
-void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
-{
-	int start_label , end_label ;
-	varST *leftVar , *rightVar ;
-
-	if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
-		fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-	else
-	{
-	 	start_label = get_label () ;
-		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
-
-		tf |= 1 << declNegERROR ;
-
-		fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
-		fprintf (fp, "\tCMP AX, 0\n") ;
-		fprintf (fp, "\tJGE LABEL%d\n", start_label) ;
-		fprintf (fp, "\tJMP declNegERROR\n") ;
-
-		fprintf (fp, "\nLABEL%d:\n", start_label) ;
-	}
-
-	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
-		fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-	else
-	{
-		end_label = get_label () ;
-
-		tf |= 1 << declNegERROR ;
-
-		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
-		fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
-		fprintf (fp, "\tCMP BX, 0\n") ;
-		fprintf (fp, "\tJGE LABEL%d\n", end_label) ;
-		fprintf (fp, "\tJMP declNegERROR\n") ;
-		
-		fprintf (fp, "\nLABEL%d:\n", end_label) ;
-	}
-
-	int lab ;
-	lab = get_label () ;
-
-	tf |= 1 << declERROR ;
-
-	fprintf (fp, "\tCMP BX, AX\n") ;
-	fprintf (fp, "\tJGE LABEL%d\n", lab) ;
-	fprintf (fp, "\tJMP declERROR\n") ;
-	fprintf (fp, "\nLABEL%d:\n", lab) ;
-	fprintf (fp, "\tPUSH BX\n") ;
-	fprintf (fp, "\tPUSH AX\n") ;
-	fprintf (fp, "\tSUB BX, AX\n") ;
-	fprintf (fp, "\tADD BX, 1\n") ;
-	fprintf (fp, "\tADD BX, BX\n") ;
-	fprintf (fp, "\tMOVSX RDI, BX\n") ;
 }
 
 void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
@@ -415,15 +325,16 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 		return ;
 	}
 
-	fprintf (fp, "\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
 	if (searchedVar->datatype == TK_INTEGER)
 	{
 		tf |= 1 << printInteger ;
+		fprintf (fp, "\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
 		fprintf (fp, "\tCALL printInteger\n") ;
 	}
 	else if (searchedVar->datatype == TK_BOOLEAN)
 	{
 		tf |= 1 << printBoolean ;
+		fprintf (fp, "\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
 		fprintf (fp, "\tCALL printBoolean\n") ;
 	}
 	else // Array type
@@ -662,18 +573,45 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 	}
 }
 
+void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
+{
+	int start_label , end_label ;
+	varST *leftVar , *rightVar ;
+	tf |= 1 << dynamicDeclCheck ;
+
+	fprintf (fp, "\n") ;
+	if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
+		fprintf (fp, "\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
+	else
+	{
+		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
+		fprintf (fp, "\tMOV AX, [RBP-%d]\n", leftVar->offset) ;
+	}
+
+	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
+		fprintf (fp, "\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+	else
+	{
+		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
+		fprintf (fp, "\tMOV BX, [RBP-%d]\n", rightVar->offset) ;
+	}
+
+	fprintf (fp, "\tCALL dynamicDeclCheck\n\n") ;
+}
+
 void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp)
 {
 	int start_label ;
 	dynamicDeclareCheck (lst, searchedVar, fp) ;
+	fprintf (fp, "\tPUSH BX\t\t\t; saving register for malloc\n") ;
+	fprintf (fp, "\tPUSH AX\t\t\t; saving register for malloc\n") ;
 
 	if (declCount > 1)
 	{
-		start_label = get_label () ;
 		fprintf (fp, "\n\tMOV CX, 0\n") ;
 		fprintf (fp, "\tMOV RBX, %d\n", searchedVar->offset) ;
 		fprintf (fp, "\tNEG RBX\n") ;
-		fprintf (fp, "\nLABEL%d:\n", start_label) ;
+		fprintf (fp, "\n.declLoop:\n") ;
 
 		fprintf (fp, "\tPUSH CX\n") ;
 		fprintf (fp, "\tPUSH RBX\n") ;
@@ -694,9 +632,9 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 		fprintf (fp, "\tADD RBX, 12\n") ;
 		fprintf (fp, "\tINC CX\n") ;
 		fprintf (fp, "\tCMP CX, %d\n", declCount) ;
-		fprintf (fp, "\tJL LABEL%d\n", start_label) ;
+		fprintf (fp, "\tJL .declLoop\n") ;
 
-		fprintf (fp, "\tADD RSP, 4\n");
+		fprintf (fp, "\tADD RSP, 4\t\t\t; Restoring array limits\n");
 	}
 	else
 	{
@@ -732,43 +670,82 @@ int isFlagSet (int flagInt , int id)
 
 void postamble (FILE *fp)
 {
-	if (isFlagSet (tf, boundERROR))
+	if (isFlagSet (tf, staticBoundCheck))
 	{
-		df |= 1 << boundPrint ;
+		tf |= 1 << boundERROR ;
 
-		fprintf (fp, "\nboundERROR:\n") ;
-		fprintf (fp, "\tMOV RDI, boundPrint\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tCALL exit\n") ;
+		fprintf (fp, "\nstaticBoundCheck:\n") ;
+		fprintf (fp, "\tCMP BX, AX\n") ;
+		fprintf (fp, "\tJGE .leftLim\n") ;
+		fprintf (fp, "\tCALL boundERROR\n") ;
+
+		fprintf (fp, "\n.leftLim:\n") ;
+		fprintf (fp, "\tCMP CX, AX\n") ;
+		fprintf (fp, "\tJGE .rightLim\n") ;
+		fprintf (fp, "\tCALL boundERROR\n") ;
+
+		fprintf (fp, "\n.rightLim:\n") ;
+		fprintf (fp, "\tSUB CX, AX\n") ;
+		fprintf (fp, "\tADD CX, CX\n") ;
+		fprintf (fp, "\tSUB DX, CX\n\n") ;
+		fprintf (fp, "\tSUB BX, AX\n") ;
+		fprintf (fp, "\tADD BX, BX\n") ;
+		fprintf (fp, "\tADD BX, DX\n") ;
+		fprintf (fp ,"\tNEG BX\n") ;
+		fprintf (fp, "\tMOVSX RBX, BX\n") ;
+
+		fprintf (fp, "\n\tret\n") ;
 	}
 
-	if (isFlagSet (tf, declERROR))
+	if (isFlagSet (tf, dynamicBoundCheck))
 	{
-		df |= 1 << declPrint ;
+		tf |= 1 << boundERROR ;
 
-		fprintf (fp, "\ndeclERROR:\n") ;
-		fprintf (fp, "\tMOV RDI, declPrint\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tCALL exit\n") ;
+		fprintf (fp, "\ndynamicBoundCheck:\n") ;
+		fprintf (fp, "\tCMP BX, AX\n") ;
+		fprintf (fp, "\tJGE .leftLim\n") ;
+		fprintf (fp, "\tCALL boundERROR\n") ;
+
+		fprintf (fp, "\n.leftLim:\n") ;
+		fprintf (fp, "\tCMP CX, BX\n") ;
+		fprintf (fp, "\tJGE .rightLim\n") ;
+		fprintf (fp, "\tCALL boundERROR\n") ;
+		
+		fprintf (fp, "\n.rightLim:\n") ;
+		fprintf (fp, "\tSUB BX, AX\n") ;
+		fprintf (fp, "\tADD BX, BX\n") ;
+		fprintf (fp, "\tMOVSX RBX, BX\n") ;
+
+		fprintf (fp, "\n\tret\n") ;
 	}
 
-	if (isFlagSet (tf, declNegERROR))
+	if (isFlagSet (tf, dynamicDeclCheck))
 	{
-		df |= 1 << declNeg ;
+		tf |= 1 << declNegERROR ;
+		tf |= 1 << declERROR ;
 
-		fprintf (fp, "\ndeclNegERROR:\n") ;
-		fprintf (fp, "\tMOV RDI, declNeg\n") ;
-		fprintf (fp, "\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\tCALL printf\n") ;
-		fprintf (fp, "\tMOV EDI, 0\n") ;
-		fprintf (fp, "\tCALL exit\n") ;
+		fprintf (fp, "\ndynamicDeclCheck:\n") ;
+		fprintf (fp, "\tCMP AX, 0\n") ;
+		fprintf (fp, "\tJGE .leftNotNeg\n") ;
+		fprintf (fp, "\tCALL declNegERROR\n") ;
+
+		fprintf (fp, "\n.leftNotNeg:\n") ;
+		fprintf (fp, "\tCMP BX, 0\n") ;
+		fprintf (fp, "\tJGE .rightNotNeg\n") ;
+		fprintf (fp, "\tCALL declNegERROR\n") ;
+
+		fprintf (fp, "\n.rightNotNeg:\n") ;
+		fprintf (fp, "\tCMP BX, AX\n") ;
+		fprintf (fp, "\tJGE .dynChecked\n") ;
+		fprintf (fp, "\tCALL declERROR\n") ;
+		fprintf (fp, "\n.dynChecked:\n") ;
+		fprintf (fp, "\tMOV DX, BX\n") ;
+		fprintf (fp, "\tSUB DX, AX\n") ;
+		fprintf (fp, "\tADD DX, 1\n") ;
+		fprintf (fp, "\tADD DX, DX\n") ;
+		fprintf (fp, "\tMOVSX RDI, DX\n") ;
+
+		fprintf (fp, "\n\tret\n") ;
 	}
 
 	if (isFlagSet (tf, getValuePrimitive))
@@ -897,6 +874,47 @@ void postamble (FILE *fp)
 		fprintf (fp, "\n\tret\n") ;
 	}
 
+	if (isFlagSet (tf, boundERROR))
+	{
+		df |= 1 << boundPrint ;
+
+		fprintf (fp, "\nboundERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, boundPrint\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declERROR))
+	{
+		df |= 1 << declPrint ;
+
+		fprintf (fp, "\ndeclERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, declPrint\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declNegERROR))
+	{
+		df |= 1 << declNeg ;
+
+		fprintf (fp, "\ndeclNegERROR:\n") ;
+		fprintf (fp, "\tMOV RDI, declNeg\n") ;
+		fprintf (fp, "\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\tCALL printf\n") ;
+		fprintf (fp, "\tMOV EDI, 0\n") ;
+		fprintf (fp, "\tCALL exit\n") ;
+	}
+
+	/* --------------------------------------------------------------------------------------------- */
+	printCommentLineNASM (fp) ;
 
 	if (df)
 		fprintf (fp, "\nsection .data\n") ;
@@ -1115,4 +1133,9 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 	}
 
 	return def_label ;
+}
+
+void printCommentLineNASM (FILE *fp)
+{
+	fprintf (fp , "\n;--------------------------------------------------------------------------------------------------\n") ;
 }
