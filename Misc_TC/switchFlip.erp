@@ -1,0 +1,55 @@
+<<<driver program>>>
+start
+	declare i, j,  cnt, savei  : integer ;
+	declare cond1, cond2 : boolean ;
+
+	get_value (i) ;
+	j := 10 ;
+	j := j * j ;
+	print (j) ;
+	j := 10 ;
+
+	savei := i ;
+	cnt := 0 ;
+	while (i <= j)
+	start
+		declare l : integer ;
+		cnt := cnt + i - savei ;
+
+		cond2 := i == j ;
+		cond1 := i == 5 ;
+		switch (cond1)
+		start
+			case true :
+				declare savecnt:integer ;
+				declare A : array [1 .. cnt] of integer ;
+				get_value (A) ;
+				cond2 := true ;
+				break ;
+
+			case false :
+				switch (cond2)
+				start
+					case true :
+						declare i : integer ;
+						i := 1 ;
+						while (i <= savecnt)
+						start
+							A[i] := A[i] * A[i] ;
+							i := i + 1 ;
+						end
+
+						print (A) ;
+						break ;
+					case false :
+						break ;
+				end
+				
+				break ;
+		end
+
+		i := i + 1 ;
+	end
+
+	print (cnt) ;
+end
