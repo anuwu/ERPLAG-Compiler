@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printGetArrPrompt, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags

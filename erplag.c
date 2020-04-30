@@ -31,12 +31,12 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 				if (lst->parent == realBase)
 				{
-					fprintf (fp, "\n\tMOV RSP, RBP\n") ;
-					fprintf (fp, "\tPOP RBP\n") ;
-					fprintf (fp, "\tret\n") ;
+					fprintf (fp, "\n\t\tMOV RSP, RBP\n") ;
+					fprintf (fp, "\t\tPOP RBP\n") ;
+					fprintf (fp, "\t\tret\n") ;
 				}
 				else if (rspDepth - localBase > 0)
-					fprintf (fp, "\tADD RSP, %d\t\t\t;Restoring RSP to previous scope\n", (rspDepth-localBase)) ;
+					fprintf (fp, "\t\tADD RSP, %d\t\t\t\t\t\t\t\t; Restoring RSP to previous scope\n", (rspDepth-localBase)) ;
 			}
 			else
 				moduleGeneration(node->next, localBase, rspDepth, lst, vst, fp);
@@ -70,7 +70,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			endOffset = searchedVar->offset ;
 			if (endOffset > 0 && (switchPass == 0 || switchPass == 1))
 			{	
-				fprintf (fp, "\tSUB RSP, %d\t\t\t;Updating RSP\n", (endOffset - rspDepth)) ;
+				fprintf (fp, "\t\tSUB RSP, %d\t\t\t\t\t\t\t\t; Updating RSP\n", (endOffset - rspDepth)) ;
 				rspDepth = endOffset ;
 			}
 
@@ -91,41 +91,41 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		case TK_PLUS :
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tADD AX,BX\n");
-			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tADD AX,BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
 
 			break ;
 
 		case TK_MINUS :
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tSUB AX,BX\n");
-			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tSUB AX,BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
 
 			break ;
 
 		case TK_MUL :
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tIMUL BX\n");
-			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tIMUL BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
 
 			break ;
 
 		case TK_DIV :
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tPOP AX\n\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tPOP AX\n\n");
 
-			fprintf (fp, "\tIDIV BX\n");
-			fprintf (fp, "\tPUSH AX\n");
+			fprintf (fp, "\t\tIDIV BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
 			break ;
 
 		case TK_RNUM :
@@ -136,39 +136,39 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		case TK_NUM : 
 			if (node->prev == NULL)
 			{
-				fprintf (fp, "\tMOV AX, %s\n",node->tok->lexeme);
-				fprintf (fp, "\tPUSH AX\n");	
+				fprintf (fp, "\t\tMOV AX, %s\n",node->tok->lexeme);
+				fprintf (fp, "\t\tPUSH AX\n");	
 			}
 			else
 			{
-				fprintf (fp, "\tMOV BX, %s\n",node->tok->lexeme);
-				fprintf (fp, "\tPUSH BX\n");	
+				fprintf (fp, "\t\tMOV BX, %s\n",node->tok->lexeme);
+				fprintf (fp, "\t\tPUSH BX\n");	
 			}
 			break ;
 
 		case TK_TRUE :
 			if (node->prev == NULL)
 			{
-				fprintf (fp, "\tMOV AX, 1\n");
-				fprintf (fp, "\tPUSH AX\n");	
+				fprintf (fp, "\t\tMOV AX, 1\n");
+				fprintf (fp, "\t\tPUSH AX\n");	
 			}
 			else
 			{
-				fprintf (fp, "\tMOV BX, 1\n");
-				fprintf (fp, "\tPUSH BX\n");	
+				fprintf (fp, "\t\tMOV BX, 1\n");
+				fprintf (fp, "\t\tPUSH BX\n");	
 			}
 			break ;
 
 		case TK_FALSE :
 			if (node->prev == NULL)
 			{
-				fprintf (fp, "\tMOV AX, 0\n");
-				fprintf (fp, "\tPUSH AX\n");	
+				fprintf (fp, "\t\tMOV AX, 0\n");
+				fprintf (fp, "\t\tPUSH AX\n");	
 			}
 			else
 			{
-				fprintf (fp, "\tMOV BX, 0\n");
-				fprintf (fp, "\tPUSH BX\n");	
+				fprintf (fp, "\t\tMOV BX, 0\n");
+				fprintf (fp, "\t\tPUSH BX\n");	
 			}
 			break ;
 
@@ -180,21 +180,21 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		case TK_FOR :
 			node=node->next;
 
-			fprintf (fp, "\tMOV CX,%s\n", node->next->tok->lexeme);
-			fprintf (fp, "\tMOV [RBP - %d], CX\t\t;for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\t\tMOV CX,%s\n", node->next->tok->lexeme);
+			fprintf (fp, "\t\tMOV [RBP - %d], CX\t\t\t\t\t\t\t\t; for loop lower lim\n" , searchVar(realBase, lst, node->tok->lexeme)->offset);
 
-			fprintf (fp, "\n.forStart:\n");
-			fprintf (fp, "\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
-			fprintf (fp, "\tCMP CX,AX\n");
-			fprintf (fp, "\tJG .forEnd\n\n");
+			fprintf (fp, "\n\t.forStart:\n");
+			fprintf (fp, "\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
+			fprintf (fp, "\t\tCMP CX,AX\n");
+			fprintf (fp, "\t\tJG .forEnd\n\n");
 
 			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst, fp);		// Statements
 
-			fprintf (fp, "\n\tMOV CX, [RBP - %d]\t\t;Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			fprintf (fp, "\tINC CX\n");
-			fprintf (fp, "\tMOV [RBP - %d],CX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			fprintf (fp, "\tJMP .forStart\n");
-			fprintf (fp, "\n.forEnd:\n");
+			fprintf (fp, "\n\t\tMOV CX, [RBP - %d]\t\t\t\t\t\t\t\t; Ending increment\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\t\tINC CX\n");
+			fprintf (fp, "\t\tMOV [RBP - %d],CX\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
+			fprintf (fp, "\t\tJMP .forStart\n");
+			fprintf (fp, "\n\t.forEnd:\n");
 			break ;
 
 		
@@ -202,18 +202,18 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			node=node->next;
 			start_label = get_label();
 			end_label =  get_label();
-			fprintf (fp, "\t\n.whileStart:\n");
+			fprintf (fp, "\n\t.whileStart:\n");
 
 			moduleGeneration(node, localBase, rspDepth, lst, vst, fp);	// expression
 
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tCMP AX, 1\n");
-			fprintf (fp, "\tJNE .whileEnd\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tCMP AX, 1\n");
+			fprintf (fp, "\t\tJNE .whileEnd\n");
 
 			moduleGeneration(node->next, rspDepth, rspDepth, lst, vst, fp);		// statements
 
-			fprintf (fp, "\tJMP .whileStart\n");
-			fprintf (fp, "\n.whileEnd:\n");
+			fprintf (fp, "\t\tJMP .whileStart\n");
+			fprintf (fp, "\n\t.whileEnd:\n");
 
 			break ;
 
@@ -221,33 +221,33 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tPOP AX\n");
-			fprintf (fp, "\tCMP AX,BX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tCMP AX,BX\n");
 
 			switch (node->id)
 			{
 				case TK_LT :
-					fprintf (fp, "\tSETL AL\n");
+					fprintf (fp, "\t\tSETL AL\n");
 					break ;
 				case TK_GT :
-					fprintf (fp, "\tSETG AL\n");
+					fprintf (fp, "\t\tSETG AL\n");
 					break ;
 				case TK_LE :
-					fprintf (fp, "\tSETLE AL\n");
+					fprintf (fp, "\t\tSETLE AL\n");
 					break ;
 				case TK_GE :
-					fprintf (fp, "\tSETGE AL\n");
+					fprintf (fp, "\t\tSETGE AL\n");
 					break ;
 				case TK_NE :
-					fprintf (fp, "\tSETNE AL\n");
+					fprintf (fp, "\t\tSETNE AL\n");
 					break ;
 				case TK_EQ :
-					fprintf (fp, "\tSETE AL\n");
+					fprintf (fp, "\t\tSETE AL\n");
 					break ;
 			}
-			fprintf (fp, "\tMOVSX AX, AL\n") ;
-			fprintf (fp, "\tPUSH AX\n") ;
+			fprintf (fp, "\t\tMOVSX AX, AL\n") ;
+			fprintf (fp, "\t\tPUSH AX\n") ;
 
 			break ;
 
@@ -255,16 +255,16 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
 
-			fprintf (fp, "\tPOP BX\n");
-			fprintf (fp, "\tPOP AX\n"); 
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tPOP AX\n"); 
 
-			fprintf (fp, "\tCMP AX, 1\n");
+			fprintf (fp, "\t\tCMP AX, 1\n");
 			if (node->id == TK_AND)
-				fprintf (fp, "\tAND AX, BX\n");
+				fprintf (fp, "\t\tAND AX, BX\n");
 			else
-				fprintf (fp, "\tOR AX, BX\n");
+				fprintf (fp, "\t\tOR AX, BX\n");
 
-			fprintf (fp, "\tPUSH AX\n") ;
+			fprintf (fp, "\t\tPUSH AX\n") ;
 
 			break ;
 
@@ -297,7 +297,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			{
 				fprintf (fp, "\nLABEL%d:\n", caseLabels[i]) ;
 				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst, fp) ;
-				fprintf (fp ,"\n\tJMP LABEL%d\n", end_label) ;
+				fprintf (fp ,"\n\t\tJMP LABEL%d\n", end_label) ;
 
 				i++ ;
 				if (statementsNode->next != NULL)
@@ -318,7 +318,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 
 			fprintf (fp ,"\nLABEL%d:\n", end_label) ;
-			fprintf (fp, "\n\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
+			fprintf (fp, "\n\t\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
 			rspDepth = savedRspDepth ;
 
 			break ;
@@ -336,8 +336,8 @@ void codeGeneration(astNode *node, FILE* fp)
 	{
 		case program :
 			fprintf (fp, "\nmain:\n") ;
-			fprintf (fp, "\tPUSH RBP\n") ;
-			fprintf (fp, "\tMOV RBP, RSP\n\n") ;
+			fprintf (fp, "\t\tPUSH RBP\n") ;
+			fprintf (fp, "\t\tMOV RBP, RSP\n\n") ;
 			codeGeneration (node->child->next, fp) ;		// <otherModules>
 			break ;
 
@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
 {
 	if (argc != 2 && argc != 3)
 	{
-		printf ("\tIncorrect number of arguments\n") ;
+		printf ("\t\tIncorrect number of arguments\n") ;
 		exit (0) ;
 	}
 
