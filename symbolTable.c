@@ -94,6 +94,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 	tmp->currOffset = currOffset ;
 	tmp->hasReturns = 0 ;
 	tmp->filledMod = 0 ;
+	tmp->outputSize = 0 ;
 
 	return tmp ;
 }
@@ -594,17 +595,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
-			if (varPtr != NULL)
-			{
-				if (modPtr->filledMod && !modPtr->declUse)
-				{
-					printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
-					base->semanticError = 1 ;
-				}
-				else
-					modPtr->declUse = 1 ;
-			}
-			else if (!modPtr->filledMod)
+			if (varPtr == NULL && !modPtr->filledMod)
 			{
 				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
 				base->semanticError = 1 ;
@@ -638,17 +629,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 
 		if (modPtr != NULL)
 		{
-			if (varPtr != NULL)
-			{
-				if (modPtr->filledMod && !modPtr->declUse)
-				{
-					printf ("ERROR : In \"%s\" at line %d, both the declaration and definition of \"%s\" appear before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber ,funcNode->next->next->tok->lexeme) ;
-					base->semanticError = 1 ;
-				}
-				else
-					modPtr->declUse = 1 ;
-			}
-			else if (!modPtr->filledMod)
+			if (varPtr == NULL && !modPtr->filledMod)
 			{
 				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
 				base->semanticError = 1 ;
@@ -1274,6 +1255,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 						tmp->offset = -moduleToInsert->currOffset ;
 						moduleToInsert->currOffset += retSize ;
+						moduleToInsert->outputSize += retSize ;
 					}
 					
 					oplAST = oplAST->next ;
