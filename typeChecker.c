@@ -7,9 +7,19 @@
 
 extern char* tokenIDToString (tokenID id) ;
 
+int isLeftLimStatic (varST *arrayVar)
+{
+	return isdigit (arrayVar->arrayIndices->tokLeft->lexeme[0]) ;
+}
+
+int isRightLimStatic (varST *arrayVar)
+{
+	return isdigit (arrayVar->arrayIndices->tokRight->lexeme[0]) ;
+}
+
 int isVarStaticArr (varST *arrayVar)
 {
-	if (isdigit(arrayVar->arrayIndices->tokLeft->lexeme[0]) && isdigit(arrayVar->arrayIndices->tokRight->lexeme[0]))
+	if (isLeftLimStatic(arrayVar) && isRightLimStatic(arrayVar))
 		return 1 ;
 	else
 		return 0 ;
@@ -63,13 +73,13 @@ searchVar ()
 						--> Incorrect bounds 			==> ERROR : incorrect bounds for static array
 */
 
-int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode)
+int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrayVar, astNode *indASTNode)
 {
-	int num = atoi(indASTNode->tok->lexeme) , leftLim = atoi(arrVar->arrayIndices->tokLeft->lexeme), rightLim = atoi(arrVar->arrayIndices->tokRight->lexeme) ;
+	int num = atoi(indASTNode->tok->lexeme) , leftLim = atoi(arrayVar->arrayIndices->tokLeft->lexeme), rightLim = atoi(arrayVar->arrayIndices->tokRight->lexeme) ;
 	if (num < leftLim || num > rightLim)
 	{
 		realBase->semanticError = 1 ;
-		printf ("ERROR : In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrVar->lexeme, leftLim, rightLim) ;
+		printf ("ERROR : In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
 		return 0 ;
 	}
 

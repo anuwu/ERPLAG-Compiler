@@ -1,0 +1,10 @@
+<<module fun>>
+takes input [a:integer] ;
+returns [a:integer] ;
+start
+	a := 4 ;
+end
+
+<<<driver program>>>
+start
+end

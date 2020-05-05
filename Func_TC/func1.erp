@@ -1,0 +1,15 @@
+<<module printSucc>>
+takes input [a : integer] ;
+returns [a : boolean] ;
+start
+	a := a + 1 ;
+	print (a) ;
+end
+
+
+<<<driver program>>>
+start
+	declare val : integer ;
+	get_value (val) ;
+	use module printSucc with parameters val ;
+end

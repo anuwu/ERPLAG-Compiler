@@ -16,6 +16,8 @@ typedef struct _varST varST ;
 int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode) ;
 int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode) ;
 tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, varST **searchedVar) ;
+int isLeftLimStatic (varST *arrayVar) ;
+int isRightLimStatic (varST *arrayVar) ;
 int isVarStaticArr (varST *arrayVar) ;
 
 // Overall function

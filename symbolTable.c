@@ -450,14 +450,17 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 {	
 	varSTentry * varEntry = targetModule->inputVars[0] ;	
 	astNode * inputIter = inputNode ;
+	varST *searchedVar, *entryVar ;
+
 	while(inputIter->next) 
 		inputIter = inputIter->next ;
 
 	int sameArgNoErr = 0 ;
 	
-	while( inputIter && varEntry )
+	while(inputIter && varEntry)
 	{
-		varST * searchedVar = searchVar(realBase, thisModule , inputIter->tok->lexeme ) ;
+		searchedVar = searchVar(realBase, thisModule , inputIter->tok->lexeme ) ;
+		entryVar = varEntry->thisVarST  ;
 
 		if(searchedVar == NULL)
 		{
@@ -467,29 +470,31 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 		}
 		else 
 		{
-			if(varEntry->thisVarST->datatype == searchedVar->datatype)
+			if(entryVar->datatype == searchedVar->datatype)
 			{
-				if (varEntry->thisVarST->datatype == TK_ARRAY) 
+				if (entryVar->datatype == TK_ARRAY) 
 				{
-					if (varEntry->thisVarST->arrayIndices->type != searchedVar->arrayIndices->type)
+					if (entryVar->arrayIndices->type != searchedVar->arrayIndices->type)
 					{
-						printf ("ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+						printf ("ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 
-					if (isVarStaticArr (searchedVar) && isVarStaticArr (varEntry->thisVarST))
+					if (isLeftLimStatic(entryVar) && isLeftLimStatic(searchedVar) && !strcmp (entryVar->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme))
 					{
-						if (strcmp(varEntry->thisVarST->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme) || strcmp(varEntry->thisVarST->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
-						{
-							printf ("ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" do not have matching array limits\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
-							realBase->semanticError = 1 ;
-						}
+						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						realBase->semanticError = 1 ;
+					}
+					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && !strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
+					{
+						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						realBase->semanticError = 1 ;
 					}
 				}
 			}
 			else 
 			{
-				printf ("ERROR : In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ("ERROR : In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
 
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
@@ -529,17 +534,18 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 
 varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * outputNode ) 
 {
-	varSTentry * varEntry = targetModule->outputVars[0] ;
+	varST *searchedVar, *entryVar ;
+	varSTentry *varEntry = targetModule->outputVars[0] ;
 	int sameArgNoErr = 0 ;
 
 	astNode * outputIter = outputNode ;
-	while(outputIter->next) {
+	while(outputIter->next)
 		outputIter = outputIter->next ;
-	}
 	
-	while( outputIter && varEntry ){
-
-		varST * searchedVar = searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
+	while( outputIter && varEntry )
+	{
+		searchedVar = searchVar(realBase, thisModule , outputIter->tok->lexeme) ;
+		entryVar = varEntry->thisVarST ;
 
 		if(searchedVar == NULL)
 		{
@@ -549,9 +555,9 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		}
 		else 
 		{
-			if(varEntry->thisVarST->datatype != searchedVar->datatype)
+			if(entryVar->datatype != searchedVar->datatype)
 			{
-				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , varEntry->thisVarST->lexeme) ;
+				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme) ;
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
 			}
@@ -571,7 +577,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	{
 		printf("ERROR : In \"%s\" at line %d, Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
-		return varEntry->thisVarST ;
+		return entryVar ;
 	}
 	else{
 		if (sameArgNoErr)
@@ -607,12 +613,10 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				base->semanticError = 1 ;
 			}
 
-			if (checkIP(base, thisModule,modPtr,funcNode->next->child) !=NULL) {
+			if (checkIP(base, thisModule,modPtr,funcNode->next->child) !=NULL)
 				return -3 ;		// Errors printed in checkIP
-			}
-			else{
+			else
 				return 1 ;
-			}
 		}
 		else
 		{
@@ -641,12 +645,10 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				base->semanticError = 1 ;
 			}
 			
-			if (checkIP(base, thisModule,modPtr,funcNode->next->next->next->child) !=NULL | checkOP(base, thisModule,modPtr,funcNode->child) !=NULL ) {
+			if (checkIP(base, thisModule,modPtr,funcNode->next->next->next->child) !=NULL | checkOP(base, thisModule,modPtr,funcNode->child) !=NULL )
 				return -3 ;		// Errors printed in checkIP and checkOP
-			}
-			else{
+			else
 				return 1 ;
-			}
 		}
 		else
 		{
@@ -709,7 +711,7 @@ int getSize(baseST * realBase, varST * thisVar)
 			int indexErrorFlag = 0 ;
 			varST *searchedVarLeft, *searchedVarRight ;
 
-			if (!isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]))
+			if (!isLeftLimStatic(thisVar))
 			{
 				searchedVarLeft = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) ;
 				if (searchedVarLeft == NULL)
@@ -724,7 +726,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				}
 			}
 
-			if (!isdigit (thisVar->arrayIndices->tokRight->lexeme[0]))
+			if (!isRightLimStatic (thisVar))
 			{
 				searchedVarRight = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) ;
 				if (searchedVarRight == NULL)
@@ -754,8 +756,8 @@ int getSize(baseST * realBase, varST * thisVar)
 			int leftDigit , rightDigit ;
 			moduleST *scope ;
 
-			leftDigit = isdigit (thisVar->arrayIndices->tokLeft->lexeme[0]) ;
-			rightDigit = isdigit (thisVar->arrayIndices->tokRight->lexeme[0]) ;
+			leftDigit = isLeftLimStatic (thisVar);
+			rightDigit = isRightLimStatic(thisVar) ;
 			scope = (moduleST *)thisVar->scope ;
 
 			// Left limit
@@ -1240,13 +1242,22 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				while (oplAST) 
 				{
 					// Input and output parameters CANNOT share identifiers
-					if (searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) != NULL || (searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)!=NULL && searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme)->datatype != oplAST->child->next->id)) 
-					{
-						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" variable already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
-						base->semanticError = 1 ;
+					varST *searchedInput, *searchedOutput ;
+					searchedInput = searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) ;
+					searchedOutput = searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) ;
 
+					if (searchedInput != NULL) 
+					{
+						printf ("ERROR : In definition of \"%s\" at line %d, input variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						base->semanticError = 1 ;
 					}
-					else{
+					else if (searchedOutput != NULL)
+					{
+						printf ("ERROR : In definition of \"%s\" at line %d, output variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						base->semanticError = 1 ;
+					}
+					else
+					{
 						varST * tmp = createVarST ( oplAST->child->tok->lexeme , moduleToInsert, VAR_OUTPUT, oplAST->child->next->id) ;
 						//array can't be here
 						insertOutputVarST ( moduleToInsert , tmp ) ;
@@ -1270,7 +1281,6 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				printf ( "ERROR : In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
-				//searchCond->tableType = MODULE_REDEC_ST ;
 			}
 
 			currentASTNode = currentASTNode->next ;
