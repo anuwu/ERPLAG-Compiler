@@ -81,10 +81,14 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			break ;											
 
 		case TK_ASSIGNOP :
-			if (node->child->next == NULL)
-				printf ("Unary\n") ;
-			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
+			if ((node->child->next->id == TK_MINUS || node->child->next->id == TK_PLUS) && node->child->next->child->next == NULL)
+				//printf ("Unary\n") ;
+				moduleGeneration(node->child->next->child , localBase, rspDepth,  lst, vst, fp);
+			else
+				moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
+
 			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+
 			fprintf (fp, "\n") ;
 			break ;
 

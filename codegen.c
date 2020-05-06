@@ -172,6 +172,9 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 		else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
 		{
 			fprintf (fp, "\t\tPOP AX\n");
+			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+				fprintf (fp, "\t\tNEG AX\n") ;
+
 			fprintf (fp, "\t\tMOV [RBP - %d],AX\t\t\t\t\t\t\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
 		}
 		else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
@@ -185,11 +188,17 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 				{
 					staticArrBoundCheck (node, lst, vst, fp) ;
 					fprintf (fp, "\t\tPOP AX\n") ;
+					if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+						fprintf (fp, "\t\tNEG AX\n") ;
+
 					fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
 				}
 				else
 				{
 					fprintf (fp, "\t\tPOP AX\n");	
+					if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+						fprintf (fp, "\t\tNEG AX\n") ;
+
 					fprintf (fp, "\t\tMOV [RBP - %d], AX\t\t\t\t\t\t\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
 				}
 			}
@@ -197,6 +206,9 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 			{
 				dynamicArrBoundCheck (node, lst, vst, fp) ;
 				fprintf (fp, "\t\tPOP AX\n") ;
+				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+					fprintf (fp, "\t\tNEG AX\n") ;
+
 				fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
 			}
 		}
