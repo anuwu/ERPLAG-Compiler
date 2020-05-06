@@ -129,7 +129,10 @@ varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID da
 
 	return tmp ;
 }
-///////////////////////////////////////////////////////////////////////////
+
+/* ----------------------------------------------------------------------------------------------------------------------*/
+
+
 void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) 
 {
 
@@ -155,7 +158,7 @@ void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule )
 	base->driverST = thisDriverModule ;
 }
 
-///////////////////////////////////////////////////////////////////////////
+
 void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) 
 {
 	int index = hashFunction ( thisScopeST->lexeme , MODULE_BIN_COUNT ) ;
@@ -202,7 +205,7 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST )
 }
 
 
-///////////////////////////////////////////////////////////////////////
+/* ----------------------------------------------------------------------------------------------------------------------*/
 
 
 varST * searchVarInbaseST ( baseST * base ,char * lexeme ) 
@@ -234,7 +237,6 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme )
 	return NULL ;
 }
 
-/////////////////////////////////////////////////////////////////////////////
 
 varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
 {
@@ -305,10 +307,14 @@ varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme )
 	}
 }
 
+/* ----------------------------------------------------------------------------------------------------------------------*/
+
 char* varTypeToString (variableType varType)
 {
 	switch (varType)
 	{
+		case VAR_PLACEHOLDER :
+			return "Placeholder" ;
 		case VAR_INPUT :
 			return "Input" ;
 		case VAR_OUTPUT :
@@ -323,7 +329,6 @@ char* varTypeToString (variableType varType)
 }
 
 
-////////////////////////////////////////////////////////////////////////////
 void printBaseST ( baseST * base ) 
 {
 	
@@ -455,6 +460,9 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 	while(inputIter->next) 
 		inputIter = inputIter->next ;
 
+	while (varEntry != NULL && varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+		varEntry = varEntry->next ;
+
 	int sameArgNoErr = 0 ;
 	
 	while(inputIter && varEntry)
@@ -480,12 +488,13 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 						realBase->semanticError = 1 ;
 					}
 
-					if (isLeftLimStatic(entryVar) && isLeftLimStatic(searchedVar) && !strcmp (entryVar->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme))
+					if (isLeftLimStatic(entryVar) && isLeftLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme))
 					{
 						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
-					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && !strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
+
+					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
 					{
 						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
 						realBase->semanticError = 1 ;
@@ -502,6 +511,9 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 		}
 		
 		varEntry = varEntry->next ;
+		while (varEntry != NULL && varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+			varEntry = varEntry->next ;
+
 		inputIter = inputIter->prev ;
 	}
 
@@ -702,7 +714,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (thisVar->varType != VAR_INPUT)
 					return sz  ;
 				else
-					return 8 ;
+					return 12 ;
 			}
 		}
 		else if (thisVar->varType != VAR_INPUT)		//dynamic array but not input to a module
@@ -772,7 +784,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				}
 				else
 				{
-					searchedVarLeft = createVarST (thisVar->arrayIndices->tokLeft->lexeme, scope, VAR_INPUT, TK_INTEGER) ;
+					searchedVarLeft = createVarST (thisVar->arrayIndices->tokLeft->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarLeft->offset = -(scope->currOffset + 10) ;
 					insertInputVarST (scope, searchedVarLeft) ;
 				}
@@ -790,7 +802,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				}
 				else
 				{
-					searchedVarRight = createVarST (thisVar->arrayIndices->tokRight->lexeme, scope, VAR_INPUT, TK_INTEGER) ;
+					searchedVarRight = createVarST (thisVar->arrayIndices->tokRight->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarRight->offset = -(scope->currOffset + 8) ;
 					insertInputVarST (scope, searchedVarRight) ;
 				}
@@ -851,7 +863,12 @@ void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *var
 	{
 		printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
-	}	
+	}
+	else if (var->varType == VAR_PLACEHOLDER)
+	{
+		printf ("ERROR : In \"%s\" at line %d, placeholder variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		realBase->semanticError = 1 ;
+	}
 }
 
 void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead)

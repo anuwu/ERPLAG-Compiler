@@ -21,6 +21,7 @@ struct _moduleST ;
 enum _variableType 
 {
 	VAR_INPUT ,
+	VAR_PLACEHOLDER,
 	VAR_OUTPUT ,
 	VAR_LOCAL ,
 	VAR_LOOP ,

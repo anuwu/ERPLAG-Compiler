@@ -6,10 +6,12 @@ start
 
 	declare x, y : integer ;		** ERROR **
 	y := x + 1 ;
+	x := y - 1 ;				** ERROR **
 
 	for (y in 10 .. 15)
 	start
 		declare x : boolean ;		** NOT ERROR **
+		x := false ;
 	end
 end
 
