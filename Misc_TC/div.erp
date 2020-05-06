@@ -1,0 +1,6 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	i := 6/8 ;
+	print (i) ;
+end

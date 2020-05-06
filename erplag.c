@@ -119,11 +119,11 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			break ;
 
 		case TK_DIV :
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
+			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			fprintf (fp, "\t\tPOP AX\n");
 			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tPOP AX\n\n");
-
+			fprintf (fp, "\t\tcwd\n") ;
 			fprintf (fp, "\t\tIDIV BX\n");
 			fprintf (fp, "\t\tPUSH AX\n");
 			break ;

@@ -184,8 +184,8 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 				if(node->child->id == TK_ID)
 				{
 					staticArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\n\t\tPOP AX\n") ;
-					fprintf (fp, "\t\tMOV[RBP + RBX], AX\n") ;
+					fprintf (fp, "\t\tPOP AX\n") ;
+					fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
 				}
 				else
 				{
@@ -196,8 +196,8 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 			else
 			{
 				dynamicArrBoundCheck (node, lst, vst, fp) ;
-				fprintf (fp, "\n\t\tPOP AX\n") ;
-				fprintf (fp, "\t\tMOV[RDI + RBX], AX\n") ;
+				fprintf (fp, "\t\tPOP AX\n") ;
+				fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
 			}
 		}
 	}
