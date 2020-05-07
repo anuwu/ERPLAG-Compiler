@@ -1,0 +1,24 @@
+<<<driver program>>>
+start
+	declare i, j, k : integer ;
+	i := 4 ;
+	j := (i*6 - 5)/2 ;
+	print (j) ;
+
+	declare A : array [i .. j] of integer ;
+	A[5] := 6*4 + 9 - 3 ;
+
+	k := 5 ;
+	A[5] := -A[k] ;
+	A[k] := A[5] * 2 ;
+	A[k] := A[k] / 2 ;
+
+	declare b : boolean ;
+	
+	A[k] := A[k] * A[k] ;
+	b := A[k] > 0 AND true ;
+
+	print (A[5]) ;
+	print (b) ;
+
+end

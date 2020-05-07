@@ -69,19 +69,169 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	fprintf (fp, "\t\tCALL dynamicBoundCheck\n\n") ;
 }
 
-void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
+void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 {
-	if (node->parent->id!=TK_ASSIGNOP)
+	if(node->child == NULL)
 	{
-		if (node->prev == NULL)
-		{
-			if(node->id == TK_ID && node->child==NULL)
-			{
-				fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-				fprintf (fp, "\t\tPUSH AX\n");	
-			}
+		fprintf (fp, "\t\tPOP AX\n");
+		if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+			fprintf (fp, "\t\tNEG AX\n") ;
 
-			else if(node->id == TK_ID && node->child!=NULL) // var:=A[i]+j;
+		fprintf (fp, "\t\tMOV [RBP - %d],AX\t\t\t\t\t\t\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
+	}
+	else
+	{
+		varST* vst ;
+		vst = searchVar(realBase, lst,node->tok->lexeme);
+
+		if (isVarStaticArr(vst))
+		{
+			if(node->child->id == TK_ID)
+			{
+				staticArrBoundCheck (node, lst, vst, fp) ;
+				fprintf (fp, "\t\tPOP AX\n") ;
+				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+					fprintf (fp, "\t\tNEG AX\n") ;
+
+				fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
+			}
+			else
+			{
+				fprintf (fp, "\t\tPOP AX\n");	
+				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+					fprintf (fp, "\t\tNEG AX\n") ;
+
+				fprintf (fp, "\t\tMOV [RBP - %d], AX\t\t\t\t\t\t\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
+			}
+		}
+		else
+		{
+			dynamicArrBoundCheck (node, lst, vst, fp) ;
+			fprintf (fp, "\t\tPOP AX\n") ;
+			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
+				fprintf (fp, "\t\tNEG AX\n") ;
+
+			fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
+		}
+	}
+}
+
+void exprGeneration (astNode *node, moduleST *lst, FILE *fp)
+{
+	if (node->child == NULL || node->child->next == NULL)
+		exprLeafGeneration (node, lst, fp) ;
+
+	switch (node->id)
+	{
+		case TK_PLUS :
+			exprGeneration (node->child, lst, fp); 
+			exprGeneration (node->child->next, lst, fp) ;
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tADD AX,BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
+
+			break ;
+
+		case TK_MINUS :
+			exprGeneration (node->child->next, lst, fp) ;
+			exprGeneration (node->child, lst, fp) ;
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tSUB AX,BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
+
+			break ;
+
+		case TK_MUL :
+			exprGeneration (node->child->next, lst, fp) ;
+			exprGeneration (node->child, lst, fp) ;
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tIMUL BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
+
+			break ;
+
+		case TK_DIV :
+			exprGeneration (node->child->next, lst, fp) ;
+			exprGeneration (node->child, lst, fp) ;
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tcwd\n") ;
+			fprintf (fp, "\t\tIDIV BX\n");
+			fprintf (fp, "\t\tPUSH AX\n");
+			break ;
+
+		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
+			exprGeneration (node->child, lst, fp) ;
+			exprGeneration (node->child->next, lst, fp) ;
+
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tCMP AX,BX\n");
+
+			switch (node->id)
+			{
+				case TK_LT :
+					fprintf (fp, "\t\tSETL AL\n");
+					break ;
+				case TK_GT :
+					fprintf (fp, "\t\tSETG AL\n");
+					break ;
+				case TK_LE :
+					fprintf (fp, "\t\tSETLE AL\n");
+					break ;
+				case TK_GE :
+					fprintf (fp, "\t\tSETGE AL\n");
+					break ;
+				case TK_NE :
+					fprintf (fp, "\t\tSETNE AL\n");
+					break ;
+				case TK_EQ :
+					fprintf (fp, "\t\tSETE AL\n");
+					break ;
+			}
+			fprintf (fp, "\t\tMOVSX AX, AL\n") ;
+			fprintf (fp, "\t\tPUSH AX\n") ;
+
+			break ;
+
+		case TK_AND : case TK_OR :
+			exprGeneration (node->child, lst, fp) ;
+			exprGeneration (node->child->next, lst, fp) ;
+
+			fprintf (fp, "\t\tPOP BX\n");
+			fprintf (fp, "\t\tPOP AX\n"); 
+
+			if (node->id == TK_AND)
+				fprintf (fp, "\t\tAND AX, BX\n");
+			else
+				fprintf (fp, "\t\tOR AX, BX\n");
+
+			fprintf (fp, "\t\tPUSH AX\n") ;
+
+			break ;
+	}
+}
+
+void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp)
+{
+	char reg[3] ;
+	if (node->prev == NULL)
+		strcpy (reg, "AX") ;
+	else
+		strcpy (reg, "BX") ;
+
+	switch (node->id)
+	{
+		case TK_ID :
+			if (node->child == NULL)
+			{
+				fprintf (fp, "\t\tMOV %s, [RBP - %d]\n", reg, searchVar(realBase, lst, node->tok->lexeme)->offset);
+				fprintf (fp, "\t\tPUSH %s\n", reg);	
+			}
+			else
 			{
 				varST *vst ;
 				vst = searchVar (realBase, lst,node->tok->lexeme);
@@ -91,127 +241,41 @@ void IDGeneration (astNode *node, moduleST *lst, FILE* fp)
 					if (node->child->id == TK_ID)
 					{
 						staticArrBoundCheck (node, lst, vst, fp) ;
-						fprintf (fp, "\t\tMOV AX, [RBP + RBX]\n") ;
+						fprintf (fp, "\t\tMOV %s, [RBP + RBX]\n", reg) ;
 					}
 					else
-						fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", getStaticOffset (vst, node, 2)) ;
+						fprintf (fp, "\t\tMOV %s, [RBP - %d]\n", reg, getStaticOffset (vst, node, 2)) ;
 				}
 				else
 				{
 					dynamicArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\t\tMOV AX, [RDI + RBX]\n") ;
+					fprintf (fp, "\t\tMOV %s, [RDI + RBX]\n", reg) ;
 				}
 				
-				fprintf (fp, "\t\tPUSH AX\n");	
-			}
-		}
-		else
-		{
-			if(node->id == TK_ID && node->child==NULL)
-			{
-				fprintf (fp, "\t\tMOV BX, [RBP - %d]\n",searchVar(realBase, lst, node->tok->lexeme)->offset);
-				fprintf (fp, "\t\tPUSH BX\n");	
+				fprintf (fp, "\t\tPUSH %s\n", reg);	
 			}
 
-			else if(node->id == TK_ID && node->child!=NULL) // var:=j+A[i];
-			{
-				varST *vst ;
-				vst=searchVar (realBase, lst,node->tok->lexeme);
+			break ;
 
-				if (isVarStaticArr(vst))
-				{
-					if (node->child->id == TK_ID)
-					{
-						staticArrBoundCheck (node, lst, vst, fp) ;
-						fprintf (fp, "\t\tMOV BX, [RBP + RBX]\n") ;
-					}
-					else
-						fprintf (fp, "\t\tMOV BX, [RBP - %d]\n",getStaticOffset(vst,node,2)) ;
-				}
-				else
-				{
-					dynamicArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\t\tMOV BX, [RDI + RBX]\n") ;
-				}
-					
-				fprintf (fp, "\t\tPUSH BX\n");	
-			}
-		}
-	}
-	else
-	{
-		if(node->id == TK_ID && node->child==NULL && node->prev!=NULL)
-		{
-			fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", searchVar(realBase, lst, node->tok->lexeme)->offset);
-			fprintf (fp, "\t\tPUSH AX\n");	
-		}
-		else if(node->id == TK_ID && node->child!=NULL && node->prev!=NULL) //type checking required i:=A[j]
-		{
-			varST *vst ;
-			vst = searchVar (realBase, lst,node->tok->lexeme);
+		case TK_RNUM :
+			printf ("CODEGEN ERROR : NO FLOATING POINT ALLOWED!\n") ;
+			exit (0) ;
+			break ;
 
-			if (isVarStaticArr(vst))
-			{
-				if (node->child->id == TK_ID)
-				{
-					staticArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\t\tMOV AX, [RBP + RBX]\n") ;
-				}
-				else
-					fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", getStaticOffset(vst, node, 2)) ;
-			}
-			else
-			{
-				dynamicArrBoundCheck (node, lst, vst, fp) ;
-				fprintf (fp, "\t\tMOV AX, [RDI + RBX]\n") ;
-			}
-			
-			fprintf (fp, "\t\tPUSH AX\n");	
-			
-		}
-		else if(node->id == TK_ID && node->child==NULL && node->prev==NULL)
-		{
-			fprintf (fp, "\t\tPOP AX\n");
-			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
-				fprintf (fp, "\t\tNEG AX\n") ;
+		case TK_NUM : 
+			fprintf (fp, "\t\tMOV %s, %s\n", reg, node->tok->lexeme);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
 
-			fprintf (fp, "\t\tMOV [RBP - %d],AX\t\t\t\t\t\t\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
-		}
-		else if(node->id == TK_ID && node->child!=NULL && node->prev==NULL) // A[i]:=j
-		{
-			varST* vst ;
-			vst = searchVar(realBase, lst,node->tok->lexeme);
+		case TK_TRUE :
+			fprintf (fp, "\t\tMOV %s, 1\n", reg);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
 
-			if (isVarStaticArr(vst))
-			{
-				if(node->child->id == TK_ID)
-				{
-					staticArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\t\tPOP AX\n") ;
-					if (node->next->id == TK_MINUS && node->next->child->next == NULL)
-						fprintf (fp, "\t\tNEG AX\n") ;
-
-					fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
-				}
-				else
-				{
-					fprintf (fp, "\t\tPOP AX\n");	
-					if (node->next->id == TK_MINUS && node->next->child->next == NULL)
-						fprintf (fp, "\t\tNEG AX\n") ;
-
-					fprintf (fp, "\t\tMOV [RBP - %d], AX\t\t\t\t\t\t\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
-				}
-			}
-			else
-			{
-				dynamicArrBoundCheck (node, lst, vst, fp) ;
-				fprintf (fp, "\t\tPOP AX\n") ;
-				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
-					fprintf (fp, "\t\tNEG AX\n") ;
-
-				fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
-			}
-		}
+		case TK_FALSE :
+			fprintf (fp, "\t\tMOV %s, 0\n", reg);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
 	}
 }
 

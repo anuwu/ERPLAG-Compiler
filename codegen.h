@@ -24,7 +24,9 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
 void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp) ;
 
-void IDGeneration (astNode *node, moduleST *lst, FILE* fp) ;
+void assignGeneration (astNode *node, moduleST *lst, FILE *fp) ;
+void exprGeneration (astNode *node, moduleST *lst, FILE *fp) ;
+void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp) ;
 void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
 
 void getValueRSPAlign (FILE *fp) ;

@@ -82,105 +82,16 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_ASSIGNOP :
 			if ((node->child->next->id == TK_MINUS || node->child->next->id == TK_PLUS) && node->child->next->child->next == NULL)
-				//printf ("Unary\n") ;
-				moduleGeneration(node->child->next->child , localBase, rspDepth,  lst, vst, fp);
+				exprGeneration(node->child->next->child, lst, fp);
 			else
-				moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
+				exprGeneration(node->child->next, lst, fp);
 
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			assignGeneration (node->child, lst, fp) ;
+			//moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
 
 			fprintf (fp, "\n") ;
 			break ;
 
-		case TK_PLUS :
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, localBase, rspDepth,  lst, vst, fp);
-			fprintf (fp, "\t\tPOP AX\n");
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tADD AX,BX\n");
-			fprintf (fp, "\t\tPUSH AX\n");
-
-			break ;
-
-		case TK_MINUS :
-			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\t\tPOP AX\n");
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tSUB AX,BX\n");
-			fprintf (fp, "\t\tPUSH AX\n");
-
-			break ;
-
-		case TK_MUL :
-			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\t\tPOP AX\n");
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tIMUL BX\n");
-			fprintf (fp, "\t\tPUSH AX\n");
-
-			break ;
-
-		case TK_DIV :
-			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			fprintf (fp, "\t\tPOP AX\n");
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tcwd\n") ;
-			fprintf (fp, "\t\tIDIV BX\n");
-			fprintf (fp, "\t\tPUSH AX\n");
-			break ;
-
-		case TK_RNUM :
-			fprintf (fp, "NO RNUM ALLOWED!\n") ;
-			exit (0) ;
-			break ;
-
-		case TK_NUM : 
-			if (node->prev == NULL)
-			{
-				fprintf (fp, "\t\tMOV AX, %s\n",node->tok->lexeme);
-				fprintf (fp, "\t\tPUSH AX\n");	
-			}
-			else
-			{
-				fprintf (fp, "\t\tMOV BX, %s\n",node->tok->lexeme);
-				fprintf (fp, "\t\tPUSH BX\n");	
-			}
-			break ;
-
-		case TK_TRUE :
-			if (node->prev == NULL)
-			{
-				fprintf (fp, "\t\tMOV AX, 1\n");
-				fprintf (fp, "\t\tPUSH AX\n");	
-			}
-			else
-			{
-				fprintf (fp, "\t\tMOV BX, 1\n");
-				fprintf (fp, "\t\tPUSH BX\n");	
-			}
-			break ;
-
-		case TK_FALSE :
-			if (node->prev == NULL)
-			{
-				fprintf (fp, "\t\tMOV AX, 0\n");
-				fprintf (fp, "\t\tPUSH AX\n");	
-			}
-			else
-			{
-				fprintf (fp, "\t\tMOV BX, 0\n");
-				fprintf (fp, "\t\tPUSH BX\n");	
-			}
-			break ;
-
-
-		case TK_ID :
-			IDGeneration (node, lst, fp) ;
-			break ;
-		
 		case TK_FOR :
 			node=node->next;
 			start_label = get_label () ;
@@ -223,57 +134,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			fprintf (fp, "\n\tWHILE%d:\n", end_label) ;
 
 			break ;
-
-		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tPOP AX\n");
-			fprintf (fp, "\t\tCMP AX,BX\n");
-
-			switch (node->id)
-			{
-				case TK_LT :
-					fprintf (fp, "\t\tSETL AL\n");
-					break ;
-				case TK_GT :
-					fprintf (fp, "\t\tSETG AL\n");
-					break ;
-				case TK_LE :
-					fprintf (fp, "\t\tSETLE AL\n");
-					break ;
-				case TK_GE :
-					fprintf (fp, "\t\tSETGE AL\n");
-					break ;
-				case TK_NE :
-					fprintf (fp, "\t\tSETNE AL\n");
-					break ;
-				case TK_EQ :
-					fprintf (fp, "\t\tSETE AL\n");
-					break ;
-			}
-			fprintf (fp, "\t\tMOVSX AX, AL\n") ;
-			fprintf (fp, "\t\tPUSH AX\n") ;
-
-			break ;
-
-		case TK_AND : case TK_OR :
-			moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
-			moduleGeneration(node->child->next, localBase, rspDepth, lst, vst, fp);
-
-			fprintf (fp, "\t\tPOP BX\n");
-			fprintf (fp, "\t\tPOP AX\n"); 
-
-			if (node->id == TK_AND)
-				fprintf (fp, "\t\tAND AX, BX\n");
-			else
-				fprintf (fp, "\t\tOR AX, BX\n");
-
-			fprintf (fp, "\t\tPUSH AX\n") ;
-
-			break ;
-
+		
 		case TK_PRINT :
 			node = node->next ;
 			printGeneration (node, lst, fp) ;
