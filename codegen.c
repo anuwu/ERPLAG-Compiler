@@ -82,6 +82,7 @@ void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 
 	tf |= 1 << boundCheck ;
 
+	loadArrBase (vst, fp) ;
 	loadRegLeftLim (vst, "AX", fp) ;
 
 	if (indexVar == NULL)
@@ -146,7 +147,7 @@ void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 					fprintf (fp, "\t\tNEG AX\n") ;
 
-				fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
+				fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
 			}
 			else
 			{
@@ -197,7 +198,7 @@ void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp)
 					if (node->child->id == TK_ID)
 					{
 						boundCheckGeneration (node, lst, vst, fp) ;
-						fprintf (fp, "\t\tMOV %s, [RBP + RBX]\n", reg) ;
+						fprintf (fp, "\t\tMOV %s, [RDI + RBX]\n", reg) ;
 					}
 					else
 						fprintf (fp, "\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(getStaticOffset (vst, node, 2))) ;
@@ -382,7 +383,6 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 			else
 			{
 				// General case of static array with dynamic indices, or dynamic array
-				loadArrBase (searchedVar, fp) ;
 				boundCheckGeneration (node, lst, searchedVar, fp) ;
 				fprintf (fp, "\t\tMOV SI, [RDI + RBX]\n") ;
 			}
@@ -510,8 +510,8 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 		loadRegLeftLim (searchedVar, "BX", fp) ;
 		loadRegRightLim (searchedVar, "CX", fp) ;
 		fprintf (fp, "\t\tCALL printGetArrPrompt\n\n") ;
+
 		loadArrBase (searchedVar, fp) ;
-		
 		fprintf (fp, "\t\tMOV DX, CX\n") ;
 		fprintf (fp, "\t\tSUB DX, BX\n") ;
 		fprintf (fp, "\t\tADD DX, 1\n") ;
