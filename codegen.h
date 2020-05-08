@@ -7,6 +7,8 @@
 extern baseST *realBase ;
 extern FILE *fp ;
 
+#define codePrint(x, ...) fprintf (fp, x, ##__VA_ARGS__ )
+
 typedef enum _textFlags
 {
 	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicBoundCheck, dynamicDeclCheck
@@ -19,6 +21,7 @@ typedef enum _dataFlags
 } dataFlag ;
 
 int get_label() ;
+void codeComment (int tabCount, char *comment) ;
 char* getOffsetStr (int offset) ;
 int isIndexStatic (astNode *node) ;
 void loadRegLeftLim (varST *searchedVar, char *reg) ;
@@ -45,6 +48,9 @@ int isFlagSet (int flagInt, int id) ;
 int getCaseCount (astNode *statementsNode) ;
 int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
+
+void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
+void popOutputGeneration (astNode *inputEnd, moduleST *lst) ;
 
 int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst) ;
 void codeGeneration(astNode *node) ;

@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 		fp = fopen ("code.asm", "w") ;
 
 		preamble () ;
+		printf ("Preamble done\n") ;
 		codeGeneration (astRoot) ;
 		printCommentLineNASM () ;
 		postamble () ;
