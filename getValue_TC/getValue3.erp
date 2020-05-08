@@ -6,5 +6,10 @@ start
 	
 	declare A : array [i .. j] of integer ;
 	get_value (A) ;
-	print (A) ;
+	print (A[i]) ;
+	print (A[j]) ;
+
+	declare k : integer ;
+	get_value (k) ;
+	print (A[k]) ;
 end

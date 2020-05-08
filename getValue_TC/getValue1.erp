@@ -1,6 +1,5 @@
 <<<driver program>>>
 start
-
 	declare i, j : integer ;
 	i := 4 ;
 	j := 6 ;

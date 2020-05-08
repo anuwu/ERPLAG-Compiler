@@ -6,7 +6,7 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, printDynamicIntegerArr, printDynamicBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicBoundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags
@@ -16,11 +16,13 @@ typedef enum _dataFlags
 } dataFlag ;
 
 int get_label() ;
-
 char* getOffsetStr (int offset) ;
+int isIndexStatic (astNode *node) ;
+void loadRegLeftLim (varST *searchedVar, char *reg, FILE *fp) ;
+void loadRegRightLim (varST *searchedVar, char *reg, FILE *fp) ;
 
 int getStaticOffset (varST *vst, astNode *node, int size) ;
-void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
+void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 
 void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;

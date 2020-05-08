@@ -32,33 +32,71 @@ char* getOffsetStr (int offset)
 	return offsetStr ;
 }
 
+int isIndexStatic (astNode *node)
+{
+	return isdigit (node->child->tok->lexeme[0]) ;
+}
+
+void loadRegLeftLim (varST *searchedVar, char *reg, FILE *fp)
+{
+	if (isLeftLimStatic (searchedVar))
+		fprintf (fp, "\t\tMOV %s, %s\n", reg, searchedVar->arrayIndices->tokLeft->lexeme) ;
+	else
+		fprintf (fp, "\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(searchedVar->offset-10)) ;
+}
+
+void loadRegRightLim (varST *vst, char *reg, FILE *fp)
+{
+	if (isRightLimStatic (vst))
+		fprintf (fp, "\t\tMOV %s, %s\n", reg, vst->arrayIndices->tokRight->lexeme) ;		
+	else
+		fprintf (fp, "\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset-8)) ;
+}
+
+void loadArrBase (varST *vst, FILE *fp)
+{
+	if (isVarStaticArr (vst))
+	{
+		fprintf (fp, "\t\tMOV RDI, RBP\n") ;
+
+		if (vst->varType == VAR_LOCAL)
+			fprintf (fp, "\t\tSUB RDI, %d\n", vst->offset) ;			
+		else
+			fprintf (fp, "\t\tADD RDI, %d\n", -vst->offset) ;
+	}
+	else
+		fprintf (fp, "\t\tMOV RDI, [RBP%s]\n", getOffsetStr(vst->offset)) ;
+}
+
 
 int getStaticOffset (varST *vst, astNode *node, int size)
 {
-	return vst->offset - size*(atoi(vst->arrayIndices->tokRight->lexeme) - atoi(node->child->tok->lexeme)) ;
+	return vst->offset - size*(atoi(node->child->tok->lexeme) - atoi(vst->arrayIndices->tokLeft->lexeme)) ;
 }
 
-void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
+void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
-	int leftLim, rightLim, start_label, end_label ;
-	varST *indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
+	varST *indexVar = NULL ;
+	if (!isIndexStatic (node))	
+		indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
 
-	leftLim = atoi (vst->arrayIndices->tokLeft->lexeme) ;
-	rightLim = atoi (vst->arrayIndices->tokRight->lexeme) ;
-	tf |= 1 << staticBoundCheck ;
+	tf |= 1 << boundCheck ;
 
-	fprintf (fp, "\t\tMOV AX, %d\n", leftLim) ;
-	fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr (indexVar->offset)) ;
-	fprintf (fp, "\t\tMOV CX, %d\n", rightLim) ;
-	fprintf (fp, "\t\tMOV DX, %d\n", vst->offset) ;
-	fprintf (fp, "\t\tCALL staticBoundCheck\n\n") ;
+	loadRegLeftLim (vst, "AX", fp) ;
+
+	if (indexVar == NULL)
+		fprintf (fp, "\t\tMOV BX, %s\n", node->child->tok->lexeme) ;
+	else
+		fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr (indexVar->offset)) ;
+
+	loadRegRightLim (vst, "CX", fp) ;
+
+	fprintf (fp, "\t\tCALL boundCheck\n\n") ;
 }
 
 
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
-	int start_label, end_label ;
-
 	fprintf (fp, "\t\tMOV RDI, [RBP%s]\n", getOffsetStr(vst->offset)) ;
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
 		fprintf (fp, "\t\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
@@ -103,7 +141,7 @@ void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 		{
 			if(node->child->id == TK_ID)
 			{
-				staticArrBoundCheck (node, lst, vst, fp) ;
+				boundCheckGeneration (node, lst, vst, fp) ;
 				fprintf (fp, "\t\tPOP AX\n") ;
 				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 					fprintf (fp, "\t\tNEG AX\n") ;
@@ -158,7 +196,7 @@ void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp)
 				{
 					if (node->child->id == TK_ID)
 					{
-						staticArrBoundCheck (node, lst, vst, fp) ;
+						boundCheckGeneration (node, lst, vst, fp) ;
 						fprintf (fp, "\t\tMOV %s, [RBP + RBX]\n", reg) ;
 					}
 					else
@@ -309,13 +347,13 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 		if (node->id == TK_NUM)
 		{
 			tf |= 1 << printInteger ;
-			fprintf (fp, "\t\tMOV AX, %s\n", node->tok->lexeme) ;
+			fprintf (fp, "\t\tMOV SI, %s\n", node->tok->lexeme) ;
 			fprintf (fp, "\t\tCALL printInteger\n\n") ;
 		}
 		else
 		{
 			tf |= 1 << printBoolean ;
-			fprintf (fp, "\t\tMOV AX, %d\n", node->tok->lexeme[0]=='t'?1:0) ;
+			fprintf (fp, "\t\tMOV SI, %d\n", node->tok->lexeme[0]=='t'?1:0) ;
 			fprintf (fp, "\t\tCALL printBoolean\n\n") ;
 		}
 
@@ -326,7 +364,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 	{
 		tf |= 1 << printInteger ;
 		fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
-		fprintf (fp, "\t\tCALL printInteger\n\n") ;
+		fprintf (fp, "\t\tCALL printGenerationintInteger\n\n") ;
 	}
 	else if (searchedVar->datatype == TK_BOOLEAN)
 	{
@@ -336,50 +374,55 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 	}
 	else // Array type
 	{	
+		if (node->child != NULL)
+		{
+			// Special Case
+			if (node->child->id == TK_NUM && isVarStaticArr (searchedVar))
+				fprintf (fp, "\t\tMOV SI, [RBP%s]\n", getOffsetStr(getStaticOffset(searchedVar,node,2))) ;
+			else
+			{
+				// General case of static array with dynamic indices, or dynamic array
+				loadArrBase (searchedVar, fp) ;
+				boundCheckGeneration (node, lst, searchedVar, fp) ;
+				fprintf (fp, "\t\tMOV SI, [RDI + RBX]\n") ;
+			}
+
+			if (searchedVar->arrayIndices->type == TK_INTEGER)
+			{
+				tf |= 1 << printInteger ;
+				fprintf (fp, "\t\tCALL printInteger\n\n") ;
+			}
+			else
+			{
+				tf |= 1 << printBoolean ;
+				fprintf (fp, "\t\tCALL printBoolean\n\n") ;
+			}
+		}
+		else
+		{
+
+		}
+
+		/*
 		if (isVarStaticArr (searchedVar))
 		{
-			if (node->child != NULL && node->child->id == TK_NUM)	// Static array, static index
-			{
-				fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(getStaticOffset(searchedVar,node,2))) ;
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					tf |= 1 << printInteger ;
-					fprintf (fp, "\t\tCALL printInteger\n\n") ;
-				}
-				else
-				{
-					tf |= 1 << printBoolean ;
-					fprintf (fp, "\t\tCALL printBoolean\n\n") ;
-				}
-			}	
-			else if (node->child != NULL && node->child->id == TK_ID)
-			{
-				staticArrBoundCheck (node, lst, searchedVar, fp) ;
-				fprintf (fp, "\t\tMOV AX, [RBP + RBX]\n") ;
-
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					tf |= 1 << printInteger ;
-					fprintf (fp, "\t\tCALL printInteger\n\n") ;
-				}
-				else
-				{
-					tf |= 1 << printBoolean ;
-					fprintf (fp, "\t\tCALL printBoolean\n\n") ;
-				}
-			}
 			else if (node->child == NULL)
 			{
 				int leftLim, rightLim ;
 				leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
 				rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
 
-				fprintf (fp, "\t\tMOV RBX, -%d\n", searchedVar->offset - 2*(rightLim - leftLim)) ;
-				fprintf (fp, "\t\tMOV DX, %d\n", 2*(rightLim - leftLim + 1)) ;
+				fprintf (fp, "\n\t\tMOV CX, %d\n", leftLim) ;
+				fprintf (fp, "\t\tMOV DX, %d\n", rightLim) ;
+				fprintf (fp, "\t\tSUB DX, CX\n") ;
+				fprintf (fp, "\t\tADD DX, 1\n") ;
+				fprintf (fp, "\t\tADD DX, DX\n") ;
+				fprintf (fp, "\t\tMOV RDI, RBP\n") ;
+				fprintf (fp, "\t\tSUB RDI, %d\n", searchedVar->offset) ;
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
 				{
-					tf |= 1 << printStaticIntegerArr ;
-					fprintf (fp, "\t\tCALL printStaticIntegerArr\n\n") ;
+					tf |= 1 << printDynamicIntegerArr ;
+					fprintf (fp, "\t\tCALL printDynamicIntegerArr\n\n") ;
 				}
 				else
 				{
@@ -390,22 +433,6 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 		}
 		else
 		{
-			if (node->child != NULL)	// Dynamic array, static/dynamic index
-			{
-				dynamicArrBoundCheck (node, lst, searchedVar, fp) ;
-				fprintf (fp, "\t\tMOV AX, [RDI + RBX]\n") ;
-
-				if (searchedVar->arrayIndices->type == TK_INTEGER)
-				{
-					tf |= 1 << printInteger ;
-					fprintf (fp, "\t\tCALL printInteger\n\n") ;
-				}
-				else
-				{
-					tf |= 1 << printBoolean ;
-					fprintf (fp, "\t\tCALL printBoolean\n\n") ;
-				}
-			}
 			else 						// Print the whole array
 			{
 				df |= 1 << printFormatArray ;
@@ -429,6 +456,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 				}
 			}
 		}
+		*/
 	}
 }
 
@@ -448,7 +476,6 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 
 	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 	{
-
 		if (searchedVar->datatype == TK_INTEGER)
 		{
 			df |= 1 << inputIntPrompt ;
@@ -466,62 +493,31 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
  	}
 	else // Array type
 	{	
-		if (isVarStaticArr (searchedVar))
+		if (searchedVar->arrayIndices->type == TK_INTEGER)
 		{
-			int leftLim, rightLim ;
-			leftLim  = atoi (searchedVar->arrayIndices->tokLeft->lexeme) ;
-			rightLim = atoi (searchedVar->arrayIndices->tokRight->lexeme) ;
-
-			if (searchedVar->arrayIndices->type == TK_INTEGER)
-			{
-				df |= 1 << inputIntArrPrompt ;
-				fprintf (fp, "\t\tMOV RDI, inputIntArrPrompt\n") ;
-			}
-			else
-			{
-				df |= 1 << inputBoolArrPrompt ;
-				fprintf (fp, "\t\tMOV RDI, inputBoolArrPrompt\n") ;
-			}
-
-			tf |= 1 << printGetArrPrompt ;
-			fprintf (fp, "\t\tMOV BX, %d\n", leftLim) ;
-			fprintf (fp, "\t\tMOV CX, %d\n", rightLim) ;
-			fprintf (fp, "\t\tCALL printGetArrPrompt\n\n") ;
-
-			tf |= 1 << getStaticArr ;
-			fprintf (fp, "\t\tMOV RBX, -%d\n", searchedVar->offset - 2*(rightLim-leftLim)) ;
-			fprintf (fp, "\t\tCALL getStaticArr\n\n") ;
+			df |= 1 << inputIntArrPrompt ;
+			fprintf (fp, "\t\tMOV RDI, inputIntArrPrompt\n") ;
 		}
 		else
 		{
-			if (searchedVar->arrayIndices->type == TK_INTEGER)
-			{
-				df |= 1 << inputIntArrPrompt ;
-				fprintf (fp, "\n\t\tMOV RDI, inputIntArrPrompt\n") ;
-			}
-			else
-			{
-				df |= 1 << inputBoolArrPrompt ;
-				fprintf (fp, "\n\t\tMOV RDI, inputBoolArrPrompt\n") ;
-			}
-
-			if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
-				fprintf (fp, "\t\tMOV BX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-			else
-				fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(searchedVar->offset-10)) ;
-
-			if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
-				fprintf (fp, "\t\tMOV CX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;		
-			else
-				fprintf (fp, "\t\tMOV CX, [RBP%s]\n", getOffsetStr(searchedVar->offset-8)) ;
-
-			tf |= 1 << printGetArrPrompt ;
-			fprintf (fp, "\t\tCALL printGetArrPrompt\n\n") ;
-
-			tf |= 1 << getDynamicArr ;
-			fprintf (fp, "\n\t\tMOV RDI, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
-			fprintf (fp, "\t\tCALL getDynamicArr\n\n") ;
+			df |= 1 << inputBoolArrPrompt ;
+			fprintf (fp, "\t\tMOV RDI, inputBoolArrPrompt\n") ;
 		}
+
+		tf |= 1 << printGetArrPrompt ;
+		tf |= 1 << getArr ;
+
+		loadRegLeftLim (searchedVar, "BX", fp) ;
+		loadRegRightLim (searchedVar, "CX", fp) ;
+		fprintf (fp, "\t\tCALL printGetArrPrompt\n\n") ;
+		loadArrBase (searchedVar, fp) ;
+		
+		fprintf (fp, "\t\tMOV DX, CX\n") ;
+		fprintf (fp, "\t\tSUB DX, BX\n") ;
+		fprintf (fp, "\t\tADD DX, 1\n") ;
+		fprintf (fp, "\t\tADD DX, DX\n") ;
+		fprintf (fp, "\t\tMOVSX RDX, DX\n") ;
+		fprintf (fp, "\t\tCALL getArr\n\n") ;
 	}
 }
 
@@ -590,7 +586,7 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 	}
 	else
 	{
-		fprintf (fp, "\n\t\tCALL malloc\n") ;
+		fprintf (fp, "\t\tCALL malloc\n") ;
 		fprintf (fp, "\t\tMOV [RBP%s], RAX\n", getOffsetStr(searchedVar->offset)) ;
 		fprintf (fp, "\t\tPOP AX\n") ;
 		fprintf (fp, "\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset - 10)) ;
@@ -622,28 +618,23 @@ int isFlagSet (int flagInt , int id)
 
 void postamble (FILE *fp)
 {
-	if (isFlagSet (tf, staticBoundCheck))
+	if (isFlagSet (tf, boundCheck))
 	{
 		tf |= 1 << boundERROR ;
 
-		fprintf (fp, "\nstaticBoundCheck:\n") ;
+		fprintf (fp, "\nboundCheck:\n") ;
 		fprintf (fp, "\t\tCMP BX, AX\n") ;
 		fprintf (fp, "\t\tJGE .leftLim\n") ;
 		fprintf (fp, "\t\tCALL boundERROR\n") ;
 
 		fprintf (fp, "\n\t.leftLim:\n") ;
-		fprintf (fp, "\t\tCMP CX, AX\n") ;
+		fprintf (fp, "\t\tCMP CX, BX\n") ;
 		fprintf (fp, "\t\tJGE .rightLim\n") ;
 		fprintf (fp, "\t\tCALL boundERROR\n") ;
 
 		fprintf (fp, "\n\t.rightLim:\n") ;
-		fprintf (fp, "\t\tSUB CX, AX\n") ;
-		fprintf (fp, "\t\tADD CX, CX\n") ;
-		fprintf (fp, "\t\tSUB DX, CX\n\n") ;
 		fprintf (fp, "\t\tSUB BX, AX\n") ;
-		fprintf (fp, "\t\tADD BX, BX\n") ;
-		fprintf (fp, "\t\tADD BX, DX\n") ;
-		fprintf (fp,"\t\tNEG BX\n") ;
+		fprintf (fp,"\t\tADD BX, BX\n") ;
 		fprintf (fp, "\t\tMOVSX RBX, BX\n") ;
 
 		fprintf (fp, "\n\t\tret\n") ;
@@ -734,77 +725,41 @@ void postamble (FILE *fp)
 		df |= 1 << rightRange ;
 
 		fprintf (fp, "\nprintGetArrPrompt:\n") ;
-		fprintf (fp, "\t\tMOV DX, CX\n") ;
-		fprintf (fp, "\t\tSUB DX, BX\n") ;
-		fprintf (fp, "\t\tADD DX, 1\n") ; 
-		fprintf (fp, "\t\tMOVSX RSI, DX\n") ;
+		fprintf (fp, "\t\tMOV SI, CX\n") ;
+		fprintf (fp, "\t\tSUB SI, BX\n") ;
+		fprintf (fp, "\t\tADD SI, 1\n") ; 
+		fprintf (fp, "\t\tMOVSX RSI, SI\n") ;
 		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
 		fprintf (fp, "\t\tPUSH BX\n") ;
 		fprintf (fp, "\t\tPUSH CX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
 		fprintf (fp, "\t\tCALL printf\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
 		fprintf (fp, "\t\tPOP CX\n") ;
 		fprintf (fp, "\t\tPOP BX\n") ;
 
 		fprintf (fp, "\n\t\tMOV RDI, leftRange\n") ;
 		fprintf (fp, "\t\tMOVSX RSI, BX\n") ;
 		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\t\tPUSH BX\n") ;
 		fprintf (fp, "\t\tPUSH CX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
 		fprintf (fp, "\t\tCALL printf\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
 		fprintf (fp, "\t\tPOP CX\n") ;
+		fprintf (fp, "\t\tPOP BX\n") ;
 
 		fprintf (fp, "\n\t\tMOV RDI, rightRange\n") ;
 		fprintf (fp, "\t\tMOVSX RSI, CX\n") ;
 		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
+		fprintf (fp, "\t\tPUSH BX\n") ;
+		fprintf (fp, "\t\tPUSH CX\n") ;
 		fprintf (fp, "\t\tCALL printf\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
-
-		fprintf (fp, "\n\t\tADD DX, DX\n") ;
-		fprintf (fp, "\t\tMOVSX RDX, DX\n") ;
+		fprintf (fp, "\t\tPOP CX\n") ;
+		fprintf (fp, "\t\tPOP BX\n") ;
 
 		fprintf (fp, "\n\t\tret\n") ;
 	}
 
-	if (isFlagSet(tf, getStaticArr))
+	if (isFlagSet (tf, getArr))
 	{
-		fprintf (fp, "\ngetStaticArr:\n") ;
-		getValueRSPAlign (fp) ;
-
-		fprintf (fp, "\n\t\tMOV RCX, 0\n") ;
-		fprintf (fp, "\n\t.getArr:\t\t\t\t\t\t\t\t; getting array\n") ;
-
-		fprintf (fp, "\t\tMOV RDI, inputInt\t\t\t\t\t\t\t\t; get_value\n") ;	
-		fprintf (fp, "\t\tMOV RSI, RSP\n") ;
-		fprintf (fp, "\t\tSUB RSI, 32\n") ;
-		fprintf (fp, "\t\tPUSH RBX\n") ;
-		fprintf (fp, "\t\tPUSH RCX\n") ;
-		fprintf (fp, "\t\tPUSH RDX\n") ;
-		fprintf (fp, "\t\tPUSH RSI\n") ;
-		fprintf (fp, "\t\tCALL scanf\n") ;
-		fprintf (fp, "\t\tPOP RSI\n") ;
-		fprintf (fp, "\t\tPOP RDX\n") ;
-		fprintf (fp, "\t\tPOP RCX\n") ;
-		fprintf (fp, "\t\tPOP RBX\n\n") ;
-
-		fprintf (fp, "\t\tMOV AX, [RSP - 32]\n") ;
-		fprintf (fp, "\t\tMOV [RBP + RBX], AX\n") ;
-		fprintf (fp, "\t\tSUB RBX, 2\n") ;
-		fprintf (fp, "\t\tADD RCX, 2\n") ;
-		fprintf (fp, "\t\tCMP RCX, RDX\n") ;
-		fprintf (fp, "\t\tJNE .getArr\n\n") ;
-		fprintf (fp, "\t\tPOP RAX\n") ;
-		fprintf (fp, "\t\tADD RSP, RAX\n") ;
-
-		fprintf (fp, "\n\t\tret\n") ;
-	}
-
-	if (isFlagSet (tf, getDynamicArr))
-	{
-		fprintf (fp, "\ngetDynamicArr:\n");
+		fprintf (fp, "\ngetArr:\n");
 		getValueRSPAlign (fp) ;
 
 		fprintf (fp, "\n\t\tPUSH RDI\n") ;
@@ -829,7 +784,7 @@ void postamble (FILE *fp)
 		fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
 
 		fprintf (fp, "\n\t\tADD RCX, 2\n") ;	// Incrementing counter
-		fprintf (fp, "\t\tCMP RCX, RDX\n"/*, 2*(rightLim-leftLim+1)*/) ;
+		fprintf (fp, "\t\tCMP RCX, RDX\n") ;
 		fprintf (fp, "\t\tJNE .getArr\n\n") ;
 
 		fprintf (fp, "\t\tPOP RDI\n") ;
@@ -845,7 +800,7 @@ void postamble (FILE *fp)
 
 		fprintf (fp, "\nprintInteger:\n") ;
 		fprintf (fp, "\t\tMOV RDI, printFormat\n") ;
-		fprintf (fp, "\t\tMOVSX RSI, AX\n") ;
+		fprintf (fp, "\t\tMOVSX RSI, SI\n") ;
 		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
 		fprintf (fp, "\t\tCALL printf\n") ;
 
@@ -858,7 +813,7 @@ void postamble (FILE *fp)
 		df |= 1 << printTrue ;
 
 		fprintf (fp, "\nprintBoolean:\n") ;
-		fprintf (fp, "\t\tCMP AX, 0\n") ;
+		fprintf (fp, "\t\tCMP SI, 0\n") ;
 		fprintf (fp, "\t\tJE .false\n") ;
 		fprintf (fp, "\t\tMOV RDI, printTrue\n") ;
 		fprintf (fp, "\t\tJMP .boolPrint\n") ;
@@ -874,104 +829,7 @@ void postamble (FILE *fp)
 		fprintf (fp, "\n\t\tret\n") ;
 	}
 
-	if (isFlagSet (tf, printStaticIntegerArr))
-	{
-		df |= 1 << printFormatArray ;
-		df |= 1 << printInt ;
-		df |= 1 << printNewLine ;
-
-		fprintf (fp, "\nprintStaticIntegerArr:\n") ;
-		fprintf (fp, "\n\t\tMOV RDI, printFormatArray\t\t\t\t\t\t\t\t; printing array output prompt\n") ;
-		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tPUSH RBX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
-		fprintf (fp, "\t\tCALL printf\n\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
-		fprintf (fp, "\t\tPOP RBX\n") ;
-		
-		fprintf (fp, "\t\tMOV CX, 0\n") ;
-		fprintf (fp, "\n\t.printArr:\t\t\t\t\t\t\t\t; printing array\n") ;
-
-		fprintf (fp, "\t\tMOV AX, [RBP + RBX]\n") ;
-		fprintf (fp, "\t\tMOV RDI, printInt\n") ;
-		fprintf (fp, "\t\tMOVSX RSI, AX\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tPUSH RBX\n") ;
-		fprintf (fp, "\t\tPUSH CX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
-		fprintf (fp, "\t\tCALL printf\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
-		fprintf (fp, "\t\tPOP CX\n") ;
-		fprintf (fp, "\t\tPOP RBX\n\n") ;
-
-		fprintf (fp, "\t\tSUB RBX, 2\n") ;
-		fprintf (fp, "\t\tADD CX, 2\n") ;
-		fprintf (fp, "\t\tCMP CX, DX\n") ;
-		fprintf (fp, "\t\tJNE .printArr\n\n") ;
-
-		fprintf (fp, "\n\t\tMOV RDI, printNewLine\t\t\t\t\t\t\t\t; newline after array print\n") ;
-		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tCALL printf\n") ;
-
-		fprintf (fp, "\n\t\tret\n") ;
-	}
-
-	if (isFlagSet (tf, printStaticBooleanArr))
-	{
-		df |= 1 << printFormatArray ;
-		df |= 1 << printNewLine ;
-		df |= 1 << DATA_true ;
-		df |= 1 << DATA_false ;
-
-		fprintf (fp, "\nprintStaticBooleanArr:\n") ;
-		fprintf (fp, "\n\t\tMOV RDI, printFormatArray\t\t\t\t\t\t\t\t; printing array output prompt\n") ;
-		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tPUSH RBX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
-		fprintf (fp, "\t\tCALL printf\n\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
-		fprintf (fp, "\t\tPOP RBX\n") ;
-		
-		fprintf (fp, "\t\tMOV CX, 0\n") ;
-		fprintf (fp, "\n\t.printArr:\t\t\t\t\t\t\t\t; printing array\n") ;
-
-		fprintf (fp, "\t\tMOV AX, [RBP + RBX]\n") ;
-		fprintf (fp, "\n\t\tCMP AX, 0\n") ;
-		fprintf (fp, "\t\tJE .false\n") ;
-		fprintf (fp, "\t\tMOV RDI, true\n") ;
-		fprintf (fp, "\t\tJMP .afterBool\n") ;
-		
-		fprintf (fp, "\n\t.false:\n") ;
-		fprintf (fp, "\t\tMOV RDI, false\n") ;
-		fprintf (fp, "\n\t.afterBool:\n") ;
-
-		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tPUSH RBX\n") ;
-		fprintf (fp, "\t\tPUSH CX\n") ;
-		fprintf (fp, "\t\tPUSH DX\n") ;
-		fprintf (fp, "\t\tCALL printf\n") ;
-		fprintf (fp, "\t\tPOP DX\n") ;
-		fprintf (fp, "\t\tPOP CX\n") ;
-		fprintf (fp, "\t\tPOP RBX\n\n") ;
-
-		fprintf (fp, "\t\tSUB RBX, 2\n") ;
-		fprintf (fp, "\t\tADD CX, 2\n") ;
-		fprintf (fp, "\t\tCMP CX, DX\n") ;
-		fprintf (fp, "\t\tJNE .printArr\n\n") ;
-
-		fprintf (fp, "\n\t\tMOV RDI, printNewLine\t\t\t\t\t\t\t\t; newline after array print\n") ;
-		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
-		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
-		fprintf (fp, "\t\tCALL printf\n") ;
-
-		fprintf (fp, "\n\t\tret\n") ;
-	}
-
-	if (isFlagSet (tf, printDynamicIntegerArr))
+	if (isFlagSet (tf, printIntegerArr))
 	{
 		df |= 1 << printFormatArray ;
 		df |= 1 << printNewLine ;
@@ -993,9 +851,9 @@ void postamble (FILE *fp)
 
 		fprintf (fp, "\t\tPUSH RDI\n") ;
 		fprintf (fp, "\t\tMOVSX RBX, CX\n") ;
-		fprintf (fp, "\t\tMOV AX, [RDI + RBX]\n") ;
+		fprintf (fp, "\t\tMOV SI, [RDI + RBX]\n") ;
 		fprintf (fp, "\t\tMOV RDI, printInt\n") ;
-		fprintf (fp, "\t\tMOVSX RSI, AX\n") ;
+		fprintf (fp, "\t\tMOVSX RSI, SI\n") ;
 		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
 		fprintf (fp, "\t\tPUSH CX\n") ;
 		fprintf (fp, "\t\tPUSH DX\n") ;
@@ -1016,7 +874,7 @@ void postamble (FILE *fp)
 		fprintf (fp, "\n\t\tret\n") ;
 	}
 
-	if (isFlagSet (tf, printDynamicBooleanArr))
+	if (isFlagSet (tf, printBooleanArr))
 	{
 		df |= 1 << printFormatArray ;
 		df |= 1 << DATA_true ;
@@ -1557,10 +1415,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				}
 				else if (isVarStaticArr (searchedVar))
 				{
-					fprintf (fp, "\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
-					fprintf (fp, "\t\tPUSH AX\n") ;
-					fprintf (fp, "\t\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-					fprintf (fp, "\t\tPUSH BX\n") ;
 					fprintf (fp, "\t\tMOV RAX, RBP\n") ;
 					fprintf (fp, "\t\tSUB RAX, %d\n", -searchedVar->offset) ;
 					fprintf (fp, "\t\tPUSH RAX\n") ;

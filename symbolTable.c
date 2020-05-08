@@ -711,7 +711,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (thisVar->varType != VAR_INPUT)
 					return sz  ;
 				else
-					return 12 ;
+					return 8 ;
 			}
 		}
 		else if (thisVar->varType != VAR_INPUT)		//dynamic array but not input to a module

@@ -12,7 +12,7 @@ start
 		i := i + 1 ;
 	end
 
-	print (arr) ;
+	** print (arr) ; **
 end
 
 
