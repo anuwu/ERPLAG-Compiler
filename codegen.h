@@ -6,13 +6,13 @@
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, printDynamicIntegerArr, printDynamicBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getStaticArr, getDynamicArr, printInteger, printBoolean, printStaticIntegerArr, printStaticBooleanArr, printDynamicIntegerArr, printDynamicBooleanArr, staticBoundCheck, dynamicBoundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags
 {
 	boundPrint, declPrint, declNeg, printFormatArray, printInt, printNewLine, printFormat,
-	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt
+	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt, arrArgMismatch
 } dataFlag ;
 
 int get_label() ;

@@ -1,52 +1,33 @@
-<<module printSucc>>
-takes input [a : integer] ;
-start
-	a := a + 1 ;
-	print (a) ;
-end
-
-<<module printSum>>
-takes input [a : integer, b : integer] ;
-start
-	declare c : integer ;
-	c := a ;
-	c := c + b ;
-
-	print (c) ;
-end
-
 <<module printTimesArray>>
-takes input [arr : array [low .. high] of integer, t : integer] ;
+takes input [arr : array [4 .. 9] of integer, t : integer] ;
 start
-	print (low) ;
-	print (high) ;
+	** print (low) ; **
+	** print (high) ; **
 
 	declare i : integer ;
-	i := low ;
-	while (i <= high)
+	i := 4 ;
+	while (i <= 9)
 	start
 		arr[i] := t * arr[i] ;
 		i := i + 1 ;
 	end
 
-	** print (arr) ; **
+	print (arr) ;
 end
 
 
 <<<driver program>>>
 start
-	declare val1 : integer ;
+	declare val1, val2 : integer ;
 	get_value (val1) ;
-	use module printSucc with parameters val1 ;
-
-	declare val2 : integer ;
 	get_value (val2) ;
-	use module printSum with parameters val1, val2 ;
 
 	declare A : array [val1 .. val2] of integer ;
 	get_value (A) ;
+
 	declare times : integer ;
 	get_value (times) ;
+
 	use module printTimesArray with parameters A, times ;
 
 	print (A) ;

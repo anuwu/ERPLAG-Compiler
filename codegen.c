@@ -1105,6 +1105,19 @@ void postamble (FILE *fp)
 		fprintf (fp, "\t\tCALL exit\n") ;
 	}
 
+	if (isFlagSet (tf, argLimERROR))
+	{
+		df |= 1 << arrArgMismatch ;
+
+		fprintf (fp, "\nargLimERROR:\n") ;
+		fprintf (fp, "\t\tMOV RDI, arrArgMismatch\n") ;
+		fprintf (fp, "\t\tXOR RSI, RSI\n") ;
+		fprintf (fp, "\t\tXOR RAX, RAX\n") ;
+		fprintf (fp, "\t\tCALL printf\n") ;
+		fprintf (fp, "\t\tMOV EDI, 0\n") ;
+		fprintf (fp, "\t\tCALL exit\n") ;
+	}
+
 	/* --------------------------------------------------------------------------------------------- */
 	printCommentLineNASM (fp) ;
 
@@ -1217,6 +1230,12 @@ void postamble (FILE *fp)
 	{
 		fprintf (fp, "\t\tinputInt : ") ;
 		fprintf (fp, "db \"%%d\", 0\n") ;
+	}
+
+	if (isFlagSet (df, arrArgMismatch))
+	{
+		fprintf (fp, "\t\tarrArgMismatch: ") ;
+		fprintf (fp, "db \"Mismatch in formal and actual array limits\" , 10, 0\n") ;
 	}
 }
 
@@ -1517,6 +1536,10 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 		case TK_ID :
 			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
+			varSTentry* varEntry = calledModule->inputVars[0] ;
+
+			while (varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+				varEntry = varEntry->next ;
 
 			idListHead = node->next->child ; 
 			while (idListHead->next != NULL)
@@ -1525,6 +1548,8 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			while (idListHead != NULL)
 			{
 				searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+
+				printf ("%s : %s\n", calledModule->lexeme, varEntry->thisVarST->lexeme) ;
 				if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 				{
 					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
@@ -1534,8 +1559,8 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				{
 					fprintf (fp, "\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
 					fprintf (fp, "\t\tPUSH AX\n") ;
-					fprintf (fp, "\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
-					fprintf (fp, "\t\tPUSH AX\n") ;
+					fprintf (fp, "\t\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+					fprintf (fp, "\t\tPUSH BX\n") ;
 					fprintf (fp, "\t\tMOV RAX, RBP\n") ;
 					fprintf (fp, "\t\tSUB RAX, %d\n", -searchedVar->offset) ;
 					fprintf (fp, "\t\tPUSH RAX\n") ;
@@ -1543,14 +1568,43 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				else
 				{
 					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 10)) ;
+					if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(searchedVar))
+					{
+						int lab = get_label () ;
+						tf |= 1 << argLimERROR ;
+
+						fprintf (fp, "\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
+						fprintf (fp, "\t\tCMP AX, CX\n") ;
+						fprintf (fp, "\t\tJE LABEL%d\n", lab) ;
+						fprintf (fp, "\t\tCALL argLimERROR\n") ;
+						fprintf (fp, "\n\tLABEL%d:\n", lab) ; 
+					}
+
 					fprintf (fp, "\t\tPUSH AX\n") ;
-					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 8)) ;
-					fprintf (fp, "\t\tPUSH AX\n") ;
+
+					fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 8)) ;
+					if (isRightLimStatic (varEntry->thisVarST) && !isRightLimStatic(searchedVar))
+					{
+						int lab = get_label () ;
+						tf |= 1 << argLimERROR ;
+
+						fprintf (fp, "\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
+						fprintf (fp, "\t\tCMP BX, CX\n") ;
+						fprintf (fp, "\t\tJE LABEL%d\n", lab) ;
+						fprintf (fp, "\t\tCALL argLimERROR\n") ;
+						fprintf (fp, "\n\tLABEL%d:\n", lab) ; 
+					}
+
+					fprintf (fp, "\t\tPUSH BX\n") ;
+
 					fprintf (fp, "\t\tMOV RAX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
 					fprintf (fp, "\t\tPUSH RAX\n") ;
 				}
 
 				idListHead = idListHead->prev ;
+				varEntry = varEntry->next ;
+				while (varEntry != NULL && varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+					varEntry = varEntry->next ;
 			}
 
 			fprintf (fp, "\t\tcall %s\n", node->tok->lexeme) ;
