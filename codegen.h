@@ -17,6 +17,8 @@ typedef enum _dataFlags
 
 int get_label() ;
 
+char* getOffsetStr (int offset) ;
+
 int getStaticOffset (varST *vst, astNode *node, int size) ;
 void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
 void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
@@ -39,6 +41,9 @@ int isFlagSet (int flagInt, int id) ;
 int getCaseCount (astNode *statementsNode) ;
 int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth, FILE* fp) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels, FILE* fp) ;
+
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp) ;
+void codeGeneration(astNode *node, FILE* fp) ;
 
 void printCommentLineNASM (FILE *fp) ;
 

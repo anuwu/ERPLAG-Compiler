@@ -51,10 +51,9 @@ struct _moduleST {
 	void * parent ; 		// DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
 
 	int filledMod ;
+	int inputSize ;
 	int outputSize ;
-
 	int currOffset ;
-	int hasReturns ;
 } ;
 
 struct _moduleSTentry {

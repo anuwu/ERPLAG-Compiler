@@ -10,6 +10,7 @@ baseST *realBase ;
 int x = 0 ;
 int tf = 0 ;
 int df = 0 ;
+char offsetStr[10] ;
 
 extern int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp) ;
 
@@ -18,6 +19,19 @@ int get_label()
 	x++;
 	return x;
 }
+
+char* getOffsetStr (int offset)
+{	
+	if (offset > 0)
+		sprintf (offsetStr, " - %d", offset) ;
+	else if (offset < 0)
+		sprintf (offsetStr, " + %d", -offset) ;
+	else
+		memset (offsetStr, 0, 10) ;
+
+	return offsetStr ;
+}
+
 
 int getStaticOffset (varST *vst, astNode *node, int size)
 {
@@ -34,7 +48,7 @@ void staticArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	tf |= 1 << staticBoundCheck ;
 
 	fprintf (fp, "\t\tMOV AX, %d\n", leftLim) ;
-	fprintf (fp, "\t\tMOV BX, [RBP - %d]\n", indexVar->offset) ;
+	fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr (indexVar->offset)) ;
 	fprintf (fp, "\t\tMOV CX, %d\n", rightLim) ;
 	fprintf (fp, "\t\tMOV DX, %d\n", vst->offset) ;
 	fprintf (fp, "\t\tCALL staticBoundCheck\n\n") ;
@@ -45,11 +59,11 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 {
 	int start_label, end_label ;
 
-	fprintf (fp, "\t\tMOV RDI, [RBP - %d]\n", vst->offset) ;
+	fprintf (fp, "\t\tMOV RDI, [RBP%s]\n", getOffsetStr(vst->offset)) ;
 	if (isdigit(vst->arrayIndices->tokLeft->lexeme[0]))
 		fprintf (fp, "\t\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
-		fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", vst->offset-10) ;
+		fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(vst->offset-10)) ;
 
 	if (isdigit(node->child->tok->lexeme[0]))
 		fprintf (fp, "\n\t\tMOV BX, %s\n", node->child->tok->lexeme) ;
@@ -57,13 +71,13 @@ void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp)
 	{
 		varST *indexVar ;
 		indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
-		fprintf (fp, "\t\tMOV BX, [RBP - %d]\n", indexVar->offset) ;
+		fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(indexVar->offset)) ;
 	}
 
 	if (isdigit(vst->arrayIndices->tokRight->lexeme[0]))
 		fprintf (fp, "\t\tMOV CX, %s\n", vst->arrayIndices->tokRight->lexeme) ;		
 	else
-		fprintf (fp, "\t\tMOV CX, [RBP - %d]\n", vst->offset-8) ;
+		fprintf (fp, "\t\tMOV CX, [RBP%s]\n", getOffsetStr(vst->offset-8)) ;
 
 	tf |= 1 << dynamicBoundCheck ;
 	fprintf (fp, "\t\tCALL dynamicBoundCheck\n\n") ;
@@ -73,11 +87,12 @@ void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 {
 	if(node->child == NULL)
 	{
+		varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
 		fprintf (fp, "\t\tPOP AX\n");
 		if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 			fprintf (fp, "\t\tNEG AX\n") ;
 
-		fprintf (fp, "\t\tMOV [RBP - %d],AX\t\t\t\t\t\t\t\t;Store\n", searchVar(realBase, lst, node->tok->lexeme)->offset);	
+		fprintf (fp, "\t\tMOV [RBP%s],AX\t\t\t\t\t\t\t\t;Store\n", getOffsetStr(searchedVar->offset)) ;	
 	}
 	else
 	{
@@ -101,7 +116,7 @@ void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 				if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 					fprintf (fp, "\t\tNEG AX\n") ;
 
-				fprintf (fp, "\t\tMOV [RBP - %d], AX\t\t\t\t\t\t\t\t;Store\n" , getStaticOffset(vst,node,2)) ;
+				fprintf (fp, "\t\tMOV [RBP%s], AX\t\t\t\t\t\t\t\t;Store\n" , getOffsetStr(getStaticOffset(vst,node,2))) ;
 			}
 		}
 		else
@@ -113,6 +128,72 @@ void assignGeneration (astNode *node, moduleST *lst, FILE *fp)
 
 			fprintf (fp, "\t\tMOV [RDI + RBX], AX\n") ;
 		}
+	}
+}
+
+void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp)
+{
+	char reg[3] ;
+	if (node->prev == NULL)
+		strcpy (reg, "AX") ;
+	else
+		strcpy (reg, "BX") ;
+
+	switch (node->id)
+	{
+		case TK_ID :
+			if (node->child == NULL)
+			{
+				varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+
+				fprintf (fp, "\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(searchedVar->offset)) ;
+				fprintf (fp, "\t\tPUSH %s\n", reg);	
+			}
+			else
+			{
+				varST *vst ;
+				vst = searchVar (realBase, lst,node->tok->lexeme);
+
+				if (isVarStaticArr(vst))
+				{
+					if (node->child->id == TK_ID)
+					{
+						staticArrBoundCheck (node, lst, vst, fp) ;
+						fprintf (fp, "\t\tMOV %s, [RBP + RBX]\n", reg) ;
+					}
+					else
+						fprintf (fp, "\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(getStaticOffset (vst, node, 2))) ;
+				}
+				else
+				{
+					dynamicArrBoundCheck (node, lst, vst, fp) ;
+					fprintf (fp, "\t\tMOV %s, [RDI + RBX]\n", reg) ;
+				}
+				
+				fprintf (fp, "\t\tPUSH %s\n", reg);	
+			}
+
+			break ;
+
+		case TK_RNUM :
+			printf ("CODEGEN ERROR : NO FLOATING POINT ALLOWED!\n") ;
+			exit (0) ;
+			break ;
+
+		case TK_NUM : 
+			fprintf (fp, "\t\tMOV %s, %s\n", reg, node->tok->lexeme);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
+
+		case TK_TRUE :
+			fprintf (fp, "\t\tMOV %s, 1\n", reg);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
+
+		case TK_FALSE :
+			fprintf (fp, "\t\tMOV %s, 0\n", reg);
+			fprintf (fp, "\t\tPUSH %s\n", reg);	
+			break ;
 	}
 }
 
@@ -215,70 +296,6 @@ void exprGeneration (astNode *node, moduleST *lst, FILE *fp)
 	}
 }
 
-void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp)
-{
-	char reg[3] ;
-	if (node->prev == NULL)
-		strcpy (reg, "AX") ;
-	else
-		strcpy (reg, "BX") ;
-
-	switch (node->id)
-	{
-		case TK_ID :
-			if (node->child == NULL)
-			{
-				fprintf (fp, "\t\tMOV %s, [RBP - %d]\n", reg, searchVar(realBase, lst, node->tok->lexeme)->offset);
-				fprintf (fp, "\t\tPUSH %s\n", reg);	
-			}
-			else
-			{
-				varST *vst ;
-				vst = searchVar (realBase, lst,node->tok->lexeme);
-
-				if (isVarStaticArr(vst))
-				{
-					if (node->child->id == TK_ID)
-					{
-						staticArrBoundCheck (node, lst, vst, fp) ;
-						fprintf (fp, "\t\tMOV %s, [RBP + RBX]\n", reg) ;
-					}
-					else
-						fprintf (fp, "\t\tMOV %s, [RBP - %d]\n", reg, getStaticOffset (vst, node, 2)) ;
-				}
-				else
-				{
-					dynamicArrBoundCheck (node, lst, vst, fp) ;
-					fprintf (fp, "\t\tMOV %s, [RDI + RBX]\n", reg) ;
-				}
-				
-				fprintf (fp, "\t\tPUSH %s\n", reg);	
-			}
-
-			break ;
-
-		case TK_RNUM :
-			printf ("CODEGEN ERROR : NO FLOATING POINT ALLOWED!\n") ;
-			exit (0) ;
-			break ;
-
-		case TK_NUM : 
-			fprintf (fp, "\t\tMOV %s, %s\n", reg, node->tok->lexeme);
-			fprintf (fp, "\t\tPUSH %s\n", reg);	
-			break ;
-
-		case TK_TRUE :
-			fprintf (fp, "\t\tMOV %s, 1\n", reg);
-			fprintf (fp, "\t\tPUSH %s\n", reg);	
-			break ;
-
-		case TK_FALSE :
-			fprintf (fp, "\t\tMOV %s, 0\n", reg);
-			fprintf (fp, "\t\tPUSH %s\n", reg);	
-			break ;
-	}
-}
-
 void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 {
 	int start_label, end_label ;
@@ -308,13 +325,13 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 	if (searchedVar->datatype == TK_INTEGER)
 	{
 		tf |= 1 << printInteger ;
-		fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
+		fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
 		fprintf (fp, "\t\tCALL printInteger\n\n") ;
 	}
 	else if (searchedVar->datatype == TK_BOOLEAN)
 	{
 		tf |= 1 << printBoolean ;
-		fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", searchedVar->offset) ;
+		fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
 		fprintf (fp, "\t\tCALL printBoolean\n\n") ;
 	}
 	else // Array type
@@ -323,7 +340,7 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 		{
 			if (node->child != NULL && node->child->id == TK_NUM)	// Static array, static index
 			{
-				fprintf (fp, "\t\tMOV BX, [RBP - %d]\n", getStaticOffset(searchedVar,node,2)) ;
+				fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(getStaticOffset(searchedVar,node,2))) ;
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
 				{
 					tf |= 1 << printInteger ;
@@ -393,12 +410,12 @@ void printGeneration (astNode *node, moduleST *lst, FILE *fp)
 			{
 				df |= 1 << printFormatArray ;
 
-				fprintf (fp, "\n\t\tMOV CX, [RBP - %d]\n", searchedVar->offset - 10) ;
-				fprintf (fp, "\t\tMOV DX, [RBP - %d]\n", searchedVar->offset - 8) ;
+				fprintf (fp, "\n\t\tMOV CX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 10)) ;
+				fprintf (fp, "\t\tMOV DX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 8)) ;
 				fprintf (fp, "\t\tSUB DX, CX\n") ;
 				fprintf (fp, "\t\tADD DX, 1\n") ;
 				fprintf (fp, "\t\tADD DX, DX\n") ;
-				fprintf (fp, "\t\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
+				fprintf (fp, "\t\tMOV RDI, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
 
 				if (searchedVar->arrayIndices->type == TK_INTEGER)
 				{
@@ -491,18 +508,18 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *
 			if (isdigit(searchedVar->arrayIndices->tokLeft->lexeme[0]))
 				fprintf (fp, "\t\tMOV BX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
 			else
-				fprintf (fp, "\t\tMOV BX, [RBP - %d]\n", searchedVar->offset-10) ;
+				fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(searchedVar->offset-10)) ;
 
 			if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
 				fprintf (fp, "\t\tMOV CX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;		
 			else
-				fprintf (fp, "\t\tMOV CX, [RBP - %d]\n", searchedVar->offset-8) ;
+				fprintf (fp, "\t\tMOV CX, [RBP%s]\n", getOffsetStr(searchedVar->offset-8)) ;
 
 			tf |= 1 << printGetArrPrompt ;
 			fprintf (fp, "\t\tCALL printGetArrPrompt\n\n") ;
 
 			tf |= 1 << getDynamicArr ;
-			fprintf (fp, "\n\t\tMOV RDI, [RBP - %d]\n", searchedVar->offset) ;
+			fprintf (fp, "\n\t\tMOV RDI, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
 			fprintf (fp, "\t\tCALL getDynamicArr\n\n") ;
 		}
 	}
@@ -520,7 +537,7 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	else
 	{
 		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
-		fprintf (fp, "\t\tMOV AX, [RBP - %d]\n", leftVar->offset) ;
+		fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(leftVar->offset)) ;
 	}
 
 	if (isdigit(searchedVar->arrayIndices->tokRight->lexeme[0]))
@@ -528,7 +545,7 @@ void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp)
 	else
 	{
 		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
-		fprintf (fp, "\t\tMOV BX, [RBP - %d]\n", rightVar->offset) ;
+		fprintf (fp, "\t\tMOV BX, [RBP%s]\n", getOffsetStr(rightVar->offset)) ;
 	}
 
 	fprintf (fp, "\t\tCALL dynamicDeclCheck\n\n") ;
@@ -574,11 +591,11 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount,
 	else
 	{
 		fprintf (fp, "\n\t\tCALL malloc\n") ;
-		fprintf (fp, "\t\tMOV [RBP - %d], RAX\n", searchedVar->offset) ;
+		fprintf (fp, "\t\tMOV [RBP%s], RAX\n", getOffsetStr(searchedVar->offset)) ;
 		fprintf (fp, "\t\tPOP AX\n") ;
-		fprintf (fp, "\t\tMOV [RBP - %d], AX\n", searchedVar->offset - 10) ;
+		fprintf (fp, "\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset - 10)) ;
 		fprintf (fp, "\t\tPOP BX\n") ;
-		fprintf (fp, "\t\tMOV [RBP - %d], BX\n\n", searchedVar->offset - 8) ;
+		fprintf (fp, "\t\tMOV [RBP%s], BX\n\n", getOffsetStr(searchedVar->offset - 8)) ;
 	}
 }
 
@@ -1281,7 +1298,7 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		caseLabels[i] = get_label() ;
 
 	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-	fprintf (fp, "\n\t\tMOV AX, [RBP - %d]\n", switchVar->offset) ;
+	fprintf (fp, "\n\t\tMOV AX, [RBP%s]\n", getOffsetStr(switchVar->offset)) ;
 
 	astNode *caseValNode =  node->next->next->next ;
 	i = 0 ;
@@ -1308,6 +1325,278 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 	}
 
 	return def_label ;
+}
+
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp)
+{
+	if (node == NULL)
+		return 0 ;
+
+	varST *searchedVar ;
+	astNode *idListHead ;
+	moduleST *calledModule ;
+
+	switch (node->id)
+	{
+		int start_label, end_label ;
+		int reserveLabel[10] ;
+
+		case statements :
+			moduleGeneration (node->child, localBase, rspDepth, node->localST, vst, fp);		// Access local scope and move below
+			break ;
+
+		case statement :
+			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+			if (node->next == NULL)
+			{
+				if (lst->tableType == SWITCH_ST)
+					break ;
+
+				if (lst->parent == realBase)
+				{
+					fprintf (fp, "\n\t\tMOV RSP, RBP\n") ;
+					fprintf (fp, "\t\tPOP RBP\n") ;
+					fprintf (fp, "\t\tret\n") ;
+				}
+				else if (rspDepth - localBase > 0)
+					fprintf (fp, "\t\tADD RSP, %d\t\t\t\t\t\t\t\t; Restoring RSP to previous scope\n", (rspDepth-localBase)) ;
+			}
+			else
+				moduleGeneration(node->next, localBase, rspDepth, lst, vst, fp);
+
+			break ;
+
+		case TK_DECLARE :
+			;
+			int switchPass = 0 ;
+			if (lst->tableType != SWITCH_ST)
+				; // Subtract RSP, and allocate memory if dynamic
+			else if (node->parent != node)
+				switchPass = 1 ; // Subtract RSP only, and do not allocate memory for dynamic
+			else
+			{
+				switchPass = 2 ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
+				node->parent = node->next->parent ;
+			}
+
+			int endOffset, declCount = 1 ;
+			idListHead = node->next->child ;
+			astNode *dtNode = node->next->next ;
+
+			while (idListHead->next != NULL)
+			{
+				declCount++ ;
+				idListHead = idListHead->next ;
+			}
+
+			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+			endOffset = searchedVar->offset ;
+			if (endOffset > 0 && (switchPass == 0 || switchPass == 1))
+			{	
+				fprintf (fp, "\t\tSUB RSP, %d\t\t\t\t\t\t\t\t; Updating RSP\n", (endOffset - rspDepth)) ;
+				rspDepth = endOffset ;
+			}
+
+			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && (switchPass == 0 || switchPass == 2))
+				dynamicDeclareGeneration (lst, searchedVar, declCount, fp) ;
+
+			
+			break ;											
+
+		case TK_ASSIGNOP :
+			if ((node->child->next->id == TK_MINUS || node->child->next->id == TK_PLUS) && node->child->next->child->next == NULL)
+				exprGeneration(node->child->next->child, lst, fp);
+			else
+				exprGeneration(node->child->next, lst, fp);
+
+			assignGeneration (node->child, lst, fp) ;
+			//moduleGeneration(node->child, localBase, rspDepth, lst, vst, fp);
+
+			fprintf (fp, "\n") ;
+			break ;
+
+		case TK_FOR :
+			node=node->next;
+			start_label = get_label () ;
+			end_label = get_label () ;
+
+			searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+
+			fprintf (fp, "\t\tMOV CX,%s\n", node->next->tok->lexeme);
+			fprintf (fp, "\t\tMOV [RBP%s], CX\t\t\t\t\t\t\t\t; for loop lower lim\n" , getOffsetStr(searchedVar->offset)) ;
+
+			fprintf (fp, "\n\tFOR%d:\n", start_label) ;
+			fprintf (fp, "\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
+			fprintf (fp, "\t\tCMP CX,AX\n");
+			fprintf (fp, "\t\tJG FOR%d\n\n", end_label);
+
+			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst, fp);		// Statements
+
+			fprintf (fp, "\n\t\tMOV CX, [RBP%s]\t\t\t\t\t\t\t\t; Ending increment\n", getOffsetStr(searchedVar->offset)) ;
+			fprintf (fp, "\t\tINC CX\n");
+			fprintf (fp, "\t\tMOV [RBP%s],CX\n", getOffsetStr(searchedVar->offset)) ;
+			fprintf (fp, "\t\tJMP FOR%d\n", start_label) ;
+			fprintf (fp, "\n\tFOR%d:\n", end_label) ;
+			break ;
+
+		
+		case TK_WHILE :
+			node=node->next;
+			start_label = get_label();
+			end_label =  get_label();
+
+			fprintf (fp, "\n\tWHILE%d:\n", start_label) ;
+
+			exprGeneration (node, lst, fp);	// expression
+
+			fprintf (fp, "\t\tPOP AX\n");
+			fprintf (fp, "\t\tCMP AX, 0\n");
+			fprintf (fp, "\t\tJE WHILE%d\n\n", end_label) ;
+
+			moduleGeneration(node->next, rspDepth, rspDepth, lst, vst, fp);		// statements
+
+			fprintf (fp, "\t\tJMP WHILE%d\n", start_label) ;
+			fprintf (fp, "\n\tWHILE%d:\n", end_label) ;
+
+			break ;
+		
+		case TK_PRINT :
+			node = node->next ;
+			printGeneration (node, lst, fp) ;
+			break ;
+
+		case TK_GET_VALUE :
+			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			getValueGeneration (lst, searchedVar, rspDepth, fp) ;
+			break ;
+
+		case TK_SWITCH :
+			;
+
+			int i, caseCount, savedRspDepth, def_label ;
+			int *caseLabels ;
+			astNode *statementsNode = node->next->next->next->next ;
+
+			savedRspDepth = rspDepth ;
+
+			rspDepth = switchDeclareVars (node->next->next->next->next, vst, rspDepth, fp) ;
+			caseCount = getCaseCount (node->next->next->next->next) ;
+			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
+			def_label = switchCaseLabels (node , lst, caseCount, caseLabels, fp) ;
+
+			end_label = get_label () ;
+			i = 0 ;
+			while (statementsNode != NULL)
+			{
+				fprintf (fp, "\nLABEL%d:\n", caseLabels[i]) ;
+				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst, fp) ;
+				fprintf (fp ,"\n\t\tJMP LABEL%d\n", end_label) ;
+
+				i++ ;
+				if (statementsNode->next != NULL)
+				{
+					if (statementsNode->next->id == TK_DEFAULT)
+					{
+						statementsNode = statementsNode->next->next ;
+						fprintf (fp, "\nLABEL%d:\n", def_label) ;
+						moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst, fp) ;
+
+						break ;
+					}
+					statementsNode = statementsNode->next->next->next ;
+				}
+				else
+					statementsNode = NULL ;
+			}
+
+			fprintf (fp ,"\nLABEL%d:\n", end_label) ;
+			fprintf (fp, "\n\t\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
+			rspDepth = savedRspDepth ;
+
+			break ;
+
+		case TK_ID :
+			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
+
+			idListHead = node->next->child ; 
+			while (idListHead->next != NULL)
+				idListHead = idListHead->next ;
+
+			while (idListHead != NULL)
+			{
+				searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+				if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
+				{
+					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
+					fprintf (fp, "\t\tPUSH AX\n") ;
+				}
+				else if (isVarStaticArr (searchedVar))
+				{
+					fprintf (fp, "\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
+					fprintf (fp, "\t\tPUSH AX\n") ;
+					fprintf (fp, "\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+					fprintf (fp, "\t\tPUSH AX\n") ;
+					fprintf (fp, "\t\tMOV RAX, RBP\n") ;
+					fprintf (fp, "\t\tSUB RAX, %d\n", -searchedVar->offset) ;
+					fprintf (fp, "\t\tPUSH RAX\n") ;
+				}
+				else
+				{
+					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 10)) ;
+					fprintf (fp, "\t\tPUSH AX\n") ;
+					fprintf (fp, "\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 8)) ;
+					fprintf (fp, "\t\tPUSH AX\n") ;
+					fprintf (fp, "\t\tMOV RAX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
+					fprintf (fp, "\t\tPUSH RAX\n") ;
+				}
+
+				idListHead = idListHead->prev ;
+			}
+
+			fprintf (fp, "\t\tcall %s\n", node->tok->lexeme) ;
+			fprintf (fp, "\t\tADD RSP, %d\n", calledModule->inputSize) ;
+			break ;
+	}
+
+	return rspDepth ;
+}
+
+void codeGeneration(astNode *node, FILE* fp)
+{
+	if (node == NULL)
+		return;
+
+	switch (node->id)
+	{
+		case program :
+			codeGeneration (node->child->next, fp) ;		// <otherModules>
+			break ;
+
+		case otherModules :
+			codeGeneration (node->child, fp) ;					// Do module definitions
+			codeGeneration (node->next, fp) ;					// <driverModule> or NULL
+			break ;
+
+		case module :
+			fprintf (fp, "\n%s:\n", node->child->tok->lexeme) ;
+			fprintf (fp, "\t\tPUSH RBP\n") ;
+			fprintf (fp, "\t\tMOV RBP, RSP\n\n") ;
+
+			moduleGeneration (node->child->next->next->next, 0, 0, NULL, NULL, fp) ;
+			codeGeneration (node->next, fp) ;					// Moving on to the next module
+
+			break ;
+
+		case driverModule :
+			fprintf (fp, "\nmain:\n") ;
+			fprintf (fp, "\t\tPUSH RBP\n") ;
+			fprintf (fp, "\t\tMOV RBP, RSP\n\n") ;
+
+			moduleGeneration(node->child, 0, 0, NULL, NULL, fp); 				// <statements>
+			codeGeneration(node->next, fp); 				// Move to the next child of program
+
+			break ;
+	}
 }
 
 void printCommentLineNASM (FILE *fp)

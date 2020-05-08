@@ -92,9 +92,9 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 
 	tmp->parent = (void *) parent ;
 	tmp->currOffset = currOffset ;
-	tmp->hasReturns = 0 ;
 	tmp->filledMod = 0 ;
 	tmp->outputSize = 0 ;
+	tmp->inputSize = 0 ;
 
 	return tmp ;
 }
@@ -199,9 +199,6 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST )
 	tmp->thisVarST = thisVarST ;
 	tmp->next = thisModule->outputVars[index] ; 
 	thisModule->outputVars[index] = tmp ;
-
-	if (!thisModule->hasReturns)
-		thisModule->hasReturns = 1 ;
 }
 
 
@@ -619,7 +616,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				base->semanticError = 1 ;
 			}
 
-			if (modPtr->hasReturns)
+			if (modPtr->outputVars[0] != NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
@@ -651,7 +648,7 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 				base->semanticError = 1 ;
 			}
 
-			if (!modPtr->hasReturns)
+			if (modPtr->outputVars[0] == NULL)
 			{
 				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
@@ -1226,7 +1223,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							retSize = getSize (base, tmp) ;
 							tmp->offset = -moduleToInsert->currOffset ;
 							moduleToInsert->currOffset += retSize ;
-
+							moduleToInsert->inputSize += retSize ;
 						}
 						else{
 							// array 
@@ -1239,6 +1236,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							{
 								tmp->offset = -moduleToInsert->currOffset ;
 								moduleToInsert->currOffset += retSize ;
+								moduleToInsert->inputSize += retSize ;
 							}
 							else
 								tmp->offset = retSize ;
