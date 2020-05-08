@@ -4,7 +4,7 @@
 #include "typeChecker.h"
 #include "codegen.h"
 
-extern baseST *realBase ;
+FILE *fp ;
 
 int main(int argc, char *argv[])
 {
@@ -39,12 +39,12 @@ int main(int argc, char *argv[])
 
 	if (!realBase->semanticError)
 	{
-		FILE *fp = fopen ("code.asm", "w") ;
+		fp = fopen ("code.asm", "w") ;
 
-		preamble (fp) ;
-		codeGeneration (astRoot, fp) ;
-		printCommentLineNASM (fp) ;
-		postamble (fp) ;
+		preamble () ;
+		codeGeneration (astRoot) ;
+		printCommentLineNASM () ;
+		postamble () ;
 	}
 	else
 		printf ("Semantic errors found. Please check the above messages\n") ;

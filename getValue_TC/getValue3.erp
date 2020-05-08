@@ -12,4 +12,6 @@ start
 	declare k : integer ;
 	get_value (k) ;
 	print (A[k]) ;
+
+	print (A) ;
 end

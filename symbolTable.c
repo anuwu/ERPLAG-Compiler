@@ -469,7 +469,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 
 		if(searchedVar == NULL)
 		{
-			printf("ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n",getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme) ;
+			printf("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n",getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme) ;
 			realBase->semanticError = 1 ;
 			sameArgNoErr = 1 ;
 		}
@@ -481,26 +481,26 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 				{
 					if (entryVar->arrayIndices->type != searchedVar->arrayIndices->type)
 					{
-						printf ("ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, array inputs \"%s\" and \"%s\" have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 
 					if (isLeftLimStatic(entryVar) && isLeftLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme))
 					{
-						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 
 					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
 					{
-						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 				}
 			}
 			else 
 			{
-				printf ("ERROR : In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
 
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
@@ -517,13 +517,13 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 
 	if (varEntry == NULL && inputIter)
 	{
-		printf("ERROR : In \"%s\" at line %d More parameters passed\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber) ;
+		printf("SEMANTIC ERROR : In \"%s\" at line %d More parameters passed\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return (varST *) malloc (sizeof(varST)) ;
 	}
 	else if (varEntry && inputIter == NULL) 
 	{
-		printf("ERROR : In \"%s\" at line %d insufficient number of actual parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
+		printf("SEMANTIC ERROR : In \"%s\" at line %d insufficient number of actual parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 
 		return (varST *) malloc (sizeof(varST)) ;
@@ -558,7 +558,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 		if(searchedVar == NULL)
 		{
-			printf("ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
+			printf("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" variable not declared\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
 			sameArgNoErr = 1 ;
 			realBase->semanticError = 1 ;
 		}
@@ -566,7 +566,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		{
 			if(entryVar->datatype != searchedVar->datatype)
 			{
-				printf ( "ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme) ;
+				printf ( "SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme) ;
 				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
 			}
@@ -578,13 +578,13 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 	if (varEntry==NULL && outputIter)
 	{
-		printf("ERROR : In \"%s\" at line %d, more parameters passed\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber) ;
+		printf("SEMANTIC ERROR : In \"%s\" at line %d, more parameters passed\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 	}
 	else if (varEntry && outputIter==NULL) 
 	{
-		printf("ERROR : In \"%s\" at line %d, Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
+		printf("SEMANTIC ERROR : In \"%s\" at line %d, Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
 		realBase->semanticError = 1 ;
 		return entryVar ;
 	}
@@ -612,13 +612,13 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		{
 			if (varPtr == NULL && !modPtr->filledMod)
 			{
-				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
 				base->semanticError = 1 ;
 			}
 
 			if (modPtr->outputVars[0] != NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
 			}
 
@@ -644,13 +644,13 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 		{
 			if (varPtr == NULL && !modPtr->filledMod)
 			{
-				printf ("ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
 				base->semanticError = 1 ;
 			}
 
 			if (modPtr->outputVars[0] == NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
 				base->semanticError = 1 ;
 			}
 			
@@ -702,7 +702,7 @@ int getSize(baseST * realBase, varST * thisVar)
 
 			if (sz <= 0)
 			{
-				printf ("ERROR : In \"%s\" at line %d, the declaration of array \"%s\" must have left index <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, the declaration of array \"%s\" must have left index <= right index\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->lexeme) ;
 				realBase->semanticError = 1 ;
 				return -1 ;
 			}
@@ -725,12 +725,12 @@ int getSize(baseST * realBase, varST * thisVar)
 				searchedVarLeft = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokLeft->lexeme) ;
 				if (searchedVarLeft == NULL)
 				{
-					printf ("ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarLeft->datatype != TK_INTEGER)
 				{
-					printf ("ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 			}
@@ -740,12 +740,12 @@ int getSize(baseST * realBase, varST * thisVar)
 				searchedVarRight = searchVar (realBase, (moduleST *)thisVar->scope, thisVar->arrayIndices->tokRight->lexeme) ;
 				if (searchedVarRight == NULL)
 				{
-					printf ("ERROR : In \"%s\" at line %d, right index \"%s\" of array\"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, right index \"%s\" of array\"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarRight->datatype != TK_INTEGER)
 				{
-					printf ("ERROR : In \"%s\" at line %d, right index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, right index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 			}
@@ -776,7 +776,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				
 				if (searchedVarLeft != NULL)
 				{
-					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				else
@@ -794,7 +794,7 @@ int getSize(baseST * realBase, varST * thisVar)
 
 				if (searchedVarRight != NULL)
 				{
-					printf ("ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 				else
@@ -858,12 +858,12 @@ void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *var
 	var->tinker++ ;
 	if (var->varType == VAR_LOOP)
 	{
-		printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		printf ("SEMANTIC ERROR : In \"%s\" at line %d, loop variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
 	}
 	else if (var->varType == VAR_PLACEHOLDER)
 	{
-		printf ("ERROR : In \"%s\" at line %d, placeholder variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		printf ("SEMANTIC ERROR : In \"%s\" at line %d, placeholder variable \"%s\" cannot be modified\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
 	}
 }
@@ -932,7 +932,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 				if (searchedVar != NULL && searchedVar->scope == baseModule && searchedVar->varType != VAR_INPUT)
 				{
-					printf ( "ERROR : In \"%s\" at line %d, %s variable \"%s\" already declared\n", getParentModuleName (realBase, baseModule) ,idAST->tok->lineNumber, varTypeToString(searchedVar->varType) , idAST->tok->lexeme) ;
+					printf ( "SEMANTIC ERROR : In \"%s\" at line %d, %s variable \"%s\" already declared\n", getParentModuleName (realBase, baseModule) ,idAST->tok->lineNumber, varTypeToString(searchedVar->varType) , idAST->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 				}
 				else		// if input variable, or a local variable in some parent scope, or not found at all
@@ -973,7 +973,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			if (getExpressionType (realBase, baseModule, statementAST->child->next) != TK_BOOLEAN)
 			{
-				printf ("ERROR : In \"%s\" at line %d, the guard condition must be of type boolean\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, the guard condition must be of type boolean\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -988,12 +988,12 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			searchedVar = searchVar (realBase, baseModule, statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, loop variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if (searchedVar->datatype != TK_INTEGER)
 			{
-				printf ("ERROR : In \"%s\" at line %d, loop variable \"%s\" needs to be of integer type\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, loop variable \"%s\" needs to be of integer type\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber, statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -1002,7 +1002,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			if (atoi(loopLim->tok->lexeme) > atoi(loopLim->next->tok->lexeme))
 			{
-				printf ("ERROR : In \"%s\" at line %d, left loop limit must be <= right loop limit\n", getParentModuleName(realBase, baseModule), loopLim->tok->lineNumber) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, left loop limit must be <= right loop limit\n", getParentModuleName(realBase, baseModule), loopLim->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -1026,7 +1026,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			if (searchedVar == NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" variable undeclared\n" ,  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber , statementAST->child->next->tok->lexeme ) ;
 				realBase->semanticError = 1 ;
 			}
 			else
@@ -1046,11 +1046,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
 
 			if (validCallFlag == -1 )	{
-				printf("ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+				printf("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if( validCallFlag == -2 ) {
-				printf( "ERROR : In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
+				printf( "SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			// else error messages is printed in internal functions
@@ -1064,11 +1064,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			int validCallFlag = isValidCall ( realBase , baseModule,statementAST->child , 0 ) ;
 			if (validCallFlag == -1 )	
 			{
-				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+				printf( "SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if( validCallFlag == -2 ) {
-				printf( "ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
+				printf( "SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 		}
@@ -1079,14 +1079,14 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
-				printf ("ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else
 			{
 				if (!(searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN))
 				{
-					printf ("ERROR : In \"%s\" at line %d, \"%s\" switch variable must be integer or boolean\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" switch variable must be integer or boolean\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
 					realBase->semanticError = 1 ;
 					switchTypeError = 1 ;
 				}
@@ -1103,7 +1103,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE))|| (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
 					{
-						printf ("ERROR : In \"%s\" at line %d, switch variable has type %s and case value has type %s\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, switch variable has type %s and case value has type %s\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
 						realBase->semanticError = 1 ;
 					}
 				}
@@ -1112,7 +1112,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					if (caseValRepeat (caseAstNode))
 					{
-						printf ("ERROR : In \"%s\" at line %d, case value is repeating\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, case value is repeating\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
 					}
 
@@ -1123,7 +1123,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					hasDefault = 1 ;
 					if (searchedVar->datatype == TK_BOOLEAN)
 					{
-						printf ("ERROR : In \"%s\" at line %d, switch variable is boolean, default case is not allowed\n", getParentModuleName(realBase, baseModule), caseAstNode->tok->lineNumber) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, switch variable is boolean, default case is not allowed\n", getParentModuleName(realBase, baseModule), caseAstNode->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
 					}
 
@@ -1138,7 +1138,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 
 			if (!hasDefault && searchedVar->datatype == TK_INTEGER)
 			{
-				printf ("ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
+				printf ("SEMANTIC ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -1162,7 +1162,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 		
 		varST * searchResult ;
 		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
-			printf("ERROR : In line %d, \"%s\" module already declared.\n" , currentASTNode->tok->lineNumber, searchResult->lexeme ) ;
+			printf("SEMANTIC ERROR : In line %d, \"%s\" module already declared.\n" , currentASTNode->tok->lineNumber, searchResult->lexeme ) ;
 			base->semanticError = 1 ;
 		}
 		else {
@@ -1186,7 +1186,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
 			{
-				printf ("ERROR : In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				//currentASTNode->child->prev = currentASTNode->child ;
 				currentASTNode = currentASTNode->next ;
@@ -1208,7 +1208,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 					if (searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
 					{
-						printf ("ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
+						printf ("SEMANTIC ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else{
@@ -1263,12 +1263,12 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 					if (searchedInput != NULL) 
 					{
-						printf ("ERROR : In definition of \"%s\" at line %d, input variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						printf ("SEMANTIC ERROR : In definition of \"%s\" at line %d, input variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else if (searchedOutput != NULL)
 					{
-						printf ("ERROR : In definition of \"%s\" at line %d, output variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						printf ("SEMANTIC ERROR : In definition of \"%s\" at line %d, output variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
 					}
 					else
@@ -1293,7 +1293,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
-				printf ( "ERROR : In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
+				printf ( "SEMANTIC ERROR : In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
 				base->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 			}
@@ -1329,7 +1329,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 			if (!checkAllOutputsTinkered(moduleToInsert))
 			{
-				printf ("ERROR : In the definition of \"%s\", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
+				printf ("SEMANTIC ERROR : In the definition of \"%s\", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
 				printOutputsNotTinkered (moduleToInsert) ;
 				printf ("\n") ;
 				base->semanticError = 1 ;

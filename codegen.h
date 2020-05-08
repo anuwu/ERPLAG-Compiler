@@ -4,6 +4,9 @@
 #include "ast.h"
 #include "symbolTable.h"
 
+extern baseST *realBase ;
+extern FILE *fp ;
+
 typedef enum _textFlags
 {
 	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicBoundCheck, dynamicDeclCheck
@@ -18,36 +21,35 @@ typedef enum _dataFlags
 int get_label() ;
 char* getOffsetStr (int offset) ;
 int isIndexStatic (astNode *node) ;
-void loadRegLeftLim (varST *searchedVar, char *reg, FILE *fp) ;
-void loadRegRightLim (varST *searchedVar, char *reg, FILE *fp) ;
+void loadRegLeftLim (varST *searchedVar, char *reg) ;
+void loadRegRightLim (varST *searchedVar, char *reg) ;
 
 int getStaticOffset (varST *vst, astNode *node, int size) ;
-void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
-void dynamicArrBoundCheck (astNode *node, moduleST *lst, varST *vst, FILE *fp) ;
+void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst) ;
 
-void dynamicDeclareCheck (moduleST *lst, varST *searchedVar, FILE *fp) ;
-void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount, FILE *fp) ;
+void dynamicDeclareCheck (moduleST *lst, varST *searchedVar) ;
+void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount) ;
 
-void assignGeneration (astNode *node, moduleST *lst, FILE *fp) ;
-void exprGeneration (astNode *node, moduleST *lst, FILE *fp) ;
-void exprLeafGeneration (astNode *node, moduleST *lst, FILE* fp) ;
-void printGeneration (astNode *node, moduleST *lst, FILE *fp) ;
+void assignGeneration (astNode *node, moduleST *lst) ;
+void exprGeneration (astNode *node, moduleST *lst) ;
+void exprLeafGeneration (astNode *node, moduleST *lst) ;
+void printGeneration (astNode *node, moduleST *lst) ;
 
-void getValueRSPAlign (FILE *fp) ;
-void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth, FILE *fp) ;
+void getValueRSPAlign () ;
+void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth) ;
 
-void preamble (FILE *fp) ;
-void postamble (FILE *fp) ;
+void preamble () ;
+void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 
 int getCaseCount (astNode *statementsNode) ;
-int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth, FILE* fp) ;
-int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels, FILE* fp) ;
+int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth) ;
+int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst, FILE *fp) ;
-void codeGeneration(astNode *node, FILE* fp) ;
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst) ;
+void codeGeneration(astNode *node) ;
 
-void printCommentLineNASM (FILE *fp) ;
+void printCommentLineNASM () ;
 
 
 #endif
