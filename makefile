@@ -1,12 +1,5 @@
 output : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o erplag erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
-	./erplag $(FILE).erp
-	nasm -felf64 code.asm
-	gcc -no-pie code.o -o $(FILE)
-	rm code.o
-
-erplag : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
-	gcc -o erplag erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
 	
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o ast astDriver.o ast.o lexTest.o lexer.o parser.o
@@ -41,19 +34,23 @@ symbolTableDriver.o : symbolTableDriver.c
 	gcc -c symbolTableDriver.c
 
 asm :
-	make -f make.asm
+	make -f make.asm FILE=$(FILE)
+
+erp :
+	make
+	./erplag $(FILE).erp $(FILE).asm
+	make asm FILE=$(FILE)
+
+erpExec :
+	make erp FILE=$(FILE)
+	./$(FILE)
 
 clean :
 	make objClean
 	make exeClean
-	rm -f a.out
-	rm -f code.asm
-	rm -f code.o
 
 exeClean :
-	rm -f erplag
-	rm -f ST
-	rm -f ast
+	find . -type f ! -name "*.*" -delete
 
 objClean :
-	rm -f *.o
+	rm -r -f *.o

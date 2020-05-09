@@ -1,3 +1,5 @@
-output : code.asm
-	nasm -felf64 code.asm
-	gcc -no-pie code.o
+output : $(FILE).o
+	gcc -no-pie $(FILE).o -o $(FILE)
+
+$(FILE).o : $(FILE).asm
+	nasm -felf64 $(FILE).asm
