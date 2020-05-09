@@ -50,7 +50,9 @@ clean :
 	make exeClean
 
 exeClean :
-	find . -type f ! -name "*.*" -delete
+	rm -f erplag
+	rm -f ST
+	rm -f ast
 
 objClean :
-	rm -r -f *.o
+	rm -f *.o
