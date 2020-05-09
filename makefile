@@ -1,10 +1,10 @@
-output : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
-	gcc -o erplag erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
+output : erplag.o codegen.o ast.o typeChecker.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
+	gcc -o erplag erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
 	
-allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
-	gcc -o ast astDriver.o ast.o lexTest.o lexer.o parser.o
-	gcc -o ST symbolTableDriver.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
-	gcc -o erplag erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
+allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
+	gcc -o ast astDriver.o ast.o lexer.o parser.o
+	gcc -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
+	gcc -o erplag erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
 
 erplag.o : erplag.c
 	gcc -c erplag.c
@@ -23,9 +23,6 @@ typeChecker.o : typeChecker.c
 
 parser.o : parser.c
 	gcc -c parser.c
-
-lexTest.o : lexTest.c
-	gcc -c lexTest.c
 
 lexer.o : lexer.c
 	gcc -c lexer.c

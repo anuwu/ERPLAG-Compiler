@@ -100,7 +100,7 @@ void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst)
 
 	loadRegRightLim (vst, "CX") ;
 
-	codePrint ("\t\tCALL boundCheck\n\n") ;
+	codePrint ("\t\tCALL @boundCheck\n\n") ;
 }
 
 void assignGeneration (astNode *node, moduleST *lst)
@@ -134,7 +134,7 @@ void assignGeneration (astNode *node, moduleST *lst)
 			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 				codePrint ("\t\tNEG AX\n") ;
 
-			codePrint ("\t\tMOV [RDI + RBX], AX\n") ;
+			codePrint ("\t\tMOV [RDI + RBX], AX") ;
 		}
 	}
 	codeComment (9, "store variable") ;
@@ -312,13 +312,13 @@ void printGeneration (astNode *node, moduleST *lst)
 		{
 			tf |= 1 << printInteger ;
 			codePrint ("\t\tMOV SI, %s\n", node->tok->lexeme) ;
-			codePrint ("\t\tCALL printInteger\n\n") ;
+			codePrint ("\t\tCALL @printInteger\n\n") ;
 		}
 		else
 		{
 			tf |= 1 << printBoolean ;
 			codePrint ("\t\tMOV SI, %d\n", node->tok->lexeme[0]=='t'?1:0) ;
-			codePrint ("\t\tCALL printBoolean\n\n") ;
+			codePrint ("\t\tCALL @printBoolean\n\n") ;
 		}
 
 		return ;
@@ -328,13 +328,13 @@ void printGeneration (astNode *node, moduleST *lst)
 	{
 		tf |= 1 << printInteger ;
 		codePrint ("\t\tMOV SI, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
-		codePrint ("\t\tCALL printInteger\n\n") ;
+		codePrint ("\t\tCALL @printInteger\n\n") ;
 	}
 	else if (searchedVar->datatype == TK_BOOLEAN)
 	{
 		tf |= 1 << printBoolean ;
 		codePrint ("\t\tMOV SI, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
-		codePrint ("\t\tCALL printBoolean\n\n") ;
+		codePrint ("\t\tCALL @printBoolean\n\n") ;
 	}
 	else // Array type
 	{	
@@ -353,12 +353,12 @@ void printGeneration (astNode *node, moduleST *lst)
 			if (searchedVar->arrayIndices->type == TK_INTEGER)
 			{
 				tf |= 1 << printInteger ;
-				codePrint ("\t\tCALL printInteger\n\n") ;
+				codePrint ("\t\tCALL @printInteger\n\n") ;
 			}
 			else
 			{
 				tf |= 1 << printBoolean ;
-				codePrint ("\t\tCALL printBoolean\n\n") ;
+				codePrint ("\t\tCALL @printBoolean\n\n") ;
 			}
 		}
 		else
@@ -373,12 +373,12 @@ void printGeneration (astNode *node, moduleST *lst)
 			if (searchedVar->arrayIndices->type == TK_INTEGER)
 			{
 				tf |= 1 << printIntegerArr ;
-				codePrint ("\t\tCALL printIntegerArr\n\n") ;
+				codePrint ("\t\tCALL @printIntegerArr\n\n") ;
 			}
 			else
 			{
 				tf |= 1 << printBooleanArr ;
-				codePrint ("\t\tCALL printBooleanArr\n\n") ;
+				codePrint ("\t\tCALL @printBooleanArr\n\n") ;
 			}
 		}
 	}
@@ -403,31 +403,31 @@ void getValueGeneration (moduleST *lst, varST *vst)
 		if (vst->datatype == TK_INTEGER)
 		{
 			df |= 1 << inputIntPrompt ;
-			codePrint ("\n\t\tMOV RDI, inputIntPrompt") ;
+			codePrint ("\n\t\tMOV RDI, @inputIntPrompt") ;
 		}
 		else if (vst->datatype == TK_BOOLEAN)
 		{
 			df |= 1 << inputBoolPrompt ;
-			codePrint ("\n\t\tMOV RDI, inputBoolPrompt") ;
+			codePrint ("\n\t\tMOV RDI, @inputBoolPrompt") ;
 		}
 		codeComment (8, "get_value") ;
 
 
 		tf |= 1 << getValuePrimitive ;
 		codePrint ("\t\tMOV RBX, -%d\n", vst->offset) ;
-		codePrint ("\t\tCALL getValuePrimitive\n\n") ;		
+		codePrint ("\t\tCALL @getValuePrimitive\n\n") ;		
  	}
 	else // Array type
 	{	
 		if (vst->arrayIndices->type == TK_INTEGER)
 		{
 			df |= 1 << inputIntArrPrompt ;
-			codePrint ("\t\tMOV RDI, inputIntArrPrompt\n") ;
+			codePrint ("\t\tMOV RDI, @inputIntArrPrompt\n") ;
 		}
 		else
 		{
 			df |= 1 << inputBoolArrPrompt ;
-			codePrint ("\t\tMOV RDI, inputBoolArrPrompt\n") ;
+			codePrint ("\t\tMOV RDI, @inputBoolArrPrompt\n") ;
 		}
 
 		tf |= 1 << printGetArrPrompt ;
@@ -435,7 +435,7 @@ void getValueGeneration (moduleST *lst, varST *vst)
 
 		loadRegLeftLim (vst, "BX") ;
 		loadRegRightLim (vst, "CX") ;
-		codePrint ("\t\tCALL printGetArrPrompt\n\n") ;
+		codePrint ("\t\tCALL @printGetArrPrompt\n\n") ;
 
 		loadArrBase (vst) ;
 		codePrint ("\t\tMOV DX, CX\n") ;
@@ -443,7 +443,7 @@ void getValueGeneration (moduleST *lst, varST *vst)
 		codePrint ("\t\tADD DX, 1\n") ;
 		codePrint ("\t\tADD DX, DX\n") ;
 		codePrint ("\t\tMOVSX RDX, DX\n") ;
-		codePrint ("\t\tCALL getArr\n\n") ;
+		codePrint ("\t\tCALL @getArr\n\n") ;
 	}
 }
 
@@ -471,7 +471,7 @@ void dynamicDeclareCheck (moduleST *lst, varST *vst)
 		codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr(rightVar->offset)) ;
 	}
 
-	codePrint ("\t\tCALL dynamicDeclCheck\n\n") ;
+	codePrint ("\t\tCALL @dynamicDeclCheck\n\n") ;
 }
 
 void dynamicDeclareGeneration (moduleST *lst, varST *vst, int declCount)
@@ -552,15 +552,15 @@ void postamble()
 	{
 		tf |= 1 << boundERROR ;
 
-		codePrint ("\nboundCheck:\n") ;
+		codePrint ("\n@boundCheck:\n") ;
 		codePrint ("\t\tCMP BX, AX\n") ;
 		codePrint ("\t\tJGE .leftLim\n") ;
-		codePrint ("\t\tCALL boundERROR\n") ;
+		codePrint ("\t\tCALL @boundERROR\n") ;
 
 		codePrint ("\n\t.leftLim:\n") ;
 		codePrint ("\t\tCMP CX, BX\n") ;
 		codePrint ("\t\tJGE .rightLim\n") ;
-		codePrint ("\t\tCALL boundERROR\n") ;
+		codePrint ("\t\tCALL @boundERROR\n") ;
 
 		codePrint ("\n\t.rightLim:\n") ;
 		codePrint ("\t\tSUB BX, AX\n") ;
@@ -575,20 +575,20 @@ void postamble()
 		tf |= 1 << declNegERROR ;
 		tf |= 1 << declERROR ;
 
-		codePrint ("\ndynamicDeclCheck:\n") ;
+		codePrint ("\n@dynamicDeclCheck:\n") ;
 		codePrint ("\t\tCMP AX, 0\n") ;
 		codePrint ("\t\tJGE .leftNotNeg\n") ;
-		codePrint ("\t\tCALL declNegERROR\n") ;
+		codePrint ("\t\tCALL @declNegERROR\n") ;
 
 		codePrint ("\n\t.leftNotNeg:\n") ;
 		codePrint ("\t\tCMP BX, 0\n") ;
 		codePrint ("\t\tJGE .rightNotNeg\n") ;
-		codePrint ("\t\tCALL declNegERROR\n") ;
+		codePrint ("\t\tCALL @declNegERROR\n") ;
 
 		codePrint ("\n\t.rightNotNeg:\n") ;
 		codePrint ("\t\tCMP BX, AX\n") ;
 		codePrint ("\t\tJGE .dynChecked\n") ;
-		codePrint ("\t\tCALL declERROR\n") ;
+		codePrint ("\t\tCALL @declERROR\n") ;
 		codePrint ("\n\t.dynChecked:\n") ;
 		codePrint ("\t\tMOV DX, BX\n") ;
 		codePrint ("\t\tSUB DX, AX\n") ;
@@ -601,7 +601,7 @@ void postamble()
 
 	if (isFlagSet (tf, getValuePrimitive))
 	{
-		codePrint ("\ngetValuePrimitive:\n") ;
+		codePrint ("\n@getValuePrimitive:\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH RBX\n") ;
@@ -610,7 +610,7 @@ void postamble()
 
 		getValueRSPAlign (fp) ;
 
-		codePrint ("\t\tMOV RDI, inputInt") ;
+		codePrint ("\t\tMOV RDI, @inputInt") ;
 		codeComment (9, "get_value") ;
 		codePrint ("\t\tMOV RSI, RSP\n") ;
 		codePrint ("\t\tSUB RSI, 16\n") ;
@@ -633,7 +633,7 @@ void postamble()
 		df |= 1 << leftRange ;
 		df |= 1 << rightRange ;
 
-		codePrint ("\nprintGetArrPrompt:\n") ;
+		codePrint ("\n@printGetArrPrompt:\n") ;
 		codePrint ("\t\tMOV SI, CX\n") ;
 		codePrint ("\t\tSUB SI, BX\n") ;
 		codePrint ("\t\tADD SI, 1\n") ; 
@@ -645,7 +645,7 @@ void postamble()
 		codePrint ("\t\tPOP CX\n") ;
 		codePrint ("\t\tPOP BX\n") ;
 
-		codePrint ("\n\t\tMOV RDI, leftRange\n") ;
+		codePrint ("\n\t\tMOV RDI, @leftRange\n") ;
 		codePrint ("\t\tMOVSX RSI, BX\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH BX\n") ;
@@ -654,7 +654,7 @@ void postamble()
 		codePrint ("\t\tPOP CX\n") ;
 		codePrint ("\t\tPOP BX\n") ;
 
-		codePrint ("\n\t\tMOV RDI, rightRange\n") ;
+		codePrint ("\n\t\tMOV RDI, @rightRange\n") ;
 		codePrint ("\t\tMOVSX RSI, CX\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH BX\n") ;
@@ -668,15 +668,15 @@ void postamble()
 
 	if (isFlagSet (tf, getArr))
 	{
-		codePrint ("\ngetArr:\n");
+		codePrint ("\n@getArr:\n");
 		getValueRSPAlign (fp) ;
 
 		codePrint ("\n\t\tPUSH RDI\n") ;
 		codePrint ("\t\tMOV RCX, 0\n") ;
-		codePrint ("\n\t.getArr:") ;
+		codePrint ("\n\t.getArrLoop:") ;
 		codeComment (8, "getting array") ;
 
-		codePrint ("\t\tMOV RDI, inputInt\n") ;
+		codePrint ("\t\tMOV RDI, @inputInt\n") ;
 		codePrint ("\t\tMOV RSI, RSP\n") ;
 		codePrint ("\t\tSUB RSI, 24\n") ;
 		codePrint ("\t\tPUSH RCX\n") ;
@@ -695,7 +695,7 @@ void postamble()
 
 		codePrint ("\n\t\tADD RCX, 2\n") ;	// Incrementing counter
 		codePrint ("\t\tCMP RCX, RDX\n") ;
-		codePrint ("\t\tJNE .getArr\n\n") ;
+		codePrint ("\t\tJNE .getArrLoop\n\n") ;
 
 		codePrint ("\t\tPOP RDI\n") ;
 		codePrint ("\t\tPOP RAX\n") ;
@@ -708,8 +708,8 @@ void postamble()
 	{
 		df |= 1 << printFormat ;
 
-		codePrint ("\nprintInteger:\n") ;
-		codePrint ("\t\tMOV RDI, printFormat\n") ;
+		codePrint ("\n@printInteger:\n") ;
+		codePrint ("\t\tMOV RDI, @printFormat\n") ;
 		codePrint ("\t\tMOVSX RSI, SI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -722,14 +722,14 @@ void postamble()
 		df |= 1 << printFalse ;
 		df |= 1 << printTrue ;
 
-		codePrint ("\nprintBoolean:\n") ;
+		codePrint ("\n@printBoolean:\n") ;
 		codePrint ("\t\tCMP SI, 0\n") ;
 		codePrint ("\t\tJE .boolFalse\n") ;
-		codePrint ("\t\tMOV RDI, printTrue\n") ;
+		codePrint ("\t\tMOV RDI, @printTrue\n") ;
 		codePrint ("\t\tJMP .boolPrint\n") ;
 
 		codePrint ("\n\t.boolFalse:\n") ;
-		codePrint ("\t\tMOV RDI, printFalse\n") ;
+		codePrint ("\t\tMOV RDI, @printFalse\n") ;
 		codePrint ("\n\t.boolPrint:\n") ;
 
 		codePrint ("\t\tXOR RSI, RSI\n") ;
@@ -746,9 +746,9 @@ void postamble()
 		df |= 1 << printInt ;
 
 
-		codePrint ("\nprintIntegerArr:\n") ;
+		codePrint ("\n@printIntegerArr:\n") ;
 		codePrint ("\t\tPUSH RDI\n") ;
-		codePrint ("\t\tMOV RDI, printFormatArray\n") ;
+		codePrint ("\t\tMOV RDI, @printFormatArray\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
@@ -763,7 +763,7 @@ void postamble()
 		codePrint ("\t\tPUSH RDI\n") ;
 		codePrint ("\t\tMOVSX RBX, CX\n") ;
 		codePrint ("\t\tMOV SI, [RDI + RBX]\n") ;
-		codePrint ("\t\tMOV RDI, printInt\n") ;
+		codePrint ("\t\tMOV RDI, @printInt\n") ;
 		codePrint ("\t\tMOVSX RSI, SI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
@@ -777,7 +777,7 @@ void postamble()
 		codePrint ("\t\tCMP CX, DX\n") ;
 		codePrint ("\t\tJNE .printArr\n\n") ;
 
-		codePrint ("\t\tMOV RDI, printNewLine\n") ;
+		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -792,9 +792,9 @@ void postamble()
 		df |= 1 << DATA_false ;
 		df |= 1 << printNewLine ;
 
-		codePrint ("\nprintBooleanArr:\n") ;
+		codePrint ("\n@printBooleanArr:\n") ;
 		codePrint ("\n\t\tPUSH RDI\n") ;
-		codePrint ("\t\tMOV RDI, printFormatArray\n") ;
+		codePrint ("\t\tMOV RDI, @printFormatArray\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
@@ -812,11 +812,11 @@ void postamble()
 
 		codePrint ("\n\t\tCMP AX, 0\n") ;
 		codePrint ("\t\tJE .arrFalse\n") ;
-		codePrint ("\t\tMOV RDI, true\n") ;
+		codePrint ("\t\tMOV RDI, @true\n") ;
 		codePrint ("\t\tJMP .afterBool\n") ;
 		
 		codePrint ("\n\t.arrFalse:\n") ;
-		codePrint ("\t\tMOV RDI, false\n") ;
+		codePrint ("\t\tMOV RDI, @false\n") ;
 		codePrint ("\n\t.afterBool:\n") ;
 
 		codePrint ("\t\tXOR RSI, RSI\n") ;
@@ -832,7 +832,7 @@ void postamble()
 		codePrint ("\t\tCMP CX, DX\n") ;
 		codePrint ("\t\tJNE .printArr\n\n") ;
 
-		codePrint ("\t\tMOV RDI, printNewLine\n") ;
+		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -844,8 +844,8 @@ void postamble()
 	{
 		df |= 1 << boundPrint ;
 
-		codePrint ("\nboundERROR:\n") ;
-		codePrint ("\t\tMOV RDI, boundPrint\n") ;
+		codePrint ("\n@boundERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @boundPrint\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -857,8 +857,8 @@ void postamble()
 	{
 		df |= 1 << declPrint ;
 
-		codePrint ("\ndeclERROR:\n") ;
-		codePrint ("\t\tMOV RDI, declPrint\n") ;
+		codePrint ("\n@declERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @declPrint\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -870,8 +870,8 @@ void postamble()
 	{
 		df |= 1 << declNeg ;
 
-		codePrint ("\ndeclNegERROR:\n") ;
-		codePrint ("\t\tMOV RDI, declNeg\n") ;
+		codePrint ("\n@declNegERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @declNeg\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -883,8 +883,8 @@ void postamble()
 	{
 		df |= 1 << arrArgMismatch ;
 
-		codePrint ("\nargLimERROR:\n") ;
-		codePrint ("\t\tMOV RDI, arrArgMismatch\n") ;
+		codePrint ("\n@argLimERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @arrArgMismatch\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
@@ -900,115 +900,115 @@ void postamble()
 
 	if (isFlagSet (df, boundPrint))
 	{
-		codePrint ("\t\tboundPrint : ") ;
+		codePrint ("\t\t@boundPrint : ") ;
 		codePrint ("db \"RUNTIME ERROR : Array out of bounds\" , 10, 0\n") ;	
 	}
 	
 	if (isFlagSet (df, declPrint))
 	{
-		codePrint ("\t\tdeclPrint : ") ;
+		codePrint ("\t\t@declPrint : ") ;
 		codePrint ("db \"RUNTIME ERROR : Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;		
 	}
 	
 	if (isFlagSet (df, declNeg))
 	{
-		codePrint ("\t\tdeclNeg : ") ;
+		codePrint ("\t\t@declNeg : ") ;
 		codePrint ("db \"RUNTIME ERROR : Negative bound in dynamic array declaration\" , 10, 0\n") ;	
 	}
 
 	if (isFlagSet (df, arrArgMismatch))
 	{
-		codePrint ("\t\tarrArgMismatch: ") ;
+		codePrint ("\t\t@arrArgMismatch: ") ;
 		codePrint ("db \"RUNTIME ERROR : Mismatch in formal and actual array limits\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormatArray))
 	{
-		codePrint ("\t\tprintFormatArray : ") ;
+		codePrint ("\t\t@printFormatArray : ") ;
 		codePrint ("db \"Output : \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, printInt))
 	{
-		codePrint ("\t\tprintInt : ") ;
+		codePrint ("\t\t@printInt : ") ;
 		codePrint ("db \"%%d \", 0\n") ;
 	}
 
 	if (isFlagSet (df, printNewLine))
 	{
-		codePrint ("\t\tprintNewLine : ") ;
+		codePrint ("\t\t@printNewLine : ") ;
 		codePrint ("db 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormat))
 	{
-		codePrint ("\t\tprintFormat : ") ;
+		codePrint ("\t\t@printFormat : ") ;
 		codePrint ("db \"Output :  %%d\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printTrue))
 	{
-		codePrint ("\t\tprintTrue : ") ;
+		codePrint ("\t\t@printTrue : ") ;
 		codePrint ("db \"Output : true\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFalse))
 	{
-		codePrint ("\t\tprintFalse : ") ;
+		codePrint ("\t\t@printFalse : ") ;
 		codePrint ("db \"Output : false\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, DATA_true))
 	{
-		codePrint ("\t\ttrue : ") ;
+		codePrint ("\t\t@true : ") ;
 		codePrint ("db \"true \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, DATA_false))
 	{
-		codePrint ("\t\tfalse : ") ;
+		codePrint ("\t\t@false : ") ;
 		codePrint ("db \"false \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, inputIntPrompt))
 	{
-		codePrint ("\t\tinputIntPrompt : ") ;
+		codePrint ("\t\t@inputIntPrompt : ") ;
 		codePrint ("db \"Enter an integer : \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, inputBoolPrompt))
 	{
-		codePrint ("\t\tinputBoolPrompt : ") ;
+		codePrint ("\t\t@inputBoolPrompt : ") ;
 		codePrint ("db \"Enter a boolean (0 for false, non-zero for true) : \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, inputIntArrPrompt))
 	{
-		codePrint ("\t\tinputIntArrPrompt : ") ;
+		codePrint ("\t\t@inputIntArrPrompt : ") ;
 		codePrint ("db \"Enter %%d array elements of integer type for range \", 0\n") ;
 	}
 
 	if (isFlagSet (df, inputBoolArrPrompt))
 	{
-		codePrint ("\t\tinputBoolArrPrompt : ") ;
+		codePrint ("\t\t@inputBoolArrPrompt : ") ;
 		codePrint ("db \"Enter %%d array elements of boolean type for range \", 0\n") ;
 	}
 
 	if (isFlagSet (df, leftRange))
 	{
-		codePrint ("\t\tleftRange : ") ;
+		codePrint ("\t\t@leftRange : ") ;
 		codePrint ("db \"%%d to \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, rightRange))
 	{
-		codePrint ("\t\trightRange : ") ;
+		codePrint ("\t\t@rightRange : ") ;
 		codePrint ("db \"%%d\" ,10, 0\n") ;
 	}
 
 	if (isFlagSet (df, inputInt))
 	{
-		codePrint ("\t\tinputInt : ") ;
+		codePrint ("\t\t@inputInt : ") ;
 		codePrint ("db \"%%d\", 0\n") ;
 	}
 }
@@ -1172,7 +1172,7 @@ void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst
 				codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
 				codePrint ("\t\tCMP AX, CX\n") ;
 				codePrint ("\t\tJE LABEL%d\n", lab) ;
-				codePrint ("\t\tCALL argLimERROR\n") ;
+				codePrint ("\t\tCALL @argLimERROR\n") ;
 				codePrint ("\n\tLABEL%d:\n", lab) ; 
 			}
 
@@ -1188,7 +1188,7 @@ void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst
 				codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
 				codePrint ("\t\tCMP BX, CX\n") ;
 				codePrint ("\t\tJE LABEL%d\n", lab) ;
-				codePrint ("\t\tCALL argLimERROR\n") ;
+				codePrint ("\t\tCALL @argLimERROR\n") ;
 				codePrint ("\n\tLABEL%d:\n", lab) ; 
 			}
 
@@ -1353,7 +1353,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			exprGeneration (node, lst);	// expression
 
 			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tCMP AX, 0\n");
+			codePrint ("\t\tCMP AX, 0");
 			codeComment (8, "Checking while loop condition") ;
 			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
 
@@ -1428,7 +1428,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			pushInputGeneration (idListHead, varEntry, lst) ;
 
-			codePrint ("\t\tCALL %s\n", node->tok->lexeme) ;
+			codePrint ("\t\tCALL %s\n", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
 			break ;
 
@@ -1469,7 +1469,7 @@ void codeGeneration(astNode *node)
 			break ;
 
 		case module :
-			codePrint ("\n%s:\n", node->child->tok->lexeme) ;
+			codePrint ("\n%s:\n", strcmp(node->child->tok->lexeme , "main") ? node->child->tok->lexeme : "@main") ;
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
