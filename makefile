@@ -7,8 +7,7 @@ output : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer
 
 erplag : erplag.o codegen.o ast.o typeChecker.o lexTest.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o erplag erplag.o codegen.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o
-	make objClean
-
+	
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexTest.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o ast astDriver.o ast.o lexTest.o lexer.o parser.o
 	gcc -o ST symbolTableDriver.o ast.o lexTest.o lexer.o parser.o symbolTable.o typeChecker.o

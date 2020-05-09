@@ -137,7 +137,7 @@ void assignGeneration (astNode *node, moduleST *lst)
 			codePrint ("\t\tMOV [RDI + RBX], AX\n") ;
 		}
 	}
-	codeComment (9, "Store") ;
+	codeComment (9, "store variable") ;
 
 }
 
@@ -1433,8 +1433,10 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 					statementsNode = NULL ;
 			}
 
+			statementsNode = node->next->next->next->next ;
 			codePrint ("\nLABEL%d:\n", end_label) ;
-			codePrint ("\n\t\tADD RSP, %d\n", rspDepth - savedRspDepth) ;
+			codePrint ("\n\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
+			codeComment (8, "restoring outer scope") ;
 			rspDepth = savedRspDepth ;
 
 			break ;

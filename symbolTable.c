@@ -95,6 +95,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 	tmp->filledMod = 0 ;
 	tmp->outputSize = 0 ;
 	tmp->inputSize = 0 ;
+	tmp->scopeSize = 0 ;
 
 	return tmp ;
 }
@@ -109,7 +110,7 @@ moduleST * createScopeST ( moduleST * parent , stType scopeType) {
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
 
-	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme, parent->currOffset+ 8) ;
+	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme, parent->currOffset) ;
 	tmp->tableType = scopeType ;
 
 	return tmp ;
@@ -1185,6 +1186,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 		}
 		statementAST = statementAST->next ;
 	}
+
+	if (baseModule->parent != realBase)
+		baseModule->scopeSize = baseModule->currOffset - ((moduleST *)baseModule->parent)->currOffset ;
+	else
+		baseModule->scopeSize = baseModule->currOffset ;
 }
 
 baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) 

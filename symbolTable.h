@@ -43,18 +43,19 @@ struct _varST {
 
 
 struct _moduleST {
-	char * lexeme ; // iterations must be given a unique name also
+	char * lexeme ;
 	enum _stType tableType ;
 	struct _varSTentry *localVars[VAR_BIN_COUNT] ;
 	struct _varSTentry *inputVars[IO_BIN_COUNT] ;
 	struct _varSTentry *outputVars[IO_BIN_COUNT] ;
 	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;
-	void * parent ; 		// DRIVER_ST, MODULE_ST -> baseST , ITER_ST -> moduleST 
+	void * parent ; 		
 
 	int filledMod ;
 	int inputSize ;
 	int outputSize ;
 	int currOffset ;
+	int scopeSize ;
 } ;
 
 struct _moduleSTentry {
