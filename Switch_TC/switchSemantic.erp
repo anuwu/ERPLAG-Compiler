@@ -1,0 +1,29 @@
+<<<driver program>>>
+start
+	declare bool : boolean ;
+	declare a,b : integer ;
+	get_value (b) ;
+
+	switch (a) start case
+	1 :
+		declare A : array [a .. b] of integer ;
+		break ; case
+	2 :
+		a := 4 ;
+		break ; case
+	3 :
+		b := 5 ;
+		break ;
+	default :
+		bool := false ;
+		break ; end
+
+
+	switch (bool) start case
+	true :
+		bool := false ;
+		break ; case
+	false :
+		bool := true ;
+		break ; end
+end

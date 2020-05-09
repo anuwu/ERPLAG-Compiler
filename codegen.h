@@ -20,6 +20,11 @@ typedef enum _dataFlags
 	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt, arrArgMismatch
 } dataFlag ;
 
+typedef enum _switchDeclareStatus
+{
+	NOT_SWITCH, SWITCH_INIT, SWITCH_GEN
+} switchDeclareStatus ;
+
 int get_label() ;
 void codeComment (int tabCount, char *comment) ;
 char* getOffsetStr (int offset) ;

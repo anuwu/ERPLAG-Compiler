@@ -137,7 +137,7 @@ void assignGeneration (astNode *node, moduleST *lst)
 			codePrint ("\t\tMOV [RDI + RBX], AX\n") ;
 		}
 	}
-	codeComment (10, "Store") ;
+	codeComment (9, "Store") ;
 
 }
 
@@ -479,9 +479,9 @@ void dynamicDeclareGeneration (moduleST *lst, varST *vst, int declCount)
 	int start_label ;
 	dynamicDeclareCheck (lst, vst) ;
 	codePrint ("\t\tPUSH BX") ;
-	codeComment (8, "saving register for malloc") ;
+	codeComment (12, "saving register for malloc") ;
 	codePrint ("\t\tPUSH AX") ;
-	codeComment (8, "saving register for malloc") ;
+	codeComment (12, "saving register for malloc") ;
 
 	if (declCount > 1)
 	{
@@ -997,7 +997,7 @@ void postamble()
 	if (isFlagSet (df, inputBoolPrompt))
 	{
 		codePrint ("\t\tinputBoolPrompt : ") ;
-		codePrint ("db \"Enter a boolean (0 or 1) : \" , 0\n") ;
+		codePrint ("db \"Enter a boolean (0 for false, non-zero for true) : \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, inputIntArrPrompt))
@@ -1109,30 +1109,51 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		caseLabels[i] = get_label() ;
 
 	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-	codePrint ("\n\t\tMOV AX, [RBP%s]\n", getOffsetStr(switchVar->offset)) ;
+	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
+	codeComment (9, "loading switch variable") ;
 
 	astNode *caseValNode =  node->next->next->next ;
 	i = 0 ;
 
-	while (caseValNode != NULL)
+	if (switchVar->datatype == TK_INTEGER)
 	{
-		codePrint ("\n\t\tCMP AX, %s\n", (switchVar->datatype == TK_INTEGER)?caseValNode->tok->lexeme:((caseValNode->tok->lexeme[0] == 't')?"1":"0")) ;
-		codePrint ("\t\tJE LABEL%d\n", caseLabels[i]) ;
-
-		if (caseValNode->next->next != NULL)
+		while (caseValNode != NULL)
 		{
-			if (caseValNode->next->next->id == TK_DEFAULT)		
+			codePrint ("\n\t\tCMP AX, %s", caseValNode->tok->lexeme) ;
+			codeComment (11, "switch case") ;
+			codePrint ("\t\tJE LABEL%d\n", caseLabels[i]) ;
+
+			if (caseValNode->next->next->next->id == statements)
 			{
 				def_label = get_label () ;
-				codePrint ("\n\t\tJMP LABEL%d\n", def_label) ;
+				codePrint ("\n\t\tJMP LABEL%d", def_label) ;
+				codeComment (11, "default case") ;
 				break ;
 			}
 
 			i++ ;
 			caseValNode = caseValNode->next->next->next ;
 		}
+	}
+	else
+	{		
+		codePrint ("\n\t\tCMP AX, 0\n") ;
+		if (caseValNode->tok->lexeme[0] == 't')
+		{
+			codePrint ("\t\tJNE LABEL%d", caseLabels[0]) ;
+			codeComment (11, "true case") ;
+		}
 		else
-			caseValNode = NULL ;
+		{
+			codePrint ("\t\tJE LABEL%d", caseLabels[0]) ;
+			codeComment (11, "false case") ;
+		}
+
+		codePrint ("\t\tJMP LABEL%d", caseLabels[1]) ;
+		if (caseValNode->tok->lexeme[0] == 't')
+			codeComment (11, "false case") ;
+		else
+			codeComment (11, "true case") ;
 	}
 
 	return def_label ;
@@ -1267,18 +1288,18 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 
 		case TK_DECLARE :
 			;
-			int switchPass = 0 ;
+			switchDeclareStatus stat ;
 			if (lst->tableType != SWITCH_ST)
-				; // Subtract RSP, and allocate memory if dynamic
+				stat = NOT_SWITCH ; // Subtract RSP, and allocate memory if dynamic
 			else if (node->parent != node)
-				switchPass = 1 ; // Subtract RSP only, and do not allocate memory for dynamic
+				stat = SWITCH_INIT ; // Subtract RSP only, and do not allocate memory for dynamic
 			else
 			{
-				switchPass = 2 ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
+				stat = SWITCH_GEN ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
 				node->parent = node->next->parent ;
 			}
 
-			int endOffset, declCount = 1 ;
+			int declCount = 1 ;
 			idListHead = node->next->child ;
 			astNode *dtNode = node->next->next ;
 
@@ -1289,15 +1310,17 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			}
 
 			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
-			endOffset = searchedVar->offset ;
-			if (endOffset > 0 && (switchPass == 0 || switchPass == 1))
+			if (searchedVar->size > 0 && stat != SWITCH_GEN)
 			{	
-				codePrint ("\t\tSUB RSP, %d", (endOffset - rspDepth)) ;
-				codeComment (11, "Updating RSP") ;
-				rspDepth = endOffset ;
+				codePrint ("\t\tSUB RSP, %d", searchedVar->size * declCount) ;
+				if (stat == NOT_SWITCH)
+					codeComment (11, "making space for declaration") ;
+				else if (stat == SWITCH_INIT)
+					codeComment (11, "declaring before switch") ;
+				rspDepth += searchedVar->size ;
 			}
 
-			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && (switchPass == 0 || switchPass == 2))
+			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
 				dynamicDeclareGeneration (lst, searchedVar, declCount) ;
 
 			

@@ -734,6 +734,11 @@ int getSize(baseST * realBase, varST * thisVar)
 					printf ("SEMANTIC ERROR : In \"%s\" at line %d, left index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
+				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarLeft->scope)
+				{
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, declaration of left index \"%s\" of array \"%s\", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
 			}
 
 			if (!isRightLimStatic (thisVar))
@@ -747,6 +752,11 @@ int getSize(baseST * realBase, varST * thisVar)
 				else if (searchedVarRight->datatype != TK_INTEGER)
 				{
 					printf ("SEMANTIC ERROR : In \"%s\" at line %d, right index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					indexErrorFlag = 1 ;
+				}
+				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarRight->scope)
+				{
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, declaration of right index \"%s\" of array \"%s\", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					indexErrorFlag = 1 ;
 				}
 			}
@@ -942,7 +952,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				{
 					varST * tmp = createVarST (idAST->tok->lexeme , baseModule , VAR_LOCAL, -9999) ;
 
-					if (dataTypeAST->dtTag  == ARRAY)
+					if (dataTypeAST->dtTag == ARRAY)
 					{
 						tmp->datatype = TK_ARRAY ;
 						tmp->arrayIndices = dataTypeAST->dt->arrType ; 
@@ -1086,7 +1096,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			searchedVar = searchVar (realBase, baseModule , statementAST->child->next->tok->lexeme) ;
 			if (searchedVar == NULL)
 			{
-				printf ("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule),statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, \"%s\" switch variable undeclared\n",  getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber ,  statementAST->child->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else
@@ -1103,6 +1113,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			astNode *caseAstNode = statementAST->child->next->next ;
 
 			int hasDefault = 0 ;
+			int hasTrue = 0, hasFalse = 0 ;
 			while (caseAstNode != NULL)
 			{
 				// case value mismatch
@@ -1122,6 +1133,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 						printf ("SEMANTIC ERROR : In \"%s\" at line %d, case value is repeating\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
 					}
+
+					if (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 't')
+						hasTrue = 1 ;
+					else if (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 'f')
+						hasFalse = 1 ;
 
 					fillModuleST (realBase, switchST, caseAstNode->next->next, depthSTPrint) ;
 				}
@@ -1147,6 +1163,21 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			{
 				printf ("SEMANTIC ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
+			}
+
+			if (searchedVar->datatype == TK_BOOLEAN && (!hasTrue || !hasFalse))
+			{
+				if (!hasTrue)
+				{
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, boolean switch statement is missing 'true' case\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
+					realBase->semanticError = 1 ;
+				}
+
+				if (!hasFalse)
+				{
+					printf ("SEMANTIC ERROR : In \"%s\" at line %d, boolean switch statement is missing 'false' case\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
+					realBase->semanticError = 1 ;
+				}
 			}
 
 			insertScopeST (baseModule , switchST) ;
