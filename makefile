@@ -39,10 +39,13 @@ asm :
 erp :
 	make
 	./erplag $(FILE).erp $(FILE).asm
+
+erpAsm :
+	make erp FILE=$(FILE)
 	make asm FILE=$(FILE)
 
 erpExec :
-	make erp FILE=$(FILE)
+	make erpAsm FILE=$(FILE)
 	./$(FILE)
 
 clean :
