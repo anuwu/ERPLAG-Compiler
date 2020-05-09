@@ -34,6 +34,7 @@ struct _varST {
 	tokenID datatype ; // TK_INTEGER, TK_REAL, TK_BOOLEAN, TK_ARRAY
 	arrayTypeInfo *arrayIndices ; // if TK_ARRAY 
 
+	int size ;
 	int offset ;
 	int tinker ;
 	void *scope ;

@@ -109,7 +109,7 @@ moduleST * createScopeST ( moduleST * parent , stType scopeType) {
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
 
-	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme, parent->currOffset ) ;
+	moduleST * tmp = createModuleST ( (baseST*)parent , lexeme, parent->currOffset+ 8) ;
 	tmp->tableType = scopeType ;
 
 	return tmp ;
@@ -122,6 +122,7 @@ varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID da
 	tmp->lexeme = lexeme ;
 	tmp->datatype = datatype ;
 	tmp->offset = 0 ; //default value
+	tmp->size = 0 ;
 	tmp->tinker = 0 ;
 	tmp->arrayIndices = NULL ;
 	tmp->scope = scope ;
@@ -783,6 +784,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				{
 					searchedVarLeft = createVarST (thisVar->arrayIndices->tokLeft->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarLeft->offset = -(scope->currOffset + 10) ;
+					searchedVarLeft->size = 2 ;
 					insertInputVarST (scope, searchedVarLeft) ;
 				}
 			}
@@ -801,6 +803,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				{
 					searchedVarRight = createVarST (thisVar->arrayIndices->tokRight->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarRight->offset = -(scope->currOffset + 8) ;
+					searchedVarRight->size = 2 ;
 					insertInputVarST (scope, searchedVarRight) ;
 				}
 			}
@@ -954,6 +957,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					if (retSize > 0)
 					{
 						tmp->offset = baseModule->currOffset + retSize ;
+						tmp->size = retSize ;
 						baseModule->currOffset += retSize ;
 					}
 					else	// correct dynamic array, or invalid static/dynamic array
@@ -1012,7 +1016,10 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			if (searchedVar == NULL)
 				loopVar->offset = -2 ;		// VAR_LOOP with offset of -2 is undeclared loop counter
 			else
+			{
 				loopVar->offset = searchedVar->offset ;
+				loopVar->size = searchedVar->size ;
+			}
 
 			insertLocalVarST (forScope, loopVar) ;
 			fillModuleST (realBase, forScope, loopLim->next->next, depthSTPrint) ;
@@ -1235,6 +1242,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							if (retSize > 0)
 							{
 								tmp->offset = -moduleToInsert->currOffset ;
+								tmp->size = retSize ;
 								moduleToInsert->currOffset += retSize ;
 								moduleToInsert->inputSize += retSize ;
 							}
@@ -1274,14 +1282,13 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					else
 					{
 						varST * tmp = createVarST ( oplAST->child->tok->lexeme , moduleToInsert, VAR_OUTPUT, oplAST->child->next->id) ;
-						//array can't be here
-						insertOutputVarST ( moduleToInsert , tmp ) ;
-
 						int retSize = getSize (base, tmp) ;
 
 						tmp->offset = -moduleToInsert->currOffset ;
+						tmp->size = retSize ;
 						moduleToInsert->currOffset += retSize ;
 						moduleToInsert->outputSize += retSize ;
+						insertOutputVarST ( moduleToInsert , tmp ) ;
 					}
 					
 					oplAST = oplAST->next ;
