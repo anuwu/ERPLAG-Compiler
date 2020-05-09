@@ -1,5 +1,0 @@
-<<<driver program>>>
-start
-	declare A : array[4 .. 7] of integer ;
-	get_value (A) ;
-end

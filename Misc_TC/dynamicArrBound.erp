@@ -1,8 +1,0 @@
-<<<driver program>>>
-start
-	declare i : integer ;
-	get_value (i) ;
-	declare A : array [i .. 10] of integer ;
-
-	get_value (A) ;
-end
