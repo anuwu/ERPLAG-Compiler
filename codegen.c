@@ -241,7 +241,7 @@ void exprGeneration (astNode *node, moduleST *lst)
 			exprGeneration (node->child, lst) ;
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tPOP BX\n");
-			codePrint ("\t\tcwd\n") ;
+			codePrint ("\t\tCWD\n") ;
 			codePrint ("\t\tIDIV BX\n");
 			codePrint ("\t\tPUSH AX\n");
 			break ;
@@ -611,7 +611,7 @@ void postamble()
 		getValueRSPAlign (fp) ;
 
 		codePrint ("\t\tMOV RDI, inputInt") ;
-		codeComment (8, "get_value") ;
+		codeComment (9, "get_value") ;
 		codePrint ("\t\tMOV RSI, RSP\n") ;
 		codePrint ("\t\tSUB RSI, 16\n") ;
 		codePrint ("\t\tPUSH RBX\n") ;
@@ -1253,6 +1253,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 					codePrint ("\n\t\tMOV RSP, RBP\n") ;
 					codePrint ("\t\tPOP RBP\n") ;
 					codePrint ("\t\tret\n") ;
+					printCommentLineNASM () ;
 				}
 				else
 				{

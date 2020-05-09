@@ -121,7 +121,7 @@ varST * searchVar (baseST* realBase, moduleST *thisModule , char *lexeme) ;
 void printBaseST (baseST * base ) ;
 void printModuleST (moduleST * thisModuleST, int printParam) ;
 
-// Tinker
+// Tinker --> Checked for module outputs, loop variable, placeholders only
 void printOutputsNotTinkered (moduleST *baseModule) ;
 int checkAllOutputsTinkered (moduleST *baseModule) ;
 void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) ;

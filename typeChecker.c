@@ -234,7 +234,6 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 		typeLeft = validateVar (realBase, baseModule, assignopASTNode->child, &searchedVarLeft) ;
 		typeRight = validateVar (realBase, baseModule, assignopASTNode->child->next, &searchedVarRight) ;
 
-
 		if (typeLeft == TK_ARRAY && typeRight == TK_ARRAY) 	// Array assignment
 		{
 			if (searchedVarLeft->arrayIndices->type == searchedVarRight->arrayIndices->type)
@@ -275,6 +274,8 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 				printf ("ERROR : In \"%s\" at line %d, assignment of \"%s\" to \"%s\" are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
+
+			tinkerVar (realBase, baseModule, searchedVarLeft, assignopASTNode->child) ;
 		}
 
 		return ;

@@ -1057,7 +1057,9 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  				validateVar (realBase, baseModule, statementAST->child->next, &searchedVar) ;
  		} 
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
+		{
 			assignmentTypeCheck (realBase, baseModule, statementAST->child) ;
+		}
  		else if (statementAST->child->id == idList) 
  		{
 			// [a] = use module with parameters [ d ] ;
@@ -1227,7 +1229,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 		//currentASTNode is now a modulef
 		while (currentASTNode) 
 		{
-
+			/*
 			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
 			{
 				printf ("SEMANTIC ERROR : In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
@@ -1236,6 +1238,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				currentASTNode = currentASTNode->next ;
 				continue ;
 			}
+			*/
 
 			searchCond = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
 			
