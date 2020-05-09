@@ -46,13 +46,13 @@ void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 
 int getCaseCount (astNode *statementsNode) ;
-int switchDeclareVars (astNode *statementNode, varST *vst , int rspDepth) ;
+int switchDeclareVars (astNode *statementNode, int rspDepth) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
 void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
 void popOutputGeneration (astNode *inputEnd, moduleST *lst) ;
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst) ;
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst) ;
 void codeGeneration(astNode *node) ;
 
 void printCommentLineNASM () ;

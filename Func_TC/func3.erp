@@ -2,6 +2,7 @@ declare module isSortAndSum ;
 
 <<<driver program>>>
 start
+
 	declare left, right, sum : integer ;
 	get_value (left) ;
 	get_value (right) ;
@@ -21,6 +22,12 @@ end
 takes input [arr : array [low .. high] of integer, desc : boolean] ;
 returns [srt : boolean, sum : integer] ;
 start
+		switch (left) start case
+	true :
+		break ; case
+	false :
+		break ; end
+
 	declare i, prev : integer ;
 	declare ord : boolean ;
 
@@ -34,7 +41,7 @@ start
 
 		switch (srt) start case
 		true :
-			switch (desc) start case
+			switch (des) start case
 			true :
 				ord := prev >= arr[i] ;
 				break ; case

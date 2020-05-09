@@ -44,12 +44,12 @@ int isIndexStatic (astNode *node)
 	return isdigit (node->child->tok->lexeme[0]) ;
 }
 
-void loadRegLeftLim (varST *searchedVar, char *reg)
+void loadRegLeftLim (varST *vst, char *reg)
 {
-	if (isLeftLimStatic (searchedVar))
-		codePrint ("\t\tMOV %s, %s\n", reg, searchedVar->arrayIndices->tokLeft->lexeme) ;
+	if (isLeftLimStatic (vst))
+		codePrint ("\t\tMOV %s, %s\n", reg, vst->arrayIndices->tokLeft->lexeme) ;
 	else
-		codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(searchedVar->offset-10)) ;
+		codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset-10)) ;
 }
 
 void loadRegRightLim (varST *vst, char *reg)
@@ -393,19 +393,19 @@ void getValueRSPAlign()
 	codePrint ("\t\tPUSH RAX\n") ;
 }
 
-void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth)
+void getValueGeneration (moduleST *lst, varST *vst, int rspDepth)
 {		
 	int rspAlign ;
 	df |= 1 << inputInt ;
 
-	if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
+	if (vst->datatype == TK_INTEGER || vst->datatype == TK_BOOLEAN)
 	{
-		if (searchedVar->datatype == TK_INTEGER)
+		if (vst->datatype == TK_INTEGER)
 		{
 			df |= 1 << inputIntPrompt ;
 			codePrint ("\n\t\tMOV RDI, inputIntPrompt") ;
 		}
-		else if (searchedVar->datatype == TK_BOOLEAN)
+		else if (vst->datatype == TK_BOOLEAN)
 		{
 			df |= 1 << inputBoolPrompt ;
 			codePrint ("\n\t\tMOV RDI, inputBoolPrompt") ;
@@ -414,12 +414,12 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth)
 
 
 		tf |= 1 << getValuePrimitive ;
-		codePrint ("\t\tMOV RBX, -%d\n", searchedVar->offset) ;
+		codePrint ("\t\tMOV RBX, -%d\n", vst->offset) ;
 		codePrint ("\t\tCALL getValuePrimitive\n\n") ;		
  	}
 	else // Array type
 	{	
-		if (searchedVar->arrayIndices->type == TK_INTEGER)
+		if (vst->arrayIndices->type == TK_INTEGER)
 		{
 			df |= 1 << inputIntArrPrompt ;
 			codePrint ("\t\tMOV RDI, inputIntArrPrompt\n") ;
@@ -433,11 +433,11 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth)
 		tf |= 1 << printGetArrPrompt ;
 		tf |= 1 << getArr ;
 
-		loadRegLeftLim (searchedVar, "BX") ;
-		loadRegRightLim (searchedVar, "CX") ;
+		loadRegLeftLim (vst, "BX") ;
+		loadRegRightLim (vst, "CX") ;
 		codePrint ("\t\tCALL printGetArrPrompt\n\n") ;
 
-		loadArrBase (searchedVar) ;
+		loadArrBase (vst) ;
 		codePrint ("\t\tMOV DX, CX\n") ;
 		codePrint ("\t\tSUB DX, BX\n") ;
 		codePrint ("\t\tADD DX, 1\n") ;
@@ -447,37 +447,37 @@ void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth)
 	}
 }
 
-void dynamicDeclareCheck (moduleST *lst, varST *searchedVar)
+void dynamicDeclareCheck (moduleST *lst, varST *vst)
 {
 	int start_label , end_label ;
 	varST *leftVar , *rightVar ;
 	tf |= 1 << dynamicDeclCheck ;
 
 	codePrint ("\n") ;
-	if (isLeftLimStatic (searchedVar))
-		codePrint ("\t\tMOV AX, %s\n", searchedVar->arrayIndices->tokLeft->lexeme) ;
+	if (isLeftLimStatic (vst))
+		codePrint ("\t\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
 	{
-		leftVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokLeft->lexeme) ;
+		leftVar = searchVar (realBase, lst, vst->arrayIndices->tokLeft->lexeme) ;
 		//codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr(leftVar->offset)) ;
 		codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr (leftVar->offset)) ;
 	}
 
-	if (isRightLimStatic (searchedVar))
-		codePrint ("\t\tMOV BX, %s\n", searchedVar->arrayIndices->tokRight->lexeme) ;
+	if (isRightLimStatic (vst))
+		codePrint ("\t\tMOV BX, %s\n", vst->arrayIndices->tokRight->lexeme) ;
 	else
 	{
-		rightVar = searchVar (realBase, lst, searchedVar->arrayIndices->tokRight->lexeme) ;
+		rightVar = searchVar (realBase, lst, vst->arrayIndices->tokRight->lexeme) ;
 		codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr(rightVar->offset)) ;
 	}
 
 	codePrint ("\t\tCALL dynamicDeclCheck\n\n") ;
 }
 
-void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount)
+void dynamicDeclareGeneration (moduleST *lst, varST *vst, int declCount)
 {
 	int start_label ;
-	dynamicDeclareCheck (lst, searchedVar) ;
+	dynamicDeclareCheck (lst, vst) ;
 	codePrint ("\t\tPUSH BX") ;
 	codeComment (8, "saving register for malloc") ;
 	codePrint ("\t\tPUSH AX") ;
@@ -486,7 +486,7 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount)
 	if (declCount > 1)
 	{
 		codePrint ("\n\t\tMOV CX, 0\n") ;
-		codePrint ("\t\tMOV RBX, %d\n", searchedVar->offset) ;
+		codePrint ("\t\tMOV RBX, %d\n", vst->offset) ;
 		codePrint ("\t\tNEG RBX\n") ;
 		codePrint ("\n\t.declLoop:\n") ;
 
@@ -517,11 +517,11 @@ void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount)
 	else
 	{
 		codePrint ("\t\tCALL malloc\n") ;
-		codePrint ("\t\tMOV [RBP%s], RAX\n", getOffsetStr(searchedVar->offset)) ;
+		codePrint ("\t\tMOV [RBP%s], RAX\n", getOffsetStr(vst->offset)) ;
 		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset - 10)) ;
+		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(vst->offset - 10)) ;
 		codePrint ("\t\tPOP BX\n") ;
-		codePrint ("\t\tMOV [RBP%s], BX\n\n", getOffsetStr(searchedVar->offset - 8)) ;
+		codePrint ("\t\tMOV [RBP%s], BX\n\n", getOffsetStr(vst->offset - 8)) ;
 	}
 }
 
@@ -1056,7 +1056,7 @@ int getCaseCount (astNode *statementsNode)
 }
 
 
-int switchDeclareVars (astNode *statementsNode, varST *vst , int rspDepth)
+int switchDeclareVars (astNode *statementsNode, int rspDepth)
 {
 	astNode *statementNode ;
 
@@ -1068,7 +1068,7 @@ int switchDeclareVars (astNode *statementsNode, varST *vst , int rspDepth)
 		{
 			if (statementNode->child->id == TK_DECLARE)
 			{
-				rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst) ;
+				rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST) ;
 				statementNode->child->parent = statementNode->child ;		// tieing a knot
 			}
 			statementNode = statementNode->next ;
@@ -1084,7 +1084,7 @@ int switchDeclareVars (astNode *statementsNode, varST *vst , int rspDepth)
 				{
 					if (statementNode->child->id == TK_DECLARE)
 					{
-						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST, vst) ;
+						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST) ;
 						statementNode->child->parent = statementNode->child ;		// tieing a knot
 					}
 					statementNode = statementNode->next ;
@@ -1221,7 +1221,7 @@ void popOutputGeneration (astNode *outputHead, moduleST *lst)
 	codePrint ("\n") ;
 }
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst, varST *vst)
+int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 {
 	if (node == NULL)
 		return 0 ;
@@ -1237,11 +1237,11 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 		int reserveLabel[10] ;
 
 		case statements :
-			moduleGeneration (node->child, localBase, rspDepth, node->localST, vst);		// Access local scope and move below
+			moduleGeneration (node->child, localBase, rspDepth, node->localST);		// Access local scope and move below
 			break ;
 
 		case statement :
-			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst, vst);
+			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst);
 			if (node->next == NULL)
 			{
 				if (lst->tableType == SWITCH_ST)
@@ -1261,7 +1261,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 			}
 			else
-				moduleGeneration(node->next, localBase, rspDepth, lst, vst);
+				moduleGeneration(node->next, localBase, rspDepth, lst);
 
 			break ;
 
@@ -1310,7 +1310,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 				exprGeneration(node->child->next, lst);
 
 			assignGeneration (node->child, lst) ;
-			//moduleGeneration(node->child, localBase, rspDepth, lst, vst);
 
 			codePrint ("\n") ;
 			break ;
@@ -1330,7 +1329,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			codePrint ("\t\tCMP CX,AX\n");
 			codePrint ("\t\tJG FOR%d\n\n", end_label);
 
-			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst, vst);		// Statements
+			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst);		// Statements
 
 			codePrint ("\n\t\tMOV CX, [RBP%s]", getOffsetStr(searchedVar->offset)) ;
 			codeComment (8, "For loop increment") ;
@@ -1355,7 +1354,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			codeComment (8, "Checking while loop condition") ;
 			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
 
-			moduleGeneration(node->next, rspDepth, rspDepth, lst, vst);		// statements
+			moduleGeneration(node->next, rspDepth, rspDepth, lst);		// statements
 
 			codePrint ("\t\tJMP WHILE%d\n", start_label) ;
 			codePrint ("\n\tWHILE%d:\n", end_label) ;
@@ -1381,7 +1380,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 
 			savedRspDepth = rspDepth ;
 
-			rspDepth = switchDeclareVars (node->next->next->next->next, vst, rspDepth) ;
+			rspDepth = switchDeclareVars (node->next->next->next->next, rspDepth) ;
 			caseCount = getCaseCount (node->next->next->next->next) ;
 			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
 			def_label = switchCaseLabels (node , lst, caseCount, caseLabels) ;
@@ -1391,7 +1390,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 			while (statementsNode != NULL)
 			{
 				codePrint ("\nLABEL%d:\n", caseLabels[i]) ;
-				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst) ;
+				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst) ;
 				codePrint ("\n\t\tJMP LABEL%d\n", end_label) ;
 
 				i++ ;
@@ -1401,7 +1400,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst,
 					{
 						statementsNode = statementsNode->next->next ;
 						codePrint ("\nLABEL%d:\n", def_label) ;
-						moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst, vst) ;
+						moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst) ;
 
 						break ;
 					}
@@ -1473,7 +1472,7 @@ void codeGeneration(astNode *node)
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
-			moduleGeneration (node->child->next->next->next, 0, 0, NULL, NULL) ;
+			moduleGeneration (node->child->next->next->next, 0, 0, NULL) ;
 			codeGeneration (node->next) ;					// Moving on to the next module
 
 			break ;
@@ -1483,7 +1482,7 @@ void codeGeneration(astNode *node)
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
-			moduleGeneration(node->child, 0, 0, NULL, NULL); 				// <statements>
+			moduleGeneration(node->child, 0, 0, NULL); 				// <statements>
 			codeGeneration(node->next); 				// Move to the next child of program
 
 			break ;
