@@ -1118,9 +1118,9 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			while (caseAstNode != NULL)
 			{
 				// case value mismatch
-				if (!switchTypeError && caseAstNode->id != TK_DEFAULT)
+				if (searchedVar != NULL && !switchTypeError && caseAstNode->id != TK_DEFAULT)
 				{
-					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE))|| (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
+					if ((searchedVar->datatype == TK_INTEGER && (caseAstNode->next->id == TK_TRUE || caseAstNode->next->id == TK_FALSE)) || (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->id == TK_NUM)) 
 					{
 						printf ("SEMANTIC ERROR : In \"%s\" at line %d, switch variable has type %s and case value has type %s\n", getParentModuleName(realBase, baseModule), caseAstNode->next->tok->lineNumber, typeIDToString (searchedVar->datatype) , (caseAstNode->next->id == TK_NUM)?"integer":"boolean") ;
 						realBase->semanticError = 1 ;
@@ -1135,9 +1135,9 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 						realBase->semanticError = 1 ;
 					}
 
-					if (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 't')
+					if (searchedVar != NULL && searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 't')
 						hasTrue = 1 ;
-					else if (searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 'f')
+					else if (searchedVar != NULL && searchedVar->datatype == TK_BOOLEAN && caseAstNode->next->tok->lexeme[0] == 'f')
 						hasFalse = 1 ;
 
 					fillModuleST (realBase, switchST, caseAstNode->next->next, depthSTPrint) ;
@@ -1145,7 +1145,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				else
 				{
 					hasDefault = 1 ;
-					if (searchedVar->datatype == TK_BOOLEAN)
+					if (searchedVar != NULL && searchedVar->datatype == TK_BOOLEAN)
 					{
 						printf ("SEMANTIC ERROR : In \"%s\" at line %d, switch variable is boolean, default case is not allowed\n", getParentModuleName(realBase, baseModule), caseAstNode->tok->lineNumber) ;
 						realBase->semanticError = 1 ;
@@ -1160,13 +1160,13 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					caseAstNode = caseAstNode->next->next ;
 			}
 
-			if (!hasDefault && searchedVar->datatype == TK_INTEGER)
+			if (searchedVar != NULL && !hasDefault && searchedVar->datatype == TK_INTEGER)
 			{
 				printf ("SEMANTIC ERROR : In \"%s\", default case expected in switch statement beginning at line %d\n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber) ;
 				realBase->semanticError = 1 ;
 			}
 
-			if (searchedVar->datatype == TK_BOOLEAN && (!hasTrue || !hasFalse))
+			if (searchedVar != NULL && searchedVar->datatype == TK_BOOLEAN && (!hasTrue || !hasFalse))
 			{
 				if (!hasTrue)
 				{

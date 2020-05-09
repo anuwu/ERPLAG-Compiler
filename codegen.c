@@ -393,7 +393,7 @@ void getValueRSPAlign()
 	codePrint ("\t\tPUSH RAX\n") ;
 }
 
-void getValueGeneration (moduleST *lst, varST *vst, int rspDepth)
+void getValueGeneration (moduleST *lst, varST *vst)
 {		
 	int rspAlign ;
 	df |= 1 << inputInt ;
@@ -570,28 +570,6 @@ void postamble()
 		codePrint ("\n\t\tret\n") ;
 	}
 
-	if (isFlagSet (tf, dynamicBoundCheck))
-	{
-		tf |= 1 << boundERROR ;
-
-		codePrint ("\ndynamicBoundCheck:\n") ;
-		codePrint ("\t\tCMP BX, AX\n") ;
-		codePrint ("\t\tJGE .leftLim\n") ;
-		codePrint ("\t\tCALL boundERROR\n") ;
-
-		codePrint ("\n\t.leftLim:\n") ;
-		codePrint ("\t\tCMP CX, BX\n") ;
-		codePrint ("\t\tJGE .rightLim\n") ;
-		codePrint ("\t\tCALL boundERROR\n") ;
-		
-		codePrint ("\n\t.rightLim:\n") ;
-		codePrint ("\t\tSUB BX, AX\n") ;
-		codePrint ("\t\tADD BX, BX\n") ;
-		codePrint ("\t\tMOVSX RBX, BX\n") ;
-
-		codePrint ("\n\t\tret\n") ;
-	}
-
 	if (isFlagSet (tf, dynamicDeclCheck))
 	{
 		tf |= 1 << declNegERROR ;
@@ -746,11 +724,11 @@ void postamble()
 
 		codePrint ("\nprintBoolean:\n") ;
 		codePrint ("\t\tCMP SI, 0\n") ;
-		codePrint ("\t\tJE .false\n") ;
+		codePrint ("\t\tJE .boolFalse\n") ;
 		codePrint ("\t\tMOV RDI, printTrue\n") ;
 		codePrint ("\t\tJMP .boolPrint\n") ;
 
-		codePrint ("\n\t.false:\n") ;
+		codePrint ("\n\t.boolFalse:\n") ;
 		codePrint ("\t\tMOV RDI, printFalse\n") ;
 		codePrint ("\n\t.boolPrint:\n") ;
 
@@ -774,7 +752,7 @@ void postamble()
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		codePrint ("\t\tCALL printf\n\n") ;
+		codePrint ("\t\tCALL printf\n") ;
 		codePrint ("\t\tPOP DX\n") ;
 		codePrint ("\t\tPOP RDI\n\n") ;
 
@@ -814,13 +792,13 @@ void postamble()
 		df |= 1 << DATA_false ;
 		df |= 1 << printNewLine ;
 
-		codePrint ("\nprintDynamicBooleanArr:\n") ;
-		codePrint ("\n\t\tMOV RDI, printFormatArray\n") ;
+		codePrint ("\nprintBooleanArr:\n") ;
+		codePrint ("\n\t\tPUSH RDI\n") ;
+		codePrint ("\t\tMOV RDI, printFormatArray\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tPUSH RDI\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		codePrint ("\t\tCALL printf\n\n") ;
+		codePrint ("\t\tCALL printf\n") ;
 		codePrint ("\t\tPOP DX\n") ;
 		codePrint ("\t\tPOP RDI\n\n") ;
 
@@ -830,21 +808,25 @@ void postamble()
 
 		codePrint ("\t\tMOVSX RBX, CX\n") ;
 		codePrint ("\t\tMOV AX, [RDI + RBX]\n") ;
+		codePrint ("\t\tPUSH RDI\n") ;
 
 		codePrint ("\n\t\tCMP AX, 0\n") ;
-		codePrint ("\t\tJE .false\n") ;
+		codePrint ("\t\tJE .arrFalse\n") ;
 		codePrint ("\t\tMOV RDI, true\n") ;
 		codePrint ("\t\tJMP .afterBool\n") ;
 		
-		codePrint ("\n\t.false:\n") ;
+		codePrint ("\n\t.arrFalse:\n") ;
 		codePrint ("\t\tMOV RDI, false\n") ;
 		codePrint ("\n\t.afterBool:\n") ;
 
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
+		codePrint ("\t\tPUSH DX\n") ;
 		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tPOP CX\n\n") ;
+		codePrint ("\t\tPOP DX\n") ;
+		codePrint ("\t\tPOP CX\n") ;
+		codePrint ("\t\tPOP RDI\n\n") ;
 
 		codePrint ("\t\tADD CX, 2\n") ;
 		codePrint ("\t\tCMP CX, DX\n") ;
@@ -1056,7 +1038,7 @@ int getCaseCount (astNode *statementsNode)
 }
 
 
-int switchDeclareVars (astNode *statementsNode, int rspDepth)
+void switchDeclareVars (astNode *statementsNode)
 {
 	astNode *statementNode ;
 
@@ -1068,7 +1050,7 @@ int switchDeclareVars (astNode *statementsNode, int rspDepth)
 		{
 			if (statementNode->child->id == TK_DECLARE)
 			{
-				rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST) ;
+				moduleGeneration (statementNode->child, statementsNode->localST) ;
 				statementNode->child->parent = statementNode->child ;		// tieing a knot
 			}
 			statementNode = statementNode->next ;
@@ -1084,7 +1066,7 @@ int switchDeclareVars (astNode *statementsNode, int rspDepth)
 				{
 					if (statementNode->child->id == TK_DECLARE)
 					{
-						rspDepth = moduleGeneration (statementNode->child, rspDepth, rspDepth, statementsNode->localST) ;
+						moduleGeneration (statementNode->child, statementsNode->localST) ;
 						statementNode->child->parent = statementNode->child ;		// tieing a knot
 					}
 					statementNode = statementNode->next ;
@@ -1097,8 +1079,6 @@ int switchDeclareVars (astNode *statementsNode, int rspDepth)
 		else
 			statementsNode = NULL ;
 	}
-
-	return rspDepth ;
 }
 
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels)
@@ -1242,7 +1222,7 @@ void popOutputGeneration (astNode *outputHead, moduleST *lst)
 	codePrint ("\n") ;
 }
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
+int moduleGeneration (astNode *node, moduleST *lst)
 {
 	if (node == NULL)
 		return 0 ;
@@ -1258,11 +1238,11 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 		int reserveLabel[10] ;
 
 		case statements :
-			moduleGeneration (node->child, localBase, rspDepth, node->localST);		// Access local scope and move below
+			moduleGeneration (node->child, node->localST);		// Access local scope and move below
 			break ;
 
 		case statement :
-			rspDepth = moduleGeneration(node->child, localBase, rspDepth, lst);
+			moduleGeneration(node->child, lst);
 			if (node->next == NULL)
 			{
 				if (lst->tableType == SWITCH_ST)
@@ -1274,15 +1254,15 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 					codePrint ("\t\tPOP RBP\n") ;
 					codePrint ("\t\tret\n") ;
 				}
-				else if (rspDepth - localBase > 0)
+				else
 				{
-					codePrint ("\t\tADD RSP, %d", (rspDepth-localBase)) ;
-					codeComment (8, "Restoring RSP to previous scope") ;
+					codePrint ("\t\tADD RSP, %d", lst->scopeSize) ;
+					codeComment (10, "restoring to parent scope") ;
 				}
 
 			}
 			else
-				moduleGeneration(node->next, localBase, rspDepth, lst);
+				moduleGeneration(node->next, lst);
 
 			break ;
 
@@ -1317,7 +1297,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 					codeComment (11, "making space for declaration") ;
 				else if (stat == SWITCH_INIT)
 					codeComment (11, "declaring before switch") ;
-				rspDepth += searchedVar->size ;
 			}
 
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
@@ -1352,7 +1331,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			codePrint ("\t\tCMP CX,AX\n");
 			codePrint ("\t\tJG FOR%d\n\n", end_label);
 
-			moduleGeneration(node->next->next->next, rspDepth, rspDepth, lst);		// Statements
+			moduleGeneration(node->next->next->next, lst);		// Statements
 
 			codePrint ("\n\t\tMOV CX, [RBP%s]", getOffsetStr(searchedVar->offset)) ;
 			codeComment (8, "For loop increment") ;
@@ -1377,7 +1356,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			codeComment (8, "Checking while loop condition") ;
 			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
 
-			moduleGeneration(node->next, rspDepth, rspDepth, lst);		// statements
+			moduleGeneration(node->next, lst);		// statements
 
 			codePrint ("\t\tJMP WHILE%d\n", start_label) ;
 			codePrint ("\n\tWHILE%d:\n", end_label) ;
@@ -1391,19 +1370,17 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 
 		case TK_GET_VALUE :
 			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-			getValueGeneration (lst, searchedVar, rspDepth) ;
+			getValueGeneration (lst, searchedVar) ;
 			break ;
 
 		case TK_SWITCH :
 			;
 
-			int i, caseCount, savedRspDepth, def_label ;
+			int i, caseCount, def_label ;
 			int *caseLabels ;
 			astNode *statementsNode = node->next->next->next->next ;
 
-			savedRspDepth = rspDepth ;
-
-			rspDepth = switchDeclareVars (node->next->next->next->next, rspDepth) ;
+			switchDeclareVars (node->next->next->next->next) ;
 			caseCount = getCaseCount (node->next->next->next->next) ;
 			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
 			def_label = switchCaseLabels (node , lst, caseCount, caseLabels) ;
@@ -1413,7 +1390,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			while (statementsNode != NULL)
 			{
 				codePrint ("\nLABEL%d:\n", caseLabels[i]) ;
-				moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst) ;
+				moduleGeneration (statementsNode, lst) ;
 				codePrint ("\n\t\tJMP LABEL%d\n", end_label) ;
 
 				i++ ;
@@ -1423,7 +1400,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 					{
 						statementsNode = statementsNode->next->next ;
 						codePrint ("\nLABEL%d:\n", def_label) ;
-						moduleGeneration (statementsNode, savedRspDepth, rspDepth, lst) ;
+						moduleGeneration (statementsNode, lst) ;
 
 						break ;
 					}
@@ -1436,8 +1413,7 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			statementsNode = node->next->next->next->next ;
 			codePrint ("\nLABEL%d:\n", end_label) ;
 			codePrint ("\n\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
-			codeComment (8, "restoring outer scope") ;
-			rspDepth = savedRspDepth ;
+			codeComment (11, "restoring to parent scope") ;
 
 			break ;
 
@@ -1473,7 +1449,6 @@ int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst)
 			break ;
 	}
 
-	return rspDepth ;
 }
 
 void codeGeneration(astNode *node)
@@ -1497,7 +1472,7 @@ void codeGeneration(astNode *node)
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
-			moduleGeneration (node->child->next->next->next, 0, 0, NULL) ;
+			moduleGeneration (node->child->next->next->next, NULL) ;
 			codeGeneration (node->next) ;					// Moving on to the next module
 
 			break ;
@@ -1507,7 +1482,7 @@ void codeGeneration(astNode *node)
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
-			moduleGeneration(node->child, 0, 0, NULL); 				// <statements>
+			moduleGeneration(node->child, NULL); 				// <statements>
 			codeGeneration(node->next); 				// Move to the next child of program
 
 			break ;

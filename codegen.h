@@ -11,7 +11,7 @@ extern FILE *fp ;
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicBoundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicDeclCheck
 } textFlag ;
 
 typedef enum _dataFlags
@@ -44,20 +44,20 @@ void exprLeafGeneration (astNode *node, moduleST *lst) ;
 void printGeneration (astNode *node, moduleST *lst) ;
 
 void getValueRSPAlign () ;
-void getValueGeneration (moduleST *lst, varST *searchedVar, int rspDepth) ;
+void getValueGeneration (moduleST *lst, varST *searchedVar) ;
 
 void preamble () ;
 void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 
 int getCaseCount (astNode *statementsNode) ;
-int switchDeclareVars (astNode *statementNode, int rspDepth) ;
+void switchDeclareVars (astNode *statementNode) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
 void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
 void popOutputGeneration (astNode *inputEnd, moduleST *lst) ;
 
-int moduleGeneration (astNode *node, int localBase, int rspDepth, moduleST *lst) ;
+int moduleGeneration (astNode *node, moduleST *lst) ;
 void codeGeneration(astNode *node) ;
 
 void printCommentLineNASM () ;
