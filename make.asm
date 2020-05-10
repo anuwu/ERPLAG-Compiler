@@ -1,5 +1,3 @@
-output : $(FILE).o
-	gcc -no-pie $(FILE).o -o $(FILE)
-
-$(FILE).o : $(FILE).asm
+output :
 	nasm -felf64 $(FILE).asm
+	gcc -no-pie $(FILE).o -o $(FILE)

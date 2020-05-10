@@ -112,11 +112,11 @@ tokenID keywordToTokenID (char *str)
 	return id ;
 }
  
-twinBuffer* lexer_init (char *sourcefile)
+twinBuffer* lexer_init (FILE *fp)
 {
 	int buf1_read, buf2_read ;
 	twinBuffer *twinBuf = (twinBuffer *) malloc (sizeof(twinBuffer)) ;
-	twinBuf->fp = fopen(sourcefile, "r") ;
+	twinBuf->fp = fp ;
  
 	if (twinBuf->fp == NULL)
 		return NULL ;

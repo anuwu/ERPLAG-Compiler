@@ -80,7 +80,7 @@ typedef enum _DFAsim
 // definitions
 
 tokenID keywordToTokenID (char *str) ;
-twinBuffer* lexer_init (char *sourcefile) ;
+twinBuffer* lexer_init (FILE *fp) ;
 void resetBeginPointer (twinBuffer *twinBuf) ;
 int getLexemeLineNumber (twinBuffer *twinBuf) ;
 token *handleLexError (DFAError err, twinBuffer *twinBuf) ;

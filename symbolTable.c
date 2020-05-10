@@ -490,7 +490,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 
 					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
 					{
-						printf ("SEMANTIC ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						printf ("SEMANTIC ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have right limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 				}
@@ -598,28 +598,28 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 
 
 
-int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , int haveReturns) 
+int isValidCall ( baseST * realBase, moduleST * thisModule , astNode * funcNode , int haveReturns) 
 {
 	if(haveReturns == 0) 
 	{
-		varST * varPtr = searchVarInbaseST(base , funcNode->tok->lexeme) ;
-		moduleST * modPtr = searchModuleInbaseST (base , funcNode->tok->lexeme) ;
+		varST * varPtr = searchVarInbaseST(realBase , funcNode->tok->lexeme) ;
+		moduleST * modPtr = searchModuleInbaseST (realBase , funcNode->tok->lexeme) ;
 
 		if (modPtr != NULL)
 		{
 			if (varPtr == NULL && !modPtr->filledMod)
 			{
-				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
-				base->semanticError = 1 ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(realBase, thisModule), funcNode->tok->lineNumber, funcNode->tok->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
 
 			if (modPtr->outputVars[0] != NULL)
 			{
-				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(base, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
-				base->semanticError = 1 ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has return data but no receiving variables\n", getParentModuleName(realBase, thisModule), funcNode->tok->lineNumber, modPtr->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
 
-			if (checkIP(base, thisModule,modPtr,funcNode->next->child) !=NULL)
+			if (checkIP(realBase, thisModule,modPtr,funcNode->next->child) !=NULL)
 				return -3 ;		// Errors printed in checkIP
 			else
 				return 1 ;
@@ -634,24 +634,24 @@ int isValidCall ( baseST * base, moduleST * thisModule , astNode * funcNode , in
 	}
 	else if ( haveReturns == 1 ) 
 	{
-		varST * varPtr = searchVarInbaseST(base , funcNode->next->next->tok->lexeme ) ;
-		moduleST * modPtr = searchModuleInbaseST ( base , funcNode->next->next->tok->lexeme) ;
+		varST * varPtr = searchVarInbaseST(realBase , funcNode->next->next->tok->lexeme ) ;
+		moduleST * modPtr = searchModuleInbaseST ( realBase , funcNode->next->next->tok->lexeme) ;
 
 		if (modPtr != NULL)
 		{
 			if (varPtr == NULL && !modPtr->filledMod)
 			{
-				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
-				base->semanticError = 1 ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, module \"%s\" has not been declared before its call\n", getParentModuleName(realBase, thisModule), funcNode->next->next->tok->lineNumber, funcNode->next->next->tok->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
 
 			if (modPtr->outputVars[0] == NULL)
 			{
-				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(base, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
-				base->semanticError = 1 ;
+				printf ("SEMANTIC ERROR : In \"%s\" at line %d, call to function \"%s\" has no return data but receiving variables are present\n", getParentModuleName(realBase, thisModule), funcNode->next->next->tok->lineNumber, modPtr->lexeme) ;
+				realBase->semanticError = 1 ;
 			}
 			
-			if (checkIP(base, thisModule,modPtr,funcNode->next->next->next->child) !=NULL | checkOP(base, thisModule,modPtr,funcNode->child) !=NULL )
+			if (checkIP(realBase, thisModule,modPtr,funcNode->next->next->next->child) !=NULL | checkOP(realBase, thisModule,modPtr,funcNode->child) !=NULL )
 				return -3 ;		// Errors printed in checkIP and checkOP
 			else
 				return 1 ;

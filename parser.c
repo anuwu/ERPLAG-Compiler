@@ -24,7 +24,7 @@ location heads[SIZE];
 int parsetable[150][150];
 int rule_count;
 char utility_array[150][40] ; 
-extern twinBuffer* lexer_init (char *sourcefile) ;
+extern twinBuffer* lexer_init (FILE *fp) ;
 extern token* getNextTok (twinBuffer *fs) ;
 extern token* getNextToken (twinBuffer *fs) ;
 
@@ -1022,44 +1022,6 @@ char* isLeafNode (treeNode* node)
 		return "NO" ;
 }
  
- 
-void inorderTraversal(treeNode * root,FILE* ptr)
-{
-	// EPS is sorted by not reassigning the lexeme as it originally had lexeme and it shouldn't be replaced by DRIVERDEFF or whatever
-
-
-	if(root != NULL){
-		inorderTraversal(root->child,ptr);
-		
-		//print this node
-		
-		if(root->tag == NON_TERMINAL){
-			fprintf (ptr,"||%d|| \t\t\t\t\t\t%s\t\t%s\t\t%s\n" , root->gcode , nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
-		}
-		else{
-			// terminal
-			token * tk = root->tnt.term;
-			fprintf (ptr,"||%d||\t%s\t%d\t%s\t%s\t%s\t%s\t%s\n", root->gcode,(tk->lexeme)==NULL?"EPS":tk->lexeme, tk->lineNumber, utility_array[tk->id], (tk->lexeme)==NULL?"EPS":tk->lexeme, nodeSymbol(root->parent), isLeafNode(root), nodeSymbol(root)) ;
-		}
- 
- 
-		treeNode * tmp;
-		tmp=root->child;
-		if(tmp!=NULL && tmp->next!=NULL)
-		{
-			tmp = tmp->next;
-			//inorderTraversal(tmp);
- 
-			while(tmp!=NULL)
-			{	
-			inorderTraversal(tmp,ptr);
-			tmp = tmp->next;
-			}
-		}		
-	}
-}
- 
- 
 
 void init_parser()
 {
@@ -1073,7 +1035,7 @@ void init_parser()
 
  
 	// file handling
-	FILE* file_pointer=fopen("grammar.txt","r");
+	FILE* file_pointer=fopen("/home/anwesh/Desktop/ERPLAG/ERPLAG-Compiler/grammar.txt","r");
 	
  
 	int st=0; // 3 states 0-LHS 1-RHS_head 2-rests
@@ -1356,13 +1318,13 @@ treeNode * nextTreeNode(treeNode* current_node){
 	
 }
 
-treeNode* parseTree(char *inFile)
+treeNode* parseTree(FILE *fp)
 {
 	fillUtilityArray();
 	init_parser () ;
 
- 	int rule_index , while_count = 1 ;
-	twinBuffer *twinBuf = lexer_init (inFile) ;
+ 	int rule_index , while_count = 1 ; 	
+	twinBuffer *twinBuf = lexer_init (fp) ;
 	token* tk ;
  
 	stacknode* stack = initStack () ;
@@ -1535,6 +1497,5 @@ treeNode* parseTree(char *inFile)
 		while_count++ ;
 	}
  	labelabc:;
-	endl; 
 	return root ;
 }

@@ -57,7 +57,6 @@ static int counter = 0 ;
 char* nodeSymbol (treeNode* node) ;
 char* isLeafNode (treeNode* node) ;
 char* tokenIDToSting (tokenID id) ;
-void inorderTraversal(treeNode * root,FILE* ptr) ;
 void init_parser() ;
 treeNode* create_root () ;
 treeNode* create_node (nodeTag tag, TNT tnt) ;
@@ -73,15 +72,6 @@ void test_tree () ;
 void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
-treeNode* parseTree (char *inFile) ;
-
-/*
-typedef struct _token
-{
-	tokenID id ;
-	char *lexeme ;
-	int lineNumber ;
-} token ;
-*/
+treeNode* parseTree (FILE *fp) ;
 
 #endif

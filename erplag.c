@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "typeChecker.h"
 #include "codegen.h"
 
-FILE *fp ;
+FILE *fpOut ;
 
 void checkCommand (int argc, char **argv, char **outputFile)
 {
+	if (argc == 1)
+	{
+		printf ("ERPLAG : No source file\n") ;
+		exit (1) ;
+	}
+
 	if (argc != 2 && argc != 3)
 	{
 		printf ("ERPLAG : Incorrect number of arguments\n") ;
@@ -45,15 +52,23 @@ void checkCommand (int argc, char **argv, char **outputFile)
 
 int main(int argc, char **argv)
 {
+	FILE *fpIn ;
 	char *outputFile ;
 	checkCommand (argc, argv, &outputFile) ;
  
-	treeNode *root = parseTree (argv[1]) ;
+ 	if (!(fpIn = fopen (argv[1], "r")))
+ 	{
+ 		printf ("ERPLAG : Source file %s does not exist\n", argv[1]) ;
+ 		exit (1) ;
+ 	}
+
+
+	treeNode *root = parseTree (fpIn) ;
 	if (root->syntax_error)
 	{
 		printf ("ERPLAG : Source file contains lexical/syntactical errors. Please check the above messages for details\n") ;
 		exit (1) ;
-	}
+	}	
 
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
@@ -62,7 +77,11 @@ int main(int argc, char **argv)
 	if (!realBase->semanticError)
 	{
 		int len ;
-		fp = fopen (outputFile, "w") ;
+		if (!(fpOut = fopen (outputFile, "w")))
+		{
+			printf ("Error creating output file %s\n", outputFile) ;
+			exit (1) ;
+		}
 
 		preamble () ;
 		codeGeneration (astRoot) ;

@@ -5,19 +5,19 @@
 #include "symbolTable.h"
 
 extern baseST *realBase ;
-extern FILE *fp ;
+extern FILE *fpOut ;
 
-#define codePrint(x, ...) fprintf (fp, x, ##__VA_ARGS__ )
+#define codePrint(x, ...) fprintf (fpOut, x, ##__VA_ARGS__ )
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, argLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicDeclCheck
+	boundERROR, declERROR, declNegERROR, argLimERROR, asgnLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicDeclCheck, asgnArr
 } textFlag ;
 
 typedef enum _dataFlags
 {
 	boundPrint, declPrint, declNeg, printFormatArray, printInt, printNewLine, printFormat,
-	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt, arrArgMismatch
+	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt, arrArgMismatch, asgnArgMismatch
 } dataFlag ;
 
 typedef enum _switchDeclareStatus
@@ -30,8 +30,13 @@ typedef enum _pushArrLim
 	LEFT, RIGHT
 } pushArrLim ;
 
+typedef enum _labelType
+{
+	LABEL_SWITCH, LABEL_FOR, LABEL_WHILE, LABEL_OTHER
+} labelType ;
+
 // Helper functions
-int get_label() ;
+int get_label (labelType lt) ;
 void codeComment (int tabCount, char *comment) ;
 char* getOffsetStr (int offset) ;
 int isIndexStatic (astNode *node) ;

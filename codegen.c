@@ -7,15 +7,35 @@
 #include "codegen.h"
 
 baseST *realBase ;
-int x = 0 ;
+int switchX = 0 ;
+int forX = 0 ;
+int whileX = 0 ;
+int otherX = 0 ;
+
 int tf = 0 ;
 int df = 0 ;
 char offsetStr[10] ;
 
-int get_label()
+int get_label (labelType lt)
 {
-	x++;
-	return x;
+	switch (lt)
+	{
+		case LABEL_SWITCH :
+			switchX++ ;
+			return switchX ;
+
+		case LABEL_FOR :
+			forX++ ;
+			return forX ;
+
+		case LABEL_WHILE :
+			whileX++ ;
+			return whileX ;
+
+		case LABEL_OTHER :
+			otherX++ ;
+			return otherX ;
+	}
 }
 
 void codeComment (int tabCount, char *comment)
@@ -223,8 +243,8 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_RNUM :
-			printf ("CODEGEN ERROR : NO FLOATING POINT ALLOWED!\n") ;
-			exit (0) ;
+			printf ("ERPLAG : Floating point is not allowed!\n") ;
+			exit (1) ;
 			break ;
 
 		case TK_NUM : 
@@ -630,7 +650,7 @@ void postamble()
 		codePrint ("\t\tCALL printf\n") ;
 		codePrint ("\t\tPOP RBX\n\n") ;
 
-		RSPAlign  (fp) ;
+		RSPAlign  () ;
 
 		codePrint ("\t\tMOV RDI, @inputInt") ;
 		codeComment (10, "get_value") ;
@@ -691,7 +711,7 @@ void postamble()
 	if (isFlagSet (tf, getArr))
 	{
 		codePrint ("\n@getArr:\n");
-		RSPAlign  (fp) ;
+		RSPAlign  () ;
 
 		codePrint ("\n\t\tPUSH RDI\n") ;
 		codePrint ("\t\tMOV RCX, 0\n") ;
@@ -861,6 +881,23 @@ void postamble()
 		codePrint ("\n\t\tret\n") ;
 	}
 
+	if (isFlagSet (tf, asgnArr))
+	{
+		codePrint ("\n@asgnArr:\n") ;
+		codePrint ("\t\tMOV CX, 0\n") ;
+
+		codePrint ("\n\t.assnLoop:\n") ;
+		codePrint ("\t\tMOVSX RBX, CX\n") ;
+		codePrint ("\t\tMOV AX, [RSI + RBX]\n") ;
+		codePrint ("\t\tMOV [RDI + RBX], AX\n") ;
+
+		codePrint ("\n\t\tADD CX, 2\n") ;
+		codePrint ("\t\tCMP CX, DX\n") ;
+		codePrint ("\t\tJNE .assnLoop\n") ;
+
+		codePrint ("\n\t\tret\n") ;
+	}
+
 	if (isFlagSet (tf, boundERROR))
 	{
 		df |= 1 << boundPrint ;
@@ -913,8 +950,21 @@ void postamble()
 		codePrint ("\t\tCALL exit\n") ;
 	}
 
+	if (isFlagSet (tf, asgnLimERROR))
+	{
+		df |= 1 << asgnArgMismatch ;
+
+		codePrint ("\n@asgnLimERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @asgnArgMismatch\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV EDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;		
+	}
+
 	/* --------------------------------------------------------------------------------------------- */
-	printCommentLineNASM (fp) ;
+	printCommentLineNASM () ;
 
 	if (df)
 		codePrint ("\nsection .data\n") ;
@@ -940,7 +990,13 @@ void postamble()
 	if (isFlagSet (df, arrArgMismatch))
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
-		codePrint ("db \"RUNTIME ERROR : Mismatch in formal and actual array limits\" , 10, 0\n") ;
+		codePrint ("db \"RUNTIME ERROR : Mismatch of limits in formal and actual array argument\" , 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, asgnArgMismatch))
+	{
+		codePrint ("\t\t@asgnArgMismatch: ") ;
+		codePrint ("db \"RUNTIME ERROR : Mismatch of limits in array assignment\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormatArray))
@@ -1107,7 +1163,7 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 	int i, def_label = -1 ;
 
 	for (i = 0 ; i < caseCount ; i++)
-		caseLabels[i] = get_label() ;
+		caseLabels[i] = get_label (LABEL_SWITCH) ;
 
 	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
 	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
@@ -1122,12 +1178,12 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		{
 			codePrint ("\n\t\tCMP AX, %s", caseValNode->tok->lexeme) ;
 			codeComment (11, "switch case") ;
-			codePrint ("\t\tJE LABEL%d\n", caseLabels[i]) ;
+			codePrint ("\t\tJE SWITCH%d\n", caseLabels[i]) ;
 
 			if (caseValNode->next->next->next->id == statements)
 			{
-				def_label = get_label () ;
-				codePrint ("\n\t\tJMP LABEL%d", def_label) ;
+				def_label = get_label (LABEL_SWITCH) ;
+				codePrint ("\n\t\tJMP SWITCH%d", def_label) ;
 				codeComment (11, "default case") ;
 				break ;
 			}
@@ -1173,7 +1229,7 @@ void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLi
 
 	if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(vst))
 	{
-		lab = get_label () ;
+		lab = get_label (LABEL_OTHER) ;
 		tf |= 1 << argLimERROR ;
 
 		if (flag == LEFT)
@@ -1285,7 +1341,16 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				{
 					codePrint ("\n\t\tMOV RSP, RBP\n") ;
 					codePrint ("\t\tPOP RBP\n") ;
-					codePrint ("\t\tret\n") ;
+
+					if (realBase->driverST == lst)
+					{
+						codePrint ("\t\tMOV RAX, 1\n") ;
+						codePrint ("\t\tMOV RBX, 0\n") ;
+						codePrint ("\t\tINT 0x80\n") ;
+					}
+					else
+						codePrint ("\t\tret\n") ;
+
 					printCommentLineNASM () ;
 				}
 				else if (lst->scopeSize > 0)
@@ -1346,13 +1411,58 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			if (isSingleRHS(node))
 			{
-				if (!isArrayRHS (node, lst))
+				if (isArrayRHS (node, lst))
+				{
+					//printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
+					varST *lhs, *rhs ;
+					lhs = searchVar (realBase, lst, node->child->tok->lexeme) ;
+					rhs = searchVar (realBase, lst, node->child->next->tok->lexeme) ;
+
+					tf |= 1 << asgnArr ;
+				
+					if (isVarStaticArr (lhs) && isVarStaticArr (rhs))
+					{
+						loadRegLeftLim (lhs, "CX") ;
+						loadRegRightLim (lhs, "DX") ;
+					}
+					else
+					{
+						tf |= 1 << asgnLimERROR ;
+						int leftLab, rightLab ;
+
+						leftLab = get_label (LABEL_OTHER) ;
+						rightLab = get_label (LABEL_OTHER) ;
+
+						loadRegLeftLim (lhs, "AX") ;
+						loadRegLeftLim (rhs, "CX") ;
+
+						codePrint ("\t\tCMP AX, CX\n") ;
+						codePrint ("\t\tJE LABEL%d\n", leftLab) ;
+						codePrint ("\t\tCALL @asgnLimERROR\n") ;
+
+						codePrint ("\n\tLABEL%d:\n", leftLab) ;
+						loadRegRightLim (lhs, "BX") ;
+						loadRegRightLim (rhs, "DX") ;
+
+						codePrint ("\t\tCMP BX, DX\n") ;
+						codePrint ("\t\tJE LABEL%d\n", rightLab) ;
+						codePrint ("\t\tCALL @asgnLimERROR\n") ;
+
+						codePrint ("\n\tLABEL%d:\n", rightLab) ;
+					}
+
+					loadArrBase (lhs, "RDI") ;
+					loadArrBase (rhs, "RSI") ;
+					codePrint ("\t\tSUB DX, CX\n") ;
+					codePrint ("\t\tADD DX, 1\n") ;
+					codePrint ("\t\tADD DX, DX\n") ;
+					codePrint ("\t\tCALL @asgnArr\n") ;
+				}
+				else
 				{
 					expr(node->child->next, lst, 1);
 					exprAssign (node->child, lst, 1) ;
 				}
-				else
-					printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
 			}
 			else
 			{
@@ -1376,8 +1486,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 		case TK_FOR :
 			node=node->next;
-			start_label = get_label () ;
-			end_label = get_label () ;
+			start_label = get_label (LABEL_FOR) ;
+			end_label = get_label (LABEL_FOR) ;
 
 			searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
 
@@ -1402,8 +1512,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 		
 		case TK_WHILE :
 			node=node->next;
-			start_label = get_label();
-			end_label =  get_label();
+			start_label = get_label(LABEL_WHILE);
+			end_label =  get_label(LABEL_WHILE);
 
 			codePrint ("\n\tWHILE%d:\n", start_label) ;
 
@@ -1443,13 +1553,13 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
 			def_label = switchCaseLabels (node , lst, caseCount, caseLabels) ;
 
-			end_label = get_label () ;
+			end_label = get_label (LABEL_SWITCH) ;
 			i = 0 ;
 			while (statementsNode != NULL)
 			{
 				codePrint ("\nLABEL%d:\n", caseLabels[i]) ;
 				moduleGeneration (statementsNode, lst) ;
-				codePrint ("\n\t\tJMP LABEL%d\n", end_label) ;
+				codePrint ("\n\t\tJMP SWITCH%d\n", end_label) ;
 
 				i++ ;
 				if (statementsNode->next != NULL)
