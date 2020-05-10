@@ -82,7 +82,7 @@ int getStaticOffset (varST *vst, astNode *node, int size)
 	return vst->offset - size*(atoi(node->child->tok->lexeme) - atoi(vst->arrayIndices->tokLeft->lexeme)) ;
 }
 
-void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst)
+void arrBoundCheck (astNode *node, moduleST *lst, varST *vst)
 {
 	varST *indexVar = NULL ;
 	if (!isIndexStatic (node))	
@@ -103,7 +103,7 @@ void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst)
 	codePrint ("\t\tCALL @boundCheck\n\n") ;
 }
 
-void assignGeneration (astNode *node, moduleST *lst)
+void exprAssign (astNode *node, moduleST *lst)
 {
 	if(node->child == NULL)
 	{
@@ -129,7 +129,7 @@ void assignGeneration (astNode *node, moduleST *lst)
 		}
 		else
 		{
-			boundCheckGeneration (node, lst, vst) ;
+			arrBoundCheck (node, lst, vst) ;
 			codePrint ("\t\tPOP AX\n") ;
 			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 				codePrint ("\t\tNEG AX\n") ;
@@ -141,7 +141,7 @@ void assignGeneration (astNode *node, moduleST *lst)
 
 }
 
-void exprLeafGeneration (astNode *node, moduleST *lst)
+void exprLeaf (astNode *node, moduleST *lst)
 {
 	char reg[3] ;
 	if (node->prev == NULL)
@@ -168,7 +168,7 @@ void exprLeafGeneration (astNode *node, moduleST *lst)
 					codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(getStaticOffset (vst, node, 2))) ;						
 				else
 				{
-					boundCheckGeneration (node, lst, vst) ;
+					arrBoundCheck (node, lst, vst) ;
 					codePrint ("\t\tMOV %s, [RDI + RBX]\n", reg) ;
 				}
 				
@@ -199,16 +199,16 @@ void exprLeafGeneration (astNode *node, moduleST *lst)
 	}
 }
 
-void exprGeneration (astNode *node, moduleST *lst)
+void expr (astNode *node, moduleST *lst)
 {
 	if (node->child == NULL || node->child->next == NULL)
-		exprLeafGeneration (node, lst) ;
+		exprLeaf (node, lst) ;
 
 	switch (node->id)
 	{
 		case TK_PLUS :
-			exprGeneration (node->child, lst); 
-			exprGeneration (node->child->next, lst) ;
+			expr (node->child, lst); 
+			expr (node->child->next, lst) ;
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tADD AX,BX\n");
@@ -217,8 +217,8 @@ void exprGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_MINUS :
-			exprGeneration (node->child->next, lst) ;
-			exprGeneration (node->child, lst) ;
+			expr (node->child->next, lst) ;
+			expr (node->child, lst) ;
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tSUB AX,BX\n");
@@ -227,8 +227,8 @@ void exprGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_MUL :
-			exprGeneration (node->child->next, lst) ;
-			exprGeneration (node->child, lst) ;
+			expr (node->child->next, lst) ;
+			expr (node->child, lst) ;
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tIMUL BX\n");
@@ -237,8 +237,8 @@ void exprGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_DIV :
-			exprGeneration (node->child->next, lst) ;
-			exprGeneration (node->child, lst) ;
+			expr (node->child->next, lst) ;
+			expr (node->child, lst) ;
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tCWD\n") ;
@@ -247,8 +247,8 @@ void exprGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
-			exprGeneration (node->child, lst) ;
-			exprGeneration (node->child->next, lst) ;
+			expr (node->child, lst) ;
+			expr (node->child->next, lst) ;
 
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tPOP AX\n");
@@ -281,8 +281,8 @@ void exprGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_AND : case TK_OR :
-			exprGeneration (node->child, lst) ;
-			exprGeneration (node->child->next, lst) ;
+			expr (node->child, lst) ;
+			expr (node->child->next, lst) ;
 
 			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tPOP AX\n"); 
@@ -298,7 +298,7 @@ void exprGeneration (astNode *node, moduleST *lst)
 	}
 }
 
-void printGeneration (astNode *node, moduleST *lst)
+void print (astNode *node, moduleST *lst)
 {
 	int start_label, end_label ;
 	int reserveLabel[2] ;
@@ -346,7 +346,7 @@ void printGeneration (astNode *node, moduleST *lst)
 			else
 			{
 				// General case of static array with dynamic indices, or dynamic array
-				boundCheckGeneration (node, lst, searchedVar) ;
+				arrBoundCheck (node, lst, searchedVar) ;
 				codePrint ("\t\tMOV SI, [RDI + RBX]\n") ;
 			}
 
@@ -384,7 +384,7 @@ void printGeneration (astNode *node, moduleST *lst)
 	}
 }
 
-void getValueRSPAlign()
+void RSPAlign ()
 {
 	codePrint ("\t\tMOV RAX, RSP\n") ;
 	codePrint ("\t\tAND RAX, 15\n") ;
@@ -393,7 +393,7 @@ void getValueRSPAlign()
 	codePrint ("\t\tPUSH RAX\n") ;
 }
 
-void getValueGeneration (moduleST *lst, varST *vst)
+void getValue (moduleST *lst, varST *vst)
 {		
 	int rspAlign ;
 	df |= 1 << inputInt ;
@@ -447,7 +447,7 @@ void getValueGeneration (moduleST *lst, varST *vst)
 	}
 }
 
-void dynamicDeclareCheck (moduleST *lst, varST *vst)
+void dynamicDeclarationCheck (moduleST *lst, varST *vst)
 {
 	int start_label , end_label ;
 	varST *leftVar , *rightVar ;
@@ -474,10 +474,10 @@ void dynamicDeclareCheck (moduleST *lst, varST *vst)
 	codePrint ("\t\tCALL @dynamicDeclCheck\n\n") ;
 }
 
-void dynamicDeclareGeneration (moduleST *lst, varST *vst, int declCount)
+void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 {
 	int start_label ;
-	dynamicDeclareCheck (lst, vst) ;
+	dynamicDeclarationCheck (lst, vst) ;
 	codePrint ("\t\tPUSH BX") ;
 	codeComment (12, "saving register for malloc") ;
 	codePrint ("\t\tPUSH AX") ;
@@ -608,7 +608,7 @@ void postamble()
 		codePrint ("\t\tCALL printf\n") ;
 		codePrint ("\t\tPOP RBX\n\n") ;
 
-		getValueRSPAlign (fp) ;
+		RSPAlign  (fp) ;
 
 		codePrint ("\t\tMOV RDI, @inputInt") ;
 		codeComment (9, "get_value") ;
@@ -669,7 +669,7 @@ void postamble()
 	if (isFlagSet (tf, getArr))
 	{
 		codePrint ("\n@getArr:\n");
-		getValueRSPAlign (fp) ;
+		RSPAlign  (fp) ;
 
 		codePrint ("\n\t\tPUSH RDI\n") ;
 		codePrint ("\t\tMOV RCX, 0\n") ;
@@ -1171,7 +1171,7 @@ void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLi
 }
 
 
-void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
+void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
 {
 	varST *searchedVar ;
 
@@ -1207,7 +1207,7 @@ void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst
 	}
 }
 
-void popOutputGeneration (astNode *outputHead, moduleST *lst)
+void popOutput (astNode *outputHead, moduleST *lst)
 {
 	varST* searchedVar ;
 
@@ -1302,18 +1302,18 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			}
 
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
-				dynamicDeclareGeneration (lst, searchedVar, declCount) ;
+				dynamicDeclaration (lst, searchedVar, declCount) ;
 
 			
 			break ;											
 
 		case TK_ASSIGNOP :
 			if ((node->child->next->id == TK_MINUS || node->child->next->id == TK_PLUS) && node->child->next->child->next == NULL)
-				exprGeneration(node->child->next->child, lst);
+				expr(node->child->next->child, lst);
 			else
-				exprGeneration(node->child->next, lst);
+				expr(node->child->next, lst);
 
-			assignGeneration (node->child, lst) ;
+			exprAssign (node->child, lst) ;
 
 			codePrint ("\n") ;
 			break ;
@@ -1351,7 +1351,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			codePrint ("\n\tWHILE%d:\n", start_label) ;
 
-			exprGeneration (node, lst);	// expression
+			expr (node, lst);	// expr
 
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tCMP AX, 0");
@@ -1367,12 +1367,12 @@ int moduleGeneration (astNode *node, moduleST *lst)
 		
 		case TK_PRINT :
 			node = node->next ;
-			printGeneration (node, lst) ;
+			print (node, lst) ;
 			break ;
 
 		case TK_GET_VALUE :
 			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-			getValueGeneration (lst, searchedVar) ;
+			getValue (lst, searchedVar) ;
 			break ;
 
 		case TK_SWITCH :
@@ -1427,7 +1427,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			while (idListHead->next != NULL)
 				idListHead = idListHead->next ;
 
-			pushInputGeneration (idListHead, varEntry, lst) ;
+			pushInput (idListHead, varEntry, lst) ;
 
 			codePrint ("\t\tCALL %s\n", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
@@ -1442,12 +1442,12 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				idListHead = idListHead->next ;
 
 			codePrint ("\t\tSUB RSP, %d\n", calledModule->outputSize) ;
-			pushInputGeneration (idListHead, varEntry, lst) ;
+			pushInput (idListHead, varEntry, lst) ;
 
 			codePrint ("\t\tCALL %s\n", node->next->next->tok->lexeme) ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
 
-			popOutputGeneration (node->child, lst) ;
+			popOutput (node->child, lst) ;
 			break ;
 	}
 

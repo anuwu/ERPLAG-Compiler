@@ -38,18 +38,18 @@ void loadRegLeftLim (varST *searchedVar, char *reg) ;
 void loadRegRightLim (varST *searchedVar, char *reg) ;
 
 int getStaticOffset (varST *vst, astNode *node, int size) ;
-void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst) ;
+void arrBoundCheck (astNode *node, moduleST *lst, varST *vst) ;
 
-void dynamicDeclareCheck (moduleST *lst, varST *searchedVar) ;
-void dynamicDeclareGeneration (moduleST *lst, varST *searchedVar, int declCount) ;
+void dynamicDeclarationCheck (moduleST *lst, varST *searchedVar) ;
+void dynamicDeclaration (moduleST *lst, varST *searchedVar, int declCount) ;
 
-void assignGeneration (astNode *node, moduleST *lst) ;
-void exprGeneration (astNode *node, moduleST *lst) ;
-void exprLeafGeneration (astNode *node, moduleST *lst) ;
-void printGeneration (astNode *node, moduleST *lst) ;
+void exprAssign (astNode *node, moduleST *lst) ;
+void expr (astNode *node, moduleST *lst) ;
+void exprLeaf (astNode *node, moduleST *lst) ;
+void print (astNode *node, moduleST *lst) ;
 
-void getValueRSPAlign () ;
-void getValueGeneration (moduleST *lst, varST *searchedVar) ;
+void RSPAlign () ;
+void getValue (moduleST *lst, varST *searchedVar) ;
 
 void preamble () ;
 void postamble () ;
@@ -60,8 +60,8 @@ void switchDeclareVars (astNode *statementNode) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
 void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag) ;
-void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
-void popOutputGeneration (astNode *inputEnd, moduleST *lst) ;
+void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
+void popOutput (astNode *inputEnd, moduleST *lst) ;
 
 int moduleGeneration (astNode *node, moduleST *lst) ;
 void codeGeneration(astNode *node) ;
