@@ -30,6 +30,7 @@ typedef enum _pushArrLim
 	LEFT, RIGHT
 } pushArrLim ;
 
+// Helper functions
 int get_label() ;
 void codeComment (int tabCount, char *comment) ;
 char* getOffsetStr (int offset) ;
@@ -37,17 +38,25 @@ int isIndexStatic (astNode *node) ;
 void loadRegLeftLim (varST *searchedVar, char *reg) ;
 void loadRegRightLim (varST *searchedVar, char *reg) ;
 
+// Array handling
 int getStaticOffset (varST *vst, astNode *node, int size) ;
 void arrBoundCheck (astNode *node, moduleST *lst, varST *vst) ;
-
 void dynamicDeclarationCheck (moduleST *lst, varST *searchedVar) ;
 void dynamicDeclaration (moduleST *lst, varST *searchedVar, int declCount) ;
 
+// Expression helper function
+int isExprLeaf (tokenID id) ;
+int isUnary (tokenID id) ;
+int isAssignUnary (astNode *assignNode) ;
+int isSingleRHS (astNode *node) ;
+
+// Expression
 void exprAssign (astNode *node, moduleST *lst, int singleAssign) ;
 void exprAssign (astNode *node, moduleST *lst, int singleAssign) ;
 void exprLeaf (astNode *node, moduleST *lst, int singleAssign) ;
-void print (astNode *node, moduleST *lst) ;
 
+// I/O
+void print (astNode *node, moduleST *lst) ;
 void RSPAlign () ;
 void getValue (moduleST *lst, varST *searchedVar) ;
 
@@ -55,10 +64,12 @@ void preamble () ;
 void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 
+// Switch case
 int getCaseCount (astNode *statementsNode) ;
 void switchDeclareVars (astNode *statementNode) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
+// Function call
 void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag) ;
 void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
 void popOutput (astNode *inputEnd, moduleST *lst) ;

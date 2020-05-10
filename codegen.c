@@ -116,19 +116,39 @@ int isExprLeaf (tokenID id)
 			return 1 ;
 		case TK_FALSE :
 			return 1 ;
+
 		default :
 			return 0 ;
 	}
 }
 
-int isAssignUnary (astNode *assignNode)
+int isUnary (tokenID id)
 {
-	return ((assignNode->child->next->id == TK_MINUS || assignNode->child->next->id == TK_PLUS) && assignNode->child->next->child->next == NULL) ;
+	return (id == TK_PLUS || id == TK_MINUS) ;
 }
 
-int isSingleRHS (astNode *node)
+int isAssignUnary (astNode *assignNode)
 {
-	return isExprLeaf (node->child->next->id) ;
+	return (isUnary (assignNode->child->next->id) && assignNode->child->next->child->next == NULL) ;
+}
+
+int isArrayRHS (astNode *assignNode, moduleST *lst)
+{
+	varST *searchedVar ;
+
+	if (assignNode->child->next->id == TK_ID)
+	{
+		searchedVar = searchVar (realBase, lst, assignNode->child->next->tok->lexeme) ;
+		if (searchedVar->datatype == TK_ARRAY && assignNode->child->next->child == NULL)
+			return 1 ;
+	}
+
+	return 0 ;
+}
+
+int isSingleRHS (astNode *assignNode)
+{
+	return isExprLeaf (assignNode->child->next->id) ;
 }
 
 void exprAssign (astNode *node, moduleST *lst, int singleAssign)
@@ -1326,8 +1346,13 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			if (isSingleRHS(node))
 			{
-				expr(node->child->next, lst, 1);
-				exprAssign (node->child, lst, 1) ;
+				if (!isArrayRHS (node, lst))
+				{
+					expr(node->child->next, lst, 1);
+					exprAssign (node->child, lst, 1) ;
+				}
+				else
+					printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
 			}
 			else
 			{

@@ -238,16 +238,19 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 		{
 			if (searchedVarLeft->arrayIndices->type == searchedVarRight->arrayIndices->type)
 			{
-				int leftLim1, rightLim1, leftLim2, rightLim2 ;	
-				leftLim1 = atoi (searchedVarLeft->arrayIndices->tokLeft->lexeme) ;
-				rightLim1 = atoi (searchedVarLeft->arrayIndices->tokRight->lexeme) ;
-				leftLim2 = atoi (searchedVarRight->arrayIndices->tokLeft->lexeme) ;
-				rightLim2 = atoi (searchedVarRight->arrayIndices->tokRight->lexeme) ;
-
-				if (leftLim1 != leftLim2 || rightLim1 != rightLim2)
+				if (isVarStaticArr (searchedVarLeft) && isVarStaticArr (searchedVarRight))
 				{
-					printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
-					realBase->semanticError = 1 ;
+					int leftLim1, rightLim1, leftLim2, rightLim2 ;	
+					leftLim1 = atoi (searchedVarLeft->arrayIndices->tokLeft->lexeme) ;
+					rightLim1 = atoi (searchedVarLeft->arrayIndices->tokRight->lexeme) ;
+					leftLim2 = atoi (searchedVarRight->arrayIndices->tokLeft->lexeme) ;
+					rightLim2 = atoi (searchedVarRight->arrayIndices->tokRight->lexeme) ;
+
+					if (leftLim1 != leftLim2 || rightLim1 != rightLim2)
+					{
+						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+						realBase->semanticError = 1 ;
+					}
 				}
 			}
 			else
