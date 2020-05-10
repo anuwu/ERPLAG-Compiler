@@ -35,6 +35,7 @@ asm :
 
 erp :
 	make
+	clear
 	./erplag $(FILE).erp $(FILE).asm
 
 erpAsm :

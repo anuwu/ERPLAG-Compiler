@@ -410,7 +410,7 @@ void getValue (moduleST *lst, varST *vst)
 			df |= 1 << inputBoolPrompt ;
 			codePrint ("\n\t\tMOV RDI, @inputBoolPrompt") ;
 		}
-		codeComment (8, "get_value") ;
+		codeComment (7, "get_value") ;
 
 
 		tf |= 1 << getValuePrimitive ;
@@ -530,6 +530,7 @@ void preamble()
 	codePrint ("extern printf\n") ;
 	codePrint ("extern scanf\n") ;
 	codePrint ("extern malloc\n") ;
+	codePrint ("extern free\n") ;
 	codePrint ("extern exit\n") ;
 
 	codePrint ("\nglobal main\n") ;
@@ -1249,6 +1250,17 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				if (lst->tableType == SWITCH_ST)
 					break ;
 
+				varEntry = lst->dynamicVars[0] ;
+				if (varEntry != NULL)
+					codePrint ("\n") ;
+				while (varEntry != NULL)
+				{
+					codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr(varEntry->thisVarST->offset)) ;
+					codePrint ("\t\tCALL free\n") ;
+
+					varEntry = varEntry->next ;
+				}
+
 				if (lst->parent == realBase)
 				{
 					codePrint ("\n\t\tMOV RSP, RBP\n") ;
@@ -1258,7 +1270,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				}
 				else
 				{
-					codePrint ("\t\tADD RSP, %d", lst->scopeSize) ;
+					codePrint ("\n\t\tADD RSP, %d", lst->scopeSize) ;
 					codeComment (10, "restoring to parent scope") ;
 				}
 
@@ -1414,7 +1426,17 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			statementsNode = node->next->next->next->next ;
 			codePrint ("\nLABEL%d:\n", end_label) ;
-			codePrint ("\n\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
+
+			varEntry = statementsNode->localST->dynamicVars[0] ;
+			while (varEntry != NULL)
+			{
+				codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr(varEntry->thisVarST->offset)) ;
+				codePrint ("\t\tCALL free\n") ;
+
+				varEntry = varEntry->next ;
+			}
+
+			codePrint ("\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
 			codeComment (11, "restoring to parent scope") ;
 
 			break ;
