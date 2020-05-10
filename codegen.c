@@ -91,24 +91,54 @@ void arrBoundCheck (astNode *node, moduleST *lst, varST *vst)
 	tf |= 1 << boundCheck ;
 
 	loadArrBase (vst, "RDI") ;
-	loadRegLeftLim (vst, "AX") ;
+	loadRegLeftLim (vst, "BX") ;
 
 	if (indexVar == NULL)
-		codePrint ("\t\tMOV BX, %s\n", node->child->tok->lexeme) ;
+		codePrint ("\t\tMOV CX, %s\n", node->child->tok->lexeme) ;
 	else
-		codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr (indexVar->offset)) ;
+		codePrint ("\t\tMOV CX, [RBP%s]\n", getOffsetStr (indexVar->offset)) ;
 
-	loadRegRightLim (vst, "CX") ;
+	loadRegRightLim (vst, "DX") ;
 
-	codePrint ("\t\tCALL @boundCheck\n\n") ;
+	codePrint ("\t\tCALL @boundCheck") ;
+	codeComment (10, "checking array index bound") ;
 }
 
-void exprAssign (astNode *node, moduleST *lst)
+int isExprLeaf (tokenID id)
 {
+	switch (id)
+	{
+		case TK_ID :
+			return 1 ;
+		case TK_NUM :
+			return 1 ;
+		case TK_TRUE :
+			return 1 ;
+		case TK_FALSE :
+			return 1 ;
+		default :
+			return 0 ;
+	}
+}
+
+int isAssignUnary (astNode *assignNode)
+{
+	return ((assignNode->child->next->id == TK_MINUS || assignNode->child->next->id == TK_PLUS) && assignNode->child->next->child->next == NULL) ;
+}
+
+int isSingleRHS (astNode *node)
+{
+	return isExprLeaf (node->child->next->id) ;
+}
+
+void exprAssign (astNode *node, moduleST *lst, int singleAssign)
+{
+	if (!singleAssign)
+		codePrint ("\t\tPOP AX\n") ;
+
 	if(node->child == NULL)
 	{
 		varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
-		codePrint ("\t\tPOP AX\n");
 		if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 			codePrint ("\t\tNEG AX\n") ;
 
@@ -121,7 +151,6 @@ void exprAssign (astNode *node, moduleST *lst)
 
 		if (isVarStaticArr(vst) && node->child->id == TK_NUM)
 		{
-			codePrint ("\t\tPOP AX\n");	
 			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 				codePrint ("\t\tNEG AX\n") ;
 
@@ -129,25 +158,25 @@ void exprAssign (astNode *node, moduleST *lst)
 		}
 		else
 		{
-			arrBoundCheck (node, lst, vst) ;
-			codePrint ("\t\tPOP AX\n") ;
 			if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 				codePrint ("\t\tNEG AX\n") ;
 
+			arrBoundCheck (node, lst, vst) ;
 			codePrint ("\t\tMOV [RDI + RBX], AX") ;
 		}
 	}
-	codeComment (9, "store variable") ;
+	codeComment (10, "store variable") ;
 
 }
 
-void exprLeaf (astNode *node, moduleST *lst)
+void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 {
 	char reg[3] ;
-	if (node->prev == NULL)
-		strcpy (reg, "AX") ;
-	else
+
+	if (!singleAssign && node->prev != NULL)
 		strcpy (reg, "BX") ;
+	else
+		strcpy (reg, "AX") ;
 
 	switch (node->id)
 	{
@@ -155,9 +184,7 @@ void exprLeaf (astNode *node, moduleST *lst)
 			if (node->child == NULL)
 			{
 				varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
-
 				codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(searchedVar->offset)) ;
-				codePrint ("\t\tPUSH %s\n", reg);	
 			}
 			else
 			{
@@ -169,10 +196,8 @@ void exprLeaf (astNode *node, moduleST *lst)
 				else
 				{
 					arrBoundCheck (node, lst, vst) ;
-					codePrint ("\t\tMOV %s, [RDI + RBX]\n", reg) ;
-				}
-				
-				codePrint ("\t\tPUSH %s\n", reg);	
+					codePrint ("\t\tMOV %s, [RDI + RBX]\n\n", reg) ;
+				}				
 			}
 
 			break ;
@@ -184,74 +209,54 @@ void exprLeaf (astNode *node, moduleST *lst)
 
 		case TK_NUM : 
 			codePrint ("\t\tMOV %s, %s\n", reg, node->tok->lexeme);
-			codePrint ("\t\tPUSH %s\n", reg);	
 			break ;
 
 		case TK_TRUE :
 			codePrint ("\t\tMOV %s, 1\n", reg);
-			codePrint ("\t\tPUSH %s\n", reg);	
 			break ;
 
 		case TK_FALSE :
 			codePrint ("\t\tMOV %s, 0\n", reg);
-			codePrint ("\t\tPUSH %s\n", reg);	
 			break ;
 	}
+
+	if (!singleAssign)
+		codePrint ("\t\tPUSH %s\n", reg);	
 }
 
-void expr (astNode *node, moduleST *lst)
+void expr (astNode *node, moduleST *lst, int singleAssign)
 {
 	if (node->child == NULL || node->child->next == NULL)
-		exprLeaf (node, lst) ;
+	{
+		exprLeaf (node, lst, singleAssign) ;
+		return ;
+	}
+
+	expr (node->child->next, lst, singleAssign) ;
+	expr (node->child, lst, singleAssign); 
+	codePrint ("\t\tPOP AX\n");
+	codePrint ("\t\tPOP BX\n");
 
 	switch (node->id)
 	{
 		case TK_PLUS :
-			expr (node->child, lst); 
-			expr (node->child->next, lst) ;
-			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tADD AX,BX\n");
-			codePrint ("\t\tPUSH AX\n");
-
 			break ;
 
 		case TK_MINUS :
-			expr (node->child->next, lst) ;
-			expr (node->child, lst) ;
-			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tSUB AX,BX\n");
-			codePrint ("\t\tPUSH AX\n");
-
 			break ;
 
 		case TK_MUL :
-			expr (node->child->next, lst) ;
-			expr (node->child, lst) ;
-			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tIMUL BX\n");
-			codePrint ("\t\tPUSH AX\n");
-
 			break ;
 
 		case TK_DIV :
-			expr (node->child->next, lst) ;
-			expr (node->child, lst) ;
-			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tPOP BX\n");
 			codePrint ("\t\tCWD\n") ;
 			codePrint ("\t\tIDIV BX\n");
-			codePrint ("\t\tPUSH AX\n");
 			break ;
 
 		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
-			expr (node->child, lst) ;
-			expr (node->child->next, lst) ;
-
-			codePrint ("\t\tPOP BX\n");
-			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tCMP AX,BX\n");
 
 			switch (node->id)
@@ -276,26 +281,19 @@ void expr (astNode *node, moduleST *lst)
 					break ;
 			}
 			codePrint ("\t\tMOVSX AX, AL\n") ;
-			codePrint ("\t\tPUSH AX\n") ;
 
 			break ;
 
 		case TK_AND : case TK_OR :
-			expr (node->child, lst) ;
-			expr (node->child->next, lst) ;
-
-			codePrint ("\t\tPOP BX\n");
-			codePrint ("\t\tPOP AX\n"); 
-
 			if (node->id == TK_AND)
 				codePrint ("\t\tAND AX, BX\n");
 			else
 				codePrint ("\t\tOR AX, BX\n");
 
-			codePrint ("\t\tPUSH AX\n") ;
-
 			break ;
 	}
+
+	codePrint ("\t\tPUSH AX\n") ;
 }
 
 void print (astNode *node, moduleST *lst)
@@ -410,7 +408,7 @@ void getValue (moduleST *lst, varST *vst)
 			df |= 1 << inputBoolPrompt ;
 			codePrint ("\n\t\tMOV RDI, @inputBoolPrompt") ;
 		}
-		codeComment (7, "get_value") ;
+		codeComment (9, "get_value") ;
 
 
 		tf |= 1 << getValuePrimitive ;
@@ -471,7 +469,10 @@ void dynamicDeclarationCheck (moduleST *lst, varST *vst)
 		codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr(rightVar->offset)) ;
 	}
 
-	codePrint ("\t\tCALL @dynamicDeclCheck\n\n") ;
+	codePrint ("\t\tCALL @dynamicDeclCheck") ;
+	codeComment (10, "checking dynamic array declaration limits") ;
+
+	codePrint ("\n\n") ;
 }
 
 void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
@@ -554,19 +555,19 @@ void postamble()
 		tf |= 1 << boundERROR ;
 
 		codePrint ("\n@boundCheck:\n") ;
-		codePrint ("\t\tCMP BX, AX\n") ;
+		codePrint ("\t\tCMP CX, BX\n") ;
 		codePrint ("\t\tJGE .leftLim\n") ;
 		codePrint ("\t\tCALL @boundERROR\n") ;
 
 		codePrint ("\n\t.leftLim:\n") ;
-		codePrint ("\t\tCMP CX, BX\n") ;
+		codePrint ("\t\tCMP DX, CX\n") ;
 		codePrint ("\t\tJGE .rightLim\n") ;
 		codePrint ("\t\tCALL @boundERROR\n") ;
 
 		codePrint ("\n\t.rightLim:\n") ;
-		codePrint ("\t\tSUB BX, AX\n") ;
-		codePrint ("\t\tADD BX, BX\n") ;
-		codePrint ("\t\tMOVSX RBX, BX\n") ;
+		codePrint ("\t\tSUB CX, BX\n") ;
+		codePrint ("\t\tADD CX, CX\n") ;
+		codePrint ("\t\tMOVSX RBX, CX\n") ;
 
 		codePrint ("\n\t\tret\n") ;
 	}
@@ -612,7 +613,7 @@ void postamble()
 		RSPAlign  (fp) ;
 
 		codePrint ("\t\tMOV RDI, @inputInt") ;
-		codeComment (9, "get_value") ;
+		codeComment (10, "get_value") ;
 		codePrint ("\t\tMOV RSI, RSP\n") ;
 		codePrint ("\t\tSUB RSI, 16\n") ;
 		codePrint ("\t\tPUSH RBX\n") ;
@@ -758,8 +759,7 @@ void postamble()
 		codePrint ("\t\tPOP RDI\n\n") ;
 
 		codePrint ("\t\tMOV CX, 0\n") ;
-		codePrint ("\n\t.printArr:") ;
-		codeComment (8, "printing array") ;
+		codePrint ("\n\t.printArr:\n") ;
 
 		codePrint ("\t\tPUSH RDI\n") ;
 		codePrint ("\t\tMOVSX RBX, CX\n") ;
@@ -1091,7 +1091,7 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 
 	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
 	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
-	codeComment (9, "loading switch variable") ;
+	codeComment (10, "loading switch variable") ;
 
 	astNode *caseValNode =  node->next->next->next ;
 	i = 0 ;
@@ -1268,8 +1268,9 @@ int moduleGeneration (astNode *node, moduleST *lst)
 					codePrint ("\t\tret\n") ;
 					printCommentLineNASM () ;
 				}
-				else
+				else if (lst->scopeSize > 0)
 				{
+
 					codePrint ("\n\t\tADD RSP, %d", lst->scopeSize) ;
 					codeComment (10, "restoring to parent scope") ;
 				}
@@ -1311,6 +1312,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 					codeComment (11, "making space for declaration") ;
 				else if (stat == SWITCH_INIT)
 					codeComment (11, "declaring before switch") ;
+
+				codePrint ("\n") ;
 			}
 
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
@@ -1320,12 +1323,28 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			break ;											
 
 		case TK_ASSIGNOP :
-			if ((node->child->next->id == TK_MINUS || node->child->next->id == TK_PLUS) && node->child->next->child->next == NULL)
-				expr(node->child->next->child, lst);
-			else
-				expr(node->child->next, lst);
 
-			exprAssign (node->child, lst) ;
+			if (isSingleRHS(node))
+			{
+				expr(node->child->next, lst, 1);
+				exprAssign (node->child, lst, 1) ;
+			}
+			else
+			{
+				int singleAssign = 0 ;
+
+				if (isAssignUnary (node))
+				{
+					if (isExprLeaf (node->child->next->child->id))
+						singleAssign = 1 ;
+
+					expr(node->child->next->child, lst, singleAssign) ;
+				}
+				else
+					expr(node->child->next, lst, 0);	
+
+				exprAssign (node->child, lst, singleAssign) ;
+			}
 
 			codePrint ("\n") ;
 			break ;
@@ -1363,11 +1382,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			codePrint ("\n\tWHILE%d:\n", start_label) ;
 
-			expr (node, lst);	// expr
+			expr (node, lst, 0);	// expr
 
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tCMP AX, 0");
-			codeComment (8, "Checking while loop condition") ;
+			codeComment (11, "checking while loop condition") ;
 			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
 
 			moduleGeneration(node->next, lst);		// statements
@@ -1436,8 +1455,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				varEntry = varEntry->next ;
 			}
 
-			codePrint ("\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
-			codeComment (11, "restoring to parent scope") ;
+			if (statementsNode->localST->scopeSize > 0)
+			{
+				codePrint ("\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
+				codeComment (11, "restoring to parent scope") ;
+			}
 
 			break ;
 
@@ -1451,7 +1473,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			pushInput (idListHead, varEntry, lst) ;
 
-			codePrint ("\t\tCALL %s\n", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
+			codePrint ("\t\tCALL %s", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
+			codeComment (11, "calling user function") ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
 			break ;
 
@@ -1466,7 +1489,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codePrint ("\t\tSUB RSP, %d\n", calledModule->outputSize) ;
 			pushInput (idListHead, varEntry, lst) ;
 
-			codePrint ("\t\tCALL %s\n", node->next->next->tok->lexeme) ;
+			codePrint ("\t\tCALL %s", node->next->next->tok->lexeme) ;
+			codeComment (11, "calling user function") ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
 
 			popOutput (node->child, lst) ;

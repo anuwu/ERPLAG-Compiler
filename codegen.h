@@ -43,9 +43,9 @@ void arrBoundCheck (astNode *node, moduleST *lst, varST *vst) ;
 void dynamicDeclarationCheck (moduleST *lst, varST *searchedVar) ;
 void dynamicDeclaration (moduleST *lst, varST *searchedVar, int declCount) ;
 
-void exprAssign (astNode *node, moduleST *lst) ;
-void expr (astNode *node, moduleST *lst) ;
-void exprLeaf (astNode *node, moduleST *lst) ;
+void exprAssign (astNode *node, moduleST *lst, int singleAssign) ;
+void exprAssign (astNode *node, moduleST *lst, int singleAssign) ;
+void exprLeaf (astNode *node, moduleST *lst, int singleAssign) ;
 void print (astNode *node, moduleST *lst) ;
 
 void RSPAlign () ;
