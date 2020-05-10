@@ -43,6 +43,7 @@ erpAsm :
 
 erpExec :
 	make erpAsm FILE=$(FILE)
+	clear
 	./$(FILE)
 
 clean :

@@ -4,7 +4,7 @@
 #include "lexerDef.h"
 #include "ast.h"
 
-#define VAR_BIN_COUNT 13
+#define LOCAL_BIN_COUNT 13
 #define MODULE_BIN_COUNT 13
 #define SCOPE_BIN_COUNT 13
 #define IO_BIN_COUNT 1
@@ -17,7 +17,6 @@ enum _stType {
 
 struct _baseST ;
 struct _moduleST ;
-
 
 enum _variableType 
 {
@@ -47,14 +46,14 @@ struct _moduleST
 {
 	char * lexeme ;
 	enum _stType tableType ;
+	void * parent ; 		
 
-	struct _varSTentry *localVars[VAR_BIN_COUNT] ;
+	struct _varSTentry *localVars[LOCAL_BIN_COUNT] ;
 	struct _varSTentry *dynamicVars[DYNAMIC_BIN_COUNT] ;
-
 	struct _varSTentry *inputVars[IO_BIN_COUNT] ;
 	struct _varSTentry *outputVars[IO_BIN_COUNT] ;
+
 	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;
-	void * parent ; 		
 
 	int filledMod ;
 	int inputSize ;
@@ -74,12 +73,22 @@ struct _varSTentry {
 } ;
 
 struct _baseST {
-	struct _varSTentry * vars[VAR_BIN_COUNT] ;
+	struct _varSTentry * vars[LOCAL_BIN_COUNT] ;
 	struct _moduleSTentry * modules[MODULE_BIN_COUNT] ;
 	struct _moduleST * driverST ;
 
 	int semanticError ;
 } ;
+
+typedef enum _insertVarType
+{
+	INSERT_INPUT, INSERT_OUTPUT, INSERT_LOCAL, INSERT_DYNAMIC
+} insertVarType ;
+
+typedef enum _searchVarType
+{
+	SEARCH_INPUT, SEARCH_OUTPUT, SEARCH_LOCAL
+} searchVarType ;
 
 typedef enum _stType stType ;
 typedef enum _variableType variableType ;
@@ -90,12 +99,9 @@ typedef struct _varSTentry varSTentry ;
 typedef struct _moduleSTentry moduleSTentry ;
 typedef struct _guardTinkerNode guardTinkerNode ;
 
-
-
 //general functions
 int hashFunction ( char* lexeme , int size ) ;
 char * generateString () ;
-
 
 // function for base symbol table
 baseST * createBaseST () ;
@@ -107,19 +113,14 @@ varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID da
 // Insertion
 void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
 void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;
-void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) ;
 void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) ;
-void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) ;
-void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) ;
-void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) ;
+void insertVar (moduleST *thisModule, varST *thisVarST, insertVarType flag) ;
 
 //search
 varST * searchVarInbaseST (baseST * base ,char * lexeme) ;
 moduleST * searchModuleInbaseST (baseST * base, char * lexeme) ;
-varST * searchlocalVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
-varST * searchInputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
-varST * searchOutputVarInCurrentModule (moduleST * thisModule , char * lexeme) ;
-varST * searchVarInCurrentModule (moduleST * thisModule , char *lexeme) ;
+varST* searchVarModuleList (moduleST* thisModule, char* lexeme, searchVarType flag) ;
+varST* searchVarModule (moduleST * thisModule , char * lexeme) ;
 varST * searchVar (baseST* realBase, moduleST *thisModule , char *lexeme) ;
 
 // Printing

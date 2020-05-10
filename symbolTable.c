@@ -62,7 +62,7 @@ baseST * createBaseST ()
 	for ( int i = 0 ; i < MODULE_BIN_COUNT ; i++ ) {
 		tmp->modules[i] = NULL ;
 	}
-	for ( int i = 0 ; i < VAR_BIN_COUNT ; i++ ) {
+	for ( int i = 0 ; i < LOCAL_BIN_COUNT ; i++ ) {
 		tmp->vars[i] = NULL ;
 	}
 	return tmp ;
@@ -76,7 +76,7 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 	tmp->lexeme = lexeme ;
 	tmp->tableType = MODULE_ST ;
 
-	for ( int i = 0 ; i < VAR_BIN_COUNT ; i++ ) {
+	for ( int i = 0 ; i < LOCAL_BIN_COUNT ; i++ ) {
 		tmp->localVars[i] = NULL ;
 		
 	}
@@ -99,14 +99,16 @@ moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset)
 
 	return tmp ;
 }
-moduleST * createDriverST ( baseST * parent ) {
+moduleST * createDriverST ( baseST * parent ) 
+{
 	moduleST * tmp = createModuleST ( parent , "Driver", 0 ) ;
 	tmp->tableType = DRIVER_ST ;
 
 	return tmp ;
 }
 
-moduleST * createScopeST ( moduleST * parent , stType scopeType) {
+moduleST * createScopeST ( moduleST * parent , stType scopeType) 
+{
 	char * lexeme = (char*) malloc(sizeof(char)*20) ;
 	strcpy ( lexeme , generateString () ) ;
 
@@ -147,17 +149,12 @@ void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule)
 }
 
 void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) {
-	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
+	int index = hashFunction ( thisVarST->lexeme , LOCAL_BIN_COUNT ) ;
 
 	varSTentry * tmp = ( varSTentry *) malloc (sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
 	tmp->next = base->vars[index] ;
 	base->vars[index] = tmp ;
-}
-
-void insertDriverSTInbaseST ( baseST * base , moduleST * thisDriverModule ) 
-{
-	base->driverST = thisDriverModule ;
 }
 
 
@@ -172,45 +169,40 @@ void insertScopeST ( moduleST* parent , moduleST * thisScopeST )
 	(parent->scopeVars)[index] = tmp ;
 }
 
-void insertDynamicVarST (moduleST *thisModule, varST *thisVarST)
+void insertVar (moduleST *thisModule, varST *thisVarST, insertVarType flag)
 {
-	int index = hashFunction ( thisVarST->lexeme , DYNAMIC_BIN_COUNT) ;
+	int index, binCount ;
+	varSTentry **list ;
+
+	switch (flag)
+	{
+		case INSERT_INPUT : 
+			list = thisModule->inputVars ;
+			binCount = IO_BIN_COUNT ;
+			break ;
+
+		case INSERT_OUTPUT :
+			list = thisModule->outputVars ;
+			binCount = IO_BIN_COUNT ;
+			break ;
+
+		case INSERT_DYNAMIC :
+			list = thisModule->dynamicVars ;
+			binCount = DYNAMIC_BIN_COUNT ;
+			break ;
+
+		case INSERT_LOCAL :
+			list = thisModule->localVars ;
+			binCount = LOCAL_BIN_COUNT ;
+			break ;
+	}
+
+	index = hashFunction (thisVarST->lexeme , binCount) ;
 
 	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
 	tmp->thisVarST = thisVarST ;
-	tmp->next = thisModule->dynamicVars[index] ; 
-	thisModule->dynamicVars[index] = tmp ;
-}
-
-
-void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) 
-{
-	int index = hashFunction ( thisVarST->lexeme , VAR_BIN_COUNT ) ;
-
-	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
-	tmp->thisVarST = thisVarST ;
-	tmp->next = thisModule->localVars[index] ; 
-	thisModule->localVars[index] = tmp ;
-}
-
-void insertInputVarST ( moduleST* thisModule , varST* thisVarST ) 
-{
-	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
-
-	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
-	tmp->thisVarST = thisVarST ;
-	tmp->next = thisModule->inputVars[index] ; 
-	thisModule->inputVars[index] = tmp ;
-}
-
-void insertOutputVarST ( moduleST* thisModule , varST* thisVarST ) 
-{
-	int index = hashFunction ( thisVarST->lexeme , IO_BIN_COUNT ) ;
-
-	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
-	tmp->thisVarST = thisVarST ;
-	tmp->next = thisModule->outputVars[index] ; 
-	thisModule->outputVars[index] = tmp ;
+	tmp->next = list[index] ; 
+	list[index] = tmp ;
 }
 
 
@@ -219,7 +211,7 @@ void insertOutputVarST ( moduleST* thisModule , varST* thisVarST )
 
 varST * searchVarInbaseST ( baseST * base ,char * lexeme ) 
 {
-	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
+	int index = hashFunction ( lexeme , LOCAL_BIN_COUNT ) ;
 
 	varSTentry * tmp = base->vars[index] ;
 	while ( tmp!= NULL ){
@@ -246,69 +238,62 @@ moduleST * searchModuleInbaseST ( baseST * base, char * lexeme )
 	return NULL ;
 }
 
-
-varST * searchlocalVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+varST* searchVarModuleList (moduleST* thisModule, char *lexeme, searchVarType flag)
 {
-	int index = hashFunction ( lexeme , VAR_BIN_COUNT ) ;
+	int index, binCount ;
+	varSTentry **list ;
 
-	varSTentry * tmp = thisModule->localVars[index] ;
-	while ( tmp!= NULL ){
-		if( strcmp(tmp->thisVarST->lexeme , lexeme) == 0 )
+	switch (flag)
+	{
+		case SEARCH_INPUT : 
+			list = thisModule->inputVars ;
+			binCount = IO_BIN_COUNT ;
+			break ;
+
+		case SEARCH_OUTPUT :
+			list = thisModule->outputVars ;
+			binCount = IO_BIN_COUNT ;
+			break ;
+
+		case INSERT_LOCAL :
+			list = thisModule->localVars ;
+			binCount = LOCAL_BIN_COUNT ;
+			break ;
+	}
+
+	index = hashFunction (lexeme , binCount) ;
+
+	varSTentry * tmp = list[index] ;
+	while (tmp != NULL)
+	{
+		if(strcmp(tmp->thisVarST->lexeme , lexeme) == 0)
 			return tmp->thisVarST ;
 		
 		tmp = tmp->next ;
 	}
+
 	return NULL ;
 }
 
-varST * searchInputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
-{
-	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
-
-	varSTentry * tmp = thisModule->inputVars[index] ;
-	while ( tmp!= NULL ){
-		if( strcmp(tmp->thisVarST->lexeme , lexeme) == 0 )
-			return tmp->thisVarST ;
-		
-		tmp = tmp->next ;
-	}
-	return NULL ;
-}
-varST * searchOutputVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
-{
-	int index = hashFunction ( lexeme , IO_BIN_COUNT ) ;
-
-	varSTentry * tmp = thisModule->outputVars[index] ;
-	while ( tmp!= NULL ){
-		if( strcmp(tmp->thisVarST->lexeme , lexeme) == 0 )
-			return tmp->thisVarST ;
-		
-		tmp = tmp->next ;
-	}
-	return NULL ;
-}
-
-
-varST * searchVarInCurrentModule ( moduleST * thisModule , char * lexeme ) 
+varST * searchVarModule ( moduleST * thisModule , char * lexeme ) 
 {
 	varST * tmp ;
-	if( tmp = searchlocalVarInCurrentModule ( thisModule , lexeme ) )
+	if(tmp = searchVarModuleList (thisModule , lexeme, SEARCH_LOCAL))
 		return tmp ;
-	else if ( tmp = searchInputVarInCurrentModule(thisModule,lexeme) )
+	else if (tmp = searchVarModuleList (thisModule, lexeme, SEARCH_INPUT))
 		return tmp ;
 	else 
-		return searchOutputVarInCurrentModule (thisModule,lexeme) ;
+		return searchVarModuleList (thisModule, lexeme, SEARCH_OUTPUT) ;
 }
 
 
 varST * searchVar (baseST* realBase, moduleST * thisModule , char * lexeme ) 
-{
-	
+{	
 	if (thisModule->parent == realBase)
-		return searchVarInCurrentModule ( thisModule , lexeme ) ;
+		return searchVarModule ( thisModule , lexeme) ;
 	else
 	{
-		varST *tmp = searchlocalVarInCurrentModule (thisModule, lexeme) ;
+		varST *tmp = searchVarModuleList (thisModule, lexeme, SEARCH_LOCAL) ;
 		if (tmp == NULL)
 			return searchVar (realBase, thisModule->parent, lexeme) ;
 		else
@@ -358,7 +343,7 @@ void printBaseST ( baseST * base )
 	}
 
 	printf("\nVariables of baseST:\n") ;
-	for ( int i=0 ; i<VAR_BIN_COUNT ; i++ ) {
+	for ( int i=0 ; i<LOCAL_BIN_COUNT ; i++ ) {
 		varSTentry * tt = base->vars[i] ;
 		while( tt ){
 			printf("\t%s" , tt->thisVarST->lexeme ) ;
@@ -434,7 +419,7 @@ void printModuleST ( moduleST * thisModuleST, int printParam )
 		}
 	}
 	printf("\nLOCAL Variables :\n" ) ;
-	for ( int i = 0 ; i<VAR_BIN_COUNT ; i++ )
+	for ( int i = 0 ; i<LOCAL_BIN_COUNT ; i++ )
 	{	
 		varSTentry * vv = thisModuleST->localVars[i] ;
 
@@ -778,7 +763,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				return -2 ;		// incorect dynamic array
 			}
 
-			insertDynamicVarST ((moduleST *) thisVar->scope, thisVar) ;
+			insertVar ((moduleST *) thisVar->scope, thisVar, INSERT_DYNAMIC) ;
 			return 12 ;		// correct dynamic array
 		}
 		else		// dynamic array and input to a module
@@ -807,7 +792,7 @@ int getSize(baseST * realBase, varST * thisVar)
 					searchedVarLeft = createVarST (thisVar->arrayIndices->tokLeft->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarLeft->offset = -(scope->currOffset + 10) ;
 					searchedVarLeft->size = 2 ;
-					insertInputVarST (scope, searchedVarLeft) ;
+					insertVar (scope, searchedVarLeft, INSERT_INPUT) ;
 				}
 			}
 
@@ -826,7 +811,7 @@ int getSize(baseST * realBase, varST * thisVar)
 					searchedVarRight = createVarST (thisVar->arrayIndices->tokRight->lexeme, scope, VAR_PLACEHOLDER, TK_INTEGER) ;
 					searchedVarRight->offset = -(scope->currOffset + 8) ;
 					searchedVarRight->size = 2 ;
-					insertInputVarST (scope, searchedVarRight) ;
+					insertVar (scope, searchedVarRight, INSERT_INPUT) ;
 				}
 			}
 
@@ -985,7 +970,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 					else	// correct dynamic array, or invalid static/dynamic array
 						tmp->offset = retSize ;
 
-					insertLocalVarST(baseModule , tmp) ;
+					insertVar (baseModule , tmp, INSERT_LOCAL) ;
 				}
 
 				idAST = idAST->next ;
@@ -1043,7 +1028,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				loopVar->size = searchedVar->size ;
 			}
 
-			insertLocalVarST (forScope, loopVar) ;
+			insertVar (forScope, loopVar, INSERT_LOCAL) ;
 			fillModuleST (realBase, forScope, loopLim->next->next, depthSTPrint) ;
 
 			printModuleST (forScope, depthSTPrint) ;
@@ -1264,7 +1249,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				while (iplAST) 
 				{
 
-					if (searchVarInCurrentModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
+					if (searchVarModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
 					{
 						printf ("SEMANTIC ERROR : In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
 						base->semanticError = 1 ;
@@ -1301,7 +1286,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 								tmp->offset = retSize ;
 						}
 
-						insertInputVarST (moduleToInsert , tmp) ;
+						insertVar (moduleToInsert , tmp, INSERT_INPUT) ;
 					}
 				
 					iplAST = iplAST->next ;
@@ -1317,8 +1302,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				{
 					// Input and output parameters CANNOT share identifiers
 					varST *searchedInput, *searchedOutput ;
-					searchedInput = searchInputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) ;
-					searchedOutput = searchOutputVarInCurrentModule(moduleToInsert , oplAST->child->tok->lexeme) ;
+					searchedInput = searchVarModuleList (moduleToInsert , oplAST->child->tok->lexeme, SEARCH_INPUT) ;
+					searchedOutput = searchVarModuleList (moduleToInsert , oplAST->child->tok->lexeme, SEARCH_OUTPUT) ;
 
 					if (searchedInput != NULL) 
 					{
@@ -1339,7 +1324,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 						tmp->size = retSize ;
 						moduleToInsert->currOffset += retSize ;
 						moduleToInsert->outputSize += retSize ;
-						insertOutputVarST ( moduleToInsert , tmp ) ;
+						insertVar (moduleToInsert, tmp, INSERT_OUTPUT) ;
 					}
 					
 					oplAST = oplAST->next ;
@@ -1411,7 +1396,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	
 	fillModuleST (base,driverST , driverMODS->child, depthSTPrint) ;
 	printModuleST (driverST, depthSTPrint) ;
-	insertDriverSTInbaseST ( base , driverST ) ;	
+	base->driverST = driverST ;
 			
 	return base ;
 }
