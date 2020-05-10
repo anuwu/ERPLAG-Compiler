@@ -1035,9 +1035,19 @@ void init_parser()
 
  
 	// file handling
-	FILE* file_pointer=fopen("/home/anwesh/Desktop/ERPLAG/ERPLAG-Compiler/grammar.txt","r");
+
+	int slash = 0 ;
+	char grammarPath[500] ;
+	strcpy (grammarPath, __FILE__) ;
+
+	slash = strlen (grammarPath) - 1 ;
+	while (grammarPath[slash] != '/')
+		slash-- ;
+
+	grammarPath[slash+1] = '\0' ;
+	strcat (grammarPath, "grammar.txt") ;
+	FILE* file_pointer=fopen(grammarPath, "r");
 	
- 
 	int st=0; // 3 states 0-LHS 1-RHS_head 2-rests
 	char tempstr[TNTLENGTH];
 	node* tmp;

@@ -22,7 +22,7 @@ typeChecker.o : typeChecker.c
 	gcc -c typeChecker.c
 
 parser.o : parser.c
-	gcc -c parser.c
+	./parser.sh
 
 lexer.o : lexer.c
 	gcc -c lexer.c

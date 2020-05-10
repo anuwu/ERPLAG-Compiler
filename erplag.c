@@ -90,5 +90,7 @@ int main(int argc, char **argv)
 	}
 	else
 		printf ("ERPLAG : Semantic errors found. Please check the above messages for details\n") ;
+
+	printf ("Compilation successful\n") ;
 	return 0;
 }
