@@ -172,6 +172,16 @@ void insertScopeST ( moduleST* parent , moduleST * thisScopeST )
 	(parent->scopeVars)[index] = tmp ;
 }
 
+void insertDynamicVarST (moduleST *thisModule, varST *thisVarST)
+{
+	int index = hashFunction ( thisVarST->lexeme , DYNAMIC_BIN_COUNT) ;
+
+	varSTentry * tmp = ( varSTentry * ) malloc ( sizeof(varSTentry)) ;
+	tmp->thisVarST = thisVarST ;
+	tmp->next = thisModule->dynamicVars[index] ; 
+	thisModule->dynamicVars[index] = tmp ;
+}
+
 
 void insertLocalVarST ( moduleST* thisModule , varST* thisVarST ) 
 {
@@ -768,6 +778,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				return -2 ;		// incorect dynamic array
 			}
 
+			insertDynamicVarST ((moduleST *) thisVar->scope, thisVar) ;
 			return 12 ;		// correct dynamic array
 		}
 		else		// dynamic array and input to a module

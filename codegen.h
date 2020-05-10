@@ -25,6 +25,11 @@ typedef enum _switchDeclareStatus
 	NOT_SWITCH, SWITCH_INIT, SWITCH_GEN
 } switchDeclareStatus ;
 
+typedef enum _pushArrLim
+{
+	LEFT, RIGHT
+} pushArrLim ;
+
 int get_label() ;
 void codeComment (int tabCount, char *comment) ;
 char* getOffsetStr (int offset) ;
@@ -54,6 +59,7 @@ int getCaseCount (astNode *statementsNode) ;
 void switchDeclareVars (astNode *statementNode) ;
 int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels) ;
 
+void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag) ;
 void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
 void popOutputGeneration (astNode *inputEnd, moduleST *lst) ;
 

@@ -23,6 +23,13 @@ int main(int argc, char *argv[])
 	}
 
 	treeNode *root = parseTree (argv[1]) ;
+
+	if (root->syntax_error)
+	{
+		printf ("Source code contains syntax errors. Please correct them\n") ;
+		exit (0) ;
+	}
+
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
 	inorderAST (astRoot, 0) ;

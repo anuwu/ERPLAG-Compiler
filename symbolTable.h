@@ -8,6 +8,7 @@
 #define MODULE_BIN_COUNT 13
 #define SCOPE_BIN_COUNT 13
 #define IO_BIN_COUNT 1
+#define DYNAMIC_BIN_COUNT 1
 
 
 enum _stType {
@@ -42,10 +43,14 @@ struct _varST {
 } ;
 
 
-struct _moduleST {
+struct _moduleST 
+{
 	char * lexeme ;
 	enum _stType tableType ;
+
 	struct _varSTentry *localVars[VAR_BIN_COUNT] ;
+	struct _varSTentry *dynamicVars[DYNAMIC_BIN_COUNT] ;
+
 	struct _varSTentry *inputVars[IO_BIN_COUNT] ;
 	struct _varSTentry *outputVars[IO_BIN_COUNT] ;
 	struct _moduleSTentry *scopeVars[SCOPE_BIN_COUNT] ;

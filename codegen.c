@@ -60,20 +60,20 @@ void loadRegRightLim (varST *vst, char *reg)
 		codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset-8)) ;
 }
 
-void loadArrBase (varST *vst)
+void loadArrBase (varST *vst, char *reg)
 {
 	if (isVarStaticArr (vst))
 	{
 		if (vst->varType == VAR_LOCAL)
 		{
-			codePrint ("\t\tMOV RDI, RBP\n") ;
-			codePrint ("\t\tSUB RDI, %d\n", vst->offset) ;			
+			codePrint ("\t\tMOV %s, RBP\n", reg) ;
+			codePrint ("\t\tSUB %s, %d\n", reg, vst->offset) ;			
 		}
 		else
-			codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr (vst->offset)) ;
+			codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr (vst->offset)) ;
 	}
 	else
-		codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr(vst->offset)) ;
+		codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset)) ;
 }
 
 
@@ -90,7 +90,7 @@ void boundCheckGeneration (astNode *node, moduleST *lst, varST *vst)
 
 	tf |= 1 << boundCheck ;
 
-	loadArrBase (vst) ;
+	loadArrBase (vst, "RDI") ;
 	loadRegLeftLim (vst, "AX") ;
 
 	if (indexVar == NULL)
@@ -363,7 +363,7 @@ void printGeneration (astNode *node, moduleST *lst)
 		}
 		else
 		{
-			loadArrBase (searchedVar) ;
+			loadArrBase (searchedVar, "RDI") ;
 			loadRegLeftLim (searchedVar, "CX") ;
 			loadRegRightLim (searchedVar, "DX") ;
 			codePrint ("\t\tSUB DX, CX\n") ;
@@ -437,7 +437,7 @@ void getValueGeneration (moduleST *lst, varST *vst)
 		loadRegRightLim (vst, "CX") ;
 		codePrint ("\t\tCALL @printGetArrPrompt\n\n") ;
 
-		loadArrBase (vst) ;
+		loadArrBase (vst, "RDI") ;
 		codePrint ("\t\tMOV DX, CX\n") ;
 		codePrint ("\t\tSUB DX, BX\n") ;
 		codePrint ("\t\tADD DX, 1\n") ;
@@ -1139,6 +1139,38 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 	return def_label ;
 }
 
+void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag)
+{
+	int lab, sub ;
+
+	if (flag == LEFT)
+		sub = 10 ;
+	else
+		sub = 8 ;
+
+	codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset - sub)) ;
+
+	if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(vst))
+	{
+		lab = get_label () ;
+		tf |= 1 << argLimERROR ;
+
+		if (flag == LEFT)
+			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
+		else
+			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
+
+		codePrint ("\t\tCMP %s, CX\n", reg) ;
+		codePrint ("\t\tJE LABEL%d\n", lab) ;
+		codePrint ("\t\tCALL @argLimERROR\n") ;
+		codePrint ("\n\tLABEL%d:\n", lab) ; 
+	}
+
+	if (!isVarStaticArr (varEntry->thisVarST))
+		codePrint ("\t\tPUSH %s\n", reg) ;
+}
+
+
 void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
 {
 	varST *searchedVar ;
@@ -1157,45 +1189,14 @@ void pushInputGeneration (astNode *inputEnd, varSTentry *varEntry, moduleST *lst
 		}
 		else if (isVarStaticArr (searchedVar))
 		{
-			codePrint ("\t\tMOV RAX, RBP\n") ;
-			codePrint ("\t\tSUB RAX, %d\n", -searchedVar->offset) ;
+			loadArrBase (searchedVar, "RAX") ;
 			codePrint ("\t\tPUSH RAX\n") ;
 		}
 		else
 		{
-			codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 10)) ;
-			if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(searchedVar))
-			{
-				int lab = get_label () ;
-				tf |= 1 << argLimERROR ;
-
-				codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
-				codePrint ("\t\tCMP AX, CX\n") ;
-				codePrint ("\t\tJE LABEL%d\n", lab) ;
-				codePrint ("\t\tCALL @argLimERROR\n") ;
-				codePrint ("\n\tLABEL%d:\n", lab) ; 
-			}
-
-			if (!isVarStaticArr (varEntry->thisVarST))
-				codePrint ("\t\tPUSH AX\n") ;
-
-			codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr(searchedVar->offset - 8)) ;
-			if (isRightLimStatic (varEntry->thisVarST) && !isRightLimStatic(searchedVar))
-			{
-				int lab = get_label () ;
-				tf |= 1 << argLimERROR ;
-
-				codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
-				codePrint ("\t\tCMP BX, CX\n") ;
-				codePrint ("\t\tJE LABEL%d\n", lab) ;
-				codePrint ("\t\tCALL @argLimERROR\n") ;
-				codePrint ("\n\tLABEL%d:\n", lab) ; 
-			}
-
-			if (!isVarStaticArr (varEntry->thisVarST))
-				codePrint ("\t\tPUSH BX\n") ;
-
-			codePrint ("\t\tMOV RAX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
+			pushInputDynamicArr (searchedVar, varEntry, "AX", LEFT) ;
+			pushInputDynamicArr (searchedVar, varEntry, "BX", RIGHT) ;
+			loadArrBase (searchedVar, "RAX") ;
 			codePrint ("\t\tPUSH RAX\n") ;
 		}
 

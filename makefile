@@ -46,8 +46,10 @@ erpExec :
 	./$(FILE)
 
 clean :
-	make objClean
-	make exeClean
+	rm -f *.o
+	rm -f erplag
+	rm -f ST
+	rm -f ast
 
 exeClean :
 	rm -f erplag
