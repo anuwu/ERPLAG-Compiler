@@ -1,10 +1,10 @@
 output : erplag.o codegen.o ast.o typeChecker.o lexer.o parser.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
-	gcc -o erplag erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
+	gcc -o compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
 	
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexer.o parser.o symbolTableDriver.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h
 	gcc -o ast astDriver.o ast.o lexer.o parser.o
 	gcc -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
-	gcc -o erplag erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
+	gcc -o compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o
 
 erplag.o : erplag.c
 	gcc -c erplag.c
@@ -35,7 +35,7 @@ asm :
 
 erp :
 	make
-	./erplag $(FILE).erp $(FILE).asm
+	./compiler $(FILE).erp $(FILE).asm
 
 erpAsm :
 	make erp FILE=$(FILE)
@@ -47,12 +47,12 @@ erpExec :
 
 clean :
 	rm -f *.o
-	rm -f erplag
+	rm -f compiler
 	rm -f ST
 	rm -f ast
 
 exeClean :
-	rm -f erplag
+	rm -f compiler
 	rm -f ST
 	rm -f ast
 

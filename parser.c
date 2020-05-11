@@ -1328,7 +1328,7 @@ treeNode * nextTreeNode(treeNode* current_node){
 	
 }
 
-treeNode* parseTree(FILE *fp)
+treeNode* parse (FILE *fp)
 {
 	fillUtilityArray();
 	init_parser () ;
@@ -1352,14 +1352,14 @@ treeNode* parseTree(FILE *fp)
 		if(tk->id == TK_LEXERROR)
 		{
 			root->syntax_error=1;
-			printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+			printf ("ERPLAG : Lexical Error at line %d --> %s\n", tk->lineNumber, tk->lexeme) ;
 		}
 		
 		if(stack!=NULL && stack->key<0)
 		{
 			flag=1;
 			root->syntax_error=1;
-			printf("PARSING ERROR : Invalid symbol on stack\n");
+			printf("ERPLAG : Parsing Error --> Invalid symbol on stack\n");
 			break;
 		}
 
@@ -1372,7 +1372,7 @@ treeNode* parseTree(FILE *fp)
 			
 				if(stack==NULL)
 				{
-					printf("PARSING ERROR : Stack is empty");
+					printf("ERPLAG : Parsing Error --> Stack is empty");
 					break;
 				}
 		}
@@ -1393,7 +1393,7 @@ treeNode* parseTree(FILE *fp)
 				tk = getNextToken (twinBuf) ;
 				if(tk->id == TK_LEXERROR)
 				{
-					printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+					printf ("ERPLAG : Lexical Error at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
 					root->syntax_error=1;
 				}
 			}
@@ -1404,13 +1404,13 @@ treeNode* parseTree(FILE *fp)
 				{
 					if(stack->key!= TK_SEMICOL && stack->key!= TK_ENDDEF && stack->key!= TK_DRIVERENDDEF)
 					{
-						printf ("PARSING ERROR : This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber);
+						printf ("ERPLAG : Parsing Error at line %d --> %s symbol was expected\n", tk->lineNumber, utility_array[stack->key]);
 						current=tk->lineNumber;
 					}
 
 					else
 					{
-						printf ("PARSING ERROR : This %s symbol was expected at line number %d\n",utility_array[stack->key], tk->lineNumber-1);
+						printf ("ERPLAG : Parsing Error at line %d --> %s symbol was expected at line number\n",  tk->lineNumber-1, utility_array[stack->key]);
 						current=tk->lineNumber-1;
 					}
 					
@@ -1455,7 +1455,7 @@ treeNode* parseTree(FILE *fp)
 				root->syntax_error=1;
 				if(current != tk->lineNumber)
 				{
-					printf ("PARSING ERROR : Error at line number %d\n",tk->lineNumber);
+					printf ("ERPLAG : Parsing Error at line %d\n",tk->lineNumber);
 					current=tk->lineNumber;
 				}
 

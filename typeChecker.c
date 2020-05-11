@@ -36,13 +36,13 @@ int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTN
 	if (indexVar == NULL)
 	{
 		realBase->semanticError = 1 ;
-		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, index variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
 		return 0 ;
 	}
 	else if (indexVar->datatype != TK_INTEGER)
 	{
 		realBase->semanticError = 1 ;
-		printf ("ERROR : In \"%s\" at line %d, index variable \"%s\" needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, index variable \"%s\" needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
 		return 0 ;
 	}
 
@@ -51,26 +51,26 @@ int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTN
 
 /*
 searchVar ()
-	--> NULL 											==> ERROR
+	--> NULL 											==> SEMANTIC ERROR
 	--> NOT NULLValidVar
 		--> Primitive
 		--> Array
 				--> dynamic array
 					--> dynamic index 					==> searchVar
-						--> NULL						==> ERROR : index variable does not exist
+						--> NULL						==> SEMANTIC ERROR index variable does not exist
 						--> NOT NULL
 							--> integer type
-							--> non-integer type 		==> ERROR : index variable is not of integer type
+							--> non-integer type 		==> SEMANTIC ERROR index variable is not of integer type
 					--> static index 					==> No checks 
 				--> static array
 					--> dynamic index 					==> searchVar
-						--> NULL						==> ERROR : index variable does not exist
+						--> NULL						==> SEMANTIC ERROR index variable does not exist
 						--> NOT NULL
 							--> integer type 			 
-							--> non-integer type 		==> ERROR : index variable not of integer type
+							--> non-integer type 		==> SEMANTIC ERROR index variable not of integer type
 					--> static index 	==> Check bounds
 						--> Correct bounds
-						--> Incorrect bounds 			==> ERROR : incorrect bounds for static array
+						--> Incorrect bounds 			==> SEMANTIC ERROR incorrect bounds for static array
 */
 
 int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrayVar, astNode *indASTNode)
@@ -79,7 +79,7 @@ int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *ar
 	if (num < leftLim || num > rightLim)
 	{
 		realBase->semanticError = 1 ;
-		printf ("ERROR : In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
+		printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
 		return 0 ;
 	}
 
@@ -99,7 +99,7 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 
 	if (locSearchedVar == NULL)
 	{
-		printf ("ERROR : In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 
 		realBase->semanticError = 1 ;
 		if (varASTNode->child != NULL)
@@ -112,7 +112,7 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 		if (varASTNode->child != NULL)
 		{
 			realBase->semanticError = 1 ;
-			printf ("ERROR : In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (locSearchedVar->datatype), locSearchedVar->lexeme) ;
+			printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (locSearchedVar->datatype), locSearchedVar->lexeme) ;
 			validVarIndex (realBase, baseModule, varASTNode->child) ;
 		}
 
@@ -192,7 +192,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 
 		if (typeLeft == TK_ARRAY || typeRight == TK_ARRAY)
 		{
-			printf ("ERROR : In \"%s\" at line %d, array variable(s) \"%s\" and \"%s\" cannot occur in an expression\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->child->tok->lexeme, exprNode->child->next->tok->lexeme) ;
+			printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, array variable(s) \"%s\" and \"%s\" cannot occur in an expression\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->child->tok->lexeme, exprNode->child->next->tok->lexeme) ;
 			return 0 ;
 		}
 
@@ -203,7 +203,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 		}
 		else if (typeLeft != typeRight)
 		{
-			printf ("ERROR : In \"%s\" at line %d, the operation %s is not allowed between types \"%s\" and \"%s\" respectively\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber,  exprNode->tok->lexeme, typeIDToString(typeLeft), typeIDToString(typeRight)) ;
+			printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, the operation %s is not allowed between types \"%s\" and \"%s\" respectively\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber,  exprNode->tok->lexeme, typeIDToString(typeLeft), typeIDToString(typeRight)) ;
 			return 0 ;
 		}
 		else
@@ -216,7 +216,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 				return typeLeft ;
 			else
 			{
-				printf ("ERROR : In \"%s\" at line %d, the operator %s cannot be executed between two operands of type \"%s\"\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->tok->lexeme, typeIDToString(typeLeft)) ;
+				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, the operator %s cannot be executed between two operands of type \"%s\"\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->tok->lexeme, typeIDToString(typeLeft)) ;
 				realBase->semanticError = 1 ;
 				return 0 ;
 			}
@@ -248,14 +248,14 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 
 					if (leftLim1 != leftLim2 || rightLim1 != rightLim2)
 					{
-						printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+						printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 				}
 			}
 			else
 			{
-				printf ("ERROR : In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have the same base type\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have the same base type\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 		}
@@ -263,18 +263,18 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 		{
 			if (typeLeft != TK_ARRAY && typeRight == TK_ARRAY)
 			{
-				printf ("ERROR : In \"%s\" at line %d, array \"%s\" cannot be assigned to primitive \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, array \"%s\" cannot be assigned to primitive \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if (typeRight != TK_ARRAY && typeLeft == TK_ARRAY)
 			{
-				printf ("ERROR : In \"%s\" at line %d, primitive \"%s\" cannot be assigned to array \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, primitive \"%s\" cannot be assigned to array \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 
 			}
 			else if (typeLeft != typeRight)
 			{
-				printf ("ERROR : In \"%s\" at line %d, assignment of \"%s\" to \"%s\" are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, assignment of \"%s\" to \"%s\" are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -298,7 +298,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 		tinkerVar (realBase, baseModule, searchedVarLeft, assignopASTNode->child) ;
 		if (typeLeft == TK_ARRAY)
 		{
-			printf ("ERROR : In \"%s\" at line %d, the assignment of an expression to array \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
+			printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, the assignment of an expression to array \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
 			realBase->semanticError = 1 ;
 			return ;
 		}
@@ -311,7 +311,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 	}
 	else if (typeLeft != typeRight)
 	{
-		printf ("ERROR : In \"%s\" at line %d, assignment of expression of type \"%s\" to the variable \"%s\" of type \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, typeIDToString(typeRight), assignopASTNode->child->tok->lexeme, typeIDToString(typeLeft)) ;
+		printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, assignment of expression of type \"%s\" to the variable \"%s\" of type \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, typeIDToString(typeRight), assignopASTNode->child->tok->lexeme, typeIDToString(typeLeft)) ;
 		realBase->semanticError = 1 ;
 		return ;
 	}

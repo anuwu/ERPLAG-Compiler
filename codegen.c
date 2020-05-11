@@ -243,7 +243,7 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_RNUM :
-			printf ("ERPLAG : Floating point is not allowed!\n") ;
+			printf ("ERPLAG : At line %d, Floating point is not allowed!\n", node->tok->lineNumber) ;
 			exit (1) ;
 			break ;
 
@@ -972,31 +972,31 @@ void postamble()
 	if (isFlagSet (df, boundPrint))
 	{
 		codePrint ("\t\t@boundPrint : ") ;
-		codePrint ("db \"RUNTIME ERROR : Array out of bounds\" , 10, 0\n") ;	
+		codePrint ("db \"ERPLAG : Runtime Error --> Array out of bounds\" , 10, 0\n") ;	
 	}
 	
 	if (isFlagSet (df, declPrint))
 	{
 		codePrint ("\t\t@declPrint : ") ;
-		codePrint ("db \"RUNTIME ERROR : Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;		
+		codePrint ("db \"ERPLAG : Runtime Error --> Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;		
 	}
 	
 	if (isFlagSet (df, declNeg))
 	{
 		codePrint ("\t\t@declNeg : ") ;
-		codePrint ("db \"RUNTIME ERROR : Negative bound in dynamic array declaration\" , 10, 0\n") ;	
+		codePrint ("db \"ERPLAG : Runtime Error --> Negative bound in dynamic array declaration\" , 10, 0\n") ;	
 	}
 
 	if (isFlagSet (df, arrArgMismatch))
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
-		codePrint ("db \"RUNTIME ERROR : Mismatch of limits in formal and actual array argument\" , 10, 0\n") ;
+		codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in formal and actual array argument\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, asgnArgMismatch))
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
-		codePrint ("db \"RUNTIME ERROR : Mismatch of limits in array assignment\" , 10, 0\n") ;
+		codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignment\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormatArray))
@@ -1197,16 +1197,16 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		codePrint ("\n\t\tCMP AX, 0\n") ;
 		if (caseValNode->tok->lexeme[0] == 't')
 		{
-			codePrint ("\t\tJNE LABEL%d", caseLabels[0]) ;
+			codePrint ("\t\tJNE SWITCH%d", caseLabels[0]) ;
 			codeComment (11, "true case") ;
 		}
 		else
 		{
-			codePrint ("\t\tJE LABEL%d", caseLabels[0]) ;
+			codePrint ("\t\tJE SWITCH%d", caseLabels[0]) ;
 			codeComment (11, "false case") ;
 		}
 
-		codePrint ("\t\tJMP LABEL%d", caseLabels[1]) ;
+		codePrint ("\t\tJMP SWITCH%d", caseLabels[1]) ;
 		if (caseValNode->tok->lexeme[0] == 't')
 			codeComment (11, "false case") ;
 		else
@@ -1557,7 +1557,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			i = 0 ;
 			while (statementsNode != NULL)
 			{
-				codePrint ("\nLABEL%d:\n", caseLabels[i]) ;
+				codePrint ("\nSWITCH%d:\n", caseLabels[i]) ;
 				moduleGeneration (statementsNode, lst) ;
 				codePrint ("\n\t\tJMP SWITCH%d\n", end_label) ;
 
@@ -1567,7 +1567,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 					if (statementsNode->next->id == TK_DEFAULT)
 					{
 						statementsNode = statementsNode->next->next ;
-						codePrint ("\nLABEL%d:\n", def_label) ;
+						codePrint ("\nSWITCH%d:\n", def_label) ;
 						moduleGeneration (statementsNode, lst) ;
 
 						break ;
@@ -1579,7 +1579,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			}
 
 			statementsNode = node->next->next->next->next ;
-			codePrint ("\nLABEL%d:\n", end_label) ;
+			codePrint ("\nSWITCH%d:\n", end_label) ;
 
 			varEntry = statementsNode->localST->dynamicVars[0] ;
 			while (varEntry != NULL)

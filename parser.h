@@ -72,6 +72,6 @@ void test_tree () ;
 void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
-treeNode* parseTree (FILE *fp) ;
+treeNode* parse (FILE *fp) ;
 
 #endif

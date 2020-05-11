@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 		exit (0) ;
 	}
 
-	treeNode *root = parseTree (argv[1]) ;
+	treeNode *root = parse (argv[1]) ;
 
 	if (root->syntax_error)
 	{

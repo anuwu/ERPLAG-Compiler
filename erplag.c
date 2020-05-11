@@ -63,16 +63,13 @@ int main(int argc, char **argv)
  	}
 
 
-	treeNode *root = parseTree (fpIn) ;
+	treeNode *root = parse (fpIn) ;
 	if (root->syntax_error)
-	{
-		printf ("ERPLAG : Source file contains lexical/syntactical errors. Please check the above messages for details\n") ;
 		exit (1) ;
-	}	
 
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
-	realBase = fillSymbolTable(astRoot,0);
+	realBase = fillSymbolTable (astRoot,0);
 
 	if (!realBase->semanticError)
 	{
@@ -89,8 +86,7 @@ int main(int argc, char **argv)
 		postamble () ;
 	}
 	else
-		printf ("ERPLAG : Semantic errors found. Please check the above messages for details\n") ;
+		exit (1) ;
 
-	printf ("Compilation successful\n") ;
 	return 0;
 }
