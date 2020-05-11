@@ -1,6 +1,7 @@
 BOLD='\033[1m'
 RESET='\033[0m'
 
+sudo apt-get update
 sudo apt-get install gcc
 sudo apt-get install nasm
 echo "export PATH=\"$(pwd):\$PATH\"" >> ~/.bashrc
