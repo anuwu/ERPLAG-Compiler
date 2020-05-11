@@ -171,6 +171,34 @@ int isSingleRHS (astNode *assignNode)
 	return isExprLeaf (assignNode->child->next->id) ;
 }
 
+void dynAsgnArr (varST *lhs, varST *rhs)
+{
+	tf |= 1 << asgnLimERROR ;
+	int leftLab, rightLab ;
+
+	leftLab = get_label (LABEL_OTHER) ;
+	rightLab = get_label (LABEL_OTHER) ;
+
+	loadRegLeftLim (lhs, "AX") ;
+	loadRegLeftLim (rhs, "CX") ;
+
+	codePrint ("\t\tCMP AX, CX\n") ;
+	codePrint ("\t\tJE LABEL%d\n", leftLab) ;
+	codePrint ("\t\tCALL @asgnLimERROR\n") ;
+
+	codePrint ("\n\tLABEL%d:\n", leftLab) ;
+	loadRegRightLim (lhs, "BX") ;
+	loadRegRightLim (rhs, "DX") ;
+
+	codePrint ("\t\tCMP BX, DX\n") ;
+	codePrint ("\t\tJE LABEL%d\n", rightLab) ;
+	codePrint ("\t\tCALL @asgnLimERROR\n") ;
+
+	codePrint ("\n\tLABEL%d:\n", rightLab) ;
+	loadArrBase (rhs, "RDI") ;
+	codePrint ("\t\tMOV[RBP%s], RDI", getOffsetStr(lhs->offset)) ;
+}
+
 void exprAssign (astNode *node, moduleST *lst, int singleAssign)
 {
 	if (!singleAssign)
@@ -566,12 +594,553 @@ void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 	}
 }
 
+/*	---------------------------------- SWITCH CASE ------------------------------------- */
+
+int getCaseCount (astNode *statementsNode)
+{
+	int cnt = 0 ;
+
+	while (statementsNode != NULL)
+	{
+		cnt++ ;
+
+		if (statementsNode->next != NULL)
+		{
+			if (statementsNode->next->id == TK_DEFAULT)
+				return cnt ;
+
+			statementsNode = statementsNode->next->next->next ;
+		}
+		else
+			statementsNode = NULL ;
+	}
+
+	return cnt ;
+}
+
+
+void switchDeclareVars (astNode *statementsNode)
+{
+	astNode *statementNode ;
+
+	// Reserving space for switch scope variables
+	while (statementsNode != NULL)
+	{
+		statementNode = statementsNode->child ;
+		while (statementNode != NULL)
+		{
+			if (statementNode->child->id == TK_DECLARE)
+			{
+				moduleGeneration (statementNode->child, statementsNode->localST) ;
+				statementNode->child->parent = statementNode->child ;		// tieing a knot
+			}
+			statementNode = statementNode->next ;
+		}
+
+		if (statementsNode->next != NULL)
+		{
+			if (statementsNode->next->id == TK_DEFAULT)
+			{
+				statementsNode = statementsNode->next->next ;
+				statementNode = statementsNode->child ;
+				while (statementNode != NULL)
+				{
+					if (statementNode->child->id == TK_DECLARE)
+					{
+						moduleGeneration (statementNode->child, statementsNode->localST) ;
+						statementNode->child->parent = statementNode->child ;		// tieing a knot
+					}
+					statementNode = statementNode->next ;
+				}
+
+				break ;
+			}
+			statementsNode = statementsNode->next->next->next ;
+		}
+		else
+			statementsNode = NULL ;
+	}
+}
+
+int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels)
+{
+	int i, def_label = -1 ;
+
+	for (i = 0 ; i < caseCount ; i++)
+		caseLabels[i] = get_label (LABEL_SWITCH) ;
+
+	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
+	codeComment (10, "loading switch variable") ;
+
+	astNode *caseValNode =  node->next->next->next ;
+	i = 0 ;
+
+	if (switchVar->datatype == TK_INTEGER)
+	{
+		while (caseValNode != NULL)
+		{
+			codePrint ("\n\t\tCMP AX, %s", caseValNode->tok->lexeme) ;
+			codeComment (11, "switch case") ;
+			codePrint ("\t\tJE SWITCH%d\n", caseLabels[i]) ;
+
+			if (caseValNode->next->next->next->id == statements)
+			{
+				def_label = get_label (LABEL_SWITCH) ;
+				codePrint ("\n\t\tJMP SWITCH%d", def_label) ;
+				codeComment (11, "default case") ;
+				break ;
+			}
+
+			i++ ;
+			caseValNode = caseValNode->next->next->next ;
+		}
+	}
+	else
+	{		
+		codePrint ("\n\t\tCMP AX, 0\n") ;
+		if (caseValNode->tok->lexeme[0] == 't')
+		{
+			codePrint ("\t\tJNE SWITCH%d", caseLabels[0]) ;
+			codeComment (11, "true case") ;
+		}
+		else
+		{
+			codePrint ("\t\tJE SWITCH%d", caseLabels[0]) ;
+			codeComment (11, "false case") ;
+		}
+
+		codePrint ("\t\tJMP SWITCH%d", caseLabels[1]) ;
+		if (caseValNode->tok->lexeme[0] == 't')
+			codeComment (11, "false case") ;
+		else
+			codeComment (11, "true case") ;
+	}
+
+	return def_label ;
+}
+
+void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag)
+{
+	int lab, sub ;
+
+	if (flag == LEFT)
+		sub = 10 ;
+	else
+		sub = 8 ;
+
+	codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset - sub)) ;
+
+	if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(vst))
+	{
+		lab = get_label (LABEL_OTHER) ;
+		tf |= 1 << argLimERROR ;
+
+		if (flag == LEFT)
+			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
+		else
+			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
+
+		codePrint ("\t\tCMP %s, CX\n", reg) ;
+		codePrint ("\t\tJE LABEL%d\n", lab) ;
+		codePrint ("\t\tCALL @argLimERROR\n") ;
+		codePrint ("\n\tLABEL%d:\n", lab) ; 
+	}
+
+	if (!isVarStaticArr (varEntry->thisVarST))
+		codePrint ("\t\tPUSH %s\n", reg) ;
+}
+
+
+void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
+{
+	varST *searchedVar ;
+
+	while (varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+		varEntry = varEntry->next ;
+
+	while (inputEnd != NULL)
+	{
+		searchedVar = searchVar (realBase, lst, inputEnd->tok->lexeme) ;
+
+		if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
+		{
+			codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
+			codePrint ("\t\tPUSH AX\n") ;
+		}
+		else if (isVarStaticArr (searchedVar))
+		{
+			loadArrBase (searchedVar, "RAX") ;
+			codePrint ("\t\tPUSH RAX\n") ;
+		}
+		else
+		{
+			pushInputDynamicArr (searchedVar, varEntry, "AX", LEFT) ;
+			pushInputDynamicArr (searchedVar, varEntry, "BX", RIGHT) ;
+			loadArrBase (searchedVar, "RAX") ;
+			codePrint ("\t\tPUSH RAX\n") ;
+		}
+
+		inputEnd = inputEnd->prev ;
+		varEntry = varEntry->next ;
+		while (varEntry != NULL && varEntry->thisVarST->varType == VAR_PLACEHOLDER)
+			varEntry = varEntry->next ;
+	}
+}
+
+void popOutput (astNode *outputHead, moduleST *lst)
+{
+	varST* searchedVar ;
+
+	while (outputHead != NULL)
+	{
+		searchedVar = searchVar (realBase, lst, outputHead->tok->lexeme) ;
+		codePrint ("\t\tPOP AX\n") ;
+		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset)) ;
+
+		outputHead = outputHead->next ;
+	}
+
+	codePrint ("\n") ;
+}
+
+int moduleGeneration (astNode *node, moduleST *lst)
+{
+	if (node == NULL)
+		return 0 ;
+
+	varST *searchedVar ;
+	astNode *idListHead ;
+	moduleST *calledModule ;
+	varSTentry *varEntry ;
+
+	switch (node->id)
+	{
+		int start_label, end_label ;
+		int reserveLabel[10] ;
+
+		case statements :
+			moduleGeneration (node->child, node->localST);		// Access local scope and move below
+			break ;
+
+		case statement :
+			moduleGeneration(node->child, lst);
+			if (node->next == NULL)
+			{
+				if (lst->tableType == SWITCH_ST)
+					break ;
+
+				varEntry = lst->dynamicVars[0] ;
+
+				if (lst->parent == realBase)
+				{
+					codePrint ("\n\t\tMOV RSP, RBP\n") ;
+					codePrint ("\t\tPOP RBP\n") ;
+
+					if (realBase->driverST == lst)
+					{
+						codePrint ("\t\tMOV RAX, 1\n") ;
+						codePrint ("\t\tMOV RBX, 0\n") ;
+						codePrint ("\t\tINT 0x80\n") ;
+					}
+					else
+						codePrint ("\t\tret\n") ;
+
+					printCommentLineNASM () ;
+				}
+				else if (lst->scopeSize > 0)
+				{
+
+					codePrint ("\n\t\tADD RSP, %d", lst->scopeSize) ;
+					codeComment (10, "restoring to parent scope") ;
+				}
+
+			}
+			else
+				moduleGeneration(node->next, lst);
+
+			break ;
+
+		case TK_DECLARE :
+			;
+			switchDeclareStatus stat ;
+			if (lst->tableType != SWITCH_ST)
+				stat = NOT_SWITCH ; // Subtract RSP, and allocate memory if dynamic
+			else if (node->parent != node)
+				stat = SWITCH_INIT ; // Subtract RSP only, and do not allocate memory for dynamic
+			else
+			{
+				stat = SWITCH_GEN ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
+				node->parent = node->next->parent ;
+			}
+
+			int declCount = 1 ;
+			idListHead = node->next->child ;
+			astNode *dtNode = node->next->next ;
+
+			while (idListHead->next != NULL)
+			{
+				declCount++ ;
+				idListHead = idListHead->next ;
+			}
+
+			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+			if (searchedVar->size > 0 && stat != SWITCH_GEN)
+			{	
+				codePrint ("\t\tSUB RSP, %d", searchedVar->size * declCount) ;
+				if (stat == NOT_SWITCH)
+					codeComment (11, "making space for declaration") ;
+				else if (stat == SWITCH_INIT)
+					codeComment (11, "declaring before switch") ;
+
+				codePrint ("\n") ;
+			}
+
+			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
+				dynamicDeclaration (lst, searchedVar, declCount) ;
+
+			
+			break ;											
+
+		case TK_ASSIGNOP :
+
+			if (isSingleRHS(node))
+			{
+				if (isArrayRHS (node, lst))
+				{
+					//printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
+					varST *lhs, *rhs ;
+					lhs = searchVar (realBase, lst, node->child->tok->lexeme) ;
+					rhs = searchVar (realBase, lst, node->child->next->tok->lexeme) ;
+				
+					if (isVarStaticArr (lhs) && isVarStaticArr (rhs))
+					{
+						tf |= 1 << asgnArr ;
+
+						loadRegLeftLim (lhs, "CX") ;
+						loadRegRightLim (lhs, "DX") ;
+						loadArrBase (lhs, "RDI") ;
+						loadArrBase (rhs, "RSI") ;
+						codePrint ("\t\tSUB DX, CX\n") ;
+						codePrint ("\t\tADD DX, 1\n") ;
+						codePrint ("\t\tADD DX, DX\n") ;
+						codePrint ("\t\tCALL @asgnArr\n") ;
+					}
+					else
+						dynAsgnArr (lhs, rhs) ;
+				}
+				else
+				{
+					expr(node->child->next, lst, 1);
+					exprAssign (node->child, lst, 1) ;
+				}
+			}
+			else
+			{
+				int singleAssign = 0 ;
+
+				if (isAssignUnary (node))
+				{
+					if (isExprLeaf (node->child->next->child->id))
+						singleAssign = 1 ;
+
+					expr(node->child->next->child, lst, singleAssign) ;
+				}
+				else
+					expr(node->child->next, lst, 0);	
+
+				exprAssign (node->child, lst, singleAssign) ;
+			}
+
+			codePrint ("\n") ;
+			break ;
+
+		case TK_FOR :
+			node=node->next;
+			start_label = get_label (LABEL_FOR) ;
+			end_label = get_label (LABEL_FOR) ;
+
+			searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+
+			codePrint ("\t\tMOV CX,%s\n", node->next->tok->lexeme);
+			codePrint ("\t\tMOV [RBP%s], CX" , getOffsetStr(searchedVar->offset)) ;
+
+			codePrint ("\n\tFOR%d:\n", start_label) ;
+			codePrint ("\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
+			codePrint ("\t\tCMP CX,AX\n");
+			codePrint ("\t\tJG FOR%d\n\n", end_label);
+
+			moduleGeneration(node->next->next->next, lst);		// Statements
+
+			codePrint ("\n\t\tMOV CX, [RBP%s]", getOffsetStr(searchedVar->offset)) ;
+			codeComment (8, "For loop increment") ;
+			codePrint ("\t\tINC CX\n");
+			codePrint ("\t\tMOV [RBP%s],CX\n", getOffsetStr(searchedVar->offset)) ;
+			codePrint ("\t\tJMP FOR%d\n", start_label) ;
+			codePrint ("\n\tFOR%d:\n", end_label) ;
+			break ;
+
+		
+		case TK_WHILE :
+			node=node->next;
+			start_label = get_label(LABEL_WHILE);
+			end_label =  get_label(LABEL_WHILE);
+
+			codePrint ("\n\tWHILE%d:\n", start_label) ;
+
+			expr (node, lst, 0);	// expr
+
+			codePrint ("\t\tPOP AX\n");
+			codePrint ("\t\tCMP AX, 0");
+			codeComment (11, "checking while loop condition") ;
+			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
+
+			moduleGeneration(node->next, lst);		// statements
+
+			codePrint ("\t\tJMP WHILE%d\n", start_label) ;
+			codePrint ("\n\tWHILE%d:\n", end_label) ;
+
+			break ;
+		
+		case TK_PRINT :
+			node = node->next ;
+			print (node, lst) ;
+			break ;
+
+		case TK_GET_VALUE :
+			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			getValue (lst, searchedVar) ;
+			break ;
+
+		case TK_SWITCH :
+			;
+
+			int i, caseCount, def_label ;
+			int *caseLabels ;
+			astNode *statementsNode = node->next->next->next->next ;
+
+			switchDeclareVars (node->next->next->next->next) ;
+			caseCount = getCaseCount (node->next->next->next->next) ;
+			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
+			def_label = switchCaseLabels (node , lst, caseCount, caseLabels) ;
+
+			end_label = get_label (LABEL_SWITCH) ;
+			i = 0 ;
+			while (statementsNode != NULL)
+			{
+				codePrint ("\nSWITCH%d:\n", caseLabels[i]) ;
+				moduleGeneration (statementsNode, lst) ;
+				codePrint ("\n\t\tJMP SWITCH%d\n", end_label) ;
+
+				i++ ;
+				if (statementsNode->next != NULL)
+				{
+					if (statementsNode->next->id == TK_DEFAULT)
+					{
+						statementsNode = statementsNode->next->next ;
+						codePrint ("\nSWITCH%d:\n", def_label) ;
+						moduleGeneration (statementsNode, lst) ;
+
+						break ;
+					}
+					statementsNode = statementsNode->next->next->next ;
+				}
+				else
+					statementsNode = NULL ;
+			}
+
+			statementsNode = node->next->next->next->next ;
+			codePrint ("\nSWITCH%d:\n", end_label) ;
+
+			varEntry = statementsNode->localST->dynamicVars[0] ;
+
+			if (statementsNode->localST->scopeSize > 0)
+			{
+				codePrint ("\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
+				codeComment (11, "restoring to parent scope") ;
+			}
+
+			break ;
+
+		case TK_ID :
+			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
+			varEntry = calledModule->inputVars[0] ;
+
+			idListHead = node->next->child ; 
+			while (idListHead->next != NULL)
+				idListHead = idListHead->next ;
+
+			pushInput (idListHead, varEntry, lst) ;
+
+			codePrint ("\t\tCALL %s", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
+			codeComment (11, "calling user function") ;
+			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
+			break ;
+
+		case idList :
+			calledModule = searchModuleInbaseST (realBase, node->next->next->tok->lexeme) ;
+			varEntry = calledModule->inputVars[0] ;
+
+			idListHead = node->next->next->next->child ;
+			while (idListHead->next != NULL)
+				idListHead = idListHead->next ;
+
+			codePrint ("\t\tSUB RSP, %d\n", calledModule->outputSize) ;
+			pushInput (idListHead, varEntry, lst) ;
+
+			codePrint ("\t\tCALL %s", node->next->next->tok->lexeme) ;
+			codeComment (11, "calling user function") ;
+			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
+
+			popOutput (node->child, lst) ;
+			break ;
+	}
+
+}
+
+void codeGeneration(astNode *node)
+{
+	if (node == NULL)
+		return;
+
+	switch (node->id)
+	{
+		case program :
+			codeGeneration (node->child->next) ;		// <otherModules>
+			break ;
+
+		case otherModules :
+			codeGeneration (node->child) ;					// Do module definitions
+			codeGeneration (node->next) ;					// <driverModule> or NULL
+			break ;
+
+		case module :
+			codePrint ("\n%s:\n", strcmp(node->child->tok->lexeme , "main") ? node->child->tok->lexeme : "@main") ;
+			codePrint ("\t\tPUSH RBP\n") ;
+			codePrint ("\t\tMOV RBP, RSP\n\n") ;
+
+			moduleGeneration (node->child->next->next->next, NULL) ;
+			codeGeneration (node->next) ;					// Moving on to the next module
+
+			break ;
+
+		case driverModule :
+			codePrint ("\nmain:\n") ;
+			codePrint ("\t\tPUSH RBP\n") ;
+			codePrint ("\t\tMOV RBP, RSP\n\n") ;
+
+			moduleGeneration(node->child, NULL); 				// <statements>
+			codeGeneration(node->next); 				// Move to the next child of program
+
+			break ;
+	}
+}
+
 void preamble()
 {
 	codePrint ("extern printf\n") ;
 	codePrint ("extern scanf\n") ;
 	codePrint ("extern malloc\n") ;
-	codePrint ("extern free\n") ;
 	codePrint ("extern exit\n") ;
 
 	codePrint ("\nglobal main\n") ;
@@ -1087,588 +1656,6 @@ void postamble()
 	{
 		codePrint ("\t\t@inputInt : ") ;
 		codePrint ("db \"%%d\", 0\n") ;
-	}
-}
-
-/*	---------------------------------- SWITCH CASE ------------------------------------- */
-
-int getCaseCount (astNode *statementsNode)
-{
-	int cnt = 0 ;
-
-	while (statementsNode != NULL)
-	{
-		cnt++ ;
-
-		if (statementsNode->next != NULL)
-		{
-			if (statementsNode->next->id == TK_DEFAULT)
-				return cnt ;
-
-			statementsNode = statementsNode->next->next->next ;
-		}
-		else
-			statementsNode = NULL ;
-	}
-
-	return cnt ;
-}
-
-
-void switchDeclareVars (astNode *statementsNode)
-{
-	astNode *statementNode ;
-
-	// Reserving space for switch scope variables
-	while (statementsNode != NULL)
-	{
-		statementNode = statementsNode->child ;
-		while (statementNode != NULL)
-		{
-			if (statementNode->child->id == TK_DECLARE)
-			{
-				moduleGeneration (statementNode->child, statementsNode->localST) ;
-				statementNode->child->parent = statementNode->child ;		// tieing a knot
-			}
-			statementNode = statementNode->next ;
-		}
-
-		if (statementsNode->next != NULL)
-		{
-			if (statementsNode->next->id == TK_DEFAULT)
-			{
-				statementsNode = statementsNode->next->next ;
-				statementNode = statementsNode->child ;
-				while (statementNode != NULL)
-				{
-					if (statementNode->child->id == TK_DECLARE)
-					{
-						moduleGeneration (statementNode->child, statementsNode->localST) ;
-						statementNode->child->parent = statementNode->child ;		// tieing a knot
-					}
-					statementNode = statementNode->next ;
-				}
-
-				break ;
-			}
-			statementsNode = statementsNode->next->next->next ;
-		}
-		else
-			statementsNode = NULL ;
-	}
-}
-
-int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLabels)
-{
-	int i, def_label = -1 ;
-
-	for (i = 0 ; i < caseCount ; i++)
-		caseLabels[i] = get_label (LABEL_SWITCH) ;
-
-	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
-	codeComment (10, "loading switch variable") ;
-
-	astNode *caseValNode =  node->next->next->next ;
-	i = 0 ;
-
-	if (switchVar->datatype == TK_INTEGER)
-	{
-		while (caseValNode != NULL)
-		{
-			codePrint ("\n\t\tCMP AX, %s", caseValNode->tok->lexeme) ;
-			codeComment (11, "switch case") ;
-			codePrint ("\t\tJE SWITCH%d\n", caseLabels[i]) ;
-
-			if (caseValNode->next->next->next->id == statements)
-			{
-				def_label = get_label (LABEL_SWITCH) ;
-				codePrint ("\n\t\tJMP SWITCH%d", def_label) ;
-				codeComment (11, "default case") ;
-				break ;
-			}
-
-			i++ ;
-			caseValNode = caseValNode->next->next->next ;
-		}
-	}
-	else
-	{		
-		codePrint ("\n\t\tCMP AX, 0\n") ;
-		if (caseValNode->tok->lexeme[0] == 't')
-		{
-			codePrint ("\t\tJNE SWITCH%d", caseLabels[0]) ;
-			codeComment (11, "true case") ;
-		}
-		else
-		{
-			codePrint ("\t\tJE SWITCH%d", caseLabels[0]) ;
-			codeComment (11, "false case") ;
-		}
-
-		codePrint ("\t\tJMP SWITCH%d", caseLabels[1]) ;
-		if (caseValNode->tok->lexeme[0] == 't')
-			codeComment (11, "false case") ;
-		else
-			codeComment (11, "true case") ;
-	}
-
-	return def_label ;
-}
-
-void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLim flag)
-{
-	int lab, sub ;
-
-	if (flag == LEFT)
-		sub = 10 ;
-	else
-		sub = 8 ;
-
-	codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(vst->offset - sub)) ;
-
-	if (isLeftLimStatic(varEntry->thisVarST) && !isLeftLimStatic(vst))
-	{
-		lab = get_label (LABEL_OTHER) ;
-		tf |= 1 << argLimERROR ;
-
-		if (flag == LEFT)
-			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokLeft->lexeme) ;
-		else
-			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
-
-		codePrint ("\t\tCMP %s, CX\n", reg) ;
-		codePrint ("\t\tJE LABEL%d\n", lab) ;
-		codePrint ("\t\tCALL @argLimERROR\n") ;
-		codePrint ("\n\tLABEL%d:\n", lab) ; 
-	}
-
-	if (!isVarStaticArr (varEntry->thisVarST))
-		codePrint ("\t\tPUSH %s\n", reg) ;
-}
-
-
-void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
-{
-	varST *searchedVar ;
-
-	while (varEntry->thisVarST->varType == VAR_PLACEHOLDER)
-		varEntry = varEntry->next ;
-
-	while (inputEnd != NULL)
-	{
-		searchedVar = searchVar (realBase, lst, inputEnd->tok->lexeme) ;
-
-		if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
-		{
-			codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr(searchedVar->offset)) ;
-			codePrint ("\t\tPUSH AX\n") ;
-		}
-		else if (isVarStaticArr (searchedVar))
-		{
-			loadArrBase (searchedVar, "RAX") ;
-			codePrint ("\t\tPUSH RAX\n") ;
-		}
-		else
-		{
-			pushInputDynamicArr (searchedVar, varEntry, "AX", LEFT) ;
-			pushInputDynamicArr (searchedVar, varEntry, "BX", RIGHT) ;
-			loadArrBase (searchedVar, "RAX") ;
-			codePrint ("\t\tPUSH RAX\n") ;
-		}
-
-		inputEnd = inputEnd->prev ;
-		varEntry = varEntry->next ;
-		while (varEntry != NULL && varEntry->thisVarST->varType == VAR_PLACEHOLDER)
-			varEntry = varEntry->next ;
-	}
-}
-
-void popOutput (astNode *outputHead, moduleST *lst)
-{
-	varST* searchedVar ;
-
-	while (outputHead != NULL)
-	{
-		searchedVar = searchVar (realBase, lst, outputHead->tok->lexeme) ;
-		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset)) ;
-
-		outputHead = outputHead->next ;
-	}
-
-	codePrint ("\n") ;
-}
-
-int moduleGeneration (astNode *node, moduleST *lst)
-{
-	if (node == NULL)
-		return 0 ;
-
-	varST *searchedVar ;
-	astNode *idListHead ;
-	moduleST *calledModule ;
-	varSTentry *varEntry ;
-
-	switch (node->id)
-	{
-		int start_label, end_label ;
-		int reserveLabel[10] ;
-
-		case statements :
-			moduleGeneration (node->child, node->localST);		// Access local scope and move below
-			break ;
-
-		case statement :
-			moduleGeneration(node->child, lst);
-			if (node->next == NULL)
-			{
-				if (lst->tableType == SWITCH_ST)
-					break ;
-
-				varEntry = lst->dynamicVars[0] ;
-				if (varEntry != NULL)
-					codePrint ("\n") ;
-				while (varEntry != NULL)
-				{
-					codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr(varEntry->thisVarST->offset)) ;
-					codePrint ("\t\tCALL free\n") ;
-
-					varEntry = varEntry->next ;
-				}
-
-				if (lst->parent == realBase)
-				{
-					codePrint ("\n\t\tMOV RSP, RBP\n") ;
-					codePrint ("\t\tPOP RBP\n") ;
-
-					if (realBase->driverST == lst)
-					{
-						codePrint ("\t\tMOV RAX, 1\n") ;
-						codePrint ("\t\tMOV RBX, 0\n") ;
-						codePrint ("\t\tINT 0x80\n") ;
-					}
-					else
-						codePrint ("\t\tret\n") ;
-
-					printCommentLineNASM () ;
-				}
-				else if (lst->scopeSize > 0)
-				{
-
-					codePrint ("\n\t\tADD RSP, %d", lst->scopeSize) ;
-					codeComment (10, "restoring to parent scope") ;
-				}
-
-			}
-			else
-				moduleGeneration(node->next, lst);
-
-			break ;
-
-		case TK_DECLARE :
-			;
-			switchDeclareStatus stat ;
-			if (lst->tableType != SWITCH_ST)
-				stat = NOT_SWITCH ; // Subtract RSP, and allocate memory if dynamic
-			else if (node->parent != node)
-				stat = SWITCH_INIT ; // Subtract RSP only, and do not allocate memory for dynamic
-			else
-			{
-				stat = SWITCH_GEN ; // Do not subtract RSP, allocate memory if dynamic AND restore parent
-				node->parent = node->next->parent ;
-			}
-
-			int declCount = 1 ;
-			idListHead = node->next->child ;
-			astNode *dtNode = node->next->next ;
-
-			while (idListHead->next != NULL)
-			{
-				declCount++ ;
-				idListHead = idListHead->next ;
-			}
-
-			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
-			if (searchedVar->size > 0 && stat != SWITCH_GEN)
-			{	
-				codePrint ("\t\tSUB RSP, %d", searchedVar->size * declCount) ;
-				if (stat == NOT_SWITCH)
-					codeComment (11, "making space for declaration") ;
-				else if (stat == SWITCH_INIT)
-					codeComment (11, "declaring before switch") ;
-
-				codePrint ("\n") ;
-			}
-
-			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
-				dynamicDeclaration (lst, searchedVar, declCount) ;
-
-			
-			break ;											
-
-		case TK_ASSIGNOP :
-
-			if (isSingleRHS(node))
-			{
-				if (isArrayRHS (node, lst))
-				{
-					//printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
-					varST *lhs, *rhs ;
-					lhs = searchVar (realBase, lst, node->child->tok->lexeme) ;
-					rhs = searchVar (realBase, lst, node->child->next->tok->lexeme) ;
-
-					tf |= 1 << asgnArr ;
-				
-					if (isVarStaticArr (lhs) && isVarStaticArr (rhs))
-					{
-						loadRegLeftLim (lhs, "CX") ;
-						loadRegRightLim (lhs, "DX") ;
-					}
-					else
-					{
-						tf |= 1 << asgnLimERROR ;
-						int leftLab, rightLab ;
-
-						leftLab = get_label (LABEL_OTHER) ;
-						rightLab = get_label (LABEL_OTHER) ;
-
-						loadRegLeftLim (lhs, "AX") ;
-						loadRegLeftLim (rhs, "CX") ;
-
-						codePrint ("\t\tCMP AX, CX\n") ;
-						codePrint ("\t\tJE LABEL%d\n", leftLab) ;
-						codePrint ("\t\tCALL @asgnLimERROR\n") ;
-
-						codePrint ("\n\tLABEL%d:\n", leftLab) ;
-						loadRegRightLim (lhs, "BX") ;
-						loadRegRightLim (rhs, "DX") ;
-
-						codePrint ("\t\tCMP BX, DX\n") ;
-						codePrint ("\t\tJE LABEL%d\n", rightLab) ;
-						codePrint ("\t\tCALL @asgnLimERROR\n") ;
-
-						codePrint ("\n\tLABEL%d:\n", rightLab) ;
-					}
-
-					loadArrBase (lhs, "RDI") ;
-					loadArrBase (rhs, "RSI") ;
-					codePrint ("\t\tSUB DX, CX\n") ;
-					codePrint ("\t\tADD DX, 1\n") ;
-					codePrint ("\t\tADD DX, DX\n") ;
-					codePrint ("\t\tCALL @asgnArr\n") ;
-				}
-				else
-				{
-					expr(node->child->next, lst, 1);
-					exprAssign (node->child, lst, 1) ;
-				}
-			}
-			else
-			{
-				int singleAssign = 0 ;
-
-				if (isAssignUnary (node))
-				{
-					if (isExprLeaf (node->child->next->child->id))
-						singleAssign = 1 ;
-
-					expr(node->child->next->child, lst, singleAssign) ;
-				}
-				else
-					expr(node->child->next, lst, 0);	
-
-				exprAssign (node->child, lst, singleAssign) ;
-			}
-
-			codePrint ("\n") ;
-			break ;
-
-		case TK_FOR :
-			node=node->next;
-			start_label = get_label (LABEL_FOR) ;
-			end_label = get_label (LABEL_FOR) ;
-
-			searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
-
-			codePrint ("\t\tMOV CX,%s\n", node->next->tok->lexeme);
-			codePrint ("\t\tMOV [RBP%s], CX" , getOffsetStr(searchedVar->offset)) ;
-
-			codePrint ("\n\tFOR%d:\n", start_label) ;
-			codePrint ("\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
-			codePrint ("\t\tCMP CX,AX\n");
-			codePrint ("\t\tJG FOR%d\n\n", end_label);
-
-			moduleGeneration(node->next->next->next, lst);		// Statements
-
-			codePrint ("\n\t\tMOV CX, [RBP%s]", getOffsetStr(searchedVar->offset)) ;
-			codeComment (8, "For loop increment") ;
-			codePrint ("\t\tINC CX\n");
-			codePrint ("\t\tMOV [RBP%s],CX\n", getOffsetStr(searchedVar->offset)) ;
-			codePrint ("\t\tJMP FOR%d\n", start_label) ;
-			codePrint ("\n\tFOR%d:\n", end_label) ;
-			break ;
-
-		
-		case TK_WHILE :
-			node=node->next;
-			start_label = get_label(LABEL_WHILE);
-			end_label =  get_label(LABEL_WHILE);
-
-			codePrint ("\n\tWHILE%d:\n", start_label) ;
-
-			expr (node, lst, 0);	// expr
-
-			codePrint ("\t\tPOP AX\n");
-			codePrint ("\t\tCMP AX, 0");
-			codeComment (11, "checking while loop condition") ;
-			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
-
-			moduleGeneration(node->next, lst);		// statements
-
-			codePrint ("\t\tJMP WHILE%d\n", start_label) ;
-			codePrint ("\n\tWHILE%d:\n", end_label) ;
-
-			break ;
-		
-		case TK_PRINT :
-			node = node->next ;
-			print (node, lst) ;
-			break ;
-
-		case TK_GET_VALUE :
-			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
-			getValue (lst, searchedVar) ;
-			break ;
-
-		case TK_SWITCH :
-			;
-
-			int i, caseCount, def_label ;
-			int *caseLabels ;
-			astNode *statementsNode = node->next->next->next->next ;
-
-			switchDeclareVars (node->next->next->next->next) ;
-			caseCount = getCaseCount (node->next->next->next->next) ;
-			caseLabels = (int *) malloc (sizeof(int) * caseCount) ;
-			def_label = switchCaseLabels (node , lst, caseCount, caseLabels) ;
-
-			end_label = get_label (LABEL_SWITCH) ;
-			i = 0 ;
-			while (statementsNode != NULL)
-			{
-				codePrint ("\nSWITCH%d:\n", caseLabels[i]) ;
-				moduleGeneration (statementsNode, lst) ;
-				codePrint ("\n\t\tJMP SWITCH%d\n", end_label) ;
-
-				i++ ;
-				if (statementsNode->next != NULL)
-				{
-					if (statementsNode->next->id == TK_DEFAULT)
-					{
-						statementsNode = statementsNode->next->next ;
-						codePrint ("\nSWITCH%d:\n", def_label) ;
-						moduleGeneration (statementsNode, lst) ;
-
-						break ;
-					}
-					statementsNode = statementsNode->next->next->next ;
-				}
-				else
-					statementsNode = NULL ;
-			}
-
-			statementsNode = node->next->next->next->next ;
-			codePrint ("\nSWITCH%d:\n", end_label) ;
-
-			varEntry = statementsNode->localST->dynamicVars[0] ;
-			while (varEntry != NULL)
-			{
-				codePrint ("\t\tMOV RDI, [RBP%s]\n", getOffsetStr(varEntry->thisVarST->offset)) ;
-				codePrint ("\t\tCALL free\n") ;
-
-				varEntry = varEntry->next ;
-			}
-
-			if (statementsNode->localST->scopeSize > 0)
-			{
-				codePrint ("\t\tADD RSP, %d", statementsNode->localST->scopeSize) ;
-				codeComment (11, "restoring to parent scope") ;
-			}
-
-			break ;
-
-		case TK_ID :
-			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
-			varEntry = calledModule->inputVars[0] ;
-
-			idListHead = node->next->child ; 
-			while (idListHead->next != NULL)
-				idListHead = idListHead->next ;
-
-			pushInput (idListHead, varEntry, lst) ;
-
-			codePrint ("\t\tCALL %s", strcmp(node->tok->lexeme, "main") ? node->tok->lexeme : "@main") ;
-			codeComment (11, "calling user function") ;
-			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
-			break ;
-
-		case idList :
-			calledModule = searchModuleInbaseST (realBase, node->next->next->tok->lexeme) ;
-			varEntry = calledModule->inputVars[0] ;
-
-			idListHead = node->next->next->next->child ;
-			while (idListHead->next != NULL)
-				idListHead = idListHead->next ;
-
-			codePrint ("\t\tSUB RSP, %d\n", calledModule->outputSize) ;
-			pushInput (idListHead, varEntry, lst) ;
-
-			codePrint ("\t\tCALL %s", node->next->next->tok->lexeme) ;
-			codeComment (11, "calling user function") ;
-			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
-
-			popOutput (node->child, lst) ;
-			break ;
-	}
-
-}
-
-void codeGeneration(astNode *node)
-{
-	if (node == NULL)
-		return;
-
-	switch (node->id)
-	{
-		case program :
-			codeGeneration (node->child->next) ;		// <otherModules>
-			break ;
-
-		case otherModules :
-			codeGeneration (node->child) ;					// Do module definitions
-			codeGeneration (node->next) ;					// <driverModule> or NULL
-			break ;
-
-		case module :
-			codePrint ("\n%s:\n", strcmp(node->child->tok->lexeme , "main") ? node->child->tok->lexeme : "@main") ;
-			codePrint ("\t\tPUSH RBP\n") ;
-			codePrint ("\t\tMOV RBP, RSP\n\n") ;
-
-			moduleGeneration (node->child->next->next->next, NULL) ;
-			codeGeneration (node->next) ;					// Moving on to the next module
-
-			break ;
-
-		case driverModule :
-			codePrint ("\nmain:\n") ;
-			codePrint ("\t\tPUSH RBP\n") ;
-			codePrint ("\t\tMOV RBP, RSP\n\n") ;
-
-			moduleGeneration(node->child, NULL); 				// <statements>
-			codeGeneration(node->next); 				// Move to the next child of program
-
-			break ;
 	}
 }
 

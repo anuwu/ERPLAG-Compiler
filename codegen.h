@@ -54,6 +54,7 @@ int isExprLeaf (tokenID id) ;
 int isUnary (tokenID id) ;
 int isAssignUnary (astNode *assignNode) ;
 int isSingleRHS (astNode *node) ;
+void dynAsgnArr (varST *lhs, varST *rhs) ;
 
 // Expression
 void exprAssign (astNode *node, moduleST *lst, int singleAssign) ;
