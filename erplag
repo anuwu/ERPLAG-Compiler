@@ -5,6 +5,15 @@
 # erplag -o testExec file.erp   --> Generates executable with the name (Creates temp files)
 # erplag file.erp 				--> Generates file executable directly (Creates temp files)
 
+CYAN='\033[1;36m'
+RED='\033[1;31m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
+errHead () {
+	printf "${CYAN}ERPLAG : ${RED}FATAL ERROR ${RESET}${BOLD}--> ${RESET}"
+}
+
 optflag=0
 while getopts ":a:o:" opt; do
 	optflag=1
@@ -13,6 +22,14 @@ while getopts ":a:o:" opt; do
 			;;
 		o)	target=$OPTARG 
 			srcname=$3 
+
+			if test "$srcname" = ""
+			then
+				errHead
+				echo "No source file"
+				exit 1
+			fi
+
 			asmname=${srcname}.asm
 			compiler $srcname $asmname 
 			status=$? 
@@ -25,8 +42,11 @@ while getopts ":a:o:" opt; do
 			rm -f $asmname
 			rm -f $objname
 			;;
-		\?) echo "ERPLAG : Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable" ;;
-		:) echo "ERPLAG : Please provide output file name" 
+		\?) errHead
+			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
+			;;
+		:)  errHead
+			echo "Please provide output file name" 
 	esac
 done
 shift $((OPTIND-1))
@@ -45,7 +65,8 @@ then
 			gcc -no-pie $objname -o $fname 
 			rm -f $objname
 		else
-			echo "ERPLAG : ASM file $srcname does not exist" 
+			errHead 
+			echo "ASM file $srcname does not exist" 
 		fi
 	elif [[ $srcname =~ \.erp$ ]] 
 	then
@@ -61,7 +82,12 @@ then
 		fi
 		rm -f $asmname
 		rm -f $objname
+	elif test "$srcname" = ""
+	then
+		errHead 
+		echo "No source file"
 	else
-		echo "ERPLAG : Unsupported file format. Use .erp for source files and .asm for x86 assembly files" ;
+		errHead
+		echo "Unsupported file format. Use .erp for source files and .asm for x86 assembly files" ;
 	fi
 fi

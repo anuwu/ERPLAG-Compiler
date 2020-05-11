@@ -1353,14 +1353,21 @@ treeNode* parse (FILE *fp)
 		if(tk->id == TK_LEXERROR)
 		{
 			root->syntax_error=1;
-			printf ("ERPLAG : Lexical Error at line %d --> %s\n", tk->lineNumber, tk->lexeme) ;
+			errLex () ;
+			printf ("at line ") ;
+			errLine (tk->lineNumber) ;
+			printf (" ") ;
+			errArrow () ;
+			printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
 		}
 		
 		if(stack!=NULL && stack->key<0)
 		{
 			flag=1;
 			root->syntax_error=1;
-			printf("ERPLAG : Parsing Error --> Invalid symbol on stack\n");
+			errParse () ;
+			errArrow () ;
+			printf("Invalid symbol on stack\n");
 			break;
 		}
 
@@ -1373,7 +1380,9 @@ treeNode* parse (FILE *fp)
 			
 				if(stack==NULL)
 				{
-					printf("ERPLAG : Parsing Error --> Stack is empty");
+					errParse () ;
+					errArrow () ;
+					printf("Stack is empty");
 					break;
 				}
 		}
@@ -1394,7 +1403,12 @@ treeNode* parse (FILE *fp)
 				tk = getNextToken (twinBuf) ;
 				if(tk->id == TK_LEXERROR)
 				{
-					printf ("ERPLAG : Lexical Error at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
+					errLex () ;
+					printf ("at line ") ;
+					errLine (tk->lineNumber) ;
+					printf (" ") ;
+					errArrow () ;
+					printf (ANSI_BOLD ANSI_RED "%s\n" ANSI_RESET, tk->lexeme) ;
 					root->syntax_error=1;
 				}
 			}
@@ -1405,13 +1419,23 @@ treeNode* parse (FILE *fp)
 				{
 					if(stack->key!= TK_SEMICOL && stack->key!= TK_ENDDEF && stack->key!= TK_DRIVERENDDEF)
 					{
-						printf ("ERPLAG : Parsing Error at line %d --> %s symbol was expected\n", tk->lineNumber, utility_array[stack->key]);
+						errParse () ;
+						printf ("at line ") ;
+						errLine (tk->lineNumber) ;
+						printf (" ") ;
+						errArrow () ;
+						printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
 						current=tk->lineNumber;
 					}
 
 					else
 					{
-						printf ("ERPLAG : Parsing Error at line %d --> %s symbol was expected at line number\n",  tk->lineNumber-1, utility_array[stack->key]);
+						errParse () ;
+						printf ("at line ") ;
+						errLine (tk->lineNumber - 1) ;
+						printf (" ") ;
+						errArrow () ;
+						printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
 						current=tk->lineNumber-1;
 					}
 					
@@ -1419,7 +1443,9 @@ treeNode* parse (FILE *fp)
 				stacknode* temp=stack;
 				if(stack==NULL)
 				{
-					printf("STACK IS EMPTY");
+					errParse () ;
+					errArrow () ;
+					printf("Stack is empty\n");
 					break;
 				}
 				 stack=stack->next;
@@ -1456,13 +1482,18 @@ treeNode* parse (FILE *fp)
 				root->syntax_error=1;
 				if(current != tk->lineNumber)
 				{
-					printf ("ERPLAG : Parsing Error at line %d\n",tk->lineNumber);
+					errParse () ;
+					printf ("at line ");
+					errLine (tk->lineNumber) ;
+					printf ("\n") ;
 					current=tk->lineNumber;
 				}
 
 				if(stack==NULL)
 				{
-					printf("STACK IS EMPTY");
+					errParse () ;
+					errArrow () ;
+					printf("Stack is empty\n");
 					break;
 				}
 				flag=1;
@@ -1471,9 +1502,7 @@ treeNode* parse (FILE *fp)
 						node* temp=NULL;
 						temp=follows[stack->key];
 						while(temp != NULL && temp->key != tk->id)
-						{
 							temp=temp->next;
-						}
 
 						if(stack!=NULL && temp!=NULL)
 						{
@@ -1489,16 +1518,18 @@ treeNode* parse (FILE *fp)
 								if(tk->id == TK_LEXERROR)
 								{
 									root->syntax_error=1;
+									errLex () ;
+									printf ("at line ") ;
+									errLine (tk->lineNumber) ;
+									printf (" ") ;
+									errArrow () ;
 									printf ("%s\n", tk->lexeme) ;
-									printf ("LEXICAL ERROR at line %d : %s\n", tk->lineNumber, tk->lexeme) ;
 								}
 								break;
 							}
 
 							if(tk->id == TK_EOF)
-							{
 								goto labelabc;
-							}
 							
 						}
 					}

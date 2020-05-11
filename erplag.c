@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "typeChecker.h"
 #include "codegen.h"
+#include "error.h"
 
 FILE *fpOut ;
 
@@ -11,20 +12,23 @@ void checkCommand (int argc, char **argv, char **outputFile)
 {
 	if (argc == 1)
 	{
-		printf ("ERPLAG : No source file\n") ;
+		errFatal () ;
+		printf ("No source file\n") ;
 		exit (1) ;
 	}
 
 	if (argc != 2 && argc != 3)
 	{
-		printf ("ERPLAG : Incorrect number of arguments\n") ;
+		errFatal () ;
+		printf ("Incorrect number of arguments\n") ;
 		exit (1) ;
 	}
 
 	int len = strlen (argv[1]) ;
 	if (!(len > 4 && argv[1][len-1] == 'p' && argv[1][len-2] == 'r' && argv[1][len-3] == 'e' && argv[1][len-4] == '.'))
 	{
-		printf ("ERPLAG : Unsupported source format. Use file with .erp extension\n") ;
+		errFatal () ;
+		printf ("Unsupported source format. Use file with .erp extension\n") ;
 		exit (1) ;
 	}
 
@@ -42,7 +46,8 @@ void checkCommand (int argc, char **argv, char **outputFile)
 		len = strlen (argv[2]) ;
 		if (!(len > 4 && argv[2][len-1] == 'm' && argv[2][len-2] == 's' && argv[2][len-3] == 'a' && argv[2][len-4] == '.'))
 		{
-			printf ("ERPLAG : Unsupported output format. Use .asm extension\n") ;
+			errFatal () ;
+			printf ("Unsupported output format. Use .asm extension\n") ;
 			exit (1) ;
 		}
 
@@ -58,7 +63,8 @@ int main(int argc, char **argv)
  
  	if (!(fpIn = fopen (argv[1], "r")))
  	{
- 		printf ("ERPLAG : Source file %s does not exist\n", argv[1]) ;
+ 		errFatal () ;
+ 		printf ("Source file %s does not exist\n", argv[1]) ;
  		exit (1) ;
  	}
 
@@ -76,6 +82,7 @@ int main(int argc, char **argv)
 		int len ;
 		if (!(fpOut = fopen (outputFile, "w")))
 		{
+			errFatal () ;
 			printf ("Error creating output file %s\n", outputFile) ;
 			exit (1) ;
 		}
