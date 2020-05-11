@@ -30,6 +30,13 @@ void errParse ()
 	printf (ANSI_BOLD ANSI_MAGENTA "Parsing Error " ANSI_RESET) ;
 }
 
+void errSemantic ()
+{
+	errHead () ;
+	printf (ANSI_BOLD ANSI_YELLOW "Semantic Error " ANSI_RESET) ;
+	errArrow () ;
+}
+
 void errArrow ()
 {
 	printf (ANSI_BOLD "--> " ANSI_RESET) ;
