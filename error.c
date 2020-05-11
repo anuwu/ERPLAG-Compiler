@@ -37,6 +37,13 @@ void errSemantic ()
 	errArrow () ;
 }
 
+void errWarning ()
+{
+	errHead () ;
+	printf (ANSI_BOLD ANSI_BLUE "Warning " ANSI_RESET) ;
+	errArrow () ;
+}
+
 void errArrow ()
 {
 	printf (ANSI_BOLD "--> " ANSI_RESET) ;

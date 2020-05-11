@@ -37,14 +37,14 @@ int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTN
 	if (indexVar == NULL)
 	{
 		errSemantic () ;
-		printf ("In \"%s\" at line %d, index variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", index variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
 		return 0 ;
 	}
 	else if (indexVar->datatype != TK_INTEGER)
 	{
 		errSemantic () ;
-		printf ("In \"%s\" at line %d, index variable \"%s\" needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", index variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " needs to be of type integer\n", getParentModuleName(realBase, baseModule), varIndexASTNode->tok->lineNumber, varIndexASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
 		return 0 ;
 	}
@@ -82,7 +82,7 @@ int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *ar
 	if (num < leftLim || num > rightLim)
 	{
 		errSemantic () ;
-		printf ("In \"%s\" at line %d, specified index %s is out of bounds for static array \"%s\" with limits [%d .. %d]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", specified index " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " is out of bounds for static array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " with limits ["ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET " .. "ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET "]\n", getParentModuleName(realBase, baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
 		realBase->semanticError = 1 ;
 		return 0 ;
 	}
@@ -104,7 +104,7 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 	if (locSearchedVar == NULL)
 	{
 		errSemantic () ;
-		printf ("In \"%s\" at line %d, variable \"%s\" is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", getParentModuleName(realBase, baseModule), varASTNode->tok->lineNumber, varASTNode->tok->lexeme) ;
 		realBase->semanticError = 1 ;
 
 		if (varASTNode->child != NULL)
@@ -117,7 +117,7 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 		if (varASTNode->child != NULL)
 		{
 			errSemantic () ;
-			printf ("In \"%s\" at line %d, primitive %s variable \"%s\" cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (locSearchedVar->datatype), locSearchedVar->lexeme) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", primitive " ANSI_BOLD ANSI_BLACK "%s" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot be indexed\n", getParentModuleName(realBase, baseModule), varASTNode->child->tok->lineNumber, typeIDToString (locSearchedVar->datatype), locSearchedVar->lexeme) ;
 			realBase->semanticError = 1 ;
 
 			validVarIndex (realBase, baseModule, varASTNode->child) ;
@@ -200,7 +200,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 		if (typeLeft == TK_ARRAY || typeRight == TK_ARRAY)
 		{
 			errSemantic () ;
-			printf ("In \"%s\" at line %d, array variable(s) \"%s\" and \"%s\" cannot occur in an expression\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->child->tok->lexeme, exprNode->child->next->tok->lexeme) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", array variable(s) " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot occur in an expression\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->child->tok->lexeme, exprNode->child->next->tok->lexeme) ;
 			return 0 ;
 		}
 
@@ -209,7 +209,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 		else if (typeLeft != typeRight)
 		{
 			errSemantic () ;
-			printf ("In \"%s\" at line %d, the operation %s is not allowed between types \"%s\" and \"%s\" respectively\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber,  exprNode->tok->lexeme, typeIDToString(typeLeft), typeIDToString(typeRight)) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", the operator " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " is not allowed between types " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " respectively\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber,  exprNode->tok->lexeme, typeIDToString(typeLeft), typeIDToString(typeRight)) ;
 			return 0 ;
 		}
 		else
@@ -223,7 +223,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 			else
 			{
 				errSemantic () ;
-				printf ("In \"%s\" at line %d, the operator %s cannot be executed between two operands of type \"%s\"\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->tok->lexeme, typeIDToString(typeLeft)) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", the operator " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " cannot be executed between two operands of type " ANSI_BOLD ANSI_RED "%s" ANSI_RESET "\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->tok->lexeme, typeIDToString(typeLeft)) ;
 				realBase->semanticError = 1 ;
 				return 0 ;
 			}
@@ -256,7 +256,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 					if (leftLim1 != leftLim2 || rightLim1 != rightLim2)
 					{
 						errSemantic () ;
-						printf ("In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", arrays " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have matching bounds for assignment\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 				}
@@ -264,7 +264,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 			else
 			{
 				errSemantic () ;
-				printf ("In \"%s\" at line %d, arrays \"%s\" and \"%s\" do not have the same base type\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", arrays " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have the same base type\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarLeft->lexeme, searchedVarRight->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 		}
@@ -273,20 +273,20 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 			if (typeLeft != TK_ARRAY && typeRight == TK_ARRAY)
 			{
 				errSemantic () ;
-				printf ("In \"%s\" at line %d, array \"%s\" cannot be assigned to primitive \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot be assigned to primitive " ANSI_BOLD ANSI_RED "%s" ANSI_RESET "\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 			else if (typeRight != TK_ARRAY && typeLeft == TK_ARRAY)
 			{
 				errSemantic () ;
-				printf ("In \"%s\" at line %d, primitive \"%s\" cannot be assigned to array \"%s\"\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", primitive " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot be assigned to array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET "\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 
 			}
 			else if (typeLeft != typeRight)
 			{
 				errSemantic () ;
-				printf ("In \"%s\" at line %d, assignment of \"%s\" to \"%s\" are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", assignment of " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " to " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " are in type conflict\n", getParentModuleName (realBase, baseModule), assignopASTNode->tok->lineNumber, searchedVarRight->lexeme, searchedVarLeft->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
 
@@ -311,7 +311,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 		if (typeLeft == TK_ARRAY)
 		{
 			errSemantic () ;
-			printf ("In \"%s\" at line %d, the assignment of an expression to array \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", the assignment of an expression to array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, assignopASTNode->child->tok->lexeme) ;
 			realBase->semanticError = 1 ;
 			return ;
 		}
@@ -322,7 +322,7 @@ void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assig
 	else if (typeLeft != typeRight)
 	{
 		errSemantic () ;
-		printf ("In \"%s\" at line %d, assignment of expression of type \"%s\" to the variable \"%s\" of type \"%s\" cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, typeIDToString(typeRight), assignopASTNode->child->tok->lexeme, typeIDToString(typeLeft)) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", assignment of expression of type " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " to the variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of type " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot be made\n", getParentModuleName(realBase, baseModule), assignopASTNode->tok->lineNumber, typeIDToString(typeRight), assignopASTNode->child->tok->lexeme, typeIDToString(typeLeft)) ;
 		realBase->semanticError = 1 ;
 		return ;
 	}

@@ -1,4 +1,5 @@
 #define ANSI_BOLD "\x1b[1m"
+#define ANSI_BLACK "\x1b[30m"
 #define ANSI_GREEN "\x1b[32m"
 #define ANSI_RED "\x1b[31m"
 #define ANSI_YELLOW "\x1b[33m"
@@ -9,6 +10,7 @@
 
 void errHead () ;
 void errSemantic () ;
+void errWarning () ;
 void errLex () ;
 void errFatal () ;
 void errParse () ;
