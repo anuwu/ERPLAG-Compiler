@@ -4,6 +4,7 @@
 #include "parserDef.h"
 #include "parser.h"
 #include "lexer.h"
+#include "error.h"
 
 #define SIZE 200
 #define TNTLENGTH 40

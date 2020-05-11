@@ -498,9 +498,8 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 			else 
 			{
 				printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, inputs \"%s\" and \"%s\" have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
-
-				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
+				sameArgNoErr = 1 ;
 			}
 		}
 		
@@ -528,10 +527,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 	else
 	{
 		if (sameArgNoErr)
-		{
-			realBase->semanticError = 1 ;
-			return (varST *) malloc (sizeof(varST)) ;
-		}
+			return (varST *) 1 ;
 		else
 			return NULL ;
 	}
@@ -556,16 +552,16 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		if(searchedVar == NULL)
 		{
 			printf("ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" variable not declared\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
-			sameArgNoErr = 1 ;
 			realBase->semanticError = 1 ;
+			sameArgNoErr = 1 ;
 		}
 		else 
 		{
 			if(entryVar->datatype != searchedVar->datatype)
 			{
 				printf ( "ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" and \"%s\" have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme) ;
-				sameArgNoErr = 1 ;
 				realBase->semanticError = 1 ;
+				sameArgNoErr = 1 ;
 			}
 		}
 		
@@ -587,15 +583,11 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	}
 	else{
 		if (sameArgNoErr)
-		{
-			realBase->semanticError = 1 ;
-			return (varST *) malloc (sizeof(varST)) ;
-		}
+			return (varST *) 1 ;
 		else
 			return NULL ;
 	}
 }
-
 
 
 int isValidCall ( baseST * realBase, moduleST * thisModule , astNode * funcNode , int haveReturns) 
@@ -723,16 +715,19 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarLeft == NULL)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, left index \"%s\" of array \"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarLeft->datatype != TK_INTEGER)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, left index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarLeft->scope)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, declaration of left index \"%s\" of array \"%s\", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 			}
@@ -743,25 +738,25 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarRight == NULL)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, right index \"%s\" of array\"%s\" is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarRight->datatype != TK_INTEGER)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, right index \"%s\" of array \"%s\" must be of integer type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarRight->scope)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, declaration of right index \"%s\" of array \"%s\", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 			}
 
 			if (indexErrorFlag)
-			{
-				realBase->semanticError = 1 ;
 				return -2 ;		// incorect dynamic array
-			}
 
 			insertVar ((moduleST *) thisVar->scope, thisVar, INSERT_DYNAMIC) ;
 			return 12 ;		// correct dynamic array
@@ -785,6 +780,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarLeft != NULL)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else
@@ -804,6 +800,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarRight != NULL)
 				{
 					printf ("ERPLAG : Semantic Error --> In \"%s\" at line %d, index \"%s\" of input array \"%s\" is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else
@@ -816,10 +813,7 @@ int getSize(baseST * realBase, varST * thisVar)
 			}
 
 			if (indexErrorFlag)
-			{
-				realBase->semanticError = 1 ;
 				return -2 ;
-			}
 			else
 				return 12 ;
 		}
@@ -921,6 +915,75 @@ void printOutputsNotTinkered (moduleST *baseModule)
 	}
 }
 
+void addTinkerList (guardTinkerNode *tinkerHead, int tinker)
+{
+	if (tinkerHead->tinker == -1)
+		tinkerHead->tinker = tinker ;
+	else
+	{
+		while (tinkerHead->next != NULL)
+			tinkerHead = tinkerHead->next ;
+
+		guardTinkerNode *tinkerNode = (guardTinkerNode *) malloc (sizeof(guardTinkerNode)) ;
+		tinkerNode->tinker = tinker ;
+		tinkerNode->next = NULL ;
+
+		tinkerHead->next = tinkerNode ;
+	}
+}
+
+void getExprVars (baseST *realBase, moduleST *baseModule, guardTinkerNode *tinkerHead, astNode *exprNode)
+{
+	if (exprNode == NULL)
+		return ;
+
+	if (exprNode->child == NULL || exprNode->child->next == NULL)	// array[index]
+	{
+		varST *searchedVar, *searchedVarIndex ;
+
+		searchedVar = searchVar (realBase, baseModule, exprNode->tok->lexeme) ;
+		if (searchedVar != NULL)
+			addTinkerList (tinkerHead, searchedVar->tinker) ;
+
+		if (exprNode->child != NULL && exprNode->child->id == TK_ID)
+		{
+			searchedVarIndex = searchVar (realBase, baseModule, exprNode->child->tok->lexeme) ;
+			if (searchedVarIndex != NULL)
+				addTinkerList (tinkerHead, searchedVarIndex->tinker) ;
+		}
+	}
+	else
+	{
+		getExprVars (realBase, baseModule, tinkerHead, exprNode->child) ;
+		if (exprNode->child != NULL)
+			getExprVars (realBase, baseModule, tinkerHead, exprNode->child->next) ;
+	}
+}
+
+guardTinkerNode* getGuardTinkerList (baseST *realBase, moduleST *baseModule, astNode *exprNode)
+{
+	guardTinkerNode *tinkerHead = (guardTinkerNode *) malloc (sizeof(guardTinkerNode)) ;
+	tinkerHead->tinker = -1 ;
+	tinkerHead->next = NULL ;
+
+	getExprVars (realBase, baseModule, tinkerHead, exprNode) ;
+	return tinkerHead ;
+}
+
+int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *tinkerHeadAfter)
+{
+	while (tinkerHeadBefore && tinkerHeadAfter)
+	{
+		if (tinkerHeadAfter->tinker > tinkerHeadBefore->tinker)
+			return 1 ;
+
+		tinkerHeadAfter = tinkerHeadAfter->next ;
+		tinkerHeadBefore = tinkerHeadBefore->next ;
+	}
+
+	return 0 ;
+}
+
 void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statementsAST , int depthSTPrint) 
 {
 	int retSize = 0 ;
@@ -988,8 +1051,13 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				realBase->semanticError = 1 ;
 			}
 
-			moduleST * tmp = createScopeST ( baseModule, WHILE_ST ) ;
-			fillModuleST ( realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
+			tinkerHeadBefore = getGuardTinkerList (realBase, baseModule, statementAST->child->next) ;
+			moduleST * tmp = createScopeST (baseModule, WHILE_ST) ;
+			fillModuleST (realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
+			tinkerHeadAfter = getGuardTinkerList (realBase, baseModule, statementAST->child->next) ;
+
+			if (!hasTinkerListChanged (tinkerHeadBefore, tinkerHeadAfter))
+				printf ("ERPLAG : Warning --> In \"%s\" at line %d, none of the identifiers of the guard condition are being changed in the while loop body\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
 
 			printModuleST (tmp,  depthSTPrint) ;
 			insertScopeST ( baseModule , tmp ) ;
@@ -1061,11 +1129,13 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			// [a] = use module with parameters [ d ] ;
 			int validCallFlag = isValidCall (realBase, baseModule,statementAST->child, 1) ;
 
-			if (validCallFlag == -1 )	{
+			if (validCallFlag == -1 )	
+			{
 				printf("ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
-			else if( validCallFlag == -2 ) {
+			else if( validCallFlag == -2 ) 
+			{
 				printf( "ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" declared but not defined \n", getParentModuleName(realBase, baseModule), statementAST->child->next->next->tok->lineNumber, statementAST->child->next->next->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
@@ -1083,7 +1153,8 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				printf( "ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" Module neither declared nor defined \n", getParentModuleName(realBase, baseModule), statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
-			else if( validCallFlag == -2 ) {
+			else if( validCallFlag == -2 ) 
+			{
 				printf( "ERPLAG : Semantic Error --> In \"%s\" at line %d, \"%s\" Module declared but not defined \n", getParentModuleName(realBase, baseModule),statementAST->child->tok->lineNumber , statementAST->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 			}
@@ -1194,7 +1265,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint) 
 {
 	astNode * currentASTNode = thisASTNode ;
-	baseST * base = createBaseST () ;
+	baseST * realBase = createBaseST () ;
 
 	//****************************************************************
 	astNode * moduleDECS = currentASTNode->child ;
@@ -1203,13 +1274,14 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	{
 		
 		varST * searchResult ;
-		if( searchResult =  searchVarInbaseST (base , currentASTNode->tok->lexeme ) ) {
+		if( searchResult =  searchVarInbaseST (realBase , currentASTNode->tok->lexeme ) ) 
+		{
 			printf("ERPLAG : Semantic Error --> In line %d, \"%s\" module already declared.\n" , currentASTNode->tok->lineNumber, searchResult->lexeme ) ;
-			base->semanticError = 1 ;
+			realBase->semanticError = 1 ;
 		}
 		else {
-			varST * tmp = createVarST (currentASTNode->tok->lexeme , base , VAR_MODULE, TK_ID) ;
-			insertVarSTInbaseST ( base , tmp ) ;
+			varST * tmp = createVarST (currentASTNode->tok->lexeme , realBase , VAR_MODULE, TK_ID) ;
+			insertVarSTInbaseST ( realBase , tmp ) ;
 		}
 
 		currentASTNode = currentASTNode->next ;
@@ -1225,22 +1297,11 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 		//currentASTNode is now a modulef
 		while (currentASTNode) 
 		{
-			/*
-			if (otherMODS_Count == 2 && searchVarInbaseST (base , currentASTNode->child->tok->lexeme) == NULL)
-			{
-				printf ("ERPLAG : Semantic Error --> In line %d, module \"%s\" definition appearing after driver program, but not declared!\n",currentASTNode->child->tok->lineNumber ,currentASTNode->child->tok->lexeme) ;
-				base->semanticError = 1 ;
-				//currentASTNode->child->prev = currentASTNode->child ;
-				currentASTNode = currentASTNode->next ;
-				continue ;
-			}
-			*/
-
-			searchCond = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
+			searchCond = searchModuleInbaseST (realBase , currentASTNode->child->tok->lexeme) ;
 			
 			if (searchCond == NULL) {
 				// need to create and insert
-				moduleST * moduleToInsert = createModuleST (base , currentASTNode->child->tok->lexeme, 16) ;
+				moduleST * moduleToInsert = createModuleST (realBase , currentASTNode->child->tok->lexeme, 16) ;
 
 				// filling input_plist and output_plist
 				astNode * input_plistAST = currentASTNode->child->next ;
@@ -1252,7 +1313,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					if (searchVarModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
 					{
 						printf ("ERPLAG : Semantic Error --> In definition of \"%s\" at line %d,  \"%s\" input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
-						base->semanticError = 1 ;
+						realBase->semanticError = 1 ;
 					}
 					else{
 						varST * tmp = createVarST (iplAST->child->tok->lexeme, moduleToInsert , VAR_INPUT, -9999) ;
@@ -1263,7 +1324,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							tmp->datatype = iplAST->child->next->dt->pType ;
 
 							// Setting and increasing offset
-							retSize = getSize (base, tmp) ;
+							retSize = getSize (realBase, tmp) ;
 							tmp->offset = -moduleToInsert->currOffset ;
 							moduleToInsert->currOffset += retSize ;
 							moduleToInsert->inputSize += retSize ;
@@ -1273,7 +1334,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 							tmp->datatype = TK_ARRAY ;
 							tmp->arrayIndices = iplAST->child->next->dt->arrType ;
 
-							retSize = getSize (base, tmp) ;		// Return will be positive or -1	
+							retSize = getSize (realBase, tmp) ;		// Return will be positive or -1	
 
 							if (retSize > 0)
 							{
@@ -1308,17 +1369,17 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					if (searchedInput != NULL) 
 					{
 						printf ("ERPLAG : Semantic Error --> In definition of \"%s\" at line %d, input variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
-						base->semanticError = 1 ;
+						realBase->semanticError = 1 ;
 					}
 					else if (searchedOutput != NULL)
 					{
 						printf ("ERPLAG : Semantic Error --> In definition of \"%s\" at line %d, output variable \"%s\" is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
-						base->semanticError = 1 ;
+						realBase->semanticError = 1 ;
 					}
 					else
 					{
 						varST * tmp = createVarST ( oplAST->child->tok->lexeme , moduleToInsert, VAR_OUTPUT, oplAST->child->next->id) ;
-						int retSize = getSize (base, tmp) ;
+						int retSize = getSize (realBase, tmp) ;
 
 						tmp->offset = -moduleToInsert->currOffset ;
 						tmp->size = retSize ;
@@ -1331,13 +1392,13 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				}
 
 				moduleToInsert->currOffset = 0 ;	//resetting for input values
-				insertModuleSTInbaseST (base , moduleToInsert) ;
+				insertModuleSTInbaseST (realBase , moduleToInsert) ;
 
 			}
 			else {
 				// Only valid when otherMODS_Count = 1
 				printf ( "ERPLAG : Semantic Error --> In line %d, module \"%s\" already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
-				base->semanticError = 1 ;
+				realBase->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 			}
 
@@ -1367,15 +1428,14 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				continue ;
 			}
 			
-			moduleST *moduleToInsert = searchModuleInbaseST (base , currentASTNode->child->tok->lexeme) ;
-			fillModuleST ( base , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
+			moduleST *moduleToInsert = searchModuleInbaseST (realBase , currentASTNode->child->tok->lexeme) ;
+			fillModuleST ( realBase , moduleToInsert , currentASTNode->child->next->next->next, depthSTPrint) ;
 
 			if (!checkAllOutputsTinkered(moduleToInsert))
 			{
-				printf ("ERPLAG : Semantic Error --> In the definition of \"%s\", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
+				printf ("ERPLAG : Warning --> In the definition of \"%s\", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
 				printOutputsNotTinkered (moduleToInsert) ;
 				printf ("\n") ;
-				base->semanticError = 1 ;
 			}
 			moduleToInsert->filledMod = 1 ;
 
@@ -1392,11 +1452,11 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 
 
 	astNode * driverMODS = otherMODS->prev ;
-	moduleST * driverST = createDriverST(base) ;
+	moduleST * driverST = createDriverST(realBase) ;
 	
-	fillModuleST (base,driverST , driverMODS->child, depthSTPrint) ;
+	fillModuleST (realBase,driverST , driverMODS->child, depthSTPrint) ;
 	printModuleST (driverST, depthSTPrint) ;
-	base->driverST = driverST ;
+	realBase->driverST = driverST ;
 			
-	return base ;
+	return realBase ;
 }
