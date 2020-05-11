@@ -14,11 +14,22 @@ errHead () {
 	printf "${CYAN}ERPLAG : ${RED}FATAL ERROR ${RESET}${BOLD}--> ${RESET}"
 }
 
+erpHelp () {
+	printf "The compiler can be used with the following options - \n"
+	printf "1. ${BOLD}erplag -a mytest.erp ${RESET}generates an x86 asm file with the ${BOLD}mytest.asm${RESET}\n"
+	printf "2. ${BOLD}erplag mytest.asm ${RESET}generates an executable file named ${BOLD}mytest ${RESET}from the .asm file\n"
+	printf "3. ${BOLD}erplag -o myexec mytest.erp ${RESET}generates an executable file named ${BOLD}myexec${RESET} from the source file\n"
+	printf "4. ${BOLD}erplag mytest.erp ${RESET}directly generates an executable file named ${BOLD}mytest ${RESET}from the source file\n"
+}
+
+source ~/.bashrc
 optflag=0
-while getopts ":a:o:" opt; do
+while getopts ":a:o:h" opt; do
 	optflag=1
 	case ${opt} in
-		a)	compiler $OPTARG
+		h)	erpHelp
+			;;
+		a)	.compiler $OPTARG
 			;;
 		o)	target=$OPTARG 
 			srcname=$3 
@@ -31,7 +42,7 @@ while getopts ":a:o:" opt; do
 			fi
 
 			asmname=${srcname}.asm
-			compiler $srcname $asmname 
+			.compiler $srcname $asmname 
 			status=$? 
 			if [ $status -eq 0 ]
 			then
@@ -73,7 +84,7 @@ then
 		fname=${srcname:0:${#srcname}-4} 
 		asmname=${srcname}.asm
 		objname=${srcname}.o
-		compiler $srcname $asmname
+		.compiler $srcname $asmname
 		status=$? 
 		if [ $status -eq 0 ]
 		then

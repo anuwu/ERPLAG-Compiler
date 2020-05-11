@@ -1,0 +1,13 @@
+BOLD='\033[1m'
+RESET='\033[0m'
+
+sudo apt-get install gcc
+sudo apt-get install nasm
+echo "export PATH=\"$(pwd):\$PATH\"" >> ~/.bashrc
+source ~/.bashrc
+
+clear
+printf "${BOLD}ERPLAG compiler has been installed! Please restart the terminal to use it.${RESET}\n"
+printf "\nUse ${BOLD}erplag -h ${RESET}to read the guidelines for using the compiler\n"
+printf "Press any key to continue...\n"
+read
