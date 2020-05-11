@@ -6,6 +6,8 @@ sudo apt-get install gcc
 sudo apt-get install nasm
 echo "export PATH=\"$(pwd):\$PATH\"" >> ~/.bashrc
 source ~/.bashrc
+make
+make objClean
 
 clear
 printf "${BOLD}ERPLAG compiler has been installed! Please restart the terminal to use it.${RESET}\n"
