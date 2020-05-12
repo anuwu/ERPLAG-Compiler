@@ -4,13 +4,15 @@ RESET='\033[0m'
 sudo apt-get update
 sudo apt-get install gcc
 sudo apt-get install nasm
-echo "export PATH=\"$(pwd):\$PATH\"" >> ~/.bashrc
-source ~/.bashrc
 make
-make objClean
 
-clear
-printf "${BOLD}ERPLAG compiler has been installed! Please restart the terminal to use it.${RESET}\n"
-printf "\nUse ${BOLD}erplag -h ${RESET}to read the guidelines for using the compiler\n"
-printf "Press any key to continue...\n"
+sudo cp erplag /usr/local/bin
+sudo cp .compiler /usr/local/bin
+
+make clean
+
+printf "\n"
+printf "${BOLD}ERPLAG compiler has been successfully installed!${RESET}\n"
+printf "Use ${BOLD}erplag -h ${RESET}to read the guidelines for using the compiler\n"
+printf "Press any key to continue..."
 read

@@ -15,11 +15,11 @@ errHead () {
 }
 
 erpHelp () {
-	printf "The compiler can be used with the following options - \n"
-	printf "1. ${BOLD}erplag -a mytest.erp ${RESET}generates an x86 asm file with the ${BOLD}mytest.asm${RESET}\n"
-	printf "2. ${BOLD}erplag mytest.asm ${RESET}generates an executable file named ${BOLD}mytest ${RESET}from the .asm file\n"
-	printf "3. ${BOLD}erplag -o myexec mytest.erp ${RESET}generates an executable file named ${BOLD}myexec${RESET} from the source file\n"
-	printf "4. ${BOLD}erplag mytest.erp ${RESET}directly generates an executable file named ${BOLD}mytest ${RESET}from the source file\n"
+	printf "${BOLD}The compiler can be used with the following options - ${RESET}\n\n"
+	printf "${BOLD}${CYAN}erplag -a <filename>.erp ${RESET}generates a .asm file with the same filename\n"
+	printf "${BOLD}${CYAN}erplag <filename>.asm ${RESET}generates an executable with the same filename\n"
+	printf "${BOLD}${CYAN}erplag -o myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}${CYAN}myexec${RESET}\n"
+	printf "${BOLD}${CYAN}erplag <filename>.erp ${RESET}directly generates an executable with the same filename\n"
 }
 
 source ~/.bashrc
@@ -28,11 +28,14 @@ while getopts ":a:o:h" opt; do
 	optflag=1
 	case ${opt} in
 		h)	erpHelp
+			exit
 			;;
 		a)	.compiler $OPTARG
+			shift $(($OPTIND-1)s)
 			;;
 		o)	target=$OPTARG 
-			srcname=$3 
+			shift $(($OPTIND-1))
+			srcname=$1
 
 			if test "$srcname" = ""
 			then
@@ -55,12 +58,13 @@ while getopts ":a:o:h" opt; do
 			;;
 		\?) errHead
 			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
+			exit
 			;;
 		:)  errHead
 			echo "Please provide output file name" 
+			exit
 	esac
 done
-shift $((OPTIND-1))
 
 if [ $optflag -eq 0 ]
 then
