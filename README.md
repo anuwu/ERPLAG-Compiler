@@ -8,10 +8,13 @@ Welcome to ERPLAG. This is a toy language that was given as a semester project f
 
 If the installation fails, you can do either of the following -
 1. Edit the ~/.bashrc file and export the repository directory to the PATH variable.
+
    Run > source ~/.bashrc
+   
    Restart bash
-2. Copy the following files to the standard bin directory of your system
+2. Copy the following files to the standard bin directory of your system -
    ./erplag
+   
    ./.compiler
    
 Create your own erplag files using an extension of .erp. Use erplag -h for help on using the compiler.
