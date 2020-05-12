@@ -1,0 +1,6 @@
+Modifications from the original specification document -
+1. Floating point operations are not handled beyond the semantic analysis part.
+2. Recursion is allowed.
+3. If a function does not assign a particular output variable, it is shown as a warning and not a semantic error.
+4. If a while loop body does not change any identifiers participating in its guard condition, it is shown as a warning and not a semantic error.
+5. Redundant module declaration is not treated as a semantic error.
