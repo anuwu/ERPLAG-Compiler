@@ -1,5 +1,12 @@
 BOLD='\033[1m'
+RED='\033[1;31m'
 RESET='\033[0m'
+
+installErr () {
+	printf "\n${BOLD}${RED}ERPLAG installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
+	printf "Press any key to continue..."
+	read
+}
 
 sudo apt-get update
 sudo apt-get install gcc
@@ -7,12 +14,23 @@ sudo apt-get install nasm
 make
 
 sudo cp erplag /usr/local/bin
+stat=$?
+if [ $stat -ne 0 ]
+then
+	installErr 
+	exit
+fi
 sudo cp .compiler /usr/local/bin
+stat=$?
+if [ $stat -ne 0 ]
+then
+	installErr 
+	exit
+fi
 
 make clean
 
-printf "\n"
-printf "${BOLD}ERPLAG compiler has been successfully installed!${RESET}\n"
+printf "\n${BOLD}ERPLAG compiler has been successfully installed!${RESET}\n"
 printf "Use ${BOLD}erplag -h ${RESET}to read the guidelines for using the compiler\n"
 printf "Press any key to continue..."
 read

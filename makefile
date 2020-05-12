@@ -50,7 +50,6 @@ erpExec :
 
 clean :
 	rm -f *.o
-	rm -f .compiler
 	rm -f ST
 	rm -f ast
 
