@@ -1197,6 +1197,35 @@ void postamble()
 		codePrint ("\n\t\tret\n") ;
 	}
 
+	if (isFlagSet (tf, dynamicDeclCheck))
+	{
+		tf |= 1 << declNegERROR ;
+		tf |= 1 << declERROR ;
+
+		codePrint ("\n@dynamicDeclCheck:\n") ;
+		codePrint ("\t\tCMP AX, 0\n") ;
+		codePrint ("\t\tJGE .leftNotNeg\n") ;
+		codePrint ("\t\tCALL @declNegERROR\n") ;
+
+		codePrint ("\n\t.leftNotNeg:\n") ;
+		codePrint ("\t\tCMP BX, 0\n") ;
+		codePrint ("\t\tJGE .rightNotNeg\n") ;
+		codePrint ("\t\tCALL @declNegERROR\n") ;
+
+		codePrint ("\n\t.rightNotNeg:\n") ;
+		codePrint ("\t\tCMP BX, AX\n") ;
+		codePrint ("\t\tJGE .dynChecked\n") ;
+		codePrint ("\t\tCALL @declERROR\n") ;
+		codePrint ("\n\t.dynChecked:\n") ;
+		codePrint ("\t\tMOV DX, BX\n") ;
+		codePrint ("\t\tSUB DX, AX\n") ;
+		codePrint ("\t\tADD DX, 1\n") ;
+		codePrint ("\t\tADD DX, DX\n") ;
+		codePrint ("\t\tMOVSX RDI, DX\n") ;
+
+		codePrint ("\n\t\tret\n") ;
+	}
+
 	if (isFlagSet (tf, boundERROR))
 	{
 		df |= 1 << boundPrint ;
@@ -1276,35 +1305,6 @@ void postamble()
 	}
 
 	/* ----------------------------------- ERRORS ------------------------------------ */
-
-	if (isFlagSet (tf, dynamicDeclCheck))
-	{
-		tf |= 1 << declNegERROR ;
-		tf |= 1 << declERROR ;
-
-		codePrint ("\n@dynamicDeclCheck:\n") ;
-		codePrint ("\t\tCMP AX, 0\n") ;
-		codePrint ("\t\tJGE .leftNotNeg\n") ;
-		codePrint ("\t\tCALL @declNegERROR\n") ;
-
-		codePrint ("\n\t.leftNotNeg:\n") ;
-		codePrint ("\t\tCMP BX, 0\n") ;
-		codePrint ("\t\tJGE .rightNotNeg\n") ;
-		codePrint ("\t\tCALL @declNegERROR\n") ;
-
-		codePrint ("\n\t.rightNotNeg:\n") ;
-		codePrint ("\t\tCMP BX, AX\n") ;
-		codePrint ("\t\tJGE .dynChecked\n") ;
-		codePrint ("\t\tCALL @declERROR\n") ;
-		codePrint ("\n\t.dynChecked:\n") ;
-		codePrint ("\t\tMOV DX, BX\n") ;
-		codePrint ("\t\tSUB DX, AX\n") ;
-		codePrint ("\t\tADD DX, 1\n") ;
-		codePrint ("\t\tADD DX, DX\n") ;
-		codePrint ("\t\tMOVSX RDI, DX\n") ;
-
-		codePrint ("\n\t\tret\n") ;
-	}
 
 	if (isFlagSet (tf, getValuePrimitive))
 	{

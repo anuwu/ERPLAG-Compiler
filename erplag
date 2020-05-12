@@ -23,7 +23,7 @@ erpHelp () {
 	printf "${BOLD}${CYAN}erplag -o myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}${CYAN}myexec${RESET}\n"
 	printf "${BOLD}${CYAN}erplag <filename>.erp ${RESET}directly generates an executable with the same filename\n\n"
 	printf "If you are making any changes to the source code or the compiler script, make sure to run ${BOLD}${CYAN}./cc ${RESET} afterwards\n"
-	printf "The .${BOLD}${CYAN}\\Testcases ${RESET}folder has a script named ${BOLD}${CYAN}clean.sh${RESET}. This can be used to clean any .asm and executable files recursively in the folder\n\n"
+	printf "The .${BOLD}${CYAN}\\Testcases ${RESET}folder has a script named ${BOLD}${CYAN}clean.sh${RESET}. This can be used to clean any .asm, .o and executable files recursively in the folder\n\n"
 	printf "${BOLD}${RED}WARNING : DO NOT RUN clean.sh IN THE REPOSITORY FOLDER. IT WILL DELETE ESSENTIAL FILES OF THE COMPILER!${RESET}\n"
 }
 
