@@ -1,0 +1,6 @@
+<<<driver program>>>
+start
+	declare A : array [4 .. 7] of boolean ;
+	get_value (A) ;
+	print (A) ;
+end

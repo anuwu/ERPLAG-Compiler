@@ -1,0 +1,8 @@
+<<<driver program>>>
+start
+	declare A : array [4 .. 7] of integer ;
+	declare i : integer ;
+	i := 5 ;
+
+	print (A[i]) ;
+end

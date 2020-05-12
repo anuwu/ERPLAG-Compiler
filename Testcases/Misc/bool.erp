@@ -1,0 +1,12 @@
+<<<driver program>>>
+start
+	declare b : boolean ;
+	declare i : integer ;
+	b := false ;
+	while (true)
+	start
+		print (true) ;
+	end
+
+	print (b) ;
+end

@@ -1,0 +1,6 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	i := -(7+16/5) ;
+	print (i) ;
+end

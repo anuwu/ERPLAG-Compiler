@@ -1,0 +1,46 @@
+declare module revArr ;
+declare module exch ;
+
+<<<driver program>>>
+start
+	declare left, right : integer ;
+	get_value (left) ;
+	get_value (right) ;
+
+	declare arr : array [left .. right] of integer ;
+	get_value (arr) ;
+
+	use module revArr with parameters arr ;
+	print (arr) ;
+end
+
+
+<<module revArr>>
+takes input [A : array [low .. high] of integer] ;
+start
+	declare i, j, n1, n2 : integer ;
+
+	i := low ;
+	j := high ;
+	while (j > i)
+	start
+		n1 := A[i] ;
+		n2 := A[j] ;
+	
+		[n1, n2] := use module exch with parameters n1, n2 ;
+
+		A[i] := n1 ;
+		A[j] := n2 ;		
+
+		i := i + 1 ;
+		j := j - 1 ;
+	end
+end
+
+<<module exch>>
+takes input [a : integer, b : integer] ;
+returns [c : integer, d : integer] ;
+start
+	c := b ;
+	d := a ;
+end

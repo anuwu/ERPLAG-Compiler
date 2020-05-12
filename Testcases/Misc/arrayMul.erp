@@ -1,0 +1,11 @@
+<<<driver program>>>
+start
+	declare A : array [5 .. 10] of integer ;
+	declare i : integer ;
+
+	i := 6 ;
+	A[i] := 4 ;
+	A[i] := A[i] * A[i] ; 
+
+	print (A[i]) ;
+end
