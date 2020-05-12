@@ -8,7 +8,9 @@
 CYAN='\033[1;36m'
 RED='\033[1;31m'
 BOLD='\033[1m'
+GREEN='\033[1;32m'
 RESET='\033[0m'
+
 
 errHead () {
 	printf "${CYAN}ERPLAG : ${RED}FATAL ERROR ${RESET}${BOLD}--> ${RESET}"
@@ -20,6 +22,11 @@ erpHelp () {
 	printf "${BOLD}${CYAN}erplag <filename>.asm ${RESET}generates an executable with the same filename\n"
 	printf "${BOLD}${CYAN}erplag -o myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}${CYAN}myexec${RESET}\n"
 	printf "${BOLD}${CYAN}erplag <filename>.erp ${RESET}directly generates an executable with the same filename\n"
+	printf "If you are making any changes to the source code or the compiler script, make sure to run ${BOLD}./cc ${RESET} afterwards"
+}
+
+success () {
+	printf "${BOLD}${GREEN}Compilation successful${RESET}\n"
 }
 
 source ~/.bashrc
@@ -31,7 +38,12 @@ while getopts ":a:o:h" opt; do
 			exit
 			;;
 		a)	.compiler $OPTARG
-			shift $(($OPTIND-1)s)
+			status=$?
+			if [ $status -eq 0 ]
+			then
+				success 
+			fi
+			# shift $(($OPTIND-1)s)
 			;;
 		o)	target=$OPTARG 
 			shift $(($OPTIND-1))
@@ -51,10 +63,11 @@ while getopts ":a:o:h" opt; do
 			then
 				objname=${srcname}.o 
 				nasm -felf64 $asmname -o $objname 
-				gcc -no-pie $objname -o $target 
+				gcc -w -no-pie $objname -o $target 
 			fi
 			rm -f $asmname
 			rm -f $objname
+			success
 			;;
 		\?) errHead
 			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
@@ -77,8 +90,9 @@ then
 			fname=${srcname:0:${#srcname}-4} 
 			objname=${srcname}.o
 			nasm -felf64 $srcname -o $objname
-			gcc -no-pie $objname -o $fname 
+			gcc -w -no-pie $objname -o $fname 
 			rm -f $objname
+			success
 		else
 			errHead 
 			echo "ASM file $srcname does not exist" 
@@ -93,10 +107,11 @@ then
 		if [ $status -eq 0 ]
 		then
 			nasm -felf64 $asmname
-			gcc -no-pie $objname -o $fname
+			gcc -w -no-pie $objname -o $fname
 		fi
 		rm -f $asmname
 		rm -f $objname
+		success
 	elif test "$srcname" = ""
 	then
 		errHead 

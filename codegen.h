@@ -11,13 +11,12 @@ extern FILE *fpOut ;
 
 typedef enum _textFlags
 {
-	boundERROR, declERROR, declNegERROR, argLimERROR, asgnLimERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicDeclCheck, asgnArr
+	boundERROR, declERROR, declNegERROR, argLimERROR, asgnLimERROR, divZeroERROR, printGetArrPrompt, getValuePrimitive, getArr, printInteger, printBoolean, printIntegerArr, printBooleanArr, boundCheck, dynamicDeclCheck, asgnArr
 } textFlag ;
 
 typedef enum _dataFlags
 {
-	boundPrint, declPrint, declNeg, printFormatArray, printInt, printNewLine, printFormat,
-	printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt, arrArgMismatch, asgnArgMismatch
+	boundPrint, declPrint, declNeg, arrArgMismatch, asgnArgMismatch, divZero, printFormatArray, printInt, printNewLine, printFormat, printTrue, printFalse, DATA_true, DATA_false, inputIntPrompt, inputBoolPrompt, inputIntArrPrompt, inputBoolArrPrompt, leftRange, rightRange, inputInt
 } dataFlag ;
 
 typedef enum _switchDeclareStatus
@@ -32,7 +31,7 @@ typedef enum _pushArrLim
 
 typedef enum _labelType
 {
-	LABEL_SWITCH, LABEL_FOR, LABEL_WHILE, LABEL_OTHER
+	LABEL_SWITCH, LABEL_FOR, LABEL_WHILE, LABEL_DIV_ZERO, LABEL_OTHER
 } labelType ;
 
 // Helper functions

@@ -3,4 +3,8 @@ start
 	declare i : integer ;
 	i := -(7+16/5) ;
 	print (i) ;
+
+	declare j:integer ;
+	get_value (j) ;
+	i := i / j ;
 end

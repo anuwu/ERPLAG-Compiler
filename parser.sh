@@ -1,2 +1,2 @@
 #! /bin/bash
-gcc -c $(pwd)/parser.c
+gcc -w -c $(pwd)/parser.c

@@ -1,37 +1,37 @@
 output : erplag.o codegen.o ast.o typeChecker.o lexer.o parser.o symbolTable.o error.o lexer.h typeChecker.h lexerDef.h parser.h parserDef.h symbolTable.h codegen.h error.h
-	gcc -o .compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
+	gcc -w -o .compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
 	
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexer.o parser.o symbolTableDriver.o error.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h error.h
-	gcc -o ast astDriver.o ast.o lexer.o parser.o error.o
-	gcc -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
-	gcc -o .compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
+	gcc -w -o ast astDriver.o ast.o lexer.o parser.o error.o
+	gcc -w -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
+	gcc -w -o .compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
 
 erplag.o : erplag.c
-	gcc -c erplag.c
+	gcc -w -c erplag.c
 
 error.o : error.c
-	gcc -c error.c
+	gcc -w -c error.c
 
 codegen.o : codegen.c
-	gcc -c codegen.c
+	gcc -w -c codegen.c
 
 astDriver.o : astDriver.c
-	gcc -c astDriver.c
+	gcc -w -c astDriver.c
 
 ast.o : ast.c
-	gcc -c ast.c
+	gcc -w -c ast.c
 
 typeChecker.o : typeChecker.c
-	gcc -c typeChecker.c
+	gcc -w -c typeChecker.c
 
 parser.o : parser.c
 	./parser.sh
 
 lexer.o : lexer.c
-	gcc -c lexer.c
+	gcc -w -c lexer.c
 
 symbolTableDriver.o : symbolTableDriver.c
-	gcc -c symbolTableDriver.c
+	gcc -w -c symbolTableDriver.c
 
 asm :
 	make -f make.asm FILE=$(FILE)

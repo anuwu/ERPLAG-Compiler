@@ -11,6 +11,7 @@ int switchX = 0 ;
 int forX = 0 ;
 int whileX = 0 ;
 int otherX = 0 ;
+int divZeroX = 0 ;
 
 int tf = 0 ;
 int df = 0 ;
@@ -31,6 +32,10 @@ int get_label (labelType lt)
 		case LABEL_WHILE :
 			whileX++ ;
 			return whileX ;
+
+		case LABEL_DIV_ZERO :
+			divZeroX++ ;
+			return divZeroX ;
 
 		case LABEL_OTHER :
 			otherX++ ;
@@ -183,18 +188,18 @@ void dynAsgnArr (varST *lhs, varST *rhs)
 	loadRegLeftLim (rhs, "CX") ;
 
 	codePrint ("\t\tCMP AX, CX\n") ;
-	codePrint ("\t\tJE LABEL%d\n", leftLab) ;
+	codePrint ("\t\tJE @LABEL%d\n", leftLab) ;
 	codePrint ("\t\tCALL @asgnLimERROR\n") ;
 
-	codePrint ("\n\tLABEL%d:\n", leftLab) ;
+	codePrint ("\n\t@LABEL%d:\n", leftLab) ;
 	loadRegRightLim (lhs, "BX") ;
 	loadRegRightLim (rhs, "DX") ;
 
 	codePrint ("\t\tCMP BX, DX\n") ;
-	codePrint ("\t\tJE LABEL%d\n", rightLab) ;
+	codePrint ("\t\tJE @LABEL%d\n", rightLab) ;
 	codePrint ("\t\tCALL @asgnLimERROR\n") ;
 
-	codePrint ("\n\tLABEL%d:\n", rightLab) ;
+	codePrint ("\n\t@LABEL%d:\n", rightLab) ;
 	loadArrBase (rhs, "RDI") ;
 	codePrint ("\t\tMOV[RBP%s], RDI", getOffsetStr(lhs->offset)) ;
 }
@@ -320,6 +325,14 @@ void expr (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_DIV :
+			codePrint ("\t\tCMP BX, 0\n") ;
+
+			tf |= 1 << divZeroERROR ;
+			int lab = get_label (LABEL_DIV_ZERO) ;
+			codePrint ("\t\tJNE @DIV_ZERO%d\n", lab) ;
+			codePrint ("\t\tCALL @divZeroERROR\n") ;
+
+			codePrint ("\n\t@DIV_ZERO%d:\n", lab) ;
 			codePrint ("\t\tCWD\n") ;
 			codePrint ("\t\tIDIV BX\n");
 			break ;
@@ -682,12 +695,12 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		{
 			codePrint ("\n\t\tCMP AX, %s", caseValNode->tok->lexeme) ;
 			codeComment (11, "switch case") ;
-			codePrint ("\t\tJE SWITCH%d\n", caseLabels[i]) ;
+			codePrint ("\t\tJE @SWITCH%d\n", caseLabels[i]) ;
 
 			if (caseValNode->next->next->next->id == statements)
 			{
 				def_label = get_label (LABEL_SWITCH) ;
-				codePrint ("\n\t\tJMP SWITCH%d", def_label) ;
+				codePrint ("\n\t\tJMP @SWITCH%d", def_label) ;
 				codeComment (11, "default case") ;
 				break ;
 			}
@@ -701,16 +714,16 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 		codePrint ("\n\t\tCMP AX, 0\n") ;
 		if (caseValNode->tok->lexeme[0] == 't')
 		{
-			codePrint ("\t\tJNE SWITCH%d", caseLabels[0]) ;
+			codePrint ("\t\tJNE @SWITCH%d", caseLabels[0]) ;
 			codeComment (11, "true case") ;
 		}
 		else
 		{
-			codePrint ("\t\tJE SWITCH%d", caseLabels[0]) ;
+			codePrint ("\t\tJE @SWITCH%d", caseLabels[0]) ;
 			codeComment (11, "false case") ;
 		}
 
-		codePrint ("\t\tJMP SWITCH%d", caseLabels[1]) ;
+		codePrint ("\t\tJMP @SWITCH%d", caseLabels[1]) ;
 		if (caseValNode->tok->lexeme[0] == 't')
 			codeComment (11, "false case") ;
 		else
@@ -742,9 +755,9 @@ void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLi
 			codePrint ("\t\tMOV CX, %s\n", varEntry->thisVarST->arrayIndices->tokRight->lexeme) ;
 
 		codePrint ("\t\tCMP %s, CX\n", reg) ;
-		codePrint ("\t\tJE LABEL%d\n", lab) ;
+		codePrint ("\t\tJE @LABEL%d\n", lab) ;
 		codePrint ("\t\tCALL @argLimERROR\n") ;
-		codePrint ("\n\tLABEL%d:\n", lab) ; 
+		codePrint ("\n\t@LABEL%d:\n", lab) ; 
 	}
 
 	if (!isVarStaticArr (varEntry->thisVarST))
@@ -965,10 +978,10 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codePrint ("\t\tMOV CX,%s\n", node->next->tok->lexeme);
 			codePrint ("\t\tMOV [RBP%s], CX" , getOffsetStr(searchedVar->offset)) ;
 
-			codePrint ("\n\tFOR%d:\n", start_label) ;
+			codePrint ("\n\t@FOR%d:\n", start_label) ;
 			codePrint ("\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
 			codePrint ("\t\tCMP CX,AX\n");
-			codePrint ("\t\tJG FOR%d\n\n", end_label);
+			codePrint ("\t\tJG @FOR%d\n\n", end_label);
 
 			moduleGeneration(node->next->next->next, lst);		// Statements
 
@@ -976,8 +989,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codeComment (8, "For loop increment") ;
 			codePrint ("\t\tINC CX\n");
 			codePrint ("\t\tMOV [RBP%s],CX\n", getOffsetStr(searchedVar->offset)) ;
-			codePrint ("\t\tJMP FOR%d\n", start_label) ;
-			codePrint ("\n\tFOR%d:\n", end_label) ;
+			codePrint ("\t\tJMP @FOR%d\n", start_label) ;
+			codePrint ("\n\t@FOR%d:\n", end_label) ;
 			break ;
 
 		
@@ -986,19 +999,19 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			start_label = get_label(LABEL_WHILE);
 			end_label =  get_label(LABEL_WHILE);
 
-			codePrint ("\n\tWHILE%d:\n", start_label) ;
+			codePrint ("\n\t@WHILE%d:\n", start_label) ;
 
 			expr (node, lst, 0);	// expr
 
 			codePrint ("\t\tPOP AX\n");
 			codePrint ("\t\tCMP AX, 0");
 			codeComment (11, "checking while loop condition") ;
-			codePrint ("\t\tJE WHILE%d\n\n", end_label) ;
+			codePrint ("\t\tJE @WHILE%d\n\n", end_label) ;
 
 			moduleGeneration(node->next, lst);		// statements
 
-			codePrint ("\t\tJMP WHILE%d\n", start_label) ;
-			codePrint ("\n\tWHILE%d:\n", end_label) ;
+			codePrint ("\t\tJMP @WHILE%d\n", start_label) ;
+			codePrint ("\n\t@WHILE%d:\n", end_label) ;
 
 			break ;
 		
@@ -1028,9 +1041,9 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			i = 0 ;
 			while (statementsNode != NULL)
 			{
-				codePrint ("\nSWITCH%d:\n", caseLabels[i]) ;
+				codePrint ("\n@SWITCH%d:\n", caseLabels[i]) ;
 				moduleGeneration (statementsNode, lst) ;
-				codePrint ("\n\t\tJMP SWITCH%d\n", end_label) ;
+				codePrint ("\n\t\tJMP @SWITCH%d\n", end_label) ;
 
 				i++ ;
 				if (statementsNode->next != NULL)
@@ -1038,7 +1051,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 					if (statementsNode->next->id == TK_DEFAULT)
 					{
 						statementsNode = statementsNode->next->next ;
-						codePrint ("\nSWITCH%d:\n", def_label) ;
+						codePrint ("\n@SWITCH%d:\n", def_label) ;
 						moduleGeneration (statementsNode, lst) ;
 
 						break ;
@@ -1050,7 +1063,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			}
 
 			statementsNode = node->next->next->next->next ;
-			codePrint ("\nSWITCH%d:\n", end_label) ;
+			codePrint ("\n@SWITCH%d:\n", end_label) ;
 
 			varEntry = statementsNode->localST->dynamicVars[0] ;
 
@@ -1180,6 +1193,86 @@ void postamble()
 
 		codePrint ("\n\t\tret\n") ;
 	}
+
+	if (isFlagSet (tf, boundERROR))
+	{
+		df |= 1 << boundPrint ;
+
+		codePrint ("\n@boundERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @boundPrint\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declERROR))
+	{
+		df |= 1 << declPrint ;
+
+		codePrint ("\n@declERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @declPrint\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, declNegERROR))
+	{
+		df |= 1 << declNeg ;
+
+		codePrint ("\n@declNegERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @declNeg\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, argLimERROR))
+	{
+		df |= 1 << arrArgMismatch ;
+
+		codePrint ("\n@argLimERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @arrArgMismatch\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;
+	}
+
+	if (isFlagSet (tf, asgnLimERROR))
+	{
+		df |= 1 << asgnArgMismatch ;
+
+		codePrint ("\n@asgnLimERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @asgnArgMismatch\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;		
+	}
+
+	if (isFlagSet (tf, divZeroERROR))
+	{
+		df |= 1 << divZero ;
+
+		codePrint ("\n@divZeroERROR:\n") ;
+		codePrint ("\t\tMOV RDI, @divZero\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tCALL printf\n") ;
+		codePrint ("\t\tMOV RDI, 0\n") ;
+		codePrint ("\t\tCALL exit\n") ;		
+	}
+
+	/* ----------------------------------- ERRORS ------------------------------------ */
 
 	if (isFlagSet (tf, dynamicDeclCheck))
 	{
@@ -1467,72 +1560,7 @@ void postamble()
 		codePrint ("\n\t\tret\n") ;
 	}
 
-	if (isFlagSet (tf, boundERROR))
-	{
-		df |= 1 << boundPrint ;
-
-		codePrint ("\n@boundERROR:\n") ;
-		codePrint ("\t\tMOV RDI, @boundPrint\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tMOV EDI, 0\n") ;
-		codePrint ("\t\tCALL exit\n") ;
-	}
-
-	if (isFlagSet (tf, declERROR))
-	{
-		df |= 1 << declPrint ;
-
-		codePrint ("\n@declERROR:\n") ;
-		codePrint ("\t\tMOV RDI, @declPrint\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tMOV EDI, 0\n") ;
-		codePrint ("\t\tCALL exit\n") ;
-	}
-
-	if (isFlagSet (tf, declNegERROR))
-	{
-		df |= 1 << declNeg ;
-
-		codePrint ("\n@declNegERROR:\n") ;
-		codePrint ("\t\tMOV RDI, @declNeg\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tMOV EDI, 0\n") ;
-		codePrint ("\t\tCALL exit\n") ;
-	}
-
-	if (isFlagSet (tf, argLimERROR))
-	{
-		df |= 1 << arrArgMismatch ;
-
-		codePrint ("\n@argLimERROR:\n") ;
-		codePrint ("\t\tMOV RDI, @arrArgMismatch\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tMOV EDI, 0\n") ;
-		codePrint ("\t\tCALL exit\n") ;
-	}
-
-	if (isFlagSet (tf, asgnLimERROR))
-	{
-		df |= 1 << asgnArgMismatch ;
-
-		codePrint ("\n@asgnLimERROR:\n") ;
-		codePrint ("\t\tMOV RDI, @asgnArgMismatch\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tCALL printf\n") ;
-		codePrint ("\t\tMOV EDI, 0\n") ;
-		codePrint ("\t\tCALL exit\n") ;		
-	}
-
-	/* --------------------------------------------------------------------------------------------- */
+	/* ----------------------------------------- String data ---------------------------------------------------- */
 	printCommentLineNASM () ;
 
 	if (df)
@@ -1541,31 +1569,37 @@ void postamble()
 	if (isFlagSet (df, boundPrint))
 	{
 		codePrint ("\t\t@boundPrint : ") ;
-		codePrint ("db \"ERPLAG : Runtime Error --> Array out of bounds\" , 10, 0\n") ;	
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt.\" , 10, 0\n") ;	
 	}
 	
 	if (isFlagSet (df, declPrint))
 	{
 		codePrint ("\t\t@declPrint : ") ;
-		codePrint ("db \"ERPLAG : Runtime Error --> Invalid order of bounds in dynamic array declaration\" , 10, 0\n") ;		
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt.\" , 10, 0\n") ;		
 	}
 	
 	if (isFlagSet (df, declNeg))
 	{
 		codePrint ("\t\t@declNeg : ") ;
-		codePrint ("db \"ERPLAG : Runtime Error --> Negative bound in dynamic array declaration\" , 10, 0\n") ;	
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt.\" , 10, 0\n") ;	
 	}
 
 	if (isFlagSet (df, arrArgMismatch))
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
-		codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in formal and actual array argument\" , 10, 0\n") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt.\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, asgnArgMismatch))
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
-		codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignment\" , 10, 0\n") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt.\" , 10, 0\n") ;
+	}
+
+	if (isFlagSet (df, divZero))
+	{
+		codePrint ("\t\t@divZero: ") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt.\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormatArray))

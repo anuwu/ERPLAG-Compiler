@@ -3,7 +3,7 @@ start
 	declare A : array [5 .. 10] of integer ;
 	declare i : integer ;
 
-	i := 6 ;
+	get_value (i) ;
 	A[i] := 4 ;
 	A[i] := A[i] * A[i] ; 
 
