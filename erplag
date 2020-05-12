@@ -42,8 +42,13 @@ while getopts ":a:o:h" opt; do
 			if [ $status -eq 0 ]
 			then
 				success 
+			elif [ $status -eq 2 ]
+			then
+				fname=${OPTARG:0:${#OPTARG}-4}
+				echo $fname
+				asmname=${fname}.asm
+				rm -f $asmname
 			fi
-			# shift $(($OPTIND-1)s)
 			;;
 		o)	target=$OPTARG 
 			shift $(($OPTIND-1))

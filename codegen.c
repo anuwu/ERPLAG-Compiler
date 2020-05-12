@@ -279,7 +279,8 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 		case TK_RNUM :
 			errFatal () ;
 			printf ("At line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET " , Floating point is not allowed. Halt!\n", node->tok->lineNumber) ;
-			exit (1) ;
+			fclose (fpOut) ;
+			exit (2) ;
 			break ;
 
 		case TK_NUM : 
