@@ -52,6 +52,7 @@ clean :
 	rm -f *.o
 	rm -f ST
 	rm -f ast
+	sudo rm -f .compiler
 
 exeClean :
 	rm -f .compiler
