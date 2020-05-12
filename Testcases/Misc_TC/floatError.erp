@@ -1,0 +1,5 @@
+<<<driver program>>>
+start
+	declare r : real ;
+	r := 3.14 ;
+end

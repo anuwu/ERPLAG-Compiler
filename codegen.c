@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include "typeChecker.h"
 #include "codegen.h"
+#include "error.h"
 
 baseST *realBase ;
 int switchX = 0 ;
@@ -276,7 +277,8 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_RNUM :
-			printf ("ERPLAG : At line %d, Floating point is not allowed!\n", node->tok->lineNumber) ;
+			errFatal () ;
+			printf ("At line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET " , Floating point is not allowed. Halt!\n", node->tok->lineNumber) ;
 			exit (1) ;
 			break ;
 
@@ -1569,37 +1571,37 @@ void postamble()
 	if (isFlagSet (df, boundPrint))
 	{
 		codePrint ("\t\t@boundPrint : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt.\" , 10, 0\n") ;	
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt!\" , 10, 0\n") ;	
 	}
 	
 	if (isFlagSet (df, declPrint))
 	{
 		codePrint ("\t\t@declPrint : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt.\" , 10, 0\n") ;		
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
 	}
 	
 	if (isFlagSet (df, declNeg))
 	{
 		codePrint ("\t\t@declNeg : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt.\" , 10, 0\n") ;	
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
 	}
 
 	if (isFlagSet (df, arrArgMismatch))
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt.\" , 10, 0\n") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, asgnArgMismatch))
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt.\" , 10, 0\n") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, divZero))
 	{
 		codePrint ("\t\t@divZero: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt.\" , 10, 0\n") ;
+		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt!\" , 10, 0\n") ;
 	}
 
 	if (isFlagSet (df, printFormatArray))
