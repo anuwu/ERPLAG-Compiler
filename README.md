@@ -13,6 +13,7 @@ If the installation fails, you can do either of the following -
    
    Restart bash
 2. Copy the following files to the standard bin directory of your system -
+
    ./erplag
    
    ./.compiler
