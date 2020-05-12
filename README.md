@@ -30,7 +30,8 @@ If you wish to remove any .asm, .o or executable files recursively in the Testca
 Do not run the clean.sh script in the repository folder, it will delete the compiler source files.
 
 ## Note
-**It could occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then, the .asm files can be converted to executables in the following manner -**
+**The compiler works reliably on my system configuration. I have an Intel i7 running Ubuntu 18.04 LTS. The installation script may not work on other Linux distributions or MAC OS.
+It could also occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then, the .asm files can be converted to executables in the following manner -**
 
    - `nasm -felf64 <filename>.asm`
    - `gcc -no-pie <filename>.o -o <executable>`
