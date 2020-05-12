@@ -1,7 +1,9 @@
 Welcome to ERPLAG. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020. To install the compiler, run the following commands after opening a terminal in a suitable folder
 
 > git clone https://github.com/anwesh0304/ERPLAG-Compiler.git
+
 > cd ERPLAG-Compiler
+
 > ./install
 
 If the installation fails, you can do either of the following -
