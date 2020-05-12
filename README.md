@@ -24,5 +24,11 @@ The language specification document is present in the repository. Its name is "E
 
 If you wish to make changes to the compiler source, or the compiler script file `erplag`, then run the following command after doing so -
    - `./cc`
+   
+## Note
+**It could occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then, the .asm files can be converted to executables in the following manner -**
+
+   - `nasm -felf64 <filename>.asm`
+   - `gcc -no-pie <filename>.o -o <executable>`
 
 Thank you!
