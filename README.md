@@ -20,7 +20,8 @@ If the installation fails, you can do either of the following -
 ## Info
    
 Create your own erplag files using an extension of .erp. Use erplag -h for help on using the compiler.
-The language specification document is present in the repository. Its name is "ERPLAG-Specifications.pdf"
+The language specification document is present in the repository. Its name is "ERPLAG-Specifications.pdf".
+My personal modifications to the original specification is listed in "Notes.txt"
 
 If you wish to make changes to the compiler source, or the compiler script file `erplag`, then run the following command after doing so -
    - `./cc`
