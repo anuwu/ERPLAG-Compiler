@@ -468,7 +468,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 		if(searchedVar == NULL)
 		{
 			errSemantic () ;
-			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n",getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n",getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber ,inputIter->tok->lexeme, thisModule->lexeme) ;
 			realBase->semanticError = 1 ;
 			sameArgNoErr = 1 ;
 		}
@@ -481,21 +481,21 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 					if (entryVar->arrayIndices->type != searchedVar->arrayIndices->type)
 					{
 						errSemantic () ;
-						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK " array input " ANSI_RESET "variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting base types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
+						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK " input array " ANSI_RESET "variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting base types in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme, targetModule->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 
 					if (isLeftLimStatic(entryVar) && isLeftLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokLeft->lexeme, searchedVar->arrayIndices->tokLeft->lexeme))
 					{
 						errSemantic () ;
-						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variables" ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have matching left limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have matching left limits in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme, targetModule->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 
 					if (isRightLimStatic(entryVar) && isRightLimStatic(searchedVar) && strcmp (entryVar->arrayIndices->tokRight->lexeme, searchedVar->arrayIndices->tokRight->lexeme))
 					{
 						errSemantic () ;
-						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have right limits\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme) ;
+						printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " do not have right limits in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, entryVar->lexeme, searchedVar->lexeme, targetModule->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 				}
@@ -503,7 +503,7 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 			else 
 			{
 				errSemantic () ;
-				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "input" ANSI_RESET " variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting types\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "input" ANSI_RESET " variables " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting types in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n" ,  getParentModuleName(realBase, thisModule) ,inputIter->tok->lineNumber , inputIter->tok->lexeme , entryVar->lexeme, targetModule->lexeme) ;
 				realBase->semanticError = 1 ;
 				sameArgNoErr = 1 ;
 			}
@@ -520,14 +520,14 @@ varST * checkIP (baseST *realBase, moduleST * thisModule, moduleST * targetModul
 	if (varEntry == NULL && inputIter)
 	{
 		errSemantic () ;
-		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", extra parameters passed\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", extra actual parameters passed in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), inputIter->tok->lineNumber, targetModule->lexeme) ;
 		realBase->semanticError = 1 ;
 		return (varST *) malloc (sizeof(varST)) ;
 	}
 	else if (varEntry && inputIter == NULL) 
 	{
 		errSemantic () ;
-		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", insufficient number of actual parameters\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", insufficient number of actual parameters in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), inputNode->tok->lineNumber, targetModule->lexeme) ;
 		realBase->semanticError = 1 ;
 
 		return (varST *) malloc (sizeof(varST)) ;
@@ -560,7 +560,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 		if(searchedVar == NULL)
 		{
 			errSemantic () ;
-			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme ) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule) , outputIter->tok->lineNumber , outputIter->tok->lexeme, targetModule->lexeme ) ;
 			realBase->semanticError = 1 ;
 			sameArgNoErr = 1 ;
 		}
@@ -569,7 +569,7 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 			if(entryVar->datatype != searchedVar->datatype)
 			{
 				errSemantic () ;
-				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting return types\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme) ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " have conflicting return types in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n" , getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, outputIter->tok->lexeme , entryVar->lexeme, targetModule->lexeme) ;
 				realBase->semanticError = 1 ;
 				sameArgNoErr = 1 ;
 			}
@@ -582,14 +582,14 @@ varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModul
 	if (varEntry==NULL && outputIter)
 	{
 		errSemantic () ;
-		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", more parameters passed\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", extra output variables in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), outputIter->tok->lineNumber, targetModule->lexeme) ;
 		realBase->semanticError = 1 ;
 		return searchVar(realBase, thisModule , outputIter->tok->lexeme ) ;
 	}
 	else if (varEntry && outputIter==NULL) 
 	{
 		errSemantic () ;
-		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", Insufficient number of parameters\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber) ;
+		printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", insufficient number of outputs in the call to module " ANSI_BOLD "%s" ANSI_RESET "\n", getParentModuleName(realBase, thisModule), outputNode->tok->lineNumber, targetModule->lexeme) ;
 		realBase->semanticError = 1 ;
 		return entryVar ;
 	}
@@ -732,21 +732,21 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarLeft == NULL)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarLeft->datatype != TK_INTEGER)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " must be of " ANSI_BOLD ANSI_GREEN "integer" ANSI_RESET " type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " must be of " ANSI_BOLD ANSI_GREEN "integer" ANSI_RESET " type\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarLeft->scope)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", declaration of left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET ", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", declaration of left " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET ", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
@@ -758,21 +758,21 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarRight == NULL)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is undeclared\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber ,thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (searchedVarRight->datatype != TK_INTEGER)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " must be of " ANSI_BOLD ANSI_GREEN "integer" ANSI_RESET " type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " must be of " ANSI_BOLD ANSI_GREEN "integer" ANSI_RESET " type\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
 				else if (((moduleST*)thisVar->scope)->tableType == SWITCH_ST && thisVar->scope == searchedVarRight->scope)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", declaration of right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET ", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", declaration of right " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET ", and the array itself, appear in the same switch scope\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
@@ -803,7 +803,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarLeft != NULL)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of input array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "input array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already defined\n", parentModule, thisVar->arrayIndices->tokLeft->lineNumber, thisVar->arrayIndices->tokLeft->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
@@ -824,7 +824,7 @@ int getSize(baseST * realBase, varST * thisVar)
 				if (searchedVarRight != NULL)
 				{
 					errSemantic () ;
-					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of input array " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
+					printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "index" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " of " ANSI_BOLD ANSI_BLACK "input array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already defined\n", parentModule, thisVar->arrayIndices->tokRight->lineNumber, thisVar->arrayIndices->tokRight->lexeme, thisVar->lexeme) ;
 					realBase->semanticError = 1 ;
 					indexErrorFlag = 1 ;
 				}
@@ -1366,7 +1366,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					if (searchVarModule (moduleToInsert , iplAST->child->tok->lexeme) != NULL ) 
 					{
 						errSemantic () ;
-						printf ("In definition of " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ",  " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " input variable already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
+						printf ("In the signature of " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "input" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " already declared\n", moduleToInsert->lexeme,iplAST->child->tok->lineNumber, iplAST->child->tok->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 					else{
@@ -1423,13 +1423,13 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 					if (searchedInput != NULL) 
 					{
 						errSemantic () ;
-						printf ("In definition of " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", input variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						printf ("In the signature of " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "input " ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 					else if (searchedOutput != NULL)
 					{
 						errSemantic () ;
-						printf ("In definition of " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", output variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
+						printf ("In the signature of " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "output" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " is already declared\n", moduleToInsert->lexeme,oplAST->child->tok->lineNumber, oplAST->child->tok->lexeme) ;
 						realBase->semanticError = 1 ;
 					}
 					else
@@ -1454,7 +1454,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			else {
 				// Only valid when otherMODS_Count = 1
 				errSemantic () ;
-				printf ("In line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", module " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
+				printf ("In line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", module " ANSI_BOLD "%s" ANSI_RESET " already defined\n", currentASTNode->child->tok->lineNumber, currentASTNode->child->tok->lexeme) ;
 				realBase->semanticError = 1 ;
 				currentASTNode->child->prev = currentASTNode->child ;		// Encoding to be removed later
 			}
@@ -1491,7 +1491,7 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 			if (!checkAllOutputsTinkered(moduleToInsert))
 			{
 				errWarning () ;
-				printf ("In the definition of " ANSI_BOLD "%s" ANSI_RESET ", the following output variables are not assigned - ", moduleToInsert->lexeme) ;
+				printf ("In the signature of " ANSI_BOLD "%s" ANSI_RESET ", the following " ANSI_BOLD ANSI_BLACK "output" ANSI_RESET " variables are not assigned - ", moduleToInsert->lexeme) ;
 				printOutputsNotTinkered (moduleToInsert) ;
 				printf ("\n") ;
 			}

@@ -1,6 +1,6 @@
 <<module arrFunc>>
-takes input [A : array [low1 .. high1] of integer, B : array [4 .. x] of integer] ;
-returns [bool : boolean, cake : integer] ;
+takes input [A : array [low1 .. high1] of integer, B : array [4 .. x] of integer, low1 : integer] ;
+returns [bool : boolean, cake : integer, x : real] ;
 start
 	declare low1 : integer ;
 	declare bool : integer ;

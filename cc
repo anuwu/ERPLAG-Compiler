@@ -6,7 +6,7 @@ RESET='\033[0m'
 
 ccErr () {
 	printf "\n${BOLD}${RED}ERPLAG re-compilation failed.${RESET}\n"
-	printf "Press any key to continue..."
+	printf "Press any key to continue...\n"
 }
 
 sudo make

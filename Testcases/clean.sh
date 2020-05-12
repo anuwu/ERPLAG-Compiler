@@ -36,5 +36,5 @@ then
 	printf "${RESET}\nAre you sure you want to delete the above files? (y/n) "
 	input
 else
-	printf "No .asm or executable files found\n"
+	printf "${BOLD}Clean! ${RESET}\nNo .asm or executable files found\n"
 fi
