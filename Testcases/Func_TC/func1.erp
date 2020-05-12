@@ -1,0 +1,33 @@
+<<module printTimesArray>>
+takes input [arr : array [low .. 9] of integer, t : integer] ;
+start
+	get_value (arr) ;
+
+	declare i : integer ;
+	i := low ;
+	while (i <= 9)
+	start
+		arr[i] := t * arr[i] ;
+		i := i + 1 ;
+	end
+
+	** print (arr) ; **
+end
+
+
+<<<driver program>>>
+start
+	declare val1, val2 : integer ;
+	get_value (val1) ;
+	get_value (val2) ;
+
+	declare A : array [val1 .. val2] of integer ;
+**	get_value (A) ; **
+
+	declare times : integer ;
+	get_value (times) ;
+
+	use module printTimesArray with parameters A, times ;
+
+	print (A) ;
+end

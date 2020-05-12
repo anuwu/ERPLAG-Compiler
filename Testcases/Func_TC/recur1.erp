@@ -1,0 +1,63 @@
+declare module factorial ;
+declare module nCr ;
+
+<<<driver program>>>
+start
+	declare userIn, ans : integer ;
+	get_value (userIn) ; 
+
+	[ans] := use module factorial with parameters userIn ;
+	print (ans) ;
+
+	declare n, r : integer ;
+	declare valid : boolean ;
+	get_value (n) ;
+	get_value (r) ;
+	
+	[ans, valid] := use module nCr with parameters n, r ;
+	print (valid) ;
+	print (ans) ;
+end
+
+<<module nCr>>
+takes input [n : integer , r : integer] ;
+returns [ans : integer, valid : boolean] ;
+start
+	valid := n >= r ;
+
+	switch (valid) start case
+	true :
+		declare num, den1, den2 : integer ;
+		[num] := use module factorial with parameters n ;
+		
+		den1 := n - r ;
+		[den1] := use module factorial with parameters den1; 
+
+		[den2] := use module factorial with parameters r ;
+
+		ans := num / (den1 * den2) ;
+
+		break ; case
+	
+	false :
+		ans := -1 ;
+		break ; end
+end
+
+<<module factorial>>
+takes input [n : integer] ;
+returns [fact : integer] ;
+start
+	switch (n) start case
+	0 :
+		fact := 1 ;
+
+		break ; 
+	default :
+		declare mul, pred : integer ;
+		pred := n - 1 ;
+		[mul] := use module factorial with parameters pred ;
+		fact := n * mul ;
+
+		break ; end
+end

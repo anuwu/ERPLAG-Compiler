@@ -22,7 +22,7 @@ erpHelp () {
 	printf "${BOLD}${CYAN}erplag <filename>.asm ${RESET}generates an executable with the same filename\n"
 	printf "${BOLD}${CYAN}erplag -o myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}${CYAN}myexec${RESET}\n"
 	printf "${BOLD}${CYAN}erplag <filename>.erp ${RESET}directly generates an executable with the same filename\n"
-	printf "If you are making any changes to the source code or the compiler script, make sure to run ${BOLD}./cc ${RESET} afterwards"
+	printf "If you are making any changes to the source code or the compiler script, make sure to run ${BOLD}./cc ${RESET} afterwards\n"
 }
 
 success () {
@@ -64,10 +64,10 @@ while getopts ":a:o:h" opt; do
 				objname=${srcname}.o 
 				nasm -felf64 $asmname -o $objname 
 				gcc -w -no-pie $objname -o $target 
+				success
 			fi
 			rm -f $asmname
 			rm -f $objname
-			success
 			;;
 		\?) errHead
 			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
@@ -108,10 +108,10 @@ then
 		then
 			nasm -felf64 $asmname
 			gcc -w -no-pie $objname -o $fname
+			success
 		fi
 		rm -f $asmname
 		rm -f $objname
-		success
 	elif test "$srcname" = ""
 	then
 		errHead 

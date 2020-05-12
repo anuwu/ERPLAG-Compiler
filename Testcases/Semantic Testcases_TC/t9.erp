@@ -266,6 +266,7 @@ start
 	h:=data;
 	h[120]:= g[120] OR length<=q AND h[140];
 	declare a: real;
+	a[7] := 5 ;
 	declare p1: boolean;
 	R2:= q+1;
 	get_value(a);

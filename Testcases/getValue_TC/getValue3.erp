@@ -1,0 +1,17 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	get_value (i) ;
+	get_value (j) ;
+	
+	declare A : array [i .. j] of integer ;
+	get_value (A) ;
+	print (A[i]) ;
+	print (A[j]) ;
+
+	declare k : integer ;
+	get_value (k) ;
+	print (A[k]) ;
+
+	print (A) ;
+end

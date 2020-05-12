@@ -1,0 +1,26 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	get_value (i) ;
+
+	switch (i)
+	start
+		case 1 :
+			declare j1, j2 : integer ;   ** 4 **
+			get_value (j1) ;
+			get_value (j2) ;
+			break ;
+		case 2 :
+			j2 := 9 ;
+			declare k1,k2,k3 : integer ;  ** 6 **
+			k1 := 4 ;
+			declare C1, C2 : array [4 .. 10] of integer ; ** 28 **
+			break ;
+		case 3 :
+			declare A : array[j1 .. j2] of integer ; ** 12 **
+			break ;
+		default :
+			declare B1, B2 : array [k1 .. k3] of integer ; ** 24 **
+			break ; 
+	end
+end

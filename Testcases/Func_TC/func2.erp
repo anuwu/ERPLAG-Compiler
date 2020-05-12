@@ -1,0 +1,22 @@
+<<module isSum>>
+takes input [n1 : integer, n2 : integer, s : integer] ;
+returns [truth : boolean, ts : integer] ;
+start
+	ts := n1 + n2 ;
+	truth := ts == s ;
+end
+
+
+<<<driver program>>>
+start
+	declare val1, val2, sum, trueSum : integer ;
+	get_value (val1) ;
+	get_value (val2) ;
+	get_value (sum) ;
+
+	declare b : boolean ;
+	[b, trueSum] := use module isSum with parameters val1, val2, sum ;
+
+	print (b) ;
+	print (trueSum) ;
+end

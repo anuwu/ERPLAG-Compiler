@@ -1,0 +1,9 @@
+<<<driver program>>>
+start
+	declare i,j : integer ;
+	declare B : array [i .. j] of boolean ;
+	declare A : array [i .. j] of integer ;
+	use module m with parameters A ;
+
+	A[B] := 6 ;
+end

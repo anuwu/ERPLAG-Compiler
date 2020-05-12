@@ -1,0 +1,65 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	get_value (i) ;
+
+	declare lim1, lim2 : integer ;
+	lim1 := 999 ;
+	lim2 := 999 ;
+
+	switch (i)
+	start
+		case 1 :
+			declare j1, j2 : integer ; 
+			get_value (j1) ;
+			get_value (j2) ;
+
+			declare K : boolean ;
+			K := j1 > 0 AND j2 > 0 AND (j2 >= j1) ;
+
+			switch (K)
+			start
+				case true :
+					print (K) ;
+					print (j1) ;
+					print (j2) ;
+					break ;
+				case false :
+					print (K) ;
+					print (j2) ;
+					print (j1) ;
+					break ;
+			end
+
+			break ;
+		case 2 :
+			declare k1, k2 : boolean ; 
+		
+			declare A : array [4 .. 10] of integer ;
+			get_value (A) ;
+
+			for (lim1 in 4 .. 10)
+			start
+				lim2 := 14 - lim1 ;
+				A[lim1] := A[lim1] - A[lim2] ;
+				A[lim2] := 0 - A[lim1] ;
+			end
+
+			print (A) ;
+			
+			break ;
+
+		case 3 :
+			get_value (lim1) ;
+			get_value (lim2) ;
+			break ;
+
+		default :
+			print (lim1) ;
+			print (lim2) ;
+			break ;
+	end
+
+	print (lim1) ;
+	print (lim2) ;
+end

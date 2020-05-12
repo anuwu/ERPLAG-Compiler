@@ -1,0 +1,12 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	i := 4 ;
+	j := 6 ;
+
+	declare A: array [i..j] of integer ;
+
+	get_value (A) ;
+	print (A[5]) ;
+end
+

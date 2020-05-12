@@ -1,0 +1,63 @@
+declare module isSortAndSum ;
+
+<<<driver program>>>
+start
+
+	declare left, right, sum : integer ;
+	get_value (left) ;
+	get_value (right) ;
+
+	declare A : array [left .. right] of integer ;
+	declare desc, sort : boolean ;
+
+	get_value (A) ;
+	get_value (desc) ;
+	[sort, sum] := use module isSortAndSum with parameters A, desc ;
+
+	print (sum) ;
+	print (sort) ;
+end
+
+<<module isSortAndSum>>
+takes input [arr : array [low .. high] of integer, desc : boolean] ;
+returns [srt : boolean, sum : integer] ;
+start
+	declare i, prev : integer ;
+	declare ord : boolean ;
+
+	srt := true ;
+	prev := arr[low] ;
+	sum := arr[low] ;
+	i := low + 1 ;
+
+	while (i <= high)
+	start
+		sum := sum + arr[i] ;
+	
+		switch (srt) start case
+		true :
+			switch (desc) start case
+			true :
+				ord := prev >= arr[i] ;
+				break ; case
+			false :
+				ord := prev <= arr[i] ;
+				break ; end
+	
+			switch (ord) start case
+			true :
+				break ; case
+			false :
+				srt := false ;
+				break ; end			
+
+			break ; case
+
+		false :
+			break ; end
+
+		prev := arr[i] ;
+		i := i + 1 ;
+	end
+
+end

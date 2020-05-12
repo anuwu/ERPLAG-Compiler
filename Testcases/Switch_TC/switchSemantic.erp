@@ -1,0 +1,56 @@
+<<<driver program>>>
+start
+	declare bool : boolean ;
+	declare a,b, caseVal : integer ;
+	get_value (a) ;
+	get_value (b) ;
+	get_value (caseVal) ;
+
+	declare B : array [a .. b] of boolean ;
+
+	bool := true ;
+	switch (caseVal) start case
+	1 :
+		declare A : array [a .. b] of integer ;
+		print (caseVal) ;
+		break ; case
+	2 :
+		a := -1 ;
+		print (a) ;
+		print (b) ;
+
+		break ; case
+	3 :
+		b := -1 ;
+		print (a) ;
+		print (b) ;
+
+		break ;
+	default :
+		get_value (A) ;
+		print (A) ;
+		bool := false ;
+
+		break ; end
+
+	
+
+
+	switch (bool) start case
+	true :
+		declare A : array [0 .. 1] of boolean ;
+		A[0] := false ;
+		A[1] := true ;
+
+		print (A) ;
+
+		break ; case
+	false :
+		A[0] := true ;
+		A[1] := false ;
+
+		print (A) ;
+
+		break ; end
+
+end

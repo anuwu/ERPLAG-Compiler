@@ -1,0 +1,33 @@
+<<module arrFunc>>
+takes input [A : array [low1 .. high1] of integer, B : array [4 .. x] of integer] ;
+returns [bool : boolean, cake : integer] ;
+start
+	declare low1 : integer ;
+	declare bool : integer ;
+	low1 := low1 + 1 ;			** ERROR **
+	high1 := high1 - 1 ;			** ERROR **
+
+	declare x, y : integer ;		** ERROR **
+	y := x + 1 ;
+	x := y - 1 ;				** ERROR **
+
+	for (y in 10 .. 15)
+	start
+		declare y : boolean ;
+		declare x : boolean ;		** NOT ERROR **
+		x := false ;
+	end
+end
+
+
+<<<driver program>>>
+start
+	declare C,D : array [5 .. 10] of integer ; 
+
+	use module arrFunc with parameters C, D ;		** ERROR for D, not for C**
+end
+
+<<module arrFunc>>
+takes input [lol : integer] ;
+start
+end

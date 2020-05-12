@@ -1,0 +1,16 @@
+<<<driver program>>>
+start
+	declare i,j:integer ;
+	declare A:array[4..10] of integer ;
+	
+	A[4] := 4 ;
+
+	for (i in 5 .. 10)
+	start
+		j := i - 1 ;
+		A[i] := (i + A[j] - 6) * 3 ;
+	end
+
+	print (A) ;
+	print (A[j]) ;
+end
