@@ -25,7 +25,10 @@ My personal modifications to the original specification is listed in "Notes.txt"
 
 If you wish to make changes to the compiler source, or the compiler script file `erplag`, then run the following command after doing so -
    - `./cc`
-   
+
+If you wish to remove any .asm, .o or executable files recursively in the Testcase folder, run the clean.sh script in that folder.
+Do not run the clean.sh script in the repository folder, it will delete the compiler source files.
+
 ## Note
 **It could occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then, the .asm files can be converted to executables in the following manner -**
 
