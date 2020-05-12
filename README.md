@@ -1,17 +1,18 @@
-Welcome to ERPLAG. This is a toy language that was given as a semester project
-from the Compilers Construction course at BITS-Pilani, in the year 2020. To
-install the compiler -
+Welcome to ERPLAG. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020. To install the compiler, run the following commands after opening a terminal in a suitable folder
 
-1. Clone the repository onto your local machine.
-2. Open shell, cd into the local repository and run the installation script
-by typing ./install
-3. If the installation fails, you have to export the repository directory to
-your PATH variable.
-4. Restart the shell
+> git clone https://github.com/anwesh0304/ERPLAG-Compiler.git
+> cd ERPLAG-Compiler
+> ./install
 
-Create your own erplag files using an extension of .erp
-Use erplag -h for help on using the compiler.
-The language specification document is present in the repository. Its name
-is "ERPLAG-Specifications.pdf"
+If the installation fails, you can do either of the following -
+1. Edit the ~/.bashrc file and export the repository directory to the PATH variable.
+   Run > source ~/.bashrc
+   Restart bash
+2. Copy the following files to the standard bin directory of your system
+   ./erplag
+   ./.compiler
+   
+Create your own erplag files using an extension of .erp. Use erplag -h for help on using the compiler.
+The language specification document is present in the repository. Its name is "ERPLAG-Specifications.pdf"
 
 Thank you!
