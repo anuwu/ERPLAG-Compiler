@@ -1088,6 +1088,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 			moduleST * tmp = createScopeST (baseModule, WHILE_ST) ;
 			fillModuleST (realBase , tmp , statementAST->child->next->next, depthSTPrint) ;
 			tinkerHeadAfter = getGuardTinkerList (realBase, baseModule, statementAST->child->next) ;
+			
+			if (tinkerHeadBefore->tinker == -1)
+			{
+				errWarning () ;
+				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", guard condition of while loop is static\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
 
 			if (!hasTinkerListChanged (tinkerHeadBefore, tinkerHeadAfter))
 			{
