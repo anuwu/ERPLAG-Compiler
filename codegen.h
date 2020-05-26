@@ -63,6 +63,7 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign) ;
 // I/O
 void print (astNode *node, moduleST *lst) ;
 void RSPAlign () ;
+void RSPRestore () ;
 void getValue (moduleST *lst, varST *searchedVar) ;
 
 void preamble () ;
