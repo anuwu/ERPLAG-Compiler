@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include "ast.h"
 #include "symbolTable.h"
+#include "error.h"
 
 
 int main(int argc, char *argv[])
@@ -14,7 +15,15 @@ int main(int argc, char *argv[])
 		exit (0) ;
 	}
 
-	treeNode *root = parse (argv[1]) ;
+	FILE *fpIn ;
+	if (!(fpIn = fopen (argv[1], "r")))
+ 	{
+ 		errFatal () ;
+ 		printf ("Source file %s does not exist\n", argv[1]) ;
+ 		exit (1) ;
+ 	}
+
+	treeNode *root = parse (fpIn) ;
 
 	if (root->syntax_error)
 	{

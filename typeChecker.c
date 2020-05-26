@@ -110,7 +110,7 @@ tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNo
 		if (varASTNode->child != NULL)
 			validVarIndex (realBase, baseModule, varASTNode->child) ;
 
-		return 0 ;
+		return (tokenID)0 ;
 	}
 	else if (locSearchedVar->datatype != TK_ARRAY)
 	{
@@ -201,16 +201,16 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 		{
 			errSemantic () ;
 			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_BLACK "array" ANSI_RESET " variable(s) " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " and " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " cannot occur in an expression\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->child->tok->lexeme, exprNode->child->next->tok->lexeme) ;
-			return 0 ;
+			return (tokenID)0 ;
 		}
 
 		if (!typeLeft || !typeRight)
-			return 0 ;
+			return (tokenID)0 ;
 		else if (typeLeft != typeRight)
 		{
 			errSemantic () ;
 			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", the operator " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " is not allowed between types " ANSI_BOLD ANSI_GREEN "%s" ANSI_RESET " and " ANSI_BOLD ANSI_GREEN "%s" ANSI_RESET " respectively\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber,  exprNode->tok->lexeme, typeIDToString(typeLeft), typeIDToString(typeRight)) ;
-			return 0 ;
+			return (tokenID)0 ;
 		}
 		else
 		{
@@ -225,7 +225,7 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 				errSemantic () ;
 				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", the operator " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " cannot be executed between two operands of type " ANSI_BOLD ANSI_GREEN "%s" ANSI_RESET "\n", getParentModuleName(realBase, baseModule), exprNode->tok->lineNumber, exprNode->tok->lexeme, typeIDToString(typeLeft)) ;
 				realBase->semanticError = 1 ;
-				return 0 ;
+				return (tokenID)0 ;
 			}
 		}
 	}

@@ -526,7 +526,7 @@ tokenID grammarStringToTokenID (char *str){
 	else if (strcmp(str, "idL")==0)
 		id = idL;
 	else 
-		return -1 ;
+		return (tokenID)-1 ;
 	
 	return id ;
 }
@@ -534,7 +534,7 @@ tokenID grammarStringToTokenID (char *str){
 // for storing rules
 node * initnode(int l){
 	node * tmp = (node*)malloc(sizeof(node));
-	tmp->key = l;
+	tmp->key = (tokenID) l;
 	tmp->next = NULL;
 
 	return tmp;
@@ -883,7 +883,7 @@ void populateFollow (tokenID id)
 	for (rule_index = 0 ; rule_index < rule_count ; rule_index++)
 	{
 
-		tokenID current_rule_lhs = rule[rule_index].LHS;
+		tokenID current_rule_lhs = (tokenID) rule[rule_index].LHS;
 		node * tmp_of_rhs_of_current_rule = rule[rule_index].RHS;
 
 		while(tmp_of_rhs_of_current_rule != NULL)
@@ -1097,7 +1097,7 @@ void init_parser()
 	for (id = program ; id <= TK_RNUM ; id++)
 	{
 		if(isNonTerminal(id) && firsts[id] == NULL)
-			populateFirst(id);	
+			populateFirst((tokenID)id);	
 	}
 	
 	
@@ -1109,7 +1109,7 @@ void init_parser()
 	for (id = program + 1 ; id <= idL ; id++)
 	{
 		if (isNonTerminal(id))
-			populateFollow (id) ;
+			populateFollow ((tokenID)id) ;
 	}
 
 	traverse_grammar() ;
@@ -1254,7 +1254,7 @@ stacknode * pushRule(stacknode * stc,Rule *allRules, int rule_index){
 	} 
  
 	while(tmp_stack){
-		stc = push(stc,tmp_stack->key);
+		stc = push(stc,(tokenID)tmp_stack->key);
 		tmp_stack = pop(tmp_stack);
 	}
  

@@ -106,7 +106,7 @@ tokenID keywordToTokenID (char *str)
 	else if (strcmp(str, "while")==0)
 		id = TK_WHILE ;
 	else
-		return -1 ;
+		return (tokenID)-1 ;
  
 	
 	return id ;
@@ -1486,7 +1486,7 @@ token* getNextTokCOMMENT (twinBuffer *twinBuf)
 	DFAStatesCOMMENT dfa ;
 	//DFAError err ;
 	DFAsim sim = NONFINAL ;
-	dfa = STATE_START ;
+	dfa = (DFAStatesCOMMENT) STATE_START ;
  
  
 	while (1)

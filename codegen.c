@@ -328,6 +328,7 @@ void expr (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_DIV :
+		{
 			codePrint ("\t\tCMP BX, 0\n") ;
 
 			tf |= 1 << divZeroERROR ;
@@ -339,8 +340,10 @@ void expr (astNode *node, moduleST *lst, int singleAssign)
 			codePrint ("\t\tCWD\n") ;
 			codePrint ("\t\tIDIV BX\n");
 			break ;
+		}
 
 		case TK_LT : case TK_GT : case TK_LE : case TK_GE : case TK_NE : case TK_EQ :
+		{
 			codePrint ("\t\tCMP AX,BX\n");
 
 			switch (node->id)
@@ -367,14 +370,17 @@ void expr (astNode *node, moduleST *lst, int singleAssign)
 			codePrint ("\t\tMOVSX AX, AL\n") ;
 
 			break ;
+		}
 
 		case TK_AND : case TK_OR :
+		{
 			if (node->id == TK_AND)
 				codePrint ("\t\tAND AX, BX\n");
 			else
 				codePrint ("\t\tOR AX, BX\n");
 
 			break ;
+		}
 	}
 
 	codePrint ("\t\tPUSH AX\n") ;
@@ -840,6 +846,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case statement :
+		{
 			moduleGeneration(node->child, lst);
 			if (node->next == NULL)
 			{
@@ -876,8 +883,10 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				moduleGeneration(node->next, lst);
 
 			break ;
+		}
 
 		case TK_DECLARE :
+		{
 			;
 			switchDeclareStatus stat ;
 			if (lst->tableType != SWITCH_ST)
@@ -915,11 +924,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			if (dtNode->dtTag == ARRAY && !isVarStaticArr(searchedVar) && stat != SWITCH_GEN)
 				dynamicDeclaration (lst, searchedVar, declCount) ;
 
-			
-			break ;											
+			break ;	
+		}									
 
 		case TK_ASSIGNOP :
-
+		{
 			if (isSingleRHS(node))
 			{
 				if (isArrayRHS (node, lst))
@@ -970,8 +979,10 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			codePrint ("\n") ;
 			break ;
+		}
 
 		case TK_FOR :
+		{
 			node=node->next;
 			start_label = get_label (LABEL_FOR) ;
 			end_label = get_label (LABEL_FOR) ;
@@ -995,9 +1006,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codePrint ("\t\tJMP @FOR%d\n", start_label) ;
 			codePrint ("\n\t@FOR%d:\n", end_label) ;
 			break ;
+		}
 
 		
 		case TK_WHILE :
+		{
 			node=node->next;
 			start_label = get_label(LABEL_WHILE);
 			end_label =  get_label(LABEL_WHILE);
@@ -1017,6 +1030,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codePrint ("\n\t@WHILE%d:\n", end_label) ;
 
 			break ;
+		}
 		
 		case TK_PRINT :
 			node = node->next ;
@@ -1029,8 +1043,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_SWITCH :
-			;
-
+		{
 			int i, caseCount, def_label ;
 			int *caseLabels ;
 			astNode *statementsNode = node->next->next->next->next ;
@@ -1077,8 +1090,10 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			}
 
 			break ;
+		}
 
 		case TK_ID :
+		{
 			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
 			varEntry = calledModule->inputVars[0] ;
 
@@ -1092,8 +1107,10 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			codeComment (11, "calling user function") ;
 			codePrint ("\t\tADD RSP, %d\n", calledModule->inputSize) ;
 			break ;
+		}
 
 		case idList :
+		{
 			calledModule = searchModuleInbaseST (realBase, node->next->next->tok->lexeme) ;
 			varEntry = calledModule->inputVars[0] ;
 
@@ -1110,6 +1127,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 			popOutput (node->child, lst) ;
 			break ;
+		}
 	}
 
 }
