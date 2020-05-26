@@ -12,7 +12,7 @@ input () {
 		read ans
 		if test "$ans" = "y" -o "$ans" = "Y"
 		then
-			find . -type f  ! -name "*.*" | xargs rm -f -v
+			diff <(find . -type f ! -name "*.*") <(printf "./clean\n") --new-line-format="" --unchanged-line-format="" | xargs rm -f -v
 			find . -type f  -name "*.asm" | xargs rm -f -v
 			find . -type f  -name "*.o" | xargs rm -f -v
 			exit
@@ -26,7 +26,7 @@ input () {
 	done
 }
 
-l1=$(find . -type f  ! -name "*.*")
+l1=$(diff <(find . -type f ! -name "*.*") <(printf "./clean\n") --new-line-format="" --unchanged-line-format="")
 l2=$(find . -type f  -name "*.asm")
 l3=$(find . -type f  -name "*.o")
 
