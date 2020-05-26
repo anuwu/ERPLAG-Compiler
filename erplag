@@ -36,7 +36,7 @@ while getopts ":a:o:h" opt; do
 	optflag=1
 	case ${opt} in
 		h)	erpHelp
-			exit
+			exit 0
 			;;
 		a)	.compiler $OPTARG
 			status=$?
@@ -71,7 +71,7 @@ while getopts ":a:o:h" opt; do
 
 				if [[ "$OSTYPE" == "linux-gnu"* ]]
 				then
-				    nasm -felf64 $asmname -o $objname 
+				    nasm -felf64 $asmname -o $objname  
 				elif [[ "$OSTYPE" == "darwin"* ]]
 				then
 				    nasm -fmacho64 $asmname -o $objname
@@ -85,11 +85,11 @@ while getopts ":a:o:h" opt; do
 			;;
 		\?) errHead
 			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
-			exit
+			exit 1
 			;;
 		:)  errHead
 			echo "Please provide output file name" 
-			exit
+			exit 1
 	esac
 done
 

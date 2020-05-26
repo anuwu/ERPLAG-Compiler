@@ -1157,6 +1157,8 @@ treeNode* create_node (nodeTag tag, TNT tnt)
 	node->gcode = -5 ; // default value ( should be replaced )
 	node->syn = NULL ;
 	node->inh = NULL ;
+
+	return node ;
 }
  
  
