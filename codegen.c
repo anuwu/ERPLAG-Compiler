@@ -890,9 +890,18 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 					if (realBase->driverST == lst)
 					{
-						codePrint ("\t\tMOV RAX, 1\n") ;
-						codePrint ("\t\tMOV RBX, 0\n") ;
-						codePrint ("\t\tINT 0x80\n") ;
+						#ifdef __linux__
+							codePrint ("\t\tMOV RAX, 1\n") ;
+							codePrint ("\t\tMOV RBX, 0\n") ;
+							codePrint ("\t\tINT 0x80\n") ;
+						#endif
+							
+						#ifdef __MACH__
+							codePrint ("\t\tMOV RAX, 0x2000001\n") ;
+							codePrint ("\t\tMOV RDI, 0\n") ;
+							codePrint ("\t\tsyscall\n") ;
+						#endif
+
 					}
 					else
 						codePrint ("\t\tret\n") ;
