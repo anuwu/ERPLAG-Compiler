@@ -1,6 +1,8 @@
 #! /bin/bash
 
 BOLD='\033[1m'
+GREEN='\033[1;32m'
+CYAN='\033[1;36m'
 RED='\033[1;31m'
 RESET='\033[0m'
 
@@ -26,6 +28,7 @@ then
 
 	brew update
 	brew install gcc
+	brew install make
 	brew install nasm
 else
     printf "${BOLD}${RED}ERPLAG has not been designed for this OS. Please use a linux distribution or MacOS${RESET}\n"
@@ -52,7 +55,7 @@ fi
 
 make clean
 
-printf "\n${BOLD}ERPLAG compiler has been successfully installed!${RESET}\n"
-printf "Use ${BOLD}erplag -h ${RESET}to read the guidelines for using the compiler\n"
+printf "\n${BOLD}${GREEN}ERPLAG compiler has been successfully installed!${RESET}\n"
+printf "Use ${BOLD}${CYAN}erplag -h ${RESET}to read the guidelines for using the compiler\n"
 printf "Press any key to continue..."
 read

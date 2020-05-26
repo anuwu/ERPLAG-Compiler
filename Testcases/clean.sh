@@ -2,6 +2,7 @@
 BOLD='\033[1m'
 RED='\033[1;31m'
 CYAN='\033[1;36m'
+GREEN='\033[1;32m'
 MAGENTA='\033[1;35m'
 RESET='\033[0m'
 
@@ -51,5 +52,5 @@ then
 	printf "${RESET}Are you sure you want to delete the above files? (y/n) "
 	input
 else
-	printf "${BOLD}Clean! ${RESET}\nNo .asm, .o or executables found\n"
+	printf "${BOLD}${GREEN}Clean! ${RESET}\nNo .asm, .o or executables found\n"
 fi
