@@ -4,12 +4,11 @@ int main ()
 {
 	#ifdef __linux__
 		printf ("Linux\n") ;
-	#else
+	#endif
 	#ifdef __MACH__
-		printf ("Mac\n")
+		printf ("Mac\n") ;
 	#else
 		printf ("None\n") ;
-	#endif
 	#endif
 
 	return 0 ;
