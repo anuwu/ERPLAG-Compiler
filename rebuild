@@ -1,11 +1,12 @@
 #! /bin/bash
 
 BOLD='\033[1m'
+GREEN='\033[1;32m'
 RED='\033[1;31m'
 RESET='\033[0m'
 
 ccErr () {
-	printf "\n${BOLD}${RED}ERPLAG re-compilation failed.${RESET}\n"
+	printf "\n${BOLD}${RED}ERPLAG compiler re-build failed.${RESET}\n"
 	printf "Press any key to continue...\n"
 }
 
@@ -27,3 +28,7 @@ then
 fi
 
 make clean
+
+printf "\n${BOLD}${GREEN}ERPLAG compiler re-build OK!${RESET}\n"
+printf "Press any key to continue..."
+read
