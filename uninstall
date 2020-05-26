@@ -1,2 +1,13 @@
-sudo rm -f /usr/local/bin/erplag
-sudo rm -f /usr/local/bin/.compiler
+BOLD='\033[1m'
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+RESET='\033[0m'
+
+if [ -f /usr/local/bin/erplag ]
+then
+	sudo rm -f /usr/local/bin/erplag
+	sudo rm -f /usr/local/bin/.compiler
+	printf "${BOLD}${GREEN}ERPLAG has been successfully uninstalled!${RESET}\n"
+else
+	printf "${BOLD}${RED}ERPLAG installation does not exist!${RESET}\n"
+fi
