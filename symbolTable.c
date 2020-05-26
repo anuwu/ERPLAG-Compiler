@@ -279,9 +279,9 @@ varST* searchVarModuleList (moduleST* thisModule, char *lexeme, searchVarType fl
 varST * searchVarModule ( moduleST * thisModule , char * lexeme ) 
 {
 	varST * tmp ;
-	if(tmp = searchVarModuleList (thisModule , lexeme, SEARCH_LOCAL))
+	if((tmp = searchVarModuleList (thisModule , lexeme, SEARCH_LOCAL)))
 		return tmp ;
-	else if (tmp = searchVarModuleList (thisModule, lexeme, SEARCH_INPUT))
+	else if ((tmp = searchVarModuleList (thisModule, lexeme, SEARCH_INPUT)))
 		return tmp ;
 	else 
 		return searchVarModuleList (thisModule, lexeme, SEARCH_OUTPUT) ;
@@ -638,7 +638,7 @@ int isValidCall ( baseST * realBase, moduleST * thisModule , astNode * funcNode 
 				return -2 ;
 		}
 	}
-	else if ( haveReturns == 1 ) 
+	else
 	{
 		varST * varPtr = searchVarInbaseST(realBase , funcNode->next->next->tok->lexeme ) ;
 		moduleST * modPtr = searchModuleInbaseST ( realBase , funcNode->next->next->tok->lexeme) ;
@@ -683,7 +683,7 @@ int getSize(baseST * realBase, varST * thisVar)
 		return 2 ;
 	else if(thisVar->datatype == TK_REAL)
 		return 4 ;
-	else if (thisVar->datatype == TK_ARRAY) 
+	else // Array type 
 	{
 		int left, right ;
 		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
@@ -863,6 +863,8 @@ char *typeIDToString (tokenID id)
 			return "boolean" ;
 		case TK_REAL :
 			return "real" ;
+		default :
+			return "" ;
 	}
 }
 
@@ -1330,9 +1332,8 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 	currentASTNode = moduleDECS->child ;
 	while (currentASTNode) 
 	{
-		
 		varST * searchResult ;
-		if( searchResult =  searchVarInbaseST (realBase , currentASTNode->tok->lexeme ) ) 
+		if((searchResult =  searchVarInbaseST (realBase , currentASTNode->tok->lexeme))) 
 		{
 			errSemantic () ;
 			printf ("In line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " module already declared.\n" , currentASTNode->tok->lineNumber, searchResult->lexeme ) ;

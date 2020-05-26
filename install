@@ -19,7 +19,7 @@ then
 	sudo apt-get install nasm
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
-	var=$(which brew) 
+	var=$(sudo which brew) 
 	if test "$var" == ""
 	then
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
