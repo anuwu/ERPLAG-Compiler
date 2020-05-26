@@ -1096,8 +1096,7 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
 				errWarning () ;
 				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", guard condition of while loop is static\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
 			}
-
-			if (!hasTinkerListChanged (tinkerHeadBefore, tinkerHeadAfter))
+			else if (!hasTinkerListChanged (tinkerHeadBefore, tinkerHeadAfter))
 			{
 				errWarning () ;
 				printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", none of the identifiers of the guard condition are being changed in the while loop body\n", getParentModuleName(realBase, baseModule), statementAST->child->next->tok->lineNumber) ;
