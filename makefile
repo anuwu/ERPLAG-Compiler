@@ -1,6 +1,10 @@
 output : erplag.o codegen.o ast.o typeChecker.o lexer.o parser.o symbolTable.o error.o lexer.h typeChecker.h lexerDef.h parser.h parserDef.h symbolTable.h codegen.h error.h
 	gcc -w -o .compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
-	
+
+debug :
+	make
+	make objClean
+
 allExec : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexer.o parser.o symbolTableDriver.o error.o lexer.h typeChecker.h lexerDef.h symbolTable.o parser.h parserDef.h symbolTable.h codegen.h error.h
 	gcc -w -o ast astDriver.o ast.o lexer.o parser.o error.o
 	gcc -w -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
