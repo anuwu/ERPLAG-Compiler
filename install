@@ -10,10 +10,30 @@ installErr () {
 	read
 }
 
-sudo apt-get update
-sudo apt-get install build-essential
-sudo apt-get install nasm
-make
+if [[ "$OSTYPE" == "linux-gnu"* ]]
+then
+	sudo apt-get update
+	sudo apt-get install build-essential
+	sudo apt-get install nasm
+	make
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+	var=$(which brew) 
+	if test "$var" == ""
+	then
+		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+	fi
+
+	brew update
+	brew install gcc
+	brew install nasm
+else
+    printf "${BOLD}${RED}ERPLAG has not been designed for this OS. Please use a linux distribution or MacOS${RESET}\n"
+    printf "Press any key to continue..."
+	read
+    exit
+fi
+
 
 sudo cp erplag /usr/local/bin
 stat=$?
