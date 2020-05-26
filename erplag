@@ -67,8 +67,16 @@ while getopts ":a:o:h" opt; do
 			status=$? 
 			if [ $status -eq 0 ]
 			then
-				objname=${srcname}.o 
-				nasm -felf64 $asmname -o $objname 
+				objname=${srcname}.o
+
+				if [[ "$OSTYPE" == "linux-gnu"* ]]
+				then
+				    nasm -felf64 $asmname -o $objname 
+				elif [[ "$OSTYPE" == "darwin"* ]]
+				then
+				    nasm -fmacho64 $asmname -o $objname
+				fi
+
 				gcc -w -no-pie $objname -o $target 
 				success
 			fi
@@ -95,7 +103,15 @@ then
 		then
 			fname=${srcname:0:${#srcname}-4} 
 			objname=${srcname}.o
-			nasm -felf64 $srcname -o $objname
+
+			if [[ "$OSTYPE" == "linux-gnu"* ]]
+			then
+				nasm -felf64 $srcname -o $objname
+			elif [[ "$OSTYPE" == "darwin"* ]]
+			then
+				nasm -fmacho64 $srcname -o $objname
+			fi
+
 			gcc -w -no-pie $objname -o $fname 
 			rm -f $objname
 			success
@@ -112,7 +128,15 @@ then
 		status=$? 
 		if [ $status -eq 0 ]
 		then
-			nasm -felf64 $asmname
+
+			if [[ "$OSTYPE" == "linux-gnu"* ]]
+			then
+				nasm -felf64 $asmname -o $objname
+			elif [[ "$OSTYPE" == "darwin"* ]]
+			then
+				nasm -fmacho64 $asmname -o $objname
+			fi
+
 			gcc -w -no-pie $objname -o $fname
 			success
 		fi

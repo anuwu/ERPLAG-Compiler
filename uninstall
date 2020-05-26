@@ -1,0 +1,2 @@
+sudo rm -f /usr/local/bin/erplag
+sudo rm -f /usr/local/bin/.compiler
