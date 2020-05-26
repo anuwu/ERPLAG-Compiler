@@ -31,7 +31,6 @@ success () {
 	printf "${BOLD}${GREEN}Compilation successful${RESET}\n"
 }
 
-source ~/.bashrc
 optflag=0
 while getopts ":a:o:h" opt; do
 	optflag=1
