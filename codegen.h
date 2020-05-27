@@ -68,6 +68,8 @@ void getValue (moduleST *lst, varST *searchedVar) ;
 
 void preamble () ;
 void errorTF (char *errStr) ;
+void printArrStart () ;
+void printArrEnd () ;
 void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 

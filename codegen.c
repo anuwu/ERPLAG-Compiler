@@ -1352,6 +1352,110 @@ void errorTF (char *errStr)
 	#endif
 }
 
+void printArrStart ()
+{
+	codePrint ("\t\tPUSH RDI\n") ;
+
+	#if defined __linux__ || defined __MACH__
+		codePrint ("\t\tMOV RDI, @printFormatArray\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+		codePrint ("\t\tPUSH AX\n") ;
+		codePrint ("\t\tPUSH BX\n") ;
+		codePrint ("\t\tPUSH CX\n") ;
+		codePrint ("\t\tPUSH DX\n") ;
+	#endif
+	#ifdef _WIN64
+		codePrint ("\t\tMOV RCX, @printFormatArray\n") ;
+		codePrint ("\t\tXOR RDX, RDX\n") ;
+		codePrint ("\t\tPUSH BX\n") ;
+		codePrint ("\t\tSUB RSP, 38\n") ;
+	#endif
+
+	#if defined __linux__ || defined _WIN64
+		codePrint ("\t\tCALL printf\n") ;
+		#ifdef _WIN64
+			codePrint ("\t\tADD RSP, 38\n") ;
+		#endif
+	#endif
+	#ifdef __MACH__
+		codePrint ("\t\tCALL _printf\n") ;
+	#endif
+
+	#if defined __linux__ || defined __MACH__
+		codePrint ("\t\tPOP DX\n") ;
+		codePrint ("\t\tPOP CX\n") ;
+		codePrint ("\t\tPOP BX\n") ;
+		codePrint ("\t\tPOP AX\n") ;
+		codePrint ("\t\tPOP RDI\n\n") ;
+		codePrint ("\t\tMOV CX, 0\n") ;
+	#endif
+	#ifdef _WIN64
+		codePrint ("\t\tPOP BX\n") ;
+		codePrint ("\t\tPOP RDI\n\n") ;
+		codePrint ("\t\tMOV AX, 0\n") ;
+	#endif
+
+	codePrint ("\n\t.printArr:") ;
+	codeComment (8, "printing array") ;
+}
+
+void printArrEnd ()
+{
+	#if defined __linux__ || defined _WIN64
+		codePrint ("\t\tCALL printf\n") ;
+		#ifdef _WIN64
+			codePrint ("\t\tADD RSP, 36\n") ;
+		#endif
+	#endif
+	#ifdef __MACH__
+		codePrint ("\t\tCALL _printf\n") ;
+	#endif
+
+	#if defined __linux__ || defined __MACH__
+		codePrint ("\t\tPOP DX\n") ;
+		codePrint ("\t\tPOP CX\n") ;
+		codePrint ("\t\tPOP BX\n") ;
+		codePrint ("\t\tPOP AX\n") ;
+		codePrint ("\t\tPOP RDI\n\n") ;
+		codePrint ("\t\tADD CX, 2\n") ;
+		codePrint ("\t\tCMP CX, DX\n") ;
+	#endif
+	#ifdef _WIN64
+		codePrint ("\t\tPOP BX\n") ;
+		codePrint ("\t\tPOP AX\n") ;
+		codePrint ("\t\tPOP RDI\n\n") ;
+		codePrint ("\t\tADD AX, 2\n") ;
+		codePrint ("\t\tCMP AX, BX\n") ;
+	#endif
+
+	codePrint ("\t\tJNE .printArr\n\n") ;
+
+	#if defined __linux__ || defined __MACH__
+		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
+		codePrint ("\t\tXOR RSI, RSI\n") ;
+		codePrint ("\t\tXOR RAX, RAX\n") ;
+	#endif
+	#ifdef _WIN64
+		codePrint ("\t\tMOV RCX, @printNewLine\n") ;
+		codePrint ("\t\tXOR RDX, RDX\n") ;
+		codePrint ("\t\tSUB RSP, 32\n") ;
+	#endif
+
+	#if defined __linux__ || defined _WIN64
+		codePrint ("\t\tCALL printf\n") ;
+		#ifdef _WIN64
+			codePrint ("\t\tADD RSP, 32\n") ;
+		#endif
+	#endif
+	#ifdef __MACH__
+		codePrint ("\t\tCALL _printf\n") ;
+	#endif
+
+	RSPRestore () ;
+	codePrint ("\n\t\tret\n") ;
+}
+
 
 void postamble()
 {
@@ -1774,6 +1878,7 @@ void postamble()
 
 		codePrint ("\n@printInteger:\n") ;
 		RSPAlign () ;
+		printArrOutput () ;
 
 		#ifdef __linux__ || __MACH__
 			codePrint ("\t\tMOV RDI, @printFormat\n") ;
@@ -1809,28 +1914,43 @@ void postamble()
 		codePrint ("\n@printBoolean:\n") ;
 		RSPAlign () ;
 
+		char promptReg[5] ;
+		#if defined __linux__ || defined __MACH__
+			strcpy (promptReg, "RDI") ;
+		#endif
+		#ifdef _WIN64
+			strcpy (promptReg, "RCX") ;
+		#endif
+
 		codePrint ("\t\tCMP SI, 0\n") ;
 		codePrint ("\t\tJE .boolFalse\n") ;
-		codePrint ("\t\tMOV RDI, @printTrue\n") ;
+		codePrint ("\t\tMOV %s, @printTrue\n", promptReg) ;
 		codePrint ("\t\tJMP .boolPrint\n") ;
 
 		codePrint ("\n\t.boolFalse:\n") ;
-		codePrint ("\t\tMOV RDI, @printFalse\n") ;
+		codePrint ("\t\tMOV %s, @printFalse\n", promptReg) ;
 		codePrint ("\n\t.boolPrint:\n") ;
 
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
+		#if defined __linux__ || defined __MACH__
+			codePrint ("\t\tXOR RSI, RSI\n") ;
+			codePrint ("\t\tXOR RAX, RAX\n") ;
+		#endif
+		#ifdef _WIN64
+			codePrint ("\t\tXOR RDX, RDX\n") ;
+			codePrint ("\t\tSUB RSP, 32\n") ;
 		#endif
 
+		#if defined __linux__ || defined _WIN64
+			codePrint ("\t\tCALL printf\n") ;
+			#ifdef _WIN64
+				codePrint ("\t\tADD RSP, 32\n") ;
+			#endif
+		#endif
 		#ifdef __MACH__
 			codePrint ("\t\tCALL _printf\n") ;
 		#endif
 
-
 		RSPRestore () ;
-
 		codePrint ("\n\t\tret\n") ;
 	}
 
@@ -1843,49 +1963,7 @@ void postamble()
 
 		codePrint ("\n@printIntegerArr:\n") ;
 		RSPAlign () ;
-		codePrint ("\t\tPUSH RDI\n") ;
-
-		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tMOV RDI, @printFormatArray\n") ;
-			codePrint ("\t\tXOR RSI, RSI\n") ;
-			codePrint ("\t\tXOR RAX, RAX\n") ;
-			codePrint ("\t\tPUSH AX\n") ;
-			codePrint ("\t\tPUSH BX\n") ;
-			codePrint ("\t\tPUSH CX\n") ;
-			codePrint ("\t\tPUSH DX\n") ;
-		#endif
-		#ifdef _WIN64
-			codePrint ("\t\tMOV RCX, @printFormatArray\n") ;
-			codePrint ("\t\tXOR RDX, RDX\n") ;
-			codePrint ("\t\tPUSH BX\n") ;
-			codePrint ("\t\tSUB RSP, 38\n") ;
-		#endif
-
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
-			#ifdef _WIN64
-				codePrint ("\t\tADD RSP, 38\n") ;
-			#endif
-		#endif
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tPOP DX\n") ;
-			codePrint ("\t\tPOP CX\n") ;
-			codePrint ("\t\tPOP BX\n") ;
-			codePrint ("\t\tPOP AX\n") ;
-			codePrint ("\t\tPOP RDI\n\n") ;
-			codePrint ("\t\tMOV CX, 0\n") ;
-		#endif
-		#ifdef _WIN64
-			codePrint ("\t\tPOP BX\n") ;
-			codePrint ("\t\tPOP RDI\n\n") ;
-			codePrint ("\t\tMOV AX, 0\n") ;
-		#endif
-
-		codePrint ("\n\t.printArr:\n") ;
+		printArrStart () ;
 
 		#if defined __linux__ || defined __MACH__
 			codePrint ("\t\tPUSH RDI\n") ;
@@ -1912,59 +1990,7 @@ void postamble()
 			codePrint ("\t\tSUB RSP, 36\n") ;
 		#endif
 
-
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
-			#ifdef _WIN64
-				codePrint ("\t\tADD RSP, 36\n") ;
-			#endif
-		#endif
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tPOP DX\n") ;
-			codePrint ("\t\tPOP CX\n") ;
-			codePrint ("\t\tPOP BX\n") ;
-			codePrint ("\t\tPOP AX\n") ;
-			codePrint ("\t\tPOP RDI\n\n") ;
-			codePrint ("\t\tADD CX, 2\n") ;
-			codePrint ("\t\tCMP CX, DX\n") ;
-		#endif
-		#ifdef _WIN64
-			codePrint ("\t\tPOP BX\n") ;
-			codePrint ("\t\tPOP AX\n") ;
-			codePrint ("\t\tPOP RDI\n\n") ;
-			codePrint ("\t\tADD AX, 2\n") ;
-			codePrint ("\t\tCMP AX, BX\n") ;
-		#endif
-
-		codePrint ("\t\tJNE .printArr\n\n") ;
-
-		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tMOV RDI, @printNewLine\n") ;
-			codePrint ("\t\tXOR RSI, RSI\n") ;
-			codePrint ("\t\tXOR RAX, RAX\n") ;
-		#endif
-		#ifdef _WIN64
-			codePrint ("\t\tMOV RCX, @printNewLine\n") ;
-			codePrint ("\t\tXOR RDX, RDX\n") ;
-			codePrint ("\t\tSUB RSP, 32\n") ;
-		#endif
-
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
-			#ifdef _WIN64
-				codePrint ("\t\tADD RSP, 32\n") ;
-			#endif
-		#endif
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-		RSPRestore () ;
-		codePrint ("\n\t\tret\n") ;
+		printArrEnd () ;
 	}
 
 	if (isFlagSet (tf, printBooleanArr))
@@ -1974,87 +2000,57 @@ void postamble()
 		df |= 1 << DATA_false ;
 		df |= 1 << printNewLine ;
 
+		char cmpReg[3], boolReg[5] ;
+
 		codePrint ("\n@printBooleanArr:\n") ;
 		RSPAlign () ;
+		printArrStart () ;
 
-		codePrint ("\n\t\tPUSH RDI\n") ;
-		codePrint ("\t\tMOV RDI, @printFormatArray\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tPUSH AX\n") ;
-		codePrint ("\t\tPUSH BX\n") ;
-		codePrint ("\t\tPUSH CX\n") ;
-		codePrint ("\t\tPUSH DX\n") ;
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
+		#if defined __linux__ || defined __MACH__
+			codePrint ("\t\tPUSH RDI\n") ;
+			codePrint ("\t\tMOVSX RBX, CX\n") ;
+			codePrint ("\t\tMOV SI, [RDI + RBX]\n") ;
+
+			strcpy (cmpReg, "SI") ;
+			strcpy (boolReg, "RDI") ;
+		#endif
+		#ifdef _WIN64
+			codePrint ("\t\tPUSH BX\n") ;
+			codePrint ("\t\tMOVSX RBX, AX\n") ;
+			codePrint ("\t\tMOV DX, [RDI + RBX]\n") ;
+			codePrint ("\t\tMOVSX RDX, DX\n") ;
+			codePrint ("\t\tPOP BX\n") ;
+
+			strcpy (cmpReg, "DX") ;
+			strcpy (boolReg, "RCX") ;
 		#endif
 
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-		codePrint ("\t\tPOP DX\n") ;
-		codePrint ("\t\tPOP CX\n") ;
-		codePrint ("\t\tPOP BX\n") ;
-		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tPOP RDI\n\n") ;
-
-		codePrint ("\t\tMOV CX, 0\n") ;
-		codePrint ("\n\t.printArr:") ;
-		codeComment (8, "printing array") ;
-
-		codePrint ("\t\tMOVSX RBX, CX\n") ;
-		codePrint ("\t\tMOV AX, [RDI + RBX]\n") ;
-		codePrint ("\t\tPUSH RDI\n") ;
-
-		codePrint ("\n\t\tCMP AX, 0\n") ;
+		codePrint ("\n\t\tCMP %s, 0\n", cmpReg) ;
 		codePrint ("\t\tJE .arrFalse\n") ;
-		codePrint ("\t\tMOV RDI, @true\n") ;
+		codePrint ("\t\tMOV %s, @true\n", boolReg) ;
 		codePrint ("\t\tJMP .afterBool\n") ;
 		
 		codePrint ("\n\t.arrFalse:\n") ;
-		codePrint ("\t\tMOV RDI, @false\n") ;
+		codePrint ("\t\tMOV %s, @false\n", boolReg) ;
 		codePrint ("\n\t.afterBool:\n") ;
 
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		codePrint ("\t\tPUSH AX\n") ;
-		codePrint ("\t\tPUSH BX\n") ;
-		codePrint ("\t\tPUSH CX\n") ;
-		codePrint ("\t\tPUSH DX\n") ;
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
+		#if defined __linux__ || defined __MACH__
+			codePrint ("\t\tXOR RSI, RSI\n") ;
+			codePrint ("\t\tXOR RAX, RAX\n") ;
+			codePrint ("\t\tPUSH AX\n") ;
+			codePrint ("\t\tPUSH BX\n") ;
+			codePrint ("\t\tPUSH CX\n") ;
+			codePrint ("\t\tPUSH DX\n") ;
+		#endif
+		#ifdef _WIN64
+			codePrint ("\t\tXOR RDX, RDX\n") ;
+			codePrint ("\t\tPUSH RDI\n") ;
+			codePrint ("\t\tPUSH AX\n") ;
+			codePrint ("\t\tPUSH BX\n") ;
+			codePrint ("\t\tSUB RSP, 36\n") ;
 		#endif
 
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-		codePrint ("\t\tPOP DX\n") ;
-		codePrint ("\t\tPOP CX\n") ;
-		codePrint ("\t\tPOP BX\n") ;
-		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tPOP RDI\n\n") ;
-
-		codePrint ("\t\tADD CX, 2\n") ;
-		codePrint ("\t\tCMP CX, DX\n") ;
-		codePrint ("\t\tJNE .printArr\n\n") ;
-
-		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
-		codePrint ("\t\tXOR RSI, RSI\n") ;
-		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#if defined __linux__ || defined _WIN64
-			codePrint ("\t\tCALL printf\n") ;
-		#endif
-
-		#ifdef __MACH__
-			codePrint ("\t\tCALL _printf\n") ;
-		#endif
-
-
-		RSPRestore () ;
-
-		codePrint ("\n\t\tret\n") ;
+		printArrEnd () ;
 	}
 
 	if (isFlagSet (tf, asgnArr))

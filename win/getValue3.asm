@@ -13,12 +13,12 @@ WinMain:
 		SUB RSP, 4											; making space for declaration
 
 
-		MOV RCX, @inputIntPrompt									; get_value ===> Changed
+		MOV RCX, @inputIntPrompt									; get_value
 		MOV RBX, -2
-		CALL @getValuePrimitive										
+		CALL @getValuePrimitive
 
 
-		MOV RCX, @inputIntPrompt									; get_value ===> Changed
+		MOV RCX, @inputIntPrompt									; get_value
 		MOV RBX, -4
 		CALL @getValuePrimitive
 
@@ -32,26 +32,25 @@ WinMain:
 
 		MOV AX, [RBP - 2]
 		MOV BX, [RBP - 4]
-		CALL @dynamicDeclCheck								; checking dynamic array declaration limits ===> Changed
+		CALL @dynamicDeclCheck										; checking dynamic array declaration limits
 
 
 		PUSH BX												; saving register for malloc
 		PUSH AX												; saving register for malloc
-		SUB RSP, 48
-		CALL malloc											; ===> Changed to 44
-		ADD RSP, 48
+		SUB RSP, 44
+		CALL malloc
+		ADD RSP, 44
 		MOV [RBP - 16], RAX
 		POP AX
 		MOV [RBP - 6], AX
 		POP BX
 		MOV [RBP - 8], BX
 
-		MOV RCX, @inputIntArrPrompt							;  ===> Changed
+		MOV RCX, @inputIntArrPrompt
 		MOV SI, [RBP - 6]
 		MOV DI, [RBP - 8]
 		CALL @printGetArrPrompt
 
-															;  ===> Changed
 		MOV BX, DI
 		SUB BX, SI
 		ADD BX, 1
@@ -64,8 +63,8 @@ WinMain:
 		MOV BX, [RBP - 6]
 		MOV CX, [RBP - 2]
 		MOV DX, [RBP - 8]
-		CALL @boundCheck										; checking array index bound 
-		MOV DX, [RDI + RBX]										; ===> Changed
+		CALL @boundCheck										; checking array index bound
+		MOV DX, [RDI + RBX]
 		CALL @printInteger
 
 		MOV RDI, [RBP - 16]
@@ -155,11 +154,15 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-		MOV RDI, @boundPrint
-		XOR RSI, RSI
-		XOR RAX, RAX
+		MOV RCX, @boundPrint
+		XOR RDX, RDX
+		SUB RSP, 32
 		CALL printf
-		MOV RDI, 1
+		ADD RSP, 32
+
+		POP RAX
+		ADD RSP, RAX
+		MOV RCX, 1
 		CALL exit
 
 @declERROR:
@@ -168,11 +171,15 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-		MOV RDI, @declPrint
-		XOR RSI, RSI
-		XOR RAX, RAX
+		MOV RCX, @declPrint
+		XOR RDX, RDX
+		SUB RSP, 32
 		CALL printf
-		MOV RDI, 1
+		ADD RSP, 32
+
+		POP RAX
+		ADD RSP, RAX
+		MOV RCX, 1
 		CALL exit
 
 @declNegERROR:
@@ -181,11 +188,15 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-		MOV RDI, @declNeg
-		XOR RSI, RSI
-		XOR RAX, RAX
+		MOV RCX, @declNeg
+		XOR RDX, RDX
+		SUB RSP, 32
 		CALL printf
-		MOV RDI, 1
+		ADD RSP, 32
+
+		POP RAX
+		ADD RSP, RAX
+		MOV RCX, 1
 		CALL exit
 
 @getValuePrimitive:
@@ -194,14 +205,12 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-
 		XOR RDX, RDX
 		PUSH RBX
 		SUB RSP, 40
 		CALL printf
 		ADD RSP, 40
 		POP RBX
-
 		MOV RCX, @inputInt										; get_value
 		MOV RDX, RSP
 		SUB RDX, 16
@@ -224,7 +233,6 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-
 		MOV DX, DI
 		SUB DX, SI
 		ADD DX, 1
@@ -236,7 +244,6 @@ WinMain:
 		ADD RSP, 44
 		POP DI
 		POP SI
-
 
 		MOV RCX, @leftRange
 		MOVSX RDX, SI
@@ -279,20 +286,18 @@ WinMain:
 		SUB RDX, 24
 		PUSH RAX
 		PUSH RBX
-		SUB RSP, 72
+		SUB RSP, 48
 		CALL scanf
-		ADD RSP, 72
+		ADD RSP, 48
 		POP RBX
 		POP RAX
 		MOV CX, [RSP - 24]
-
 		POP RDI
 		PUSH RBX
 		MOV RBX, RAX
 		MOV [RDI + RBX], CX
 		POP RBX
 		PUSH RDI
-
 		ADD RAX, 2
 		CMP RAX, RBX
 		JNE .getArrLoop
@@ -309,7 +314,6 @@ WinMain:
 		ADD RAX, 8
 		SUB RSP, RAX
 		PUSH RAX
-
 		MOV RCX, @printFormat
 		MOVSX RDX, DX
 		SUB RSP, 32
@@ -328,7 +332,6 @@ WinMain:
 		SUB RSP, RAX
 		PUSH RAX
 		PUSH RDI
-
 		MOV RCX, @printFormatArray
 		XOR RDX, RDX
 		PUSH BX
@@ -342,13 +345,11 @@ WinMain:
 
 	.printArr:
 		MOV RCX, @printInt
-
 		PUSH BX
 		MOVSX RBX, AX
 		MOV DX, [RDI + RBX]
 		MOVSX RDX, DX
 		POP BX
-
 		PUSH RDI
 		PUSH AX
 		PUSH BX
