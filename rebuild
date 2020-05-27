@@ -1,6 +1,9 @@
 #! /bin/bash
 
 BOLD='\033[1m'
+CYAN='\033[1;36m'
+BLUE='\033[1;34m'
+MAGENTA='\033[1;35m'
 GREEN='\033[1;32m'
 RED='\033[1;31m'
 RESET='\033[0m'
@@ -9,6 +12,33 @@ ccErr () {
 	printf "\n${BOLD}${RED}ERPLAG compiler re-build failed.${RESET}\n"
 	printf "Press enter to continue...\n"
 }
+
+input () {
+	while :
+	do
+		read ans
+		if test "$ans" = "y" -o "$ans" = "Y"
+		then
+			return
+		elif  [ "$ans" = "n" -o "$ans" = "N" ]
+		then
+			exit
+		else
+			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) "
+		fi
+	done
+}
+
+if ! [ -f /usr/local/bin/erplag ]
+then
+	printf "${BOLD}${MAGENTA}ERPLAG compiler is not installed!${RESET}\n" 
+	printf "Please use ${BOLD}${CYAN}./install ${RESET}before using ${BOLD}${CYAN}./rebuild${RESET}\n"
+
+	exit
+fi
+
+printf "${BOLD}${CYAN}Proceed with re-building ERPLAG compiler? ${RESET}(y/n) "
+input
 
 sudo printf "Rebuilding ERPLAG...\n\n"
 sudo make

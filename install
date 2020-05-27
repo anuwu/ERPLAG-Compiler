@@ -18,8 +18,6 @@ then
 	printf "Please use ${BOLD}${CYAN}./rebuild ${RESET}to quickly remake the compiler\n"
 	printf "Otherwise, use ${BOLD}${CYAN}./uninstall ${RESET} to uninstall the compiler\n"
 
-	printf "\nPress enter to continue..."
-	read
 	exit
 fi
 
@@ -44,7 +42,7 @@ then
 	brew install nasm
 else
     printf "${BOLD}${RED}ERPLAG has not been designed for this OS. Please use a linux distribution or MacOS${RESET}\n"
-    printf "Press any key to continue..."
+    printf "Press enter to continue..."
 	read
     exit
 fi
