@@ -503,7 +503,8 @@ void RSPAlign ()
 void RSPRestore ()
 {
 	codePrint ("\n\t\tPOP RAX\n") ;
-	codePrint ("\t\tADD RSP, RAX\n") ;
+	codePrint ("\t\tADD RSP, RAX") ;
+	codeComment (9, "Restoring Stack Alignment") ;
 }
 
 void getValue (moduleST *lst, varST *vst)
@@ -596,7 +597,6 @@ void dynamicDeclarationCheck (moduleST *lst, varST *vst)
 	else
 	{
 		leftVar = searchVar (realBase, lst, vst->arrayIndices->tokLeft->lexeme) ;
-		//codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr(leftVar->offset)) ;
 		codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr (leftVar->offset)) ;
 	}
 
@@ -624,42 +624,57 @@ void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 	codePrint ("\t\tPUSH AX") ;
 	codeComment (12, "saving register for malloc") ;
 
+	int RSPsub ;
+
 	if (declCount > 1)
 	{
-		codePrint ("\n\t\tMOV CX, 0\n") ;
-		codePrint ("\t\tMOV RBX, %d\n", vst->offset) ;
-		codePrint ("\t\tNEG RBX\n") ;
+		char counterReg[3], mallocReg[5] ;
+		
+		#if defined __linux__ || defined __MACH__
+			strcpy (counterReg, "CX") ;
+			strcpy (mallocReg, "RDI") ;
+			RSPsub = 10 ;
+		#endif
+		#ifdef _WIN64
+			strcpy (counterReg, "AX") ;
+			strcpy (mallocReg, "RCX") ;
+			RSPsub = 42 ;
+		#endif
+
+		codePrint ("\t\tMOV RBX, %d\n", -vst->offset) ;
+		codePrint ("\n\t\tMOV %s, 0\n", counterReg) ;
+
 		codePrint ("\n\t.declLoop:\n") ;
 
-		codePrint ("\t\tPUSH CX\n") ;
-		codePrint ("\t\tSUB RSP, 10\n") ;
+		codePrint ("\t\tPUSH %s\n", counterReg) ;
+		codePrint ("\t\tPUSH %s\n", mallocReg) ;
 		codePrint ("\t\tPUSH RBX\n") ;
-		codePrint ("\t\tPUSH RDI\n") ;
+		codePrint ("\t\tSUB RSP, %d\n", RSPsub) ;
 
 		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL malloc\n") ;
 		#endif
-
 		#ifdef __MACH__
 			codePrint ("\t\tCALL _malloc\n") ;
 		#endif
 
-		codePrint ("\t\tPOP RDI\n") ;
+		codePrint ("\t\tADD RSP, %d\n", RSPsub) ;	
 		codePrint ("\t\tPOP RBX\n") ;
-		codePrint ("\t\tADD RSP, 10\n") ;
-		codePrint ("\t\tPOP CX\n") ;
-		codePrint ("\t\tMOV [RBP+RBX], RAX\n") ;
-
-		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tMOV [RBP + RBX + 10], AX\n") ;
-		codePrint ("\t\tPOP DX\n") ;
-		codePrint ("\t\tMOV [RBP + RBX + 8], DX\n") ;
-
-		codePrint ("\t\tPUSH DX\n") ;
-		codePrint ("\t\tPUSH AX\n") ;
+		codePrint ("\t\tMOV [RBP + RBX], RAX\n") ;
+		codePrint ("\t\tPOP %s\n", mallocReg) ;
+		codePrint ("\t\tPOP %s\n", counterReg) ;
+		
+		codePrint ("\t\tPOP SI\n") ;
+		codePrint ("\t\tMOV [RBP + RBX + 10], SI\n") ;
+		codePrint ("\t\tPOP DI\n") ;
+		codePrint ("\t\tMOV [RBP + RBX + 8], DI\n") ;
+		codePrint ("\t\tPUSH DI\n") ;
+		codePrint ("\t\tPUSH SI\n") ;
 		codePrint ("\t\tADD RBX, 12\n") ;
-		codePrint ("\t\tINC CX\n") ;
-		codePrint ("\t\tCMP CX, %d\n", declCount) ;
+
+		codePrint ("\t\tINC %s\n", counterReg) ;
+		codePrint ("\t\tCMP %s, %d\n", counterReg, declCount) ;
+
 		codePrint ("\t\tJL .declLoop\n") ;
 
 		codePrint ("\t\tADD RSP, 4") ;
@@ -668,33 +683,31 @@ void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 	else
 	{
 		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tSUB RSP, 12\n") ;
+			RSPsub = 12 ;
 		#endif
 		#ifdef _WIN64
-			codePrint ("\t\tSUB RSP, 44\n") ;
+			RSPsub = 44 ;
 		#endif
+
+		codePrint ("\t\tSUB RSP, %d\n", RSPsub) ;
 
 		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL malloc\n") ;
 		#endif
-
 		#ifdef __MACH__
 			codePrint ("\t\tCALL _malloc\n") ;
 		#endif
 
-		#if defined __linux__ || defined __MACH__
-			codePrint ("\t\tADD RSP, 12\n") ;
-		#endif
-		#ifdef _WIN64
-			codePrint ("\t\tADD RSP, 44\n") ;
-		#endif
+		codePrint ("\t\tADD RSP, %d\n", RSPsub) ;
 
 		codePrint ("\t\tMOV [RBP%s], RAX\n", getOffsetStr(vst->offset)) ;
-		codePrint ("\t\tPOP AX\n") ;
-		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(vst->offset - 10)) ;
-		codePrint ("\t\tPOP BX\n") ;
-		codePrint ("\t\tMOV [RBP%s], BX\n\n", getOffsetStr(vst->offset - 8)) ;
+		codePrint ("\t\tPOP SI\n") ;
+		codePrint ("\t\tMOV [RBP%s], SI\n", getOffsetStr(vst->offset - 10)) ;
+		codePrint ("\t\tPOP DI\n") ;
+		codePrint ("\t\tMOV [RBP%s], DI\n\n", getOffsetStr(vst->offset - 8)) ;
 	}
+
+	RSPRestore () ;
 }
 
 /*	---------------------------------- SWITCH CASE ------------------------------------- */
@@ -1878,7 +1891,6 @@ void postamble()
 
 		codePrint ("\n@printInteger:\n") ;
 		RSPAlign () ;
-		printArrOutput () ;
 
 		#ifdef __linux__ || __MACH__
 			codePrint ("\t\tMOV RDI, @printFormat\n") ;
@@ -1959,7 +1971,6 @@ void postamble()
 		df |= 1 << printFormatArray ;
 		df |= 1 << printNewLine ;
 		df |= 1 << printInt ;
-
 
 		codePrint ("\n@printIntegerArr:\n") ;
 		RSPAlign () ;

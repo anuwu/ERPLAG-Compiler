@@ -1,14 +1,14 @@
 <<<driver program>>>
 start
-	declare i,j:integer ;
+	declare i,j,k:integer ;
 	get_value (i) ;
 	get_value (j) ;	
 
-	declare A:array [i .. j] of integer ;
-	declare B:array [i .. j] of integer ;
+	declare A, B:array [i .. j] of integer ;
 
 	get_value (A) ;
 
+	k := i ;
 	while (i <= j)
 	start
 		B[i] := 2*A[i] ;
@@ -17,4 +17,12 @@ start
 
 	print (A) ;
 	print (B) ;
+
+	i := k ;
+	declare C : array [i .. j] of boolean ;
+	get_value (C) ;
+	print (C) ;
+
+	k := j - 1 ;
+	print (C[k]) ;
 end
