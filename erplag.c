@@ -28,7 +28,12 @@ void checkCommand (int argc, char **argv, char **outputFile)
 	if (!(len > 4 && argv[1][len-1] == 'p' && argv[1][len-2] == 'r' && argv[1][len-3] == 'e' && argv[1][len-4] == '.'))
 	{
 		errFatal () ;
-		printf ("Unsupported source format. Use file with .erp extension\n") ;
+		#if defined __linux__ || defined __MACH__
+			printf ("Unsupported source format. Use file with " ANSI_BOLD ".erp" ANSI_RESET "extension\n") ;
+		#endif
+		#ifdef _WIN64
+			printf ("Unsupported source format. Use file with .erp extension\n") ;
+		#endif
 		exit (1) ;
 	}
 
@@ -47,7 +52,12 @@ void checkCommand (int argc, char **argv, char **outputFile)
 		if (!(len > 4 && argv[2][len-1] == 'm' && argv[2][len-2] == 's' && argv[2][len-3] == 'a' && argv[2][len-4] == '.'))
 		{
 			errFatal () ;
-			printf ("Unsupported output format. Use .asm extension\n") ;
+			#if defined __linux__ || defined __MACH__
+				printf ("Unsupported output format. Use " ANSI_BOLD ".asm" ANSI_RESET "extension\n") ;
+			#endif
+			#ifdef _WIN64
+				printf ("Unsupported output format. Use .asm extension\n") ;
+			#endif
 			exit (1) ;
 		}
 
@@ -64,7 +74,12 @@ int main(int argc, char **argv)
  	if (!(fpIn = fopen (argv[1], "r")))
  	{
  		errFatal () ;
- 		printf ("Source file %s does not exist\n", argv[1]) ;
+		#if defined __linux__ || defined __MACH__
+ 			printf ("Source file " ANSI_BOLD "%s" ANSI_RESET " does not exist\n", argv[1]) ;
+		#endif
+		#ifdef _WIN64
+			printf ("Source file %s does not exist\n", argv[1]) ;
+		#endif
  		exit (1) ;
  	}
 
@@ -83,7 +98,12 @@ int main(int argc, char **argv)
 		if (!(fpOut = fopen (outputFile, "w")))
 		{
 			errFatal () ;
-			printf ("Error creating output file %s\n", outputFile) ;
+			#if defined __linux__ || defined __MACH__
+				printf ("Error creating output file " ANSI_BOLD "%s" ANSI_RESET "\n", outputFile) ;
+			#endif
+			#ifdef _WIN64
+				printf ("Error creating output file %s\n", outputFile) ;
+			#endif
 			exit (1) ;
 		}
 

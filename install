@@ -8,9 +8,22 @@ RESET='\033[0m'
 
 installErr () {
 	printf "\n${BOLD}${RED}ERPLAG installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
-	printf "Press any key to continue..."
+	printf "Press enter to continue..."
 	read
 }
+
+if [ -f /usr/local/bin/erplag ]
+then
+	printf "${BOLD}${GREEN}ERPLAG compiler is already installed in this system${RESET}\n\n" 
+	printf "Please use ${BOLD}${CYAN}./rebuild ${RESET}to quickly remake the compiler\n"
+	printf "Otherwise, use ${BOLD}${CYAN}./uninstall ${RESET} to uninstall the compiler\n"
+
+	printf "\nPress enter to continue..."
+	read
+	exit
+fi
+
+sudo printf "Installing ERPLAG... \n\n"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]
 then
@@ -37,6 +50,7 @@ else
 fi
 
 make
+
 sudo cp erplag /usr/local/bin
 stat=$?
 if [ $stat -ne 0 ]
@@ -44,7 +58,16 @@ then
 	installErr 
 	exit
 fi
+
 sudo cp .compiler /usr/local/bin
+stat=$?
+if [ $stat -ne 0 ]
+then
+	installErr 
+	exit
+fi
+
+sudo cp erpclr /usr/local/bin
 stat=$?
 if [ $stat -ne 0 ]
 then
@@ -56,5 +79,5 @@ make clean
 
 printf "\n${BOLD}${GREEN}ERPLAG compiler has been successfully installed!${RESET}\n"
 printf "Use ${BOLD}${CYAN}erplag -h ${RESET}to read the guidelines for using the compiler\n"
-printf "Press any key to continue..."
+printf "\nPress enter to continue..."
 read

@@ -23,14 +23,14 @@ erplagHead () {
 }
 
 erpHelp () {
-	printf "${BOLD}The compiler can be used with the following options - ${RESET}\n\n"
-	printf "${BOLD}${CYAN}erplag -a <filename>.erp ${RESET}generates a .asm file with the same filename\n"
-	printf "${BOLD}${CYAN}erplag <filename>.asm ${RESET}generates an executable with the same filename\n"
-	printf "${BOLD}${CYAN}erplag -o myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}${CYAN}myexec${RESET}\n"
-	printf "${BOLD}${CYAN}erplag <filename>.erp ${RESET}directly generates an executable with the same filename\n\n"
-	printf "If you are making any changes to the source code or the compiler script, make sure to run ${BOLD}${CYAN}./cc ${RESET} afterwards\n"
-	printf "The .${BOLD}${CYAN}\\Testcases ${RESET}folder has a script named ${BOLD}${CYAN}clean.sh${RESET}. This can be used to clean any .asm, .o and executable files recursively in the folder\n\n"
-	printf "${BOLD}${RED}WARNING : DO NOT RUN clean.sh IN THE REPOSITORY FOLDER. IT WILL DELETE ESSENTIAL FILES OF THE COMPILER!${RESET}\n"
+	printf "${BOLD}${GREEN}The compiler can be used with the following options - ${RESET}\n\n"
+	printf "${BOLD}${CYAN}erplag -a ${RESET}${BOLD}<filename>.erp ${RESET}generates a ${BOLD}.asm ${RESET}file with the same filename\n"
+	printf "${BOLD}${CYAN}erplag ${RESET}${BOLD}<filename>.asm ${RESET}generates an executable with the same filename\n"
+	printf "${BOLD}${CYAN}erplag -o ${RESET}${BOLD}myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}myexec${RESET}\n"
+	printf "${BOLD}${CYAN}erplag ${RESET}${BOLD}<filename>.erp ${RESET}directly generates an executable with the same filename\n\n"
+	printf "If you are making any changes to the ${BOLD}${GREEN}source code ${RESET}or the ${BOLD}${CYAN}erplag, erpclr ${RESET}scripts, make sure to run ${BOLD}${CYAN}./rebuild ${RESET} afterwards\n"
+	printf "A script named ${BOLD}${CYAN}erpclr${RESET}. This can be used to clean any ${BOLD}.asm, .o ${RESET}and ${BOLD}executable ${RESET}files recursively in a folder that contains only ERPLAG source files. ${BOLD}${RED}Use it with caution in other directories${RESET}\n\n"
+	printf "The compiler can be uninstalled from the git repository using ${BOLD}${CYAN}./uninstall${RESET}\n\n"
 }
 
 successErpExe () {
@@ -100,7 +100,7 @@ while getopts ":a:o:h" opt; do
 			rm -f $objname
 			;;
 		\?) errHead
-			echo "Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable"
+			echo "Invalid option. Use ${BOLD}${CYAN}-a ${RESET}to generate x86 assembly or use ${BOLD}${CYAN}-o ${RESET}along with output name to generate executable"
 			exit 1
 			;;
 		:)  errHead
@@ -133,7 +133,7 @@ then
 			successAsmExe $srcname $fname
 		else
 			errHead 
-			echo "ASM file $srcname does not exist" 
+			printf "ASM file ${BOLD}$srcname ${RESET}does not exist\n" 
 		fi
 	elif [[ $srcname =~ \.erp$ ]] 
 	then
@@ -164,6 +164,6 @@ then
 		echo "No source file"
 	else
 		errHead
-		echo "Unsupported file format. Use .erp for source files and .asm for x86 assembly files" ;
+		printf "Unsupported file format. Use ${BOLD}.erp ${RESET}for source files and ${BOLD}.asm ${RESET}for x86 assembly files\n"
 	fi
 fi

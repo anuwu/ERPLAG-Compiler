@@ -407,13 +407,13 @@ void print (astNode *node, moduleST *lst)
 		if (node->id == TK_NUM)
 		{
 			tf |= 1 << printInteger ;
-			codePrint ("\t\tMOV %s, %s\n", node->tok->lexeme, valReg) ;
+			codePrint ("\t\tMOV %s, %s\n", valReg, node->tok->lexeme) ;
 			codePrint ("\t\tCALL @printInteger\n\n") ;
 		}
 		else
 		{
 			tf |= 1 << printBoolean ;
-			codePrint ("\t\tMOV %s, %d\n", node->tok->lexeme[0]=='t'?1:0, valReg) ;
+			codePrint ("\t\tMOV %s, %d\n", valReg, node->tok->lexeme[0]=='t'?1:0) ;
 			codePrint ("\t\tCALL @printBoolean\n\n") ;
 		}
 
@@ -423,13 +423,13 @@ void print (astNode *node, moduleST *lst)
 	if (searchedVar->datatype == TK_INTEGER)
 	{
 		tf |= 1 << printInteger ;
-		codePrint ("\t\tMOV %s, [RBP%s]\n", getOffsetStr(searchedVar->offset), valReg) ;
+		codePrint ("\t\tMOV %s, [RBP%s]\n", valReg, getOffsetStr(searchedVar->offset)) ;
 		codePrint ("\t\tCALL @printInteger\n\n") ;
 	}
 	else if (searchedVar->datatype == TK_BOOLEAN)
 	{
 		tf |= 1 << printBoolean ;
-		codePrint ("\t\tMOV %s, [RBP%s]\n", getOffsetStr(searchedVar->offset), valReg) ;
+		codePrint ("\t\tMOV %s, [RBP%s]\n", valReg, getOffsetStr(searchedVar->offset)) ;
 		codePrint ("\t\tCALL @printBoolean\n\n") ;
 	}
 	else // Array type
@@ -438,7 +438,7 @@ void print (astNode *node, moduleST *lst)
 		{
 			// Special Case
 			if (node->child->id == TK_NUM && isVarStaticArr (searchedVar))
-				codePrint ("\t\tMOV %s, [RBP%s]\n", getOffsetStr(getStaticOffset(searchedVar,node,2)), valReg) ;
+				codePrint ("\t\tMOV %s, [RBP%s]\n", valReg, getOffsetStr(getStaticOffset(searchedVar,node,2))) ;
 			else
 			{
 				// General case of static array with dynamic indices, or dynamic array

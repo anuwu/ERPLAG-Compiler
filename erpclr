@@ -12,25 +12,32 @@ input () {
 		read ans
 		if test "$ans" = "y" -o "$ans" = "Y"
 		then
-			printf "${BOLD}${RED}"
-			diff <(find . -type f ! -name "*.*") <(printf "./clean\n") --new-line-format="" --unchanged-line-format="" | xargs rm -f -v
-			printf "${CYAN}"
-			find . -type f  -name "*.asm" | xargs rm -f -v
-			printf "${MAGENTA}"
-			find . -type f  -name "*.o" | xargs rm -f -v
-			printf "${RESET}"
-			exit
+			return
 		elif  [ "$ans" = "n" -o "$ans" = "N" ]
 		then
 			exit
 		else
-			printf "\nPlease re-enter correct option (y/n) "
-			input
+			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) "
 		fi
 	done
 }
 
-l1=$(diff <(find . -type f ! -name "*.*") <(printf "./clean\n") --new-line-format="" --unchanged-line-format="")
+gitList=$(find . -name '.git')
+
+if ! [ "$gitList" = "" ]
+then
+	printf "${BOLD}${RED}Git repository present inside directory tree. ERPLAG cleaner cannot proceed!${RESET}\n"
+	exit
+else
+	erpList=$(find . -type f -name "*.erp")
+	if [ "$erpList" = "" ]
+	then
+		printf "${BOLD}${MAGENTA}Not a folder with any ${RESET}${BOLD}.erp ${RESET}${MAGENTA}files. Do you want to proceed? ${RESET}(y/n) "
+		input
+	fi
+fi
+
+l1=$(find . -type f ! -name "*.*")
 l2=$(find . -type f  -name "*.asm")
 l3=$(find . -type f  -name "*.o")
 
@@ -53,8 +60,17 @@ then
 		printf "${MAGENTA}$l3"
 		printf "\n"
 	fi
+
 	printf "${RESET}Are you sure you want to delete the above files? (y/n) "
 	input
+
+	printf "${BOLD}${RED}"
+	find . -type f ! -name "*.*" | xargs rm -f -v
+	printf "${CYAN}"
+	find . -type f  -name "*.asm" | xargs rm -f -v
+	printf "${MAGENTA}"
+	find . -type f  -name "*.o" | xargs rm -f -v
+	printf "${RESET}"
 else
 	printf "${BOLD}${GREEN}Clean! ${RESET}\nNo .asm, .o or executables found\n"
 fi
