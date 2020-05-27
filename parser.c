@@ -1043,7 +1043,13 @@ void init_parser()
 	strcpy (grammarPath, __FILE__) ;
 
 	slash = strlen (grammarPath) - 1 ;
+
+	#ifdef _WIN64
+	while (grammarPath[slash] != '\\')
+	#endif
+	#if defined __linux__ || defined __MACH__	
 	while (grammarPath[slash] != '/')
+	#endif
 		slash-- ;
 
 	grammarPath[slash+1] = '\0' ;
@@ -1361,7 +1367,12 @@ treeNode* parse (FILE *fp)
 			errLine (tk->lineNumber) ;
 			printf (" ") ;
 			errArrow () ;
-			printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
+			#ifdef _WIN64
+				printf (" %s\n", tk->lexeme) ;
+			#endif
+			#if defined __linux__ || defined __MACH__
+				printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
+			#endif
 		}
 		
 		if(stack!=NULL && stack->key<0)
@@ -1370,7 +1381,12 @@ treeNode* parse (FILE *fp)
 			root->syntax_error=1;
 			errParse () ;
 			errArrow () ;
-			printf("Invalid symbol on stack\n");
+			#ifdef _WIN64
+				printf ("Invalid symbol on stack\n") ;
+			#endif
+			#if defined __linux__ || defined __MACH__
+				printf(ANSI_BOLD ANSI_RED "Invalid symbol on stack\n" ANSI_RESET);
+			#endif
 			break;
 		}
 
@@ -1385,7 +1401,12 @@ treeNode* parse (FILE *fp)
 				{
 					errParse () ;
 					errArrow () ;
-					printf("Stack is empty");
+					#ifdef _WIN64
+						printf ("Stack is empty\n") ;
+					#endif
+					#if defined __linux__ || defined __MACH__
+						printf(ANSI_BOLD ANSI_RED "Stack is empty\n" ANSI_RESET);
+					#endif
 					break;
 				}
 		}
@@ -1411,7 +1432,12 @@ treeNode* parse (FILE *fp)
 					errLine (tk->lineNumber) ;
 					printf (" ") ;
 					errArrow () ;
-					printf (ANSI_BOLD ANSI_RED "%s\n" ANSI_RESET, tk->lexeme) ;
+					#ifdef _WIN64
+						printf (" %s\n", tk->lexeme) ;
+					#endif
+					#if defined __linux__ || defined __MACH__
+						printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
+					#endif
 					root->syntax_error=1;
 				}
 			}
@@ -1427,7 +1453,12 @@ treeNode* parse (FILE *fp)
 						errLine (tk->lineNumber) ;
 						printf (" ") ;
 						errArrow () ;
-						printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
+						#ifdef _WIN64
+							printf ("%s symbol was expected\n", utility_array[stack->key]) ;
+						#endif
+						#if defined __linux__ || defined __MACH__
+							printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
+						#endif
 						current=tk->lineNumber;
 					}
 
@@ -1438,7 +1469,12 @@ treeNode* parse (FILE *fp)
 						errLine (tk->lineNumber - 1) ;
 						printf (" ") ;
 						errArrow () ;
-						printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
+						#ifdef _WIN64
+							printf ("%s symbol was expected\n", utility_array[stack->key]) ;
+						#endif
+						#if defined __linux__ || defined __MACH__
+							printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET " symbol was expected\n", utility_array[stack->key]);
+						#endif
 						current=tk->lineNumber-1;
 					}
 					
@@ -1448,7 +1484,12 @@ treeNode* parse (FILE *fp)
 				{
 					errParse () ;
 					errArrow () ;
-					printf("Stack is empty\n");
+					#ifdef _WIN64
+						printf ("Stack is empty\n") ;
+					#endif
+					#if defined __linux__ || defined __MACH__
+						printf(ANSI_BOLD ANSI_RED "Stack is empty\n" ANSI_RESET);
+					#endif
 					break;
 				}
 				 stack=stack->next;
@@ -1496,7 +1537,12 @@ treeNode* parse (FILE *fp)
 				{
 					errParse () ;
 					errArrow () ;
-					printf("Stack is empty\n");
+					#ifdef _WIN64
+						printf ("Stack is empty\n") ;
+					#endif
+					#if defined __linux__ || defined __MACH__
+						printf(ANSI_BOLD ANSI_RED "Stack is empty\n" ANSI_RESET);
+					#endif
 					break;
 				}
 				flag=1;
@@ -1526,7 +1572,12 @@ treeNode* parse (FILE *fp)
 									errLine (tk->lineNumber) ;
 									printf (" ") ;
 									errArrow () ;
-									printf ("%s\n", tk->lexeme) ;
+									#ifdef _WIN64
+										printf (" %s\n", tk->lexeme) ;
+									#endif
+									#if defined __linux__ || defined __MACH__
+										printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
+									#endif
 								}
 								break;
 							}

@@ -594,7 +594,7 @@ void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 		codePrint ("\t\tPUSH RBX\n") ;
 		codePrint ("\t\tPUSH RDI\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL malloc\n") ;
 		#endif
 
@@ -627,7 +627,7 @@ void dynamicDeclaration (moduleST *lst, varST *vst, int declCount)
 	{
 		codePrint ("\t\tSUB RSP, 12\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL malloc\n") ;
 		#endif
 
@@ -902,6 +902,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 							codePrint ("\t\tsyscall\n") ;
 						#endif
 
+						#ifdef __WIN64
+							codePrint ("\t\tMOV RAX, 0x2000001\n") ;
+							codePrint ("\t\tMOV RDI, 0\n") ;
+							codePrint ("\t\tsyscall\n") ;
+						#endif
 					}
 					else
 						codePrint ("\t\tret\n") ;
@@ -1204,6 +1209,10 @@ void codeGeneration(astNode *node)
 				codePrint ("\n_main:\n") ;
 			#endif
 
+			#ifdef _WIN64
+				codePrint ("\nWinMain:\n") ;
+			#endif
+
 			codePrint ("\t\tPUSH RBP\n") ;
 			codePrint ("\t\tMOV RBP, RSP\n\n") ;
 
@@ -1216,13 +1225,19 @@ void codeGeneration(astNode *node)
 
 void preamble()
 {
-	#ifdef __linux__
+	#if defined __linux__ || defined _WIN64
 		codePrint ("extern printf\n") ;
 		codePrint ("extern scanf\n") ;
 		codePrint ("extern malloc\n") ;
 		codePrint ("extern exit\n") ;
 
-		codePrint ("\nglobal main\n") ;
+		#ifdef __linux__
+			codePrint ("\nglobal main\n") ;
+		#endif
+
+		#ifdef _WIN64
+			codePrint ("\nglobal WinMain\n") ;
+		#endif
 	#endif
 
 	#ifdef __MACH__
@@ -1310,7 +1325,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @boundPrint\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1320,7 +1335,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;
 		#endif
 
@@ -1339,7 +1354,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @declPrint\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1349,7 +1364,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;
 		#endif
 
@@ -1368,7 +1383,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @declNeg\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1378,7 +1393,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;
 		#endif
 
@@ -1396,7 +1411,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @arrArgMismatch\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1406,7 +1421,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;
 		#endif
 
@@ -1425,7 +1440,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @asgnArgMismatch\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1435,7 +1450,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;		
 		#endif
 
@@ -1454,7 +1469,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @divZero\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1464,7 +1479,7 @@ void postamble()
 
 		codePrint ("\t\tMOV RDI, 1\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL exit\n") ;		
 		#endif
 
@@ -1484,7 +1499,7 @@ void postamble()
 		codePrint ("\t\tXOR RAX, RAX\n") ;
 		codePrint ("\t\tPUSH RBX\n") ;
 		codePrint ("\t\tPUSH RCX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1504,7 +1519,7 @@ void postamble()
 		codePrint ("\t\tPUSH RBX\n") ;
 		codePrint ("\t\tPUSH RSI\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL scanf\n") ;
 		#endif
 
@@ -1540,7 +1555,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1562,7 +1577,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1584,7 +1599,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1620,7 +1635,7 @@ void postamble()
 		codePrint ("\t\tPUSH RDX\n") ;
 		codePrint ("\t\tPUSH RSI\n") ;
 
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL scanf\n") ;
 		#endif
 
@@ -1658,7 +1673,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @printFormat\n") ;
 		codePrint ("\t\tMOVSX RSI, SI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1691,7 +1706,7 @@ void postamble()
 
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1723,7 +1738,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1750,7 +1765,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1771,7 +1786,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1803,7 +1818,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1840,7 +1855,7 @@ void postamble()
 		codePrint ("\t\tPUSH BX\n") ;
 		codePrint ("\t\tPUSH CX\n") ;
 		codePrint ("\t\tPUSH DX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1861,7 +1876,7 @@ void postamble()
 		codePrint ("\t\tMOV RDI, @printNewLine\n") ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
 		codePrint ("\t\tXOR RAX, RAX\n") ;
-		#ifdef __linux__
+		#if defined __linux__ || defined _WIN64
 			codePrint ("\t\tCALL printf\n") ;
 		#endif
 
@@ -1901,37 +1916,67 @@ void postamble()
 	if (isFlagSet (df, boundPrint))
 	{
 		codePrint ("\t\t@boundPrint : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt!\" , 10, 0\n") ;	
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Array out of bounds. Halt!\" , 10, 0\n") ;	
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt!\" , 10, 0\n") ;	
+		#endif			
 	}
 	
 	if (isFlagSet (df, declPrint))
 	{
 		codePrint ("\t\t@declPrint : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Invalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
+		#endif			
 	}
 	
 	if (isFlagSet (df, declNeg))
 	{
 		codePrint ("\t\t@declNeg : ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Negative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
+		#endif			
 	}
 
 	if (isFlagSet (df, arrArgMismatch))
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
+		#endif			
 	}
 
 	if (isFlagSet (df, asgnArgMismatch))
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
+		#endif			
 	}
 
 	if (isFlagSet (df, divZero))
 	{
 		codePrint ("\t\t@divZero: ") ;
-		codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt!\" , 10, 0\n") ;
+		#ifdef _WIN64
+			codePrint ("db \"ERPLAG : Runtime Error --> Division by zero detected. Halt!\" , 10, 0\n") ;
+		#endif
+		#if defined __linux__ || defined __MACH__
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt!\" , 10, 0\n") ;
+		#endif			
 	}
 
 	if (isFlagSet (df, printFormatArray))
