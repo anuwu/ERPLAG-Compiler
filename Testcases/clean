@@ -12,9 +12,13 @@ input () {
 		read ans
 		if test "$ans" = "y" -o "$ans" = "Y"
 		then
+			printf "${BOLD}${RED}"
 			diff <(find . -type f ! -name "*.*") <(printf "./clean\n") --new-line-format="" --unchanged-line-format="" | xargs rm -f -v
+			printf "${CYAN}"
 			find . -type f  -name "*.asm" | xargs rm -f -v
+			printf "${MAGENTA}"
 			find . -type f  -name "*.o" | xargs rm -f -v
+			printf "${RESET}"
 			exit
 		elif  [ "$ans" = "n" -o "$ans" = "N" ]
 		then

@@ -7,13 +7,19 @@
 
 CYAN='\033[1;36m'
 RED='\033[1;31m'
+WHITE='\033[1;37m'
 BOLD='\033[1m'
 GREEN='\033[1;32m'
 RESET='\033[0m'
 
 
 errHead () {
-	printf "${CYAN}ERPLAG : ${RED}FATAL ERROR ${RESET}${BOLD}--> ${RESET}"
+	erplagHead 
+	printf "${RED}FATAL ERROR ${RESET}${BOLD}--> ${RESET}"
+}
+
+erplagHead () {
+	printf "${BOLD}${CYAN}ERPLAG : "
 }
 
 erpHelp () {
@@ -27,8 +33,19 @@ erpHelp () {
 	printf "${BOLD}${RED}WARNING : DO NOT RUN clean.sh IN THE REPOSITORY FOLDER. IT WILL DELETE ESSENTIAL FILES OF THE COMPILER!${RESET}\n"
 }
 
-success () {
-	printf "${BOLD}${GREEN}Compilation successful${RESET}\n"
+successErpExe () {
+	erplagHead
+	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successfull! Executable file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
+}
+
+successErpAsm () {
+	erplagHead
+	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successful! Assembly file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
+}
+
+successAsmExe () {
+	erplagHead
+	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
 }
 
 optflag=0
@@ -40,14 +57,13 @@ while getopts ":a:o:h" opt; do
 			;;
 		a)	.compiler $OPTARG
 			status=$?
+			fname=${OPTARG:0:${#OPTARG}-4}
+			asmname=${fname}.asm
 			if [ $status -eq 0 ]
 			then
-				success 
+				successErpAsm $OPTARG $asmname
 			elif [ $status -eq 2 ]
 			then
-				fname=${OPTARG:0:${#OPTARG}-4}
-				echo $fname
-				asmname=${fname}.asm
 				rm -f $asmname
 			fi
 			;;
@@ -78,7 +94,7 @@ while getopts ":a:o:h" opt; do
 				fi
 
 				gcc -w -no-pie $objname -o $target 
-				success
+				successErpExe $srcname $target
 			fi
 			rm -f $asmname
 			rm -f $objname
@@ -114,7 +130,7 @@ then
 
 			gcc -w -no-pie $objname -o $fname 
 			rm -f $objname
-			success
+			successAsmExe $srcname $fname
 		else
 			errHead 
 			echo "ASM file $srcname does not exist" 
@@ -138,7 +154,7 @@ then
 			fi
 
 			gcc -w -no-pie $objname -o $fname
-			success
+			successErpExe $srcname $fname
 		fi
 		rm -f $asmname
 		rm -f $objname
