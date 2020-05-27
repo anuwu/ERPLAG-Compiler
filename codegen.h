@@ -67,6 +67,7 @@ void RSPRestore () ;
 void getValue (moduleST *lst, varST *searchedVar) ;
 
 void preamble () ;
+void errorTF (char *errStr) ;
 void postamble () ;
 int isFlagSet (int flagInt, int id) ;
 
