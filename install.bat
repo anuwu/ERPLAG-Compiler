@@ -9,7 +9,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 where nasm /f > nul 2>&1
-if not errorlevel 0 (
+if %ERRORLEVEL% NEQ 0 (
 	echo Please ensure nasm is installed and added to path before attempting to install ERPLAG compiler
 	set die=1
 )
