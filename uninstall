@@ -26,9 +26,9 @@ then
 	input
 
 	sudo printf "Uninstalling ERPLAG compiler... \n\n${BOLD}${RED}"
-	echo "/usr/local/bin/erplag" | xargs -0 -n1 echo rm | sh -x
-	echo "/usr/local/bin/erpclr" | xargs -0 -n1 echo rm | sh -x
-	echo "/usr/local/bin/.compiler" | xargs -0 -n1 echo rm | sh -x
+	echo "/usr/local/bin/erplag" | xargs -0 -n1 echo rm | sudo sh -x
+	echo "/usr/local/bin/erpclr" | xargs -0 -n1 echo rm | sudo sh -x
+	echo "/usr/local/bin/.compiler" | xargs -0 -n1 echo rm | sudo sh -x
 	printf "\n${BOLD}${GREEN}ERPLAG compiler has been successfully uninstalled!${RESET}\n"
 else
 	printf "${BOLD}${MAGENTA}ERPLAG compiler installation does not exist!${RESET}\n"
