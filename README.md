@@ -52,4 +52,11 @@ Then link with gcc -
    - `gcc -no-pie <filename>.o -o <executable>` for **Linux/macOS**
    - `gcc <filename>.obj -o <executable>.exe` for **Windows**
 
+## Uninstallation
+To uninstall, open a terminal in the repository and execute -
+   - `./uninstall` for **Linux/macOS**
+   - `uninstall`for **Windows**
+
+Additionally, ensure to remove the repository from the environment PATH in **Windows**. No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
+
 Thank you!
