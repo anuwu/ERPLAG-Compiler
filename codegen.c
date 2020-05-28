@@ -1348,8 +1348,6 @@ void errorTF (char *errStr)
 		codePrint ("\t\tCALL _printf\n") ;
 	#endif
 
-	RSPRestore () ;
-
 	#if defined __linux__ || defined __MACH__
 		codePrint ("\t\tMOV RDI, 1\n") ;
 	#endif
@@ -1892,7 +1890,7 @@ void postamble()
 		codePrint ("\n@printInteger:\n") ;
 		RSPAlign () ;
 
-		#ifdef __linux__ || __MACH__
+		#if defined __linux__ || defined __MACH__
 			codePrint ("\t\tMOV RDI, @printFormat\n") ;
 			codePrint ("\t\tMOVSX RSI, SI\n") ;
 			codePrint ("\t\tXOR RAX, RAX\n") ;

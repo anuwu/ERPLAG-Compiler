@@ -14,7 +14,7 @@ start
 	while (i <= j)
 	start
 		declare l : integer ;
-		cnt := cnt + i - savei ;
+		cnt := cnt + 1 ;
 
 		cond2 := i == j ;
 		cond1 := i == 5 ;

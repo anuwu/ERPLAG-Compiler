@@ -67,12 +67,12 @@ then
 	input
 
 	printf "${BOLD}${MAGENTA}"
-	find . -type f ! -name "*.*" | xargs rm -f -v
+	find . -type f ! -name "*.*" -print0 | xargs -0 -n1 echo rm | sh -x
 	printf "${BLUE}"
-	find . -type f  -name "*.asm" | xargs rm -f -v
+	find . -type f  -name "*.asm" -print0 | xargs -0 -n1 echo rm | sh -x
 	printf "${YELLOW}"
-	find . -type f  -name "*.o" | xargs rm -f -v
+	find . -type f  -name "*.o" -print0 | xargs -0 -n1 echo rm | sh -x
 	printf "${RESET}"
 else
-	printf "No ${BOLD}.asm, .o or ${BOLD}executables ${RESET}found.\n"
+	printf "No ${BOLD}.asm, .o ${RESET}or ${BOLD}executables ${RESET}found.\n"
 fi

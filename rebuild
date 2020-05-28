@@ -10,7 +10,6 @@ RESET='\033[0m'
 
 ccErr () {
 	printf "\n${BOLD}${RED}ERPLAG compiler re-build failed.${RESET}\n"
-	printf "Press enter to continue...\n"
 }
 
 input () {
@@ -63,12 +62,10 @@ sudo cp erpclr /usr/local/bin
 stat=$?
 if [ $stat -ne 0 ]
 then
-	installErr 
+	ccErr 
 	exit
 fi
 
 make clean
 
 printf "\n${BOLD}${GREEN}ERPLAG compiler re-build OK!${RESET}\n"
-printf "Press enter to continue..."
-read

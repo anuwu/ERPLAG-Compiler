@@ -4,5 +4,6 @@ start
 	declare i : integer ;
 	i := 5 ;
 
+	A[i] := i*i - 10 ;
 	print (A[i]) ;
 end
