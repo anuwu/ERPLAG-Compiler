@@ -1,0 +1,115 @@
+@echo off
+setlocal EnableDelayedExpansion
+
+IF "%1" == "" (
+	echo ERPLAG : FATAL ERROR --^> No source file
+	EXIT /B 1
+)
+
+IF "%1" == "-a" (
+	.compiler %2
+	if not errorlevel 1 (
+		set str=%2
+		set str=!str:~0,-4!
+		echo ERPLAG : Compilation of %2 successful^^! Assembly file !str!^.asm generated
+		EXIT /B 0
+	)
+	EXIT /B 1
+) ELSE IF "%1" == "-o" (
+	IF "%2" == "" (
+		echo ERPLAG : FATAL ERROR --^> Please provide executable file name
+		EXIT /B 1
+	) ELSE (
+		set ext=%2
+		set ext=!ext:~-4!
+
+		IF NOT "!ext!"==".exe" (
+			echo ERPLAG : FATAL ERROR --^> Please provide output file with .exe extension
+			EXIT /B 1
+		)
+	)
+
+	IF "%3" == "" (
+		echo ERPLAG : FATAL ERROR --^> No source file
+		EXIT /B 1
+	)
+
+	.compiler %3 $temp.erp.asm
+	if not errorlevel 1 (
+		nasm -fwin64 $temp.erp.asm -o $temp.erp.obj
+		gcc -o %2 $temp.erp.obj
+
+		del $temp.erp.asm
+		del $temp.erp.obj
+
+		set str=%3
+		set str=!str:~0,-4!
+		echo ERPLAG : Compilation of %3 successful^^! Executable %2 generated
+
+		EXIT /B 0
+	)
+
+	EXIT /B 1
+) ELSE IF "%1" == "-h" (
+	echo The compiler can be used with the following options - 
+	echo 1^. erplag -a ^<filename^>^.erp generates a ^.asm file with the same filename
+	echo 2^. erplag ^<filename^>^.asm generates an executable with the same filename
+	echo 3^. erplag -o myexec ^<filename^>^.erp generates an executable file named myexec
+	echo 4^. erplag ^<filename^>^.erp directly generates an executable with the same filename
+
+	echo.
+	echo If you are making any changes to the source code or the erplag batch script, make sure to run install again
+
+	echo.
+	echo Use make debug to create the following executables useful for debugging - 
+	echo 1^. ast - To debug the abstract syntax tree (described in astDriver^.c^)
+	echo 2^. ST - To debug the symbol table (described in symbolTableDriver^.c^)
+	echo 3^. compiler - To debug the final compiler (described in erplag^.c^)
+	
+	echo.
+	echo The compiler can be uninstalled from this repository by executing "uninstall" in the command prompt. If an installation does not exist, then any debugging files will be removed
+) ELSE (
+	set str=%1
+	set str=!str:~0,1!
+
+	IF "!str!"=="-" (
+		echo Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable
+		EXIT /B 1
+	) 
+
+	set ext=%1
+	set ext=!ext:~-4!
+	set file=%1
+	set file=!file:~0,-4!
+
+	IF "!ext!"==".asm" (
+		if exist %1 (
+			nasm -fwin64 %1 -o $temp.erp.obj
+			gcc -o !file!.exe $temp.erp.obj
+			
+			del $temp.erp.obj
+
+			echo ERPLAG : Assembly of %1 successful^^! Executable !file!^.exe generated
+			EXIT /B 0
+		) else (
+			echo ERPLAG : FATAL ERROR --^> Assembly file %1 does not exist
+			EXIT /B 1
+		)
+	) ELSE IF "!ext!"==".erp" (
+		.compiler %1 $temp.erp.asm
+		if not errorlevel 1 (
+			nasm -fwin64 $temp.erp.asm -o $temp.erp.obj
+			gcc -o !file!.exe $temp.erp.obj
+
+			del $temp.erp.asm
+			del $temp.erp.obj
+
+			echo ERPLAG : Compilation of %1 successful^^! Executable !file!^.exe generated
+			EXIT /B 0
+		)
+
+		EXIT /B 1
+	) ELSE (
+		echo ERPLAG : FATAL ERROR --^> Unsupported file format. Use ^.erp for source files and ^.asm for x86 assembly files
+	)
+)

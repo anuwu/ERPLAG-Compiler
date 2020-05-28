@@ -5,6 +5,7 @@ debug : erplag.o codegen.o astDriver.o ast.o typeChecker.o lexer.o parser.o symb
 	gcc -w -g -o ast astDriver.o ast.o lexer.o parser.o error.o
 	gcc -w -g -o ST symbolTableDriver.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
 	gcc -w -g -o compiler erplag.o codegen.o ast.o lexer.o parser.o symbolTable.o typeChecker.o error.o
+	printf "Debugging files created!\n"
 
 erplag.o : erplag.c
 	gcc -w -g -c erplag.c

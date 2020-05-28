@@ -7,4 +7,6 @@ start
 	declare j:integer ;
 	get_value (j) ;
 	i := i / j ;
+
+	print (i) ;
 end

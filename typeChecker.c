@@ -6,6 +6,7 @@
 #include "typeChecker.h"
 #include "error.h"
 
+extern int realPresent ;
 extern char* tokenIDToString (tokenID id) ;
 
 int isLeftLimStatic (varST *arrayVar)
@@ -209,7 +210,10 @@ tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *expr
 			if (exprNode->id == TK_NUM)
 				return TK_INTEGER ;
 			else if (exprNode->id == TK_RNUM)
+			{
+				realPresent = 1 ;
 				return TK_REAL ;
+			}
 			else
 				return TK_BOOLEAN ;
 		}

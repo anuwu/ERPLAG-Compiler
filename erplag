@@ -31,7 +31,7 @@ erpHelp () {
 	printf "${BOLD}3. ${CYAN}erplag -o ${RESET}${BOLD}myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}myexec${RESET}\n"
 	printf "${BOLD}4. ${CYAN}erplag ${RESET}${BOLD}<filename>.erp ${RESET}directly generates an executable with the same filename\n\n"
 	printf "If you are making any changes to the ${BOLD}${GREEN}source code ${RESET}or the ${BOLD}${CYAN}erplag, erpclr ${RESET}scripts, make sure to run ${BOLD}${CYAN}./rebuild ${RESET} afterwards\n"
-	printf "A script named ${BOLD}${CYAN}erpclr${RESET}. This can be used to clean any ${BOLD}.asm, .o ${RESET}and ${BOLD}executable ${RESET}files recursively in a folder that contains only ERPLAG source files. ${BOLD}${RED}Use it with caution in other directories${RESET}\n\n"
+	printf "A script named ${BOLD}${CYAN}erpclr${RESET} can be used to clean any ${BOLD}.asm, .o ${RESET}and ${BOLD}executable ${RESET}files recursively in a folder that contains only ERPLAG source files. ${BOLD}${RED}Use it with caution in other directories${RESET}\n\n"
 	printf "${BOLD}${YELLOW}Use ${CYAN}make debug ${YELLOW}to create the following executables useful for debugging - ${RESET}\n"
 	printf "${BOLD}1. ${CYAN}ast ${RESET}- To debug the abstract syntax tree (described in ${BOLD}astDriver.c${RESET})\n"
 	printf "${BOLD}2. ${CYAN}ST ${RESET}- To debug the symbol table (described in ${BOLD}symbolTableDriver.c${RESET})\n"
@@ -42,17 +42,17 @@ erpHelp () {
 
 successErpExe () {
 	erplagHead
-	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successfull! Executable file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
+	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successfull! Executable file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
 successErpAsm () {
 	erplagHead
-	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successful! Assembly file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
+	printf "${BOLD}${GREEN}Compilation of ${RESET}${BOLD}$1 ${GREEN}successful! Assembly file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
 successAsmExe () {
 	erplagHead
-	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated.${RESET}\n"
+	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
 optflag=0
@@ -69,10 +69,9 @@ while getopts ":a:o:h" opt; do
 			if [ $status -eq 0 ]
 			then
 				successErpAsm $OPTARG $asmname
-			elif [ $status -eq 2 ]
-			then
-				rm -f $asmname
-			fi
+			else
+
+			exit $status
 			;;
 		o)	target=$OPTARG 
 			shift $(($OPTIND-1))
@@ -105,6 +104,8 @@ while getopts ":a:o:h" opt; do
 			fi
 			rm -f $asmname
 			rm -f $objname
+
+			exit $status
 			;;
 		\?) errHead
 			echo "Invalid option. Use ${BOLD}${CYAN}-a ${RESET}to generate x86 assembly or use ${BOLD}${CYAN}-o ${RESET}along with output name to generate executable"
@@ -138,9 +139,13 @@ then
 			gcc -w -no-pie $objname -o $fname 
 			rm -f $objname
 			successAsmExe $srcname $fname
+
+			exit 0
 		else
 			errHead 
-			printf "ASM file ${BOLD}$srcname ${RESET}does not exist\n" 
+			printf "Assembly file ${BOLD}$srcname ${RESET}does not exist\n"
+
+			exit 1
 		fi
 	elif [[ $srcname =~ \.erp$ ]] 
 	then
@@ -165,12 +170,16 @@ then
 		fi
 		rm -f $asmname
 		rm -f $objname
+
+		exit $status
 	elif test "$srcname" = ""
 	then
 		errHead 
 		echo "No source file"
+		exit 1
 	else
 		errHead
 		printf "Unsupported file format. Use ${BOLD}.erp ${RESET}for source files and ${BOLD}.asm ${RESET}for x86 assembly files\n"
+		exit 1
 	fi
 fi

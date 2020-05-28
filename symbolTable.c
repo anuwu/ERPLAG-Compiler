@@ -1348,11 +1348,11 @@ void fillModuleST ( baseST* realBase , moduleST* baseModule , astNode * statemen
  		{
  			if (statementAST->child->next->id == TK_ID)
  				validateVar (realBase, baseModule, statementAST->child->next, &searchedVar) ;
+ 			else if (statementAST->child->next->id == TK_RNUM)
+ 				realPresent = 1 ;
  		} 
 		else if ( statementAST->child->id == TK_ASSIGNOP) 
-		{
 			assignmentTypeCheck (realBase, baseModule, statementAST->child) ;
-		}
  		else if (statementAST->child->id == idList) 
  		{
 			// [a] = use module with parameters [ d ] ;

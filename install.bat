@@ -1,6 +1,35 @@
 @echo off
+setlocal EnableDelayedExpansion
+
+set die=0
+where >nul 2>nul gcc
+if %ERRORLEVEL% NEQ 0 (
+	echo Please ensure gcc is installed and added to path before attempting to install ERPLAG compiler	
+	set die=1
+)
+
+where nasm /f > nul 2>&1
+if not errorlevel 0 (
+	echo Please ensure nasm is installed and added to path before attempting to install ERPLAG compiler
+	set die=1
+)
+
+IF !die!==1 (
+	echo ERPLAG compiler installation failed^!
+	EXIT /B 0
+)
+
+if exist .compiler (
+	echo ERPLAG compiler is already installed in this system 
+	echo If you wish to uninstall it, execute "uninstall" in the command prompt
+
+	EXIT /B 0
+)
+
+
 set grmPath=%CD%
 set grmPath=%grmPath%\parser.c
+
 gcc -w -g -c erplag.c
 gcc -w -g -c error.c
 gcc -w -g -c codegen.c
@@ -19,3 +48,14 @@ del ast.o
 del typeChecker.o
 del lexer.o
 del parser.o
+
+if exist erplag.bat (
+	del erplag.bat
+)
+
+rename .erplag erplag.bat
+
+echo ERPLAG compiler has been successfully installed^^!
+echo Please add this repository to the environment PATH variable
+echo.
+echo Use erplag -h to read the guidelines for using the compiler

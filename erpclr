@@ -19,7 +19,7 @@ input () {
 		then
 			exit
 		else
-			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) "
+			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) : "
 		fi
 	done
 }
@@ -34,7 +34,7 @@ else
 	erpList=$(find . -type f -name "*.erp")
 	if [ "$erpList" = "" ]
 	then
-		printf "${BOLD}${MAGENTA}Not a folder with any ${RESET}${BOLD}.erp ${RESET}${MAGENTA}files. Do you want to proceed? ${RESET}(y/n) "
+		printf "${BOLD}${MAGENTA}Not a folder with any ${RESET}${BOLD}.erp ${RESET}${MAGENTA}files. Do you want to proceed? ${RESET}(y/n) : "
 		input
 	fi
 fi
@@ -63,7 +63,7 @@ then
 		printf "\n"
 	fi
 
-	printf "${RESET}Are you sure you want to delete the above files? (y/n) "
+	printf "${RESET}Are you sure you want to delete the above files? (y/n) : "
 	input
 
 	printf "${BOLD}"

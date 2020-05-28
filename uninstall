@@ -15,14 +15,14 @@ input () {
 		then
 			exit
 		else
-			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) "
+			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) : "
 		fi
 	done
 }
 
 if [ -f /usr/local/bin/erplag ]
 then
-	printf "${BOLD}${RED}Are you sure you want to uninstall ERPLAG compiler? ${RESET}(y/n) "
+	printf "${BOLD}${RED}Are you sure you want to uninstall ERPLAG compiler? ${RESET}(y/n) : "
 	input
 
 	sudo printf "Uninstalling ERPLAG compiler... \n\n${BOLD}${RED}"

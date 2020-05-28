@@ -98,12 +98,12 @@ int main(int argc, char **argv)
 		{
 			errCodegen () ;
 			#if defined __linux__ || defined __MACH__
-				printf ("Declaration of type " ANSI_BOLD ANSI_GREEN "real" ANSI_RESET " found in source file, which is not handled by the present version of the compiler.\n") ;
+				printf ("Variables or static values of type " ANSI_BOLD ANSI_GREEN "\"real\"" ANSI_RESET " found in source file, which is not handled by the present version of the compiler.\n") ;
 			#endif
 			#ifdef _WIN64
-				printf ("Declaration of type real found in source file, which is not handled by the present version of the compiler.\n") ;
+				printf ("Variables or static values of type \"real\" found in source file, which is not handled by the present version of the compiler.\n") ;
 			#endif
-			exit (2) ;
+			exit (1) ;
 		}
 
 		int len ;
