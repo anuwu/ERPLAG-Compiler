@@ -55,6 +55,14 @@ successAsmExe () {
 	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]
+then
+	NFLAG="-felf64"
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+	NFLAG="-fmacho64"
+fi
+
 optflag=0
 while getopts ":a:o:h" opt; do
 	optflag=1
@@ -69,7 +77,7 @@ while getopts ":a:o:h" opt; do
 			if [ $status -eq 0 ]
 			then
 				successErpAsm $OPTARG $asmname
-			else
+			fi
 
 			exit $status
 			;;
@@ -91,14 +99,7 @@ while getopts ":a:o:h" opt; do
 			then
 				objname=${srcname}.o
 
-				if [[ "$OSTYPE" == "linux-gnu"* ]]
-				then
-				    nasm -felf64 $asmname -o $objname  
-				elif [[ "$OSTYPE" == "darwin"* ]]
-				then
-				    nasm -fmacho64 $asmname -o $objname
-				fi
-
+				nasm $NFLAG $asmname -o $objname
 				gcc -w -no-pie $objname -o $target 
 				successErpExe $srcname $target
 			fi
@@ -112,7 +113,12 @@ while getopts ":a:o:h" opt; do
 			exit 1
 			;;
 		:)  errHead
-			echo "Please provide output file name" 
+			if test "$1" = "-a"
+			then
+				echo "No source file"
+			else
+				echo "Please provide output file name"
+			fi
 			exit 1
 	esac
 done
@@ -128,14 +134,7 @@ then
 			fname=${srcname:0:${#srcname}-4} 
 			objname=${srcname}.o
 
-			if [[ "$OSTYPE" == "linux-gnu"* ]]
-			then
-				nasm -felf64 $srcname -o $objname
-			elif [[ "$OSTYPE" == "darwin"* ]]
-			then
-				nasm -fmacho64 $srcname -o $objname
-			fi
-
+			nasm $NFLAG $srcname -o $objname
 			gcc -w -no-pie $objname -o $fname 
 			rm -f $objname
 			successAsmExe $srcname $fname
@@ -156,15 +155,7 @@ then
 		status=$? 
 		if [ $status -eq 0 ]
 		then
-
-			if [[ "$OSTYPE" == "linux-gnu"* ]]
-			then
-				nasm -felf64 $asmname -o $objname
-			elif [[ "$OSTYPE" == "darwin"* ]]
-			then
-				nasm -fmacho64 $asmname -o $objname
-			fi
-
+			nasm $NFLAG $asmname -o $objname
 			gcc -w -no-pie $objname -o $fname
 			successErpExe $srcname $fname
 		fi
