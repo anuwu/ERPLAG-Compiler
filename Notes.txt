@@ -1,3 +1,9 @@
+Changes in grammar -
+The language document specifies that the driver function is declared as -
+  <<driver program>>
+It should instead be -
+  <<<driver program>>>
+
 Modifications from the original specification document -
 1. Floating point operations are not handled beyond the semantic analysis part.
 2. Recursion is allowed.
