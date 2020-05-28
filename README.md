@@ -4,13 +4,14 @@ Welcome to the ERPLAG compiler. This is a toy language that was given as a semes
 
 ## Pre-requisites
 
-### Linux/macOS
-Dependencies are taken care of by the installation script. For macOS, please ensure that homebrew is installed.
+### For Linux/macOS
+In Linux, dependencies are taken care of by the installation script. 
+In macOS, please ensure that homebrew is installed (if not, the script attempts to install homebrew)
 
-### Windows
+### For Windows
 Please install gcc, nasm and add them to the environment PATH variable.
 
-## Intallation
+## Installation
 To install the compiler, run the following commands after opening a terminal in a suitable folder -
    - `git clone https://github.com/anwesh0304/ERPLAG-Compiler.git`
    - `cd ERPLAG-Compiler`
@@ -19,12 +20,12 @@ To install the compiler, run the following commands after opening a terminal in 
 
 If the installation fails, you have to complete the following steps -
    - `gcc -o .compiler erplag.c codegen.c ast.c lexer.c parser.c symbolTable.c typeChecker.c error.c`
-### Linux/macOS
+### In Linux/macOS
    - `sudo cp .compiler /usr/local/bin`
    - `sudo cp erplag /usr/local/bin`
    - `sudo cp erpclr /usr/local/bin`
       If the above steps fail, you have to add the repository directory to the PATH variable.
-### Windows
+### In Windows
    Inside the repository, if there does not a batch file named 'erplag.bat', run in command prompt -
    - `rename .erplag erplag.bat`
    
