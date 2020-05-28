@@ -12,7 +12,7 @@ In macOS, please ensure that homebrew is installed (if not, the script attempts 
 Please install gcc, nasm and add them to the environment PATH variable.
 
 ## Installation
-To install the compiler, clone this repository, open a terminal in its directory and run the install script
+To install the compiler, clone this repository, open a terminal in its directory and run the install script as follows -
    - `git clone https://github.com/anwesh0304/ERPLAG-Compiler.git`
    - `cd ERPLAG-Compiler`
    - `./install` for **Linux/macOS**
