@@ -29,7 +29,7 @@ void checkCommand (int argc, char **argv, char **outputFile)
 	{
 		errFatal () ;
 		#if defined __linux__ || defined __MACH__
-			printf ("Unsupported source format. Use file with " ANSI_BOLD ".erp" ANSI_RESET "extension\n") ;
+			printf ("Unsupported source format. Use file with " ANSI_BOLD ".erp" ANSI_RESET " extension\n") ;
 		#endif
 		#ifdef _WIN64
 			printf ("Unsupported source format. Use file with .erp extension\n") ;
@@ -53,7 +53,7 @@ void checkCommand (int argc, char **argv, char **outputFile)
 		{
 			errFatal () ;
 			#if defined __linux__ || defined __MACH__
-				printf ("Unsupported output format. Use " ANSI_BOLD ".asm" ANSI_RESET "extension\n") ;
+				printf ("Unsupported output format. Use " ANSI_BOLD ".asm" ANSI_RESET " extension\n") ;
 			#endif
 			#ifdef _WIN64
 				printf ("Unsupported output format. Use .asm extension\n") ;
@@ -111,10 +111,10 @@ int main(int argc, char **argv)
 		{
 			errFatal () ;
 			#if defined __linux__ || defined __MACH__
-				printf ("Error creating output file " ANSI_BOLD "%s" ANSI_RESET "\n", outputFile) ;
+				printf ("Error creating asm file " ANSI_BOLD "%s" ANSI_RESET "\n", outputFile) ;
 			#endif
 			#ifdef _WIN64
-				printf ("Error creating output file %s\n", outputFile) ;
+				printf ("Error creating asm file %s\n", outputFile) ;
 			#endif
 			exit (1) ;
 		}
