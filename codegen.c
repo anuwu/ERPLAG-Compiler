@@ -277,8 +277,13 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 			break ;
 
 		case TK_RNUM :
-			errFatal () ;
-			printf ("At line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET " , Floating point is not allowed. Halt!\n", node->tok->lineNumber) ;
+			errCodegen () ;
+			#if defined __linux__ || defined __MACH__
+				printf ("At line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", static " ANSI_BOLD ANSI_GREEN "real" ANSI_RESET " data is not handled in the present version of the compiler.\n", node->tok->lineNumber) ;
+			#endif
+			#ifdef _WIN64
+				printf ("At line %d, static real data is not handled in the present version of the compiler.\n", node->tok->lineNumber) ;
+			#endif
 			fclose (fpOut) ;
 			exit (2) ;
 			break ;
@@ -410,11 +415,24 @@ void print (astNode *node, moduleST *lst)
 			codePrint ("\t\tMOV %s, %s\n", valReg, node->tok->lexeme) ;
 			codePrint ("\t\tCALL @printInteger\n\n") ;
 		}
-		else
+		else if (node->id == TK_BOOLEAN)
 		{
 			tf |= 1 << printBoolean ;
 			codePrint ("\t\tMOV %s, %d\n", valReg, node->tok->lexeme[0]=='t'?1:0) ;
 			codePrint ("\t\tCALL @printBoolean\n\n") ;
+		}
+		else
+		{
+			errCodegen () ;
+			#if defined __linux__ || defined __MACH__
+				printf ("At line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", static " ANSI_BOLD ANSI_GREEN "real" ANSI_RESET " data is not handled in the present version of the compiler.\n", node->tok->lineNumber) ;
+			#endif
+			#ifdef _WIN64
+				printf ("At line %d, static real data is not handled in the present version of the compiler.\n", node->tok->lineNumber) ;
+			#endif
+
+			fclose (fpOut) ;
+			exit (2) ;
 		}
 
 		return ;

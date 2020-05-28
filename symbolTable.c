@@ -9,6 +9,7 @@
 
 // make a global initial lexeme
 char current_lexeme[20] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" ;
+int realPresent = 0 ;
 
 extern char* tokenIDToString (tokenID id) ;
 
@@ -757,11 +758,17 @@ int getSize(baseST * realBase, varST * thisVar)
 	else if (thisVar->datatype == TK_BOOLEAN)
 		return 2 ;
 	else if(thisVar->datatype == TK_REAL)
+	{
+		realPresent = 1 ;
 		return 4 ;
+	}	
 	else // Array type 
 	{
 		int left, right ;
 		char *parentModule = getParentModuleName (realBase , (moduleST *)thisVar->scope) ;
+
+		if (thisVar->arrayIndices->type == TK_REAL)
+			realPresent = 1 ;
 
 		if (isVarStaticArr(thisVar))
 		{
@@ -777,7 +784,8 @@ int getSize(baseST * realBase, varST * thisVar)
 				sz = 2 ;
 			else if (thisVar->arrayIndices->type == TK_REAL)
 				sz = 4 ;
-
+			
+			
 			sz *= (right - left + 1) ;
 
 			if (sz <= 0)

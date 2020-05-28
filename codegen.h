@@ -6,6 +6,7 @@
 
 extern baseST *realBase ;
 extern FILE *fpOut ;
+extern int realPresent ;
 
 #define codePrint(x, ...) fprintf (fpOut, x, ##__VA_ARGS__ )
 

@@ -88,6 +88,20 @@ void errWarning ()
 	errArrow () ;
 }
 
+void errCodegen ()
+{
+	errHead () ;
+
+	#ifdef _WIN64
+		printf ("CODEGEN ERROR ") ;
+	#endif
+	#if defined __linux__ || defined __MACH__
+		printf (ANSI_BOLD ANSI_RED "CODEGEN ERROR " ANSI_RESET) ;
+	#endif
+
+	errArrow () ;
+}
+
 void errArrow ()
 {
 	#ifdef _WIN64

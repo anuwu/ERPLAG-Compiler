@@ -1,0 +1,10 @@
+<<<driver program>>>
+start
+	declare a : integer ;
+end
+
+<<module s>>
+takes input [a : integer, b : boolean] ;
+returns [c : integer] ;
+start
+end

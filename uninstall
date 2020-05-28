@@ -25,10 +25,10 @@ then
 	printf "${BOLD}${RED}Are you sure you want to uninstall ERPLAG? ${RESET}(y/n) "
 	input
 
-	sudo printf "Uninstalling ERPLAG... \n\n"
-	sudo rm -f -v /usr/local/bin/erplag
-	sudo rm -f -v /usr/local/bin/erpclr
-	sudo rm -f -v /usr/local/bin/.compiler
+	sudo printf "Uninstalling ERPLAG... \n\n${BOLD}${RED}"
+	echo "/usr/local/bin/erplag" | xargs -0 -n1 echo rm | sh -x
+	echo "/usr/local/bin/erpclr" | xargs -0 -n1 echo rm | sh -x
+	echo "/usr/local/bin/.compiler" | xargs -0 -n1 echo rm | sh -x
 	printf "\n${BOLD}${GREEN}ERPLAG has been successfully uninstalled!${RESET}\n"
 else
 	printf "${BOLD}${MAGENTA}ERPLAG installation does not exist!${RESET}\n"

@@ -94,6 +94,18 @@ int main(int argc, char **argv)
 
 	if (!realBase->semanticError)
 	{
+		if (realPresent)
+		{
+			errCodegen () ;
+			#if defined __linux__ || defined __MACH__
+				printf ("Declaration of type " ANSI_BOLD ANSI_GREEN "real" ANSI_RESET " found in source file, which is not handled by the present version of the compiler.\n") ;
+			#endif
+			#ifdef _WIN64
+				printf ("Declaration of type real found in source file, which is not handled by the present version of the compiler.\n") ;
+			#endif
+			exit (2) ;
+		}
+
 		int len ;
 		if (!(fpOut = fopen (outputFile, "w")))
 		{

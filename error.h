@@ -14,5 +14,6 @@ void errWarning () ;
 void errLex () ;
 void errFatal () ;
 void errParse () ;
+void errCodegen () ;
 void errArrow () ;
 void errLine (int line) ;

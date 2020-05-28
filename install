@@ -6,6 +6,16 @@ CYAN='\033[1;36m'
 RED='\033[1;31m'
 RESET='\033[0m'
 
+spin()
+{
+  while :
+  do
+    sleep 5
+    printf ".\n"
+  done
+}
+
+
 installErr () {
 	printf "\n${BOLD}${RED}ERPLAG installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
 	printf "Press enter to continue..."
@@ -21,7 +31,8 @@ then
 	exit
 fi
 
-sudo printf "Installing ERPLAG... \n\n"
+sudo printf "Installing ERPLAG... \n"
+
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]
 then
@@ -36,10 +47,29 @@ then
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 	fi
 
+	spin &
+	SPIN_PID=$!
 	brew update
+	kill -9 $SPIN_PID
+	wait $SPIN_PID 2>/dev/null
+
+	spin &
+	SPIN_PID=$!
 	brew install gcc
+	kill -9 $SPIN_PID
+	wait $SPIN_PID 2>/dev/null
+
+	spin &
+	SPIN_PID=$!
 	brew install make
+	kill -9 $SPIN_PID
+	wait $SPIN_PID 2>/dev/null
+
+	spin &
+	SPIN_PID=$!
 	brew install nasm
+	kill -9 $SPIN_PID
+	wait $SPIN_PID 2>/dev/null
 else
     printf "${BOLD}${RED}ERPLAG has not been designed for this OS. Please use a linux distribution or MacOS${RESET}\n"
     printf "Press enter to continue..."

@@ -1,0 +1,7 @@
+<<<driver program>>>
+start
+	while (3.41 >= 3.14)
+        start
+        end
+	** declare r : real ; **
+end

@@ -31,7 +31,7 @@ input () {
 if ! [ -f /usr/local/bin/erplag ]
 then
 	printf "${BOLD}${MAGENTA}ERPLAG compiler is not installed!${RESET}\n" 
-	printf "Please use ${BOLD}${CYAN}./install ${RESET}before using ${BOLD}${CYAN}./rebuild${RESET}\n"
+	printf "Please install the compiler with ${BOLD}${CYAN}./install ${RESET}before using ${BOLD}${CYAN}./rebuild${RESET}\n"
 
 	exit
 fi
