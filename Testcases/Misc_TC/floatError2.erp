@@ -5,6 +5,6 @@ end
 
 <<module s>>
 takes input [a : integer, b : boolean] ;
-returns [c : integer] ;
+returns [c : real] ;
 start
 end
