@@ -17,7 +17,7 @@ spin()
 
 
 installErr () {
-	printf "\n${BOLD}${RED}ERPLAG installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
+	printf "\n${BOLD}${RED}ERPLAG compiler installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
 	printf "Press enter to continue..."
 	read
 }
@@ -31,7 +31,7 @@ then
 	exit
 fi
 
-sudo printf "Installing ERPLAG... \n"
+sudo printf "Installing ERPLAG compiler... \n"
 
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]
@@ -71,7 +71,7 @@ then
 	kill -9 $SPIN_PID
 	wait $SPIN_PID 2>/dev/null
 else
-    printf "${BOLD}${RED}ERPLAG has not been designed for this OS. Please use a linux distribution or MacOS${RESET}\n"
+    printf "${BOLD}${RED}ERPLAG compiler has not been designed for this OS. Please use a 64-bit linux distribution, macOS or Windows OS.${RESET}\n"
     printf "Press enter to continue..."
 	read
     exit

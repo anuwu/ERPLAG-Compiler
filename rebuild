@@ -39,7 +39,7 @@ fi
 printf "${BOLD}${CYAN}Proceed with re-building ERPLAG compiler? ${RESET}(y/n) "
 input
 
-sudo printf "Rebuilding ERPLAG...\n\n"
+sudo printf "Rebuilding ERPLAG compiler...\n\n"
 sudo make
 
 sudo cp erplag /usr/local/bin

@@ -22,14 +22,14 @@ input () {
 
 if [ -f /usr/local/bin/erplag ]
 then
-	printf "${BOLD}${RED}Are you sure you want to uninstall ERPLAG? ${RESET}(y/n) "
+	printf "${BOLD}${RED}Are you sure you want to uninstall ERPLAG compiler? ${RESET}(y/n) "
 	input
 
-	sudo printf "Uninstalling ERPLAG... \n\n${BOLD}${RED}"
+	sudo printf "Uninstalling ERPLAG compiler... \n\n${BOLD}${RED}"
 	echo "/usr/local/bin/erplag" | xargs -0 -n1 echo rm | sh -x
 	echo "/usr/local/bin/erpclr" | xargs -0 -n1 echo rm | sh -x
 	echo "/usr/local/bin/.compiler" | xargs -0 -n1 echo rm | sh -x
-	printf "\n${BOLD}${GREEN}ERPLAG has been successfully uninstalled!${RESET}\n"
+	printf "\n${BOLD}${GREEN}ERPLAG compiler has been successfully uninstalled!${RESET}\n"
 else
-	printf "${BOLD}${MAGENTA}ERPLAG installation does not exist!${RESET}\n"
+	printf "${BOLD}${MAGENTA}ERPLAG compiler installation does not exist!${RESET}\n"
 fi
