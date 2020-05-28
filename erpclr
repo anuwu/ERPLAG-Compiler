@@ -66,12 +66,22 @@ then
 	printf "${RESET}Are you sure you want to delete the above files? (y/n) "
 	input
 
-	printf "${BOLD}${MAGENTA}"
-	printf "$l1" | xargs -0 -n1 echo rm | sh -x
-	printf "${BLUE}"
-	printf "$l2"| xargs -0 -n1 echo rm | sh -x
-	printf "${YELLOW}"
-	printf "$l3" | xargs -0 -n1 echo rm | sh -x
+	printf "${BOLD}"
+	if ! [ "$l1" = "" ] 
+	then
+		printf "${MAGENTA}"
+		printf "$l1" | xargs -0 -n1 echo rm | sh -x
+	fi
+	if ! [ "$l2" = "" ]
+	then
+		printf "${BLUE}"
+		printf "$l2"| xargs -0 -n1 echo rm | sh -x
+	fi
+	if ! [ "$l3" = "" ]
+	then
+		printf "${YELLOW}"
+		printf "$l3" | xargs -0 -n1 echo rm | sh -x
+	fi
 	printf "${RESET}"
 else
 	printf "No ${BOLD}.asm, .o ${RESET}or ${BOLD}executables ${RESET}found.\n"
