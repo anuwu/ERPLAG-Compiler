@@ -36,9 +36,20 @@ sudo printf "Installing ERPLAG compiler... \n"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]
 then
-	sudo apt-get update
-	sudo apt-get install build-essential
-	sudo apt-get install nasm
+	if [ -f /etc/os-release ]; then
+	    # freedesktop.org and systemd
+	    . /etc/os-release
+	    OS=$NAME
+	    TYPE=$ID_LIKE
+	fi
+
+	echo $OS
+	echo $TYPE
+	exit
+
+	# sudo apt-get update
+	# sudo apt-get install build-essential
+	# sudo apt-get install nasm
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
 	var=$(sudo which brew) 
