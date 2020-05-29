@@ -2129,10 +2129,10 @@ void postamble()
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignmen. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
 		#endif			
 	}
 
