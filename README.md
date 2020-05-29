@@ -6,10 +6,13 @@ Welcome to the ERPLAG compiler. This is a toy language that was given as a semes
 
 ### For Linux/macOS
 In Linux, dependencies are taken care of by the installation script. 
-In macOS, please ensure that homebrew is installed (if not, the script attempts to install homebrew)
+
+In macOS, please ensure that **Homebrew** is installed (if not, the script attempts to install homebrew)
 
 ### For Windows
-Please install gcc, nasm and add them to the environment PATH variable.
+Please install the following and add to PATH -
+   - `gcc`
+   - `nasm`
 
 ## Installation
 To install the compiler, clone this repository (with git or downloading the zip), open a terminal in its directory and run the install script as follows -
@@ -18,7 +21,8 @@ To install the compiler, clone this repository (with git or downloading the zip)
    - `./install` for **Linux/macOS**
    - `install` for **Windows**
 
-If the installation fails, you have to complete the following steps -
+### Manual Installation
+If the installation fails, or you wish to do it manually, you have to complete the following steps -
    - `gcc -o .compiler erplag.c codegen.c ast.c lexer.c parser.c symbolTable.c typeChecker.c error.c`
 ### In Linux/macOS
    - `sudo cp .compiler /usr/local/bin`
@@ -57,6 +61,8 @@ To uninstall, open a terminal in the repository and execute -
    - `./uninstall` for **Linux/macOS**
    - `uninstall`for **Windows**
 
-Additionally, ensure to remove the repository from the environment PATH in **Windows**. No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
+Additionally, ensure to remove the repository from the environment PATH in **Windows**. 
+
+No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
 
 Thank you!
