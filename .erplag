@@ -58,7 +58,7 @@ IF "%1" == "-a" (
 	echo 4^. erplag ^<filename^>^.erp directly generates an executable with the same filename
 
 	echo.
-	echo If you are making any changes to the source code or the erplag batch script, make sure to run install again
+	echo If you are making any changes to the source code or the erplag batch script, make sure to run "rebuild" in the command prompt
 
 	echo.
 	echo Use make debug to create the following executables useful for debugging - 
