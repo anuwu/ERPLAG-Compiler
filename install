@@ -43,13 +43,20 @@ then
 	    TYPE=$ID_LIKE
 	fi
 
-	echo $OS
-	echo $TYPE
-	exit
-
-	# sudo apt-get update
-	# sudo apt-get install build-essential
-	# sudo apt-get install nasm
+	if [[ "$TYPE" == "debian" ]] 
+	then
+		sudo apt-get update
+		sudo apt-get install build-essential
+		sudo apt-get install nasm
+	elif [[ "$TYPE" == "rhel fedora" ]] 
+	then
+		sudo yum install gcc
+		sudo yum install make
+		sudo yum install wget
+		wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
+		sudo yum install nasm-2.14.02-0.fc27.x86_64.rpm
+		rm -f nasm-2.14.02-0.fc27.x86_64.rpm
+	fi	
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
 	var=$(sudo which brew) 
