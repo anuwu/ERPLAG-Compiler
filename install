@@ -113,7 +113,12 @@ else
 		if [ $? -eq 0 ]
 		then
 			sudo yum -y install $missing
-			sudo yum -y install wget
+			
+			which wget >> /dev/null
+			if [ $? -neq 0 ]
+			then
+				sudo yum -y install wget
+			fi
 			
 			wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
 			sudo yum -y install nasm-2.14.02-0.fc27.x86_64.rpm
