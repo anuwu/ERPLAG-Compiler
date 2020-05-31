@@ -4,15 +4,22 @@ Welcome to the ERPLAG compiler. This is a toy language that was given as a semes
 
 ## Pre-requisites
 
+The dependencies on using the ERPLAG compiler are -
+   - `gcc`
+   - `nasm`
 ### For Linux/macOS
-In Linux, dependencies are taken care of by the installation script. 
+
+ERPLAG compiler uses **make** to build on Linux/macOS. If any dependency is missing, the installer script attempts to take care of it only if one of the following package managers are available -
+
+   - `apt`
+   - `yum`
+   - `zypper`
+   - `pacman`
 
 In macOS, please ensure that **Homebrew** is installed (if not, the script attempts to install homebrew)
 
 ### For Windows
-Please install the following and add to PATH -
-   - `gcc`
-   - `nasm`
+Please install the dependencies mentioned above and add them to the environment PATH variable.
 
 ## Installation
 To install the compiler, clone this repository (with git or downloading the zip), open a terminal in its directory and run the install script as follows -
@@ -43,9 +50,20 @@ If the installation fails, or you wish to do it manually, you have to complete t
 4. My personal modifications to the original specification is listed in "Notes.txt"
 
 ## Note
-**The compiler has been tested build for 64-bit operating systems and has been tested on Linux (Ubuntu 18.04 LTS), macOS (Catalina) and Windows 10. It will probably not work for 32-bit machines/OS. However, it may just work for other 64-bit OSs apart from the ones mentioned.**
+**The compiler has been built for only 64-bit operating systems and tested on the following operating systems -**
+1. Linux
 
-**It could also occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then, the .asm files can be converted to executables in the following manner -**
+   - `Ubuntu/Parrot OS`
+   
+   - `openSUSE`
+   
+   - `Fedora`
+   
+   - `Manjaro`
+   
+2. Windows 7/10
+
+**It could occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then run `erplag -a <filename>.erp`, and do the following -**
 
 First assemble using nasm -
    - `nasm -felf64 <filename>.asm` for **Linux**
