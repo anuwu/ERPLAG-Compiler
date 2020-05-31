@@ -2085,10 +2085,10 @@ void postamble()
 	{
 		codePrint ("\t\t@boundPrint : ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Array out of bounds. Halt!\" , 10, 0\n") ;	
+			codePrint ("db \"Runtime Error --> Array out of bounds. Halt!\" , 10, 0\n") ;	
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt!\" , 10, 0\n") ;	
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mArray out of bounds. Halt!\" , 10, 0\n") ;	
 		#endif			
 	}
 	
@@ -2096,10 +2096,10 @@ void postamble()
 	{
 		codePrint ("\t\t@declPrint : ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Invalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
+			codePrint ("db \"Runtime Error --> Invalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mInvalid order of bounds in dynamic array declaration. Halt!\" , 10, 0\n") ;		
 		#endif			
 	}
 	
@@ -2107,10 +2107,10 @@ void postamble()
 	{
 		codePrint ("\t\t@declNeg : ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Negative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
+			codePrint ("db \"Runtime Error --> Negative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mNegative bound in dynamic array declaration. Halt!\" , 10, 0\n") ;	
 		#endif			
 	}
 
@@ -2118,10 +2118,10 @@ void postamble()
 	{
 		codePrint ("\t\t@arrArgMismatch: ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"Runtime Error --> Mismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in formal and actual array argument. Halt!\" , 10, 0\n") ;
 		#endif			
 	}
 
@@ -2129,10 +2129,10 @@ void postamble()
 	{
 		codePrint ("\t\t@asgnArgMismatch: ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Mismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"Runtime Error --> Mismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mMismatch of limits in array assignment. Halt!\" , 10, 0\n") ;
 		#endif			
 	}
 
@@ -2140,10 +2140,10 @@ void postamble()
 	{
 		codePrint ("\t\t@divZero: ") ;
 		#ifdef _WIN64
-			codePrint ("db \"ERPLAG : Runtime Error --> Division by zero detected. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"Runtime Error --> Division by zero detected. Halt!\" , 10, 0\n") ;
 		#endif
 		#if defined __linux__ || defined __MACH__
-			codePrint ("db \"\033[1m\033[36mERPLAG : \033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt!\" , 10, 0\n") ;
+			codePrint ("db \"\033[1m\033[31mRuntime Error \033[0m\033[1m--> \033[0mDivision by zero detected. Halt!\" , 10, 0\n") ;
 		#endif			
 	}
 
