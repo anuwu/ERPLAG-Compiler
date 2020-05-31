@@ -40,31 +40,11 @@ printf "${BOLD}${CYAN}Proceed with re-building ERPLAG compiler? ${RESET}(y/n) "
 input
 
 sudo printf "Rebuilding ERPLAG compiler...\n\n"
-sudo make
+make
 
 sudo cp erplag /usr/local/bin
-stat=$?
-if [ $stat -ne 0 ]
-then
-	ccErr
-	exit
-fi
-
 sudo cp .compiler /usr/local/bin
-stat=$?
-if [ $stat -ne 0 ]
-then
-	ccErr
-	exit
-fi
-
 sudo cp erpclr /usr/local/bin
-stat=$?
-if [ $stat -ne 0 ]
-then
-	ccErr 
-	exit
-fi
 
 make clean
 

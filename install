@@ -17,36 +17,11 @@ spin() {
 installErplag () {
 	make
 
+    sudo cp .compiler /usr/local/bin
 	sudo cp erplag /usr/local/bin
-	stat=$?
-	if [ $stat -ne 0 ]
-	then
-		installErr 
-	fi
-
-	sudo cp .compiler /usr/local/bin
-	stat=$?
-	if [ $stat -ne 0 ]
-	then
-		installErr 
-	fi
-
 	sudo cp erpclr /usr/local/bin
-	stat=$?
-	if [ $stat -ne 0 ]
-	then
-		installErr 
-	fi
 
 	make clean	
-}
-
-installErr () {
-	printf "\n${BOLD}${RED}ERPLAG compiler installation failed. \nPlease export repository directory to PATH variable.${RESET}\n"
-	printf "Press enter to continue..."
-	read
-	
-	exit
 }
 
 success () {
@@ -74,19 +49,19 @@ missing=""
 which gcc >> /dev/null
 if [ $? -ne 0 ]
 then
-	printf "${BOLD}${RED}Dependency : gcc is not installed in this system!\n${RESET}"
+	printf "${BOLD}${RED}Dependency : ${CYAN}gcc $${RED}is not installed in this system!\n${RESET}"
 	missing="gcc"
 fi
 which make >> /dev/null
 if [ $? -ne 0 ]
 then
-	printf "${BOLD}${RED}Dependency : make is not installed in this system!\n${RESET}"
+	printf "${BOLD}${RED}Dependency : ${CYAN}make ${RED}is not installed in this system!\n${RESET}"
 	missing="${missing} make"
 fi
 which nasm >> /dev/null
 if [ $? -ne 0 ]
 then
-	printf "${BOLD}${RED}Dependency : nasm is not installed in this system!\n${RESET}"
+	printf "${BOLD}${RED}Dependency : ${CYAN}nasm ${RED}is not installed in this system!\n${RESET}"
 	missing="${missing} nasm"
 fi
 
@@ -95,14 +70,24 @@ then
 	installErplag
 	success
 else
-	printf "${BOLD}${CYAN}Attempting to install missing packages...${RESET}\n"
+	printf "${BOLD}${CYAN}\nAttempting to install missing packages...${RESET}\n"
 	
-	if [[ "$OSTYPE" == "linux-gnu"* ]]
+	if [[ "$OSTYPE" == "linux"* ]]
 	then
+        which zypper >> /dev/null
+        if [ $? -eq 0 ]
+		then
+			sudo zypper install -y $missing
+						
+			installErplag
+			success
+        else
+            printf "y tho\n"
+		fi
+	
 		which apt-get >> /dev/null
 		if [ $? -eq 0 ]
 		then
-			sudo apt-get update
 			sudo apt-get install -y $missing
 			
 			installErplag
@@ -112,22 +97,35 @@ else
 		which yum >> /dev/null
 		if [ $? -eq 0 ]
 		then
-			sudo yum -y install $missing
-			
-			which wget >> /dev/null
-			if [ $? -neq 0 ]
-			then
-				sudo yum -y install wget
-			fi
-			
-			wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
-			sudo yum -y install nasm-2.14.02-0.fc27.x86_64.rpm
-			rm -f nasm-2.14.02-0.fc27.x86_64.rpm
+			which gcc >> /dev/null
+            if [ $? -ne 0 ]
+            then
+                sudo yum -y install gcc
+            fi
+            
+            which make >> /dev/null
+            if [ $? -ne 0 ]
+            then
+                sudo yum -y install make
+            fi
+            
+            which nasm >> /dev/null
+            if [ $? -ne 0 ]
+            then
+                which wget >> /dev/null
+                if [ $? -neq 0 ]
+                then
+                    sudo yum -y install wget
+                fi
+                
+                wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
+                sudo yum -y install nasm-2.14.02-0.fc27.x86_64.rpm
+                rm -f nasm-2.14.02-0.fc27.x86_64.rpm
+            fi
 			
 			installErplag
 			success
 		fi
-		
 		
 		printf "${BOLD}${RED}\nInstaller could not identify the package manager in your linux distribution. Please install ${CYAN}gcc, make, ${RED}and ${CYAN}nasm ${RED}and then run the installation script${RESET}\n"	
 		exit

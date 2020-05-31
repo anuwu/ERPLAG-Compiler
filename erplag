@@ -55,7 +55,7 @@ successAsmExe () {
 	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]
+if [[ "$OSTYPE" == "linux-gnu" ]]
 then
 	NFLAG="-felf64"
 elif [[ "$OSTYPE" == "darwin"* ]]
