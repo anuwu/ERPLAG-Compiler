@@ -17,7 +17,7 @@ spin() {
 installErplag () {
 	make
 
-    sudo cp .compiler /usr/local/bin
+    	sudo cp .compiler /usr/local/bin
 	sudo cp erplag /usr/local/bin
 	sudo cp erpclr /usr/local/bin
 
@@ -46,19 +46,19 @@ fi
 sudo printf "Installing ERPLAG compiler... \n\n"
 missing=""
 
-which gcc >> /dev/null
+which gcc &> /dev/null
 if [ $? -ne 0 ]
 then
 	printf "${BOLD}${RED}Dependency : ${CYAN}gcc $${RED}is not installed in this system!\n${RESET}"
 	missing="gcc"
 fi
-which make >> /dev/null
+which make &> /dev/null
 if [ $? -ne 0 ]
 then
 	printf "${BOLD}${RED}Dependency : ${CYAN}make ${RED}is not installed in this system!\n${RESET}"
 	missing="${missing} make"
 fi
-which nasm >> /dev/null
+which nasm &> /dev/null
 if [ $? -ne 0 ]
 then
 	printf "${BOLD}${RED}Dependency : ${CYAN}nasm ${RED}is not installed in this system!\n${RESET}"
@@ -74,18 +74,18 @@ else
 	
 	if [[ "$OSTYPE" == "linux"* ]]
 	then
-        which zypper >> /dev/null
-        if [ $? -eq 0 ]
+		#################### Zypper (openSUSE) #####################
+		which zypper &> /dev/null
+		if [ $? -eq 0 ]
 		then
 			sudo zypper install -y $missing
 						
 			installErplag
 			success
-        else
-            printf "y tho\n"
 		fi
 	
-		which apt-get >> /dev/null
+		#################### Apt (debian) #####################
+		which apt-get &> /dev/null
 		if [ $? -eq 0 ]
 		then
 			sudo apt-get install -y $missing
@@ -94,35 +94,45 @@ else
 			success
 		fi
 		
-		which yum >> /dev/null
+		#################### Yum (Red Hat/Fedora) #####################
+		which yum &> /dev/null
 		if [ $? -eq 0 ]
 		then
-			which gcc >> /dev/null
-            if [ $? -ne 0 ]
-            then
-                sudo yum -y install gcc
-            fi
-            
-            which make >> /dev/null
-            if [ $? -ne 0 ]
-            then
-                sudo yum -y install make
-            fi
-            
-            which nasm >> /dev/null
-            if [ $? -ne 0 ]
-            then
-                which wget >> /dev/null
-                if [ $? -neq 0 ]
-                then
-                    sudo yum -y install wget
-                fi
+			which gcc &> /dev/null
+			if [ $? -ne 0 ]
+			then
+				sudo yum -y install gcc
+			fi
+
+			which make &> /dev/null
+			if [ $? -ne 0 ]
+			then
+				sudo yum -y install make
+			fi
+			    
+			which nasm &> /dev/null
+			if [ $? -ne 0 ]
+			then
+				which wget &> /dev/null
+				if [ $? -neq 0 ]
+				then
+					sudo yum -y install wget
+				fi
                 
-                wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
-                sudo yum -y install nasm-2.14.02-0.fc27.x86_64.rpm
-                rm -f nasm-2.14.02-0.fc27.x86_64.rpm
-            fi
+				wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/linux/nasm-2.14.02-0.fc27.x86_64.rpm
+				sudo yum -y install nasm-2.14.02-0.fc27.x86_64.rpm
+				rm -f nasm-2.14.02-0.fc27.x86_64.rpm
+ 			fi
 			
+			installErplag
+			success
+		fi
+
+		which pacman &> /dev/null
+		if [ $? -eq 0 ]
+		then
+			sudo pacman -S $missing --noconfirm
+
 			installErplag
 			success
 		fi
