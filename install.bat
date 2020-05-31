@@ -26,6 +26,8 @@ if exist .compiler (
 	EXIT /B 0
 )
 
+echo Installing ERPLAG compiler^.^.^.
+echo.
 
 set grmPath=%CD%
 set grmPath=%grmPath%\parser.c
