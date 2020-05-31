@@ -44,6 +44,8 @@ if exist .compiler (
 	)
 
 	:unin
+	echo Uninstalling ERPLAG compiler^.^.^.
+	echo.
 	del .compiler
 	rename erplag.bat .erplag
 

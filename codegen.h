@@ -8,7 +8,7 @@ extern baseST *realBase ;
 extern FILE *fpOut ;
 extern int realPresent ;
 
-#define codePrint(x, ...) fprintf (fpOut, x, ##__VA_ARGS__ )
+#define codePrint(x, ...) fprintf (fpOut, x, ##__VA_ARGS__ ) 
 
 typedef enum _textFlags
 {

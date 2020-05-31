@@ -93,10 +93,10 @@ int validStaticArrStaticIndex (moduleST *baseModule, varST *arrayVar, astNode *i
 	{
 		errSemantic () ;
 		#ifdef _WIN64
-			printf ("In module \"%s\" at line %d, specified index \"%s\" is out of bounds for static array variable \"%s\" with limits [%d .. %d]\n", getParentModuleName (baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
+			printf ("In module \"%s\" at line %d, specified index \"%s\" is out of bounds for static array variable \"%s\"\n", getParentModuleName (baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme) ;
 		#endif
 		#if defined __linux__ || defined __MACH__
-			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", specified index " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " is out of bounds for " ANSI_BOLD ANSI_BLACK "static array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s" ANSI_RESET " with limits ["ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET " .. "ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET "]\n", getParentModuleName (baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme, leftLim, rightLim) ;
+			printf ("In module " ANSI_BOLD "%s" ANSI_RESET " at line " ANSI_BOLD ANSI_CYAN "%d" ANSI_RESET ", specified index " ANSI_BOLD ANSI_CYAN "%s" ANSI_RESET " is out of bounds for " ANSI_BOLD ANSI_BLACK "static array" ANSI_RESET " variable " ANSI_BOLD ANSI_RED "%s\n" ANSI_RESET, getParentModuleName (baseModule), indASTNode->tok->lineNumber, indASTNode->tok->lexeme, arrayVar->lexeme) ;
 		#endif
 		realBase->semanticError = 1 ;
 		return 0 ;

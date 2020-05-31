@@ -13,6 +13,7 @@ int whileLabelCount = 0 ;
 int otherLabelCount = 0 ;
 int divZeroLabelCount = 0 ;
 
+int asmLines = 0 ;
 int tf = 0 ;
 int df = 0 ;
 char offsetStr[10] ;
