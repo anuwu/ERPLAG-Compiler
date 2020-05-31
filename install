@@ -49,7 +49,7 @@ missing=""
 which gcc &> /dev/null
 if [ $? -ne 0 ]
 then
-	printf "${BOLD}${RED}Dependency : ${CYAN}gcc $${RED}is not installed in this system!\n${RESET}"
+	printf "${BOLD}${RED}Dependency : ${CYAN}gcc ${RED}is not installed in this system!\n${RESET}"
 	missing="gcc"
 fi
 which make &> /dev/null
@@ -74,7 +74,7 @@ else
 	
 	if [[ "$OSTYPE" == "linux"* ]]
 	then
-		#################### Zypper (openSUSE) #####################
+		#################### zypper (openSUSE) #####################
 		which zypper &> /dev/null
 		if [ $? -eq 0 ]
 		then
@@ -84,7 +84,7 @@ else
 			success
 		fi
 	
-		#################### Apt (debian) #####################
+		#################### apt (debian) #####################
 		which apt-get &> /dev/null
 		if [ $? -eq 0 ]
 		then
@@ -94,7 +94,7 @@ else
 			success
 		fi
 		
-		#################### Yum (Red Hat/Fedora) #####################
+		#################### yum (Red Hat/Fedora) #####################
 		which yum &> /dev/null
 		if [ $? -eq 0 ]
 		then
@@ -128,6 +128,7 @@ else
 			success
 		fi
 
+		######################## pacman (Arch) ################################
 		which pacman &> /dev/null
 		if [ $? -eq 0 ]
 		then
