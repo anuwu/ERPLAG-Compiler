@@ -46,8 +46,9 @@ If the installation fails, or you wish to do it manually, you have to complete t
    
 1. Create your own erplag files using an extension of .erp. 
 2. Use erplag -h for help on using the compiler.
-3. The language specification document is "ERPLAG-Specifications.pdf".
-4. My personal modifications to the original specification is listed in "Notes.txt"
+3. Information regarding the language can be found in the /Docs folder
+4. The final grammar used by the compiler is written in a separate pdf in the folder
+5. Additional changes to the language are explained in "notes.txt" in the /Docs folder
 
 ## Note
 **The compiler has been built for only 64-bit operating systems and tested on the following operating systems -**
@@ -82,5 +83,9 @@ To uninstall, open a terminal in the repository and execute -
 Additionally, ensure to remove the repository from the environment PATH in **Windows**. 
 
 No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
+
+## Issues
+
+I'm aware that the installation script doesn't handle Gentoo distributions (yet), which use the portage package manager. Please install the dependencies on your own. In any case, if you're not able to get ERPLAG compiler running on your system, feel free to leave me a message
 
 Thank you!
