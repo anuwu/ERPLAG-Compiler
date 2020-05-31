@@ -37,7 +37,7 @@ If the installation fails, or you wish to do it manually, you have to complete t
    - `sudo cp erpclr /usr/local/bin`
       If the above steps fail, you have to add the repository directory to the PATH variable.
 ### In Windows
-   Inside the repository, if there does not a batch file named 'erplag.bat', run in command prompt -
+   Inside the repository, if there does not exist a batch file named 'erplag.bat', run in command prompt -
    - `rename .erplag erplag.bat`
    
    Add the repository directory to the environment PATH variable.
