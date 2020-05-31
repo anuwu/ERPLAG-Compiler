@@ -2,6 +2,10 @@
 
 Welcome to the ERPLAG compiler. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020. 
 
+## Unique Features
+   - Abstraction of dynamic array declaration
+   - Function returning multiple values
+
 ## Pre-requisites
 
 The dependencies on using the ERPLAG compiler are -
