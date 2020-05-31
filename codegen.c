@@ -7,12 +7,11 @@
 #include "codegen.h"
 #include "error.h"
 
-baseST *realBase ;
-int switchX = 0 ;
-int forX = 0 ;
-int whileX = 0 ;
-int otherX = 0 ;
-int divZeroX = 0 ;
+int switchLabelCount = 0 ;
+int forLabelCount = 0 ;
+int whileLabelCount = 0 ;
+int otherLabelCount = 0 ;
+int divZeroLabelCount = 0 ;
 
 int tf = 0 ;
 int df = 0 ;
@@ -23,24 +22,24 @@ int get_label (labelType lt)
 	switch (lt)
 	{
 		case LABEL_SWITCH :
-			switchX++ ;
-			return switchX ;
+			switchLabelCount++ ;
+			return switchLabelCount ;
 
 		case LABEL_FOR :
-			forX++ ;
-			return forX ;
+			forLabelCount++ ;
+			return forLabelCount ;
 
 		case LABEL_WHILE :
-			whileX++ ;
-			return whileX ;
+			whileLabelCount++ ;
+			return whileLabelCount ;
 
 		case LABEL_DIV_ZERO :
-			divZeroX++ ;
-			return divZeroX ;
+			divZeroLabelCount++ ;
+			return divZeroLabelCount ;
 
 		case LABEL_OTHER :
-			otherX++ ;
-			return otherX ;
+			otherLabelCount++ ;
+			return otherLabelCount ;
 	}
 }
 
@@ -112,7 +111,7 @@ void arrBoundCheck (astNode *node, moduleST *lst, varST *vst)
 {
 	varST *indexVar = NULL ;
 	if (!isIndexStatic (node))	
-		indexVar = searchVar (realBase, lst, node->child->tok->lexeme) ;
+		indexVar = searchVar (lst, node->child->tok->lexeme) ;
 
 	tf |= 1 << boundCheck ;
 
@@ -164,7 +163,7 @@ int isArrayRHS (astNode *assignNode, moduleST *lst)
 
 	if (assignNode->child->next->id == TK_ID)
 	{
-		searchedVar = searchVar (realBase, lst, assignNode->child->next->tok->lexeme) ;
+		searchedVar = searchVar (lst, assignNode->child->next->tok->lexeme) ;
 		if (searchedVar->datatype == TK_ARRAY && assignNode->child->next->child == NULL)
 			return 1 ;
 	}
@@ -212,7 +211,7 @@ void exprAssign (astNode *node, moduleST *lst, int singleAssign)
 
 	if(node->child == NULL)
 	{
-		varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+		varST *searchedVar = searchVar (lst, node->tok->lexeme) ;
 		if (node->next->id == TK_MINUS && node->next->child->next == NULL)
 			codePrint ("\t\tNEG AX\n") ;
 
@@ -221,7 +220,7 @@ void exprAssign (astNode *node, moduleST *lst, int singleAssign)
 	else
 	{
 		varST* vst ;
-		vst = searchVar(realBase, lst,node->tok->lexeme);
+		vst = searchVar (lst,node->tok->lexeme);
 
 		if (isVarStaticArr(vst) && node->child->id == TK_NUM)
 		{
@@ -257,13 +256,13 @@ void exprLeaf (astNode *node, moduleST *lst, int singleAssign)
 		case TK_ID :
 			if (node->child == NULL)
 			{
-				varST *searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+				varST *searchedVar = searchVar (lst, node->tok->lexeme) ;
 				codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(searchedVar->offset)) ;
 			}
 			else
 			{
 				varST *vst ;
-				vst = searchVar (realBase, lst,node->tok->lexeme) ;
+				vst = searchVar (lst,node->tok->lexeme) ;
 
 				if (isVarStaticArr(vst) && node->child->id == TK_NUM)
 					codePrint ("\t\tMOV %s, [RBP%s]\n", reg, getOffsetStr(getStaticOffset (vst, node, 2))) ;						
@@ -397,7 +396,7 @@ void print (astNode *node, moduleST *lst)
 
 	varST *searchedVar ;
 	if (node->id == TK_ID)
-		searchedVar = searchVar (realBase, lst, node->tok->lexeme) ;
+		searchedVar = searchVar (lst, node->tok->lexeme) ;
 	else
 	{
 		if (node->id == TK_NUM)
@@ -592,7 +591,7 @@ void dynamicDeclarationCheck (moduleST *lst, varST *vst)
 		codePrint ("\t\tMOV AX, %s\n", vst->arrayIndices->tokLeft->lexeme) ;
 	else
 	{
-		leftVar = searchVar (realBase, lst, vst->arrayIndices->tokLeft->lexeme) ;
+		leftVar = searchVar (lst, vst->arrayIndices->tokLeft->lexeme) ;
 		codePrint ("\t\tMOV AX, [RBP%s]\n", getOffsetStr (leftVar->offset)) ;
 	}
 
@@ -600,7 +599,7 @@ void dynamicDeclarationCheck (moduleST *lst, varST *vst)
 		codePrint ("\t\tMOV BX, %s\n", vst->arrayIndices->tokRight->lexeme) ;
 	else
 	{
-		rightVar = searchVar (realBase, lst, vst->arrayIndices->tokRight->lexeme) ;
+		rightVar = searchVar (lst, vst->arrayIndices->tokRight->lexeme) ;
 		codePrint ("\t\tMOV BX, [RBP%s]\n", getOffsetStr(rightVar->offset)) ;
 	}
 
@@ -781,7 +780,7 @@ int switchCaseLabels (astNode *node, moduleST *lst, int caseCount , int *caseLab
 	for (i = 0 ; i < caseCount ; i++)
 		caseLabels[i] = get_label (LABEL_SWITCH) ;
 
-	varST *switchVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+	varST *switchVar = searchVar (lst, node->next->tok->lexeme) ;
 	codePrint ("\n\t\tMOV AX, [RBP%s]", getOffsetStr(switchVar->offset)) ;
 	codeComment (10, "loading switch variable") ;
 
@@ -873,7 +872,7 @@ void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst)
 
 	while (inputEnd != NULL)
 	{
-		searchedVar = searchVar (realBase, lst, inputEnd->tok->lexeme) ;
+		searchedVar = searchVar (lst, inputEnd->tok->lexeme) ;
 
 		if (searchedVar->datatype == TK_INTEGER || searchedVar->datatype == TK_BOOLEAN)
 		{
@@ -906,7 +905,7 @@ void popOutput (astNode *outputHead, moduleST *lst)
 
 	while (outputHead != NULL)
 	{
-		searchedVar = searchVar (realBase, lst, outputHead->tok->lexeme) ;
+		searchedVar = searchVar (lst, outputHead->tok->lexeme) ;
 		codePrint ("\t\tPOP AX\n") ;
 		codePrint ("\t\tMOV [RBP%s], AX\n", getOffsetStr(searchedVar->offset)) ;
 
@@ -1011,7 +1010,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				idListHead = idListHead->next ;
 			}
 
-			searchedVar = searchVar (realBase, lst, idListHead->tok->lexeme) ;
+			searchedVar = searchVar (lst, idListHead->tok->lexeme) ;
 			if (searchedVar->size > 0 && stat != SWITCH_GEN)
 			{	
 				codePrint ("\t\tSUB RSP, %d", searchedVar->size * declCount) ;
@@ -1037,8 +1036,8 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				{
 					//printf ("CANNOT HANDLE ARRAY ASSIGNMENT YET\n") ;
 					varST *lhs, *rhs ;
-					lhs = searchVar (realBase, lst, node->child->tok->lexeme) ;
-					rhs = searchVar (realBase, lst, node->child->next->tok->lexeme) ;
+					lhs = searchVar (lst, node->child->tok->lexeme) ;
+					rhs = searchVar (lst, node->child->next->tok->lexeme) ;
 				
 					if (isVarStaticArr (lhs) && isVarStaticArr (rhs))
 					{
@@ -1089,7 +1088,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			start_label = get_label (LABEL_FOR) ;
 			end_label = get_label (LABEL_FOR) ;
 
-			searchedVar = searchVar(realBase, lst, node->tok->lexeme) ;
+			searchedVar = searchVar (lst, node->tok->lexeme) ;
 
 			codePrint ("\t\tMOV CX,%s\n", node->next->tok->lexeme);
 			codePrint ("\t\tMOV [RBP%s], CX" , getOffsetStr(searchedVar->offset)) ;
@@ -1140,7 +1139,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 			break ;
 
 		case TK_GET_VALUE :
-			searchedVar = searchVar (realBase, lst, node->next->tok->lexeme) ;
+			searchedVar = searchVar (lst, node->next->tok->lexeme) ;
 			getValue (lst, searchedVar) ;
 			break ;
 
@@ -1196,7 +1195,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 		case TK_ID :
 		{
-			calledModule = searchModuleInbaseST (realBase, node->tok->lexeme) ;
+			calledModule = searchModuleInbaseST (node->tok->lexeme) ;
 			varEntry = calledModule->inputVars[0] ;
 
 			idListHead = node->next->child ; 
@@ -1213,7 +1212,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 
 		case idList :
 		{
-			calledModule = searchModuleInbaseST (realBase, node->next->next->tok->lexeme) ;
+			calledModule = searchModuleInbaseST (node->next->next->tok->lexeme) ;
 			varEntry = calledModule->inputVars[0] ;
 
 			idListHead = node->next->next->next->child ;

@@ -12,22 +12,25 @@ typedef struct _baseST baseST ;
 typedef struct _moduleST moduleST ;
 typedef struct _varST varST ;
 
+extern int realPresent ;
+extern baseST *realBase ;
+
 // <var> checker
-int validVarIndex (baseST *realBase, moduleST *baseModule, astNode *varIndexASTNode) ;
-int validStaticArrStaticIndex (baseST *realBase, moduleST *baseModule, varST *arrVar, astNode *indASTNode) ;
-tokenID validateVar (baseST *realBase , moduleST *baseModule , astNode *varASTNode, varST **searchedVar) ;
+int validVarIndex (moduleST *baseModule, astNode *varIndexASTNode) ;
+int validStaticArrStaticIndex (moduleST *baseModule, varST *arrVar, astNode *indASTNode) ;
+tokenID validateVar (moduleST *baseModule , astNode *varASTNode, varST **searchedVar) ;
 int isLeftLimStatic (varST *arrayVar) ;
 int isRightLimStatic (varST *arrayVar) ;
 int isVarStaticArr (varST *arrayVar) ;
 
 // Overall function
-void assignmentTypeCheck (baseST *realBase, moduleST *baseModule, astNode *assignopASTNode) ;
+void assignmentTypeCheck (moduleST *baseModule, astNode *assignopASTNode) ;
 
 // expression checker
 int isArithmeticType (tokenID id) ;
 int isLogicalOp (tokenID id) ;
 int isRelationalOp (tokenID id) ;
 int isArithmeticType (tokenID id) ;
-tokenID getExpressionType (baseST *realBase, moduleST *baseModule, astNode *exprNode) ;
+tokenID getExpressionType (moduleST *baseModule, astNode *exprNode) ;
 
 #endif

@@ -111,52 +111,52 @@ char * generateString () ;
 
 // function for base symbol table
 baseST * createBaseST () ;
-moduleST * createModuleST ( baseST * parent , char * lexeme, int currOffset) ;
-moduleST * createDriverST ( baseST * parent ) ;
-moduleST * createScopeST ( moduleST * parent , stType scopeType ) ;
+moduleST * createModuleST (void *parent, char * lexeme, int currOffset) ;
+moduleST * createDriverST () ;
+moduleST * createScopeST (moduleST * parent , stType scopeType ) ;
 varST * createVarST (char *lexeme, void *scope, variableType varType, tokenID datatype) ;
 
 // Insertion
-void insertModuleSTInbaseST ( baseST * base , moduleST * thisModule) ;
-void insertVarSTInbaseST ( baseST * base , varST * thisVarST ) ;
+void insertModuleSTInbaseST (moduleST * thisModule) ;
+void insertVarSTInbaseST (varST * thisVarST ) ;
 void insertScopeST ( moduleST* parent , moduleST * thisScopeST ) ;
 void insertVar (moduleST *thisModule, varST *thisVarST, insertVarType flag) ;
 
 //search
-varST * searchVarInbaseST (baseST * base ,char * lexeme) ;
-moduleST * searchModuleInbaseST (baseST * base, char * lexeme) ;
+varST * searchVarInbaseST (char * lexeme) ;
+moduleST * searchModuleInbaseST (char * lexeme) ;
 varST* searchVarModuleList (moduleST* thisModule, char* lexeme, searchVarType flag) ;
 varST* searchVarModule (moduleST * thisModule , char * lexeme) ;
-varST * searchVar (baseST* realBase, moduleST *thisModule , char *lexeme) ;
+varST * searchVar (moduleST *thisModule , char *lexeme) ;
 
 // Printing
-void printBaseST (baseST * base ) ;
+void printBaseST () ;
 void printModuleST (moduleST * thisModuleST, int printParam) ;
 
 // Tinker --> Checked for module outputs, loop variable, placeholders only
 void printOutputsNotTinkered (moduleST *baseModule) ;
 int checkAllOutputsTinkered (moduleST *baseModule) ;
-void idListTinker (baseST *realBase, moduleST* baseModule, astNode *idListHead) ;
-void tinkerVar (baseST *realBase, moduleST *baseModule, varST *var, astNode *varASTNode) ;
+void idListTinker (moduleST* baseModule, astNode *idListHead) ;
+void tinkerVar (moduleST *baseModule, varST *var, astNode *varASTNode) ;
 int hasTinkerListChanged (guardTinkerNode *tinkerHeadBefore, guardTinkerNode *tinkerHeadAfter) ;
-guardTinkerNode* getGuardTinkerList (baseST *realBase, moduleST *baseModule, astNode *exprNode) ;
-void getExprVars (baseST *realBase, moduleST *baseModule, guardTinkerNode *tinkerHead, astNode *exprNode) ;
+guardTinkerNode* getGuardTinkerList (moduleST *baseModule, astNode *exprNode) ;
+void getExprVars (moduleST *baseModule, guardTinkerNode *tinkerHead, astNode *exprNode) ;
 void addTinkerList (guardTinkerNode *tinkerHead, int tinker) ;
 
 
 // ST population
 baseST * fillSymbolTable (astNode * thisASTNode, int depthSTPrint) ;
-void fillModuleST (baseST* realBase , moduleST* baseModule , astNode* moduleASTNode, int depthSTPrint) ;
+void fillModuleST (moduleST* baseModule , astNode* moduleASTNode, int depthSTPrint) ;
 
 // Function call checker
-int isValidCall (baseST * base ,moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
-varST * checkIP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
-varST * checkOP (baseST *realBase, moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
+int isValidCall (moduleST* thisModule , astNode * funcIDNode , int haveReturns) ;
+varST * checkIP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
+varST * checkOP (moduleST * thisModule ,moduleST * targetModule , astNode * inputNode) ;
 
 // Helper
 char* varTypeToString (variableType varType) ;
-int getSize(baseST * realBase, varST * thisVar) ;
-char *getParentModuleName (baseST* realBase, moduleST *scope) ;
+int getSize(varST * thisVar) ;
+char *getParentModuleName (moduleST *scope) ;
 char *typeIDToString (tokenID id) ;
 
 #endif
