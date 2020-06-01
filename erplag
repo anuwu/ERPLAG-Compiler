@@ -82,8 +82,8 @@ while getopts ":a:o:h" opt; do
 			if [ $status -eq 0 ]
 			then
 				successErpAsm $OPTARG $asmname
-				lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
-				successLines $lines
+				# lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+				# successLines $lines
 			fi
 			
 			exit $status
@@ -110,8 +110,8 @@ while getopts ":a:o:h" opt; do
 				gcc -w -no-pie $objname -o $target 
 				successErpExe $srcname $target
 
-				lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
-				successLines $lines
+				# lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+				# successLines $lines
 			fi
 			rm -f $asmname
 			rm -f $objname
@@ -169,8 +169,8 @@ then
 			gcc -w -no-pie $objname -o $fname
 			successErpExe $srcname $fname
 
-			lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
-			successLines $lines
+			# lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+			# successLines $lines
 		fi
 		rm -f $asmname
 		rm -f $objname

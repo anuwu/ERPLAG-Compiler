@@ -12,6 +12,7 @@ IF "%1" == "-a" (
 		set str=%2
 		set str=!str:~0,-4!
 		echo ERPLAG : Compilation of %2 successful^^! Assembly file !str!^.asm generated
+
 		EXIT /B 0
 	)
 	EXIT /B 1
