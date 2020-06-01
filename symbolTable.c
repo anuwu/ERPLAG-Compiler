@@ -1082,8 +1082,9 @@ void printOutputsNotTinkered (moduleST *baseModule)
 					printf ("%s", vv->thisVarST->lexeme) ;
 				#endif
 				#if defined __linux__ || defined __MACH__
-					printf ("%s", vv->thisVarST->lexeme) ;
+					printf (ANSI_BOLD ANSI_RED "%s" ANSI_RESET, vv->thisVarST->lexeme) ;
 				#endif
+					
 		 		if (vv->next != NULL && !vv->next->thisVarST->tinker)
 					printf (", ") ;
 			}
