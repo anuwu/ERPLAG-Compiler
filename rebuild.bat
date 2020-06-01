@@ -59,3 +59,4 @@ if exist .compiler (
 
 echo ERPLAG compiler is not installed!^^!
 echo Please install the compiler by running "install" before using "rebuild"
+EXIT /B 1

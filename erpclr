@@ -17,7 +17,7 @@ input () {
 			return
 		elif  [ "$ans" = "n" -o "$ans" = "N" ]
 		then
-			exit
+			exit 0
 		else
 			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) : "
 		fi
@@ -29,7 +29,7 @@ gitList=$(find . -name '.git')
 if ! [ "$gitList" = "" ]
 then
 	printf "${BOLD}${RED}Git repository present inside directory tree. ERPLAG cleaner cannot proceed!${RESET}\n"
-	exit
+	exit 1
 else
 	erpList=$(find . -type f -name "*.erp")
 	if [ "$erpList" = "" ]

@@ -54,3 +54,4 @@ if exist .compiler (
 ) 
 
 echo ERPLAG compiler installation does not exist^^!
+EXIT /B 1

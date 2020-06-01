@@ -16,14 +16,14 @@ if %ERRORLEVEL% NEQ 0 (
 
 IF !die!==1 (
 	echo ERPLAG compiler installation failed^!
-	EXIT /B 0
+	EXIT /B 1
 )
 
 if exist .compiler (
 	echo ERPLAG compiler is already installed in this system 
 	echo If you wish to uninstall it, execute "uninstall" in the command prompt
 
-	EXIT /B 0
+	EXIT /B 1
 )
 
 echo Installing ERPLAG compiler^.^.^.

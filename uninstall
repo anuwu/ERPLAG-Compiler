@@ -13,7 +13,7 @@ input () {
 			return
 		elif  [ "$ans" = "n" -o "$ans" = "N" ]
 		then
-			exit
+			exit 0
 		else
 			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) : "
 		fi
@@ -32,4 +32,5 @@ then
 	printf "\n${BOLD}${GREEN}ERPLAG compiler has been successfully uninstalled!${RESET}\n"
 else
 	printf "${BOLD}${MAGENTA}ERPLAG compiler installation does not exist!${RESET}\n"
+	exit 1
 fi

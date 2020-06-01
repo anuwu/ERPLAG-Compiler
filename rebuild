@@ -21,7 +21,7 @@ input () {
 			return
 		elif  [ "$ans" = "n" -o "$ans" = "N" ]
 		then
-			exit
+			exit 0
 		else
 			printf "\n${BOLD}${MAGENTA}Please re-enter correct option ${RESET}(y/n) "
 		fi
@@ -33,14 +33,20 @@ then
 	printf "${BOLD}${MAGENTA}ERPLAG compiler is not installed!${RESET}\n" 
 	printf "Please install the compiler with ${BOLD}${CYAN}./install ${RESET}before using ${BOLD}${CYAN}./rebuild${RESET}\n"
 
-	exit
+	exit 1
 fi
 
 printf "${BOLD}${CYAN}Proceed with re-building ERPLAG compiler? ${RESET}(y/n) "
 input
 
 sudo printf "Rebuilding ERPLAG compiler...\n\n"
+
 make
+if [ $? -ne 0 ]
+then
+	printf "\n${BOLD}${RED}ERPLAG compiler re-build failed! Please check the errors above\n${RESET}"
+	exit 1
+fi
 
 sudo cp erplag /usr/local/bin
 sudo cp .compiler /usr/local/bin

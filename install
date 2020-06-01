@@ -16,8 +16,13 @@ spin() {
 
 installErplag () {
 	make
+	if [ $? -ne 0 ]
+	then
+		printf "\n${BOLD}${RED}ERPLAG compiler installation failed! Please check the source code for errors\n${RESET}"
+		exit 1
+	fi
 
-    	sudo cp .compiler /usr/local/bin
+    sudo cp .compiler /usr/local/bin
 	sudo cp erplag /usr/local/bin
 	sudo cp erpclr /usr/local/bin
 
@@ -30,7 +35,7 @@ success () {
 	printf "\nPress enter to continue..."
 	read
 	
-	exit
+	exit 0
 }
 
 ###################################################################################################################################
@@ -40,7 +45,7 @@ then
 	printf "${BOLD}${GREEN}ERPLAG compiler is already installed in this system${RESET}\n\n" 
 	printf "Please use ${BOLD}${CYAN}./rebuild ${RESET}to quickly remake the compiler\n"
 	printf "Otherwise, use ${BOLD}${CYAN}./uninstall ${RESET} to uninstall the compiler\n"
-	exit
+	exit 1
 fi
 
 sudo printf "Installing ERPLAG compiler... \n\n"
@@ -139,14 +144,14 @@ else
 		fi
 		
 		printf "${BOLD}${RED}\nInstaller could not identify the package manager in your linux distribution. Please install ${CYAN}gcc, make, ${RED}and ${CYAN}nasm ${RED}and then run the installation script${RESET}\n"	
-		exit
+		exit 1
 	elif [[ "$OSTYPE" == "darwin"* ]]
 	then
 		var=$(sudo which brew) 
 		if test "$var" == ""
 		then
 			printf "${BOLD}${RED}Please install Homebrew or ensure that ${CYAN}gcc, make, ${RED}and ${CYAN}nasm ${RED}are installed before running the installaton script${RESET}\n" ;
-			exit
+			exit 1
 		fi
 
 		spin &
@@ -174,6 +179,6 @@ else
 		wait $SPIN_PID 2>/dev/null
 	else
 		printf "${BOLD}${RED}Linux distribution could not be identified! Please install ${CYAN}gcc, make, ${RED}and ${CYAN}nasm ${RED}and then run the installation script${RESET}\n"		
-		exit
+		exit 1
 	fi
 fi
