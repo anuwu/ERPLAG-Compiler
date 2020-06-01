@@ -1,0 +1,15 @@
+declare module emptyMod ;
+
+<<<driver program>>>
+start
+	declare i : integer ;
+	get_value (i) ;
+
+	use module emptyMod with parameters i ;
+	print (i) ;
+end
+
+<<module emptyMod>>
+takes input [a : integer] ;
+start
+end

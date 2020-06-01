@@ -1225,7 +1225,6 @@ void fillModuleST (moduleST* baseModule , astNode * statementsAST , int depthSTP
 		}
 		else if ( statementAST->child->id == TK_WHILE) 
 		{
-			// TODO type checking
 			guardTinkerNode *tinkerHeadBefore, *tinkerHeadAfter ;
 
 			if (getExpressionType (baseModule, statementAST->child->next) != TK_BOOLEAN)
@@ -1389,7 +1388,6 @@ void fillModuleST (moduleST* baseModule , astNode * statementsAST , int depthSTP
 		else if (statementAST->child->id == TK_ID) 
 		{
 			// use module with parameters ... (no return)
-
 			int validCallFlag = isValidCall (baseModule, statementAST->child, 0) ;
 			if (validCallFlag == -1 )	
 			{
@@ -1775,26 +1773,27 @@ baseST * fillSymbolTable (astNode * thisASTNode , int depthSTPrint)
 				printOutputsNotTinkered (moduleToInsert) ;
 				printf ("\n") ;
 			}
-			moduleToInsert->filledMod = 1 ;
 
+			moduleToInsert->filledMod = 1 ;
 			printModuleST (moduleToInsert, depthSTPrint) ;
 
 			currentASTNode = currentASTNode->next ;
 		}
 
 		if (otherMODS->next != NULL)
+		{
+			astNode * driverMODS = otherMODS->next ;
+			moduleST * driverST = createDriverST() ;
+			realBase->driverST = driverST ;
+			
+			fillModuleST (driverST , driverMODS->child, depthSTPrint) ;
+			printModuleST (driverST, depthSTPrint) ;
+			
 			otherMODS = otherMODS->next->next ;
+		}
 	}
 
 	//*****************************************************************
-
-
-	astNode * driverMODS = otherMODS->prev ;
-	moduleST * driverST = createDriverST() ;
-	
-	fillModuleST (driverST , driverMODS->child, depthSTPrint) ;
-	printModuleST (driverST, depthSTPrint) ;
-	realBase->driverST = driverST ;
 			
 	return realBase ;
 }

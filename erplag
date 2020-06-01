@@ -55,6 +55,11 @@ successAsmExe () {
 	printf "${BOLD}${GREEN}Assembly of ${RESET}${BOLD}$1 ${GREEN}successful! Executable file ${RESET}${BOLD}$2 ${GREEN}generated${RESET}\n"
 }
 
+successLines () {
+	erplagHead
+	printf "${BOLD}${GREEN}Lines of generated code ${RESET}${BOLD}--> ${YELLOW}$1${RESET}\n"
+}
+
 if [[ "$OSTYPE" == "linux"* ]]
 then
 	NFLAG="-felf64"
@@ -77,8 +82,10 @@ while getopts ":a:o:h" opt; do
 			if [ $status -eq 0 ]
 			then
 				successErpAsm $OPTARG $asmname
+				lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+				successLines $lines
 			fi
-
+			
 			exit $status
 			;;
 		o)	target=$OPTARG 
@@ -102,6 +109,9 @@ while getopts ":a:o:h" opt; do
 				nasm $NFLAG $asmname -o $objname
 				gcc -w -no-pie $objname -o $target 
 				successErpExe $srcname $target
+
+				lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+				successLines $lines
 			fi
 			rm -f $asmname
 			rm -f $objname
@@ -158,6 +168,9 @@ then
 			nasm $NFLAG $asmname -o $objname
 			gcc -w -no-pie $objname -o $fname
 			successErpExe $srcname $fname
+
+			lines=$(wc -l $asmname | grep -o '[0-9]*[0-9]')
+			successLines $lines
 		fi
 		rm -f $asmname
 		rm -f $objname

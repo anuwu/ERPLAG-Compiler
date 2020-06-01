@@ -916,10 +916,43 @@ void popOutput (astNode *outputHead, moduleST *lst)
 	codePrint ("\n") ;
 }
 
-int moduleGeneration (astNode *node, moduleST *lst)
+void retModule (moduleST *lst)
+{
+	codePrint ("\n\t\tMOV RSP, RBP\n") ;
+	codePrint ("\t\tPOP RBP\n") ;
+
+	if (lst == realBase->driverST)		// driver module
+	{
+		#ifdef __linux__
+			codePrint ("\t\tMOV RAX, 60\n") ;
+			codePrint ("\t\tXOR RDI, RDI\n") ;
+			codePrint ("\t\tsyscall\n") ;
+		#endif
+			
+		#ifdef __MACH__
+			codePrint ("\t\tMOV RAX, 0x2000001\n") ;
+			codePrint ("\t\tXOR RDI, RDI\n") ;
+			codePrint ("\t\tsyscall\n") ;
+		#endif
+
+		#ifdef _WIN64
+			codePrint ("\t\tret\n") ;
+		#endif
+	}
+	else
+		codePrint ("\t\tret\n") ;
+
+	printCommentLineNASM () ;
+}
+
+/*
+Carried over convention from symbolTable.c
+Module refers to not only a module, but any scope
+*/
+void moduleGeneration (astNode *node, moduleST *lst)
 {
 	if (node == NULL)
-		return 0 ;
+		return ;
 
 	varST *searchedVar ;
 	astNode *idListHead ;
@@ -932,7 +965,11 @@ int moduleGeneration (astNode *node, moduleST *lst)
 		int reserveLabel[10] ;
 
 		case statements :
-			moduleGeneration (node->child, node->localST);		// Access local scope and move below
+			if (node->child == NULL)
+				retModule (node->localST) ;
+			else
+				moduleGeneration (node->child, node->localST);		// Access local scope and move below
+
 			break ;
 
 		case statement :
@@ -946,33 +983,7 @@ int moduleGeneration (astNode *node, moduleST *lst)
 				varEntry = lst->dynamicVars[0] ;
 
 				if (lst->parent == realBase)
-				{
-					codePrint ("\n\t\tMOV RSP, RBP\n") ;
-					codePrint ("\t\tPOP RBP\n") ;
-
-					if (realBase->driverST == lst)
-					{
-						#ifdef __linux__
-							codePrint ("\t\tMOV RAX, 60\n") ;
-							codePrint ("\t\tXOR RDI, RDI\n") ;
-							codePrint ("\t\tsyscall\n") ;
-						#endif
-							
-						#ifdef __MACH__
-							codePrint ("\t\tMOV RAX, 0x2000001\n") ;
-							codePrint ("\t\tXOR RDI, RDI\n") ;
-							codePrint ("\t\tsyscall\n") ;
-						#endif
-
-						#ifdef _WIN64
-							codePrint ("\t\tret\n") ;
-						#endif
-					}
-					else
-						codePrint ("\t\tret\n") ;
-
-					printCommentLineNASM () ;
-				}
+					retModule (lst) ;
 				else if (lst->scopeSize > 0)
 				{
 
