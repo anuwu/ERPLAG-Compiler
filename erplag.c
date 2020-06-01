@@ -121,7 +121,6 @@ int main(int argc, char **argv)
 
 		preamble () ;
 		codeGeneration (astRoot) ;
-		printCommentLineNASM () ;
 		postamble () ;
 	}
 	else

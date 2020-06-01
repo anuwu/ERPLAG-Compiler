@@ -1285,6 +1285,20 @@ void codeGeneration(astNode *node)
 
 void preamble()
 {
+	codePrint (";;;;;;;;;;; Compiled for 64-bit ") ;
+
+	#ifdef __linux__
+		codePrint ("Linux ") ;
+	#endif
+	#ifdef __MACH__
+		codePrint ("macOS ") ;
+	#endif
+	#ifdef _WIN64
+		codePrint ("Windows ") ;
+	#endif
+
+	codePrint (";;;;;;;;;;;\n\n") ;
+
 	#if defined __linux__ || defined _WIN64
 		codePrint ("extern printf\n") ;
 		codePrint ("extern scanf\n") ;

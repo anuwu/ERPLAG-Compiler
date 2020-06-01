@@ -70,19 +70,19 @@ then
 	if ! [ "$l1" = "" ] 
 	then
 		printf "${MAGENTA}"
-		printf "$l1" | xargs -0 -n1 echo rm | sh -x
+		printf "$l1" | xargs rm -f 
 	fi
 	if ! [ "$l2" = "" ]
 	then
 		printf "${BLUE}"
-		printf "$l2"| xargs -0 -n1 echo rm | sh -x
+		printf "$l2"| xargs rm -f
 	fi
 	if ! [ "$l3" = "" ]
 	then
 		printf "${YELLOW}"
-		printf "$l3" | xargs -0 -n1 echo rm | sh -x
+		printf "$l3" | xargs rm -f
 	fi
-	printf "${RESET}"
+	printf "${GREEN}Cleaned!${RESET}\n"
 else
 	printf "No ${BOLD}.asm, .o ${RESET}or ${BOLD}executables ${RESET}found.\n"
 fi
