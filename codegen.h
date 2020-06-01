@@ -84,7 +84,9 @@ void pushInputDynamicArr (varST *vst, varSTentry *varEntry, char *reg, pushArrLi
 void pushInput (astNode *inputEnd, varSTentry *varEntry, moduleST *lst) ;
 void popOutput (astNode *inputEnd, moduleST *lst) ;
 
+void freeDynamic (varSTentry *varEntry) ;
 void retModule (moduleST *lst) ;
+
 void moduleGeneration (astNode *node, moduleST *lst) ;
 void codeGeneration(astNode *node) ;
 

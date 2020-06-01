@@ -945,6 +945,44 @@ void retModule (moduleST *lst)
 	printCommentLineNASM () ;
 }
 
+void freeDynamic (varSTentry *varEntry)
+{
+	if (varEntry == NULL)
+		return ;
+
+	char freeReg[5] ;
+	RSPAlign () ;
+
+	#if defined __linux__ || defined __MACH__
+		strcpy (freeReg, "RDI") ;
+	#endif
+	#ifdef _WIN64
+		strcpy (freeReg, "RCX") ;
+		codePrint ("\n\t\tSUB RSP, 32\n") ;
+	#endif
+
+	while (varEntry != NULL)
+	{
+		codePrint ("\n\t\tMOV %s, [RBP%s]\n", freeReg, getOffsetStr (varEntry->thisVarST->offset)) ;
+
+		#if defined __linux__ || defined _WIN64
+			codePrint ("\t\tCALL free") ;
+		#endif
+		#ifdef __MACH__ 
+			codePrint ("\t\tCALL _free") ;
+		#endif
+		codeComment (8, "freeing local dynamic arrays\n") ;
+
+		varEntry = varEntry->next ;
+	}
+
+	#ifdef _WIN64
+		codePrint ("\t\tADD RSP, 32\n") ;
+	#endif
+
+	RSPRestore () ;
+}
+
 /*
 Carried over convention from symbolTable.c
 Module refers to not only a module, but any scope
@@ -981,6 +1019,7 @@ void moduleGeneration (astNode *node, moduleST *lst)
 					break ;
 
 				varEntry = lst->dynamicVars[0] ;
+				freeDynamic (varEntry) ;
 
 				if (lst->parent == realBase)
 					retModule (lst) ;
@@ -1195,6 +1234,7 @@ void moduleGeneration (astNode *node, moduleST *lst)
 			codePrint ("\n@SWITCH%d:\n", end_label) ;
 
 			varEntry = statementsNode->localST->dynamicVars[0] ;
+			freeDynamic (varEntry) ;
 
 			if (statementsNode->localST->scopeSize > 0)
 			{
@@ -1314,6 +1354,7 @@ void preamble()
 		codePrint ("extern printf\n") ;
 		codePrint ("extern scanf\n") ;
 		codePrint ("extern malloc\n") ;
+		codePrint ("extern free\n") ;
 		codePrint ("extern exit\n") ;
 
 		#ifdef __linux__
@@ -1329,6 +1370,7 @@ void preamble()
 		codePrint ("extern _printf\n") ;
 		codePrint ("extern _scanf\n") ;
 		codePrint ("extern _malloc\n") ;
+		codePrint ("extern _free\n") ;
 		codePrint ("extern _exit\n") ;
 
 		codePrint ("\nglobal _main\n") ;
@@ -1348,6 +1390,8 @@ int isFlagSet (int flagInt , int id)
 
 void errorTF (char *errStr)
 {
+	RSPAlign () ;
+
 	#if defined __linux__ || defined __MACH__
 		codePrint ("\t\tMOV RDI, %s\n", errStr) ;
 		codePrint ("\t\tXOR RSI, RSI\n") ;
@@ -1559,7 +1603,6 @@ void postamble()
 		df |= 1 << boundPrint ;
 
 		codePrint ("\n@boundERROR:\n") ;
-		RSPAlign () ;
 		errorTF ("@boundPrint") ;
 	}
 
@@ -1568,7 +1611,6 @@ void postamble()
 		df |= 1 << declPrint ;
 
 		codePrint ("\n@declERROR:\n") ;
-		RSPAlign () ;
 		errorTF ("@declPrint") ;
 	}
 
@@ -1577,14 +1619,12 @@ void postamble()
 		df |= 1 << declNeg ;
 
 		codePrint ("\n@declNegERROR:\n") ;
-		RSPAlign () ;
 		errorTF ("@declNeg") ;
 	}
 
 	if (isFlagSet (tf, argLimERROR))
 	{
 		df |= 1 << arrArgMismatch ;
-		RSPAlign () ;
 		errorTF ("@arrArgMismatch") ;
 	}
 
@@ -1593,7 +1633,6 @@ void postamble()
 		df |= 1 << asgnArgMismatch ;
 
 		codePrint ("\n@asgnLimERROR:\n") ;
-		RSPAlign () ;
 		errorTF ("@asgnArgMismatch") ;
 	}
 
@@ -1602,7 +1641,6 @@ void postamble()
 		df |= 1 << divZero ;
 
 		codePrint ("\n@divZeroERROR:\n") ;
-		RSPAlign () ;
 		errorTF ("@divZero") ;
 	}
 

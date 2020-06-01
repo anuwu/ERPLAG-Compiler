@@ -1,0 +1,20 @@
+declare module lol ;
+
+<<<driver program>>>
+start
+	declare i : integer ;
+	get_value (i) ;
+	use module lol with parameters i ;
+end
+
+<<module lol>>
+takes input [i : integer] ;
+start
+	declare j : integer ;
+	j := 2*i ;
+	
+	while (true)
+	start
+		declare A : array [i .. j] of boolean ;
+	end
+end

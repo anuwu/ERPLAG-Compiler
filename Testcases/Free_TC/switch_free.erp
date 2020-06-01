@@ -1,0 +1,18 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	declare b : boolean ;
+
+	get_value (i) ;
+	get_value (j) ;
+	get_value (b) ;
+
+	switch (b) start case
+	true :
+		declare A, B : array [i .. j] of integer ;
+		break ; case
+
+	false :
+		declare C : array [0 .. j] of boolean ;
+		break ; end
+end

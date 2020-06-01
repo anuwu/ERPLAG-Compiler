@@ -1,0 +1,5 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	declare A : array [i .. j] of boolean ;
+end
