@@ -25,7 +25,7 @@ erplagHead () {
 }
 
 erpHelp () {
-	printf "${BOLD}${GREEN}The compiler can be used with the following options - ${RESET}\n"
+	printf "${BOLD}${YELLOW}The compiler can be used with the following options - ${RESET}\n"
 	printf "${BOLD}1. ${CYAN}erplag -a ${RESET}${BOLD}<filename>.erp ${RESET}generates a ${BOLD}.asm ${RESET}file with the same filename\n"
 	printf "${BOLD}2. ${CYAN}erplag ${RESET}${BOLD}<filename>.asm ${RESET}generates an executable with the same filename\n"
 	printf "${BOLD}3. ${CYAN}erplag -o ${RESET}${BOLD}myexec <filename>.erp ${RESET}generates an executable file named ${BOLD}myexec${RESET}\n"
