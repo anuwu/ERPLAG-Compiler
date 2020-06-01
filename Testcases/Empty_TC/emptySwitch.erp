@@ -1,0 +1,13 @@
+<<<driver program>>>
+start
+	declare i : integer ;
+	switch (i) start case
+	1 :
+		break ; case
+	2 :
+		break ; case
+	3 :
+		break ;
+	default :
+		break ; end
+end

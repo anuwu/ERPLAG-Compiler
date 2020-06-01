@@ -965,7 +965,7 @@ void moduleGeneration (astNode *node, moduleST *lst)
 		int reserveLabel[10] ;
 
 		case statements :
-			if (node->child == NULL)
+			if (node->child == NULL && node->localST->parent == realBase)
 				retModule (node->localST) ;
 			else
 				moduleGeneration (node->child, node->localST);		// Access local scope and move below
@@ -986,7 +986,6 @@ void moduleGeneration (astNode *node, moduleST *lst)
 					retModule (lst) ;
 				else if (lst->scopeSize > 0)
 				{
-
 					codePrint ("\n\t\tADD RSP, %d", lst->scopeSize) ;
 					codeComment (10, "restoring to parent scope") ;
 				}
@@ -1107,7 +1106,7 @@ void moduleGeneration (astNode *node, moduleST *lst)
 
 			codePrint ("\n\t@FOR%d:\n", start_label) ;
 			codePrint ("\t\tMOV AX, %s\n", node->next->next->tok->lexeme) ;
-			codePrint ("\t\tCMP CX,AX\n");
+			codePrint ("\t\tCMP CX, AX\n");
 			codePrint ("\t\tJG @FOR%d\n\n", end_label);
 
 			moduleGeneration(node->next->next->next, lst);		// Statements
@@ -1182,6 +1181,7 @@ void moduleGeneration (astNode *node, moduleST *lst)
 						statementsNode = statementsNode->next->next ;
 						codePrint ("\n@SWITCH%d:\n", def_label) ;
 						moduleGeneration (statementsNode, lst) ;
+						codePrint ("\n\t\tJMP @SWITCH%d\n", end_label) ;
 
 						break ;
 					}
