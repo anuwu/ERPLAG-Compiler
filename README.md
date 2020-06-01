@@ -57,13 +57,9 @@ If the installation fails, or you wish to do it manually, you have to complete t
 ## Note
 **The compiler has been built for only 64-bit operating systems and tested on the following operating systems -**
 1. Linux
-
    - `Ubuntu/Parrot OS`
-   
    - `openSUSE`
-   
    - `Fedora`
-   
    - `Manjaro`
    
 2. Windows 7/10
