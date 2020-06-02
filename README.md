@@ -55,7 +55,7 @@ If the installation fails, or you wish to do it manually, you have to complete t
 5. Additional changes to the language are explained in "notes.txt" in the /Docs folder
 
 ## Note
-**The compiler has been built for only 64-bit operating systems and tested on the following operating systems -**
+**The compiler has been built only for 64-bit operating systems, running on x86_64 architecture, and tested on the following -**
 1. Linux
    - `Ubuntu/Parrot OS`
    - `openSUSE`
