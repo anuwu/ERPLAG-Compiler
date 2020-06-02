@@ -1,0 +1,16 @@
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	get_value (j) ;
+
+	declare A : array [0 .. j] of integer ;
+	
+	i := 0 ;
+	while (i <= j)
+	start
+		A[i] := i ;
+		i := i + 1 ;
+	end
+
+	print (A) ;
+end
