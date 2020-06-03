@@ -88,6 +88,7 @@ No need to do this step for **Linux/macOS** unless you have installed it manuall
 
 ## Issues
 
-I'm aware that the installation script doesn't handle Gentoo distributions (yet), which use the portage package manager. Please install the dependencies on your own. In any case, if you're not able to get ERPLAG compiler running on your system, feel free to leave me a message
+   - Lexical/Parsing errors are not displayed in the best manner possible, but the compiler handles such errors well and doesn't crash
+   - I'm aware that the installation script doesn't handle Gentoo distributions (yet), which use the portage package manager. Please install the dependencies on your own. In any case, if you're not able to get ERPLAG compiler running on your system, feel free to leave me a message
 
 Thank you!
