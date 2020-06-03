@@ -6,7 +6,7 @@
 #include "lexer.h"
 
  
-#define bufSize 4096
+#define bufSize 128
  
 char keywords[30][20] = 
 {
@@ -147,9 +147,7 @@ int getLexemeLineNumber (twinBuffer *twinBuf)
 		return line ;
  
 	if ((twinBuf->forward == twinBuf->buf2 && twinBuf->buf1[bufSize - 1] == '\n') || (*(twinBuf->forward - 1) == '\n') && *twinBuf->forward != EOF)
-		line-- ;
- 
-	return line ;
+		return line - 1 ;
 }
  
 void resetBeginPointer (twinBuffer *twinBuf)
@@ -177,18 +175,23 @@ token *handleLexError (DFAError err, twinBuffer *twinBuf)
 			break ;
  
 		case EOF_WHILE_LEXING :
+			retract (twinBuf) ;
+			resetBeginPointer (twinBuf) ;
+			tk->lineNumber = twinBuf->lineNumber ;
+			nextChar (twinBuf) ;
+
 			tk->lexeme = (char *) malloc (sizeof(char) * (strlen("Reached EOF while lexing") + 1)) ;
 			strcpy (tk->lexeme, "Reached EOF while lexing") ;
 			break ;
  
 		case EOF_COMMENT :
+			retract (twinBuf) ;
+			resetBeginPointer (twinBuf) ;
+			tk->lineNumber = twinBuf->lineNumber ;
+			nextChar (twinBuf) ;
+
 			tk->lexeme = (char *) malloc (sizeof(char) * (strlen("EOF encountered before end of comment") + 1)) ;
 			strcpy (tk->lexeme , "EOF encountered before end of comment") ;
-			break ;
- 
-		case COMMENT_ASTERISK :
-			tk->lexeme = (char *) malloc (sizeof(char) * (strlen("Asterisk encountered in comment body") + 1)) ;
-			strcpy (tk->lexeme , "Asterisk encountered in comment body") ;
 			break ;
  
 		case RANGEOP_ERR :
@@ -854,6 +857,8 @@ token* getNextTok (twinBuffer *twinBuf)
 					err = EOF_COMMENT ;
 					dfa = STATE_TRAP ;
 				}
+				else
+					resetBeginPointer (twinBuf) ;
  
 				break ;
  
@@ -865,12 +870,25 @@ token* getNextTok (twinBuffer *twinBuf)
  
 				if (ch == '*')
 					dfa = FINAL_COMMENT_END2 ;
+				/*
 				else
 				{
 					if (ch != EOF)
 						retract (twinBuf) ;
+
 					err = COMMENT_ASTERISK ;
 					dfa = STATE_TRAP ;
+					resetBeginPointer (twinBuf) ;
+				}
+				*/
+				else if (ch == EOF)
+				{
+					err = EOF_COMMENT ;
+					dfa = STATE_TRAP ;
+				}
+				else
+				{
+					dfa = STATE_COMMENT_START ;
 					resetBeginPointer (twinBuf) ;
 				}
  
@@ -880,7 +898,6 @@ token* getNextTok (twinBuffer *twinBuf)
  
 			case FINAL_COMMENT_END2 :
 				sim = FINAL ;
- 
 				retract (twinBuf) ;
  
 				tk = (token *) malloc (sizeof(token)) ;
@@ -1472,177 +1489,6 @@ token* getNextTok (twinBuffer *twinBuf)
  
 	return tk ;
 }
-
-int lineBeforeAsterisk ;
-char charBeforeAsterisk ;
- 
-token* getNextTokCOMMENT (twinBuffer *twinBuf)
-{
-	char ch ;
-	char *lexeme ;
-
-	token *tk = NULL ;
- 
-	DFAStatesCOMMENT dfa ;
-	//DFAError err ;
-	DFAsim sim = NONFINAL ;
-	dfa = (DFAStatesCOMMENT) STATE_START ;
- 
- 
-	while (1)
-	{
-		switch (dfa)
-		{
-			case V_STATE_START :
-				sim = NONFINAL ;
-				ch = nextChar (twinBuf) ;
-
-				if (ch == EOF)
-					dfa = V_FINAL_EOF ;
-				else if (ch == '*')
-					dfa = V_STATE_ASTERISK ;
-				else
-					dfa = V_FINAL_CHAR ;
- 
-				break ;
-
-			case V_FINAL_CHAR :
-				sim = FINAL ;
- 
-				retract (twinBuf) ;
- 
-				tk = (token *) malloc (sizeof(token)) ;
-				tk->id = TK_CHAR_BADCOMMENT ;
-				tk->lexeme = extract_lexeme (twinBuf) ;
-				tk->lineNumber = getLexemeLineNumber (twinBuf) ;
-
-				lineBeforeAsterisk = tk->lineNumber ;
-				charBeforeAsterisk = tk->lexeme[0] ;
- 
-				nextChar (twinBuf) ;
-				resetBeginPointer (twinBuf) ;
-
-				break ;
-
-			case V_STATE_ASTERISK :
-				sim = NONFINAL ;
-				ch = nextChar (twinBuf) ;
- 
-				if (ch == '*')
-					dfa = V_STATE_COMMENT_START  ;
-				else
-				{
-					if (ch != EOF)
-						retract (twinBuf) ;
-					dfa = V_FINAL_CHAR ;
-				}
-
-				break ;
-
-			case V_STATE_COMMENT_START :
-				sim = NONFINAL ;
-				ch = nextChar (twinBuf) ;
- 
-				if (ch == '*')
-					dfa = V_STATE_COMMENT_END1 ;
-				else if (ch == EOF)
-				{
-					//printf ("COMMENT ENDING PREMATURELY WITH EOF\n") ;
-					dfa = V_FINAL_COMMENT_EOF ;
-				}
- 
-				break ;
-
-			case V_STATE_COMMENT_END1 :
-				sim = NONFINAL ;
-				ch = nextChar (twinBuf) ;
- 
-				if (ch == '*')
-					dfa = V_FINAL_COMMENT_END2 ;
-				else
-				{
-					if (ch != EOF)
-						retract (twinBuf) ;
-					dfa = V_FINAL_COMMENT_NOASTERISK ;
-
-				}
-
-				break ;
-
-			case V_FINAL_COMMENT_END2 :
-				sim = FINAL ;
-
-				retract (twinBuf) ;
- 
-				tk = (token *) malloc (sizeof(token)) ;
-				tk->id = TK_COMMENT ;
-				tk->lexeme = NULL ;
-				
-				//tk->lexeme = (char *) malloc (sizeof(char) * 100) ;
-				//itoa (lineBeforeAsterisk,tk->lexeme,10);
-				
-				tk->lineNumber = getLexemeLineNumber (twinBuf) ;
- 
-				nextChar (twinBuf) ;
-				resetBeginPointer (twinBuf) ;
-
-				break ;
-
-			case V_FINAL_COMMENT_NOASTERISK :
-				sim = FINAL ;
- 
-				retract (twinBuf) ;
- 
-				tk = (token *) malloc (sizeof(token)) ;
-				tk->id = TK_CHAR_BADCOMMENT ;
-				tk->lexeme = extract_lexeme (twinBuf) ;
-				tk->lineNumber = getLexemeLineNumber (twinBuf) ;
- 
-				nextChar (twinBuf) ;
-				resetBeginPointer (twinBuf) ;
-
-				break ;
-
-			case V_FINAL_COMMENT_EOF :
-				sim = FINAL ;
-				retract (twinBuf) ;
-
-				//printf ("Begin character is : %c\n", *(twinBuf->begin)) ;
-				//printf ("Forward character is : %c\n", *twinBuf->forward) ;
- 
-				tk = (token *) malloc (sizeof(token)) ;
-				tk->id = TK_CHAR_BADCOMMENT ;
-				tk->lexeme = extract_lexeme (twinBuf) ;
-				tk->lineNumber = getLexemeLineNumber (twinBuf) ;
-
-				//lineBeforeAsterisk = tk->lineNumber ;
-				//charBeforeAsterisk = tk->lexeme[0] ;
- 
-				nextChar (twinBuf) ;
-				resetBeginPointer (twinBuf) ;
-
-				break ;
-
-			case V_FINAL_EOF :
-				sim = FINAL ;
- 
-				tk = (token *) malloc (sizeof(token)) ;
-				tk->id = TK_EOF ;
-				tk->lexeme = (char *) malloc (sizeof(char)) ;
-				*tk->lexeme = EOF ;
-				tk->lineNumber = getLexemeLineNumber (twinBuf) ;
- 
-				break ;
- 
-		}
-
-		if (sim == FINAL || sim == TRAP)
-			break ;
-	}
-
-	return tk ;
-}
-
 
 char nextChar (twinBuffer *twinBuf)
 {

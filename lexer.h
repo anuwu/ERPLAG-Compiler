@@ -9,6 +9,7 @@ typedef struct _twinBuffer
 	char *buf1, *buf2 ;
 	char *begin, *forward ;
 	whereBufPointer where_begin, where_forward ;
+
 	int lineNumber ;
 } twinBuffer ;
 
@@ -53,19 +54,12 @@ typedef enum _DFAStates
 	FINAL_EOF 
 } DFAStates ;
 
-typedef enum _DFAStatesCOMMENT
-{
-	V_STATE_START, V_STATE_ASTERISK, V_STATE_COMMENT_START, V_STATE_COMMENT_END1, 
-	V_FINAL_CHAR, V_FINAL_COMMENT_END2, V_FINAL_EOF, V_FINAL_COMMENT_EOF, V_FINAL_COMMENT_NOASTERISK
-} DFAStatesCOMMENT ;
-
 typedef enum _DFAError
 {
 	UNKNOWN_SYMBOL,
 	RANGEOP_ERR,
 	EQ_EXPECTED,
 	EOF_COMMENT,
-	COMMENT_ASTERISK,
 	TOO_LONG_ID,
 	RNUM_DIG_EXPECTED,
 	RNUM_DIGORSIGN_EXPECTED,
@@ -86,9 +80,7 @@ int getLexemeLineNumber (twinBuffer *twinBuf) ;
 token *handleLexError (DFAError err, twinBuffer *twinBuf) ;
 token* getNextTok (twinBuffer *fs) ;
 token* getNextToken (twinBuffer *fs) ;
-token* getNextTokCOMMENT (twinBuffer *twinBuf) ;
 
 char nextChar (twinBuffer *fs) ;
 void retract (twinBuffer *fs) ;
 char* extract_lexeme (twinBuffer *fs) ;
-
