@@ -3,6 +3,7 @@
 Welcome to the ERPLAG compiler. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020. 
 
 ## Unique Features
+Although it's a toy language, there are features in ERPLAG which, in some sense, make it more powerful than C. 
    - Abstraction of dynamic array declaration
    - Function returning multiple values
 
@@ -53,6 +54,7 @@ If the installation fails, or you wish to do it manually, you have to complete t
 3. Information regarding the language can be found in the /Docs folder
 4. The final grammar used by the compiler is written in a separate pdf in the folder
 5. Additional changes to the language are explained in "notes.txt" in the /Docs folder
+6. Get started on the language with some tutorial codes in the /Basics folder.
 
 ## Note
 **The compiler has been built only for 64-bit operating systems, running on x86_64 architecture, and tested on the following -**
