@@ -75,6 +75,7 @@ typedef enum _DFAsim
 
 tokenID keywordToTokenID (char *str) ;
 twinBuffer* lexer_init (FILE *fp) ;
+void lexer_destroy (twinBuffer *twinBuf) ;
 void resetBeginPointer (twinBuffer *twinBuf) ;
 int getLexemeLineNumber (twinBuffer *twinBuf) ;
 token *handleLexError (DFAError err, twinBuffer *twinBuf) ;

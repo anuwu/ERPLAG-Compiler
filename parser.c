@@ -1393,22 +1393,20 @@ treeNode* parse (FILE *fp)
 		if (tk->id == TK_EOF)
 		{
 			if(stack!= NULL && stack->key==TK_EOF)
+				break ;
+			
+			if(stack==NULL)
 			{
+				errParse () ;
+				errArrow () ;
+				#ifdef _WIN64
+					printf ("Stack is empty\n") ;
+				#endif
+				#if defined __linux__ || defined __MACH__
+					printf(ANSI_BOLD ANSI_RED "Stack is empty\n" ANSI_RESET);
+				#endif
 				break;
 			}
-			
-				if(stack==NULL)
-				{
-					errParse () ;
-					errArrow () ;
-					#ifdef _WIN64
-						printf ("Stack is empty\n") ;
-					#endif
-					#if defined __linux__ || defined __MACH__
-						printf(ANSI_BOLD ANSI_RED "Stack is empty\n" ANSI_RESET);
-					#endif
-					break;
-				}
 		}
  
 		if (isTerminal(stack->key)) // We are getting a terminal on top of the stack
@@ -1419,27 +1417,13 @@ treeNode* parse (FILE *fp)
 				if(flag==0) // No error has been encountered yet
 				{
 					//Add the terminal to the parse tree
-				current_node->tnt.term->lexeme =  tk->lexeme ; 
-				current_node->tnt.term->lineNumber = tk->lineNumber ;
-				current_node=nextTreeNode(current_node);
+					current_node->tnt.term->lexeme =  tk->lexeme ; 
+					current_node->tnt.term->lineNumber = tk->lineNumber ;
+					current_node=nextTreeNode(current_node);
 				}
+
 				// Get the new look-ahead symbol
 				tk = getNextToken (twinBuf) ;
-				if(tk->id == TK_LEXERROR)
-				{
-					errLex () ;
-					printf ("at line ") ;
-					errLine (tk->lineNumber) ;
-					printf (" ") ;
-					errArrow () ;
-					#ifdef _WIN64
-						printf (" %s\n", tk->lexeme) ;
-					#endif
-					#if defined __linux__ || defined __MACH__
-						printf (ANSI_BOLD ANSI_RED " %s\n" ANSI_RESET, tk->lexeme) ;
-					#endif
-					root->syntax_error=1;
-				}
 			}
 			else   // The top of stack is a terminal but doesn't match with the input symbol
 			{
@@ -1461,7 +1445,6 @@ treeNode* parse (FILE *fp)
 						#endif
 						current=tk->lineNumber;
 					}
-
 					else
 					{
 						errParse () ;
@@ -1564,6 +1547,7 @@ treeNode* parse (FILE *fp)
 							if(tk->id != TK_EOF)
 							{
 								tk=getNextToken(twinBuf);
+								
 								if(tk->id == TK_LEXERROR)
 								{
 									root->syntax_error=1;
@@ -1592,6 +1576,25 @@ treeNode* parse (FILE *fp)
  
 		while_count++ ;
 	}
- 	labelabc:;
+
+ 	labelabc:
+ 	lexer_destroy (twinBuf) ;
+
 	return root ;
+}
+
+void deletePT (treeNode *node)
+{
+	if (node == NULL)
+		return ;
+
+	treeNode *ptr ;
+	ptr = node->child ;
+	free (node) ;
+
+	while (ptr != NULL)
+	{
+		deletePT (ptr) ;
+		ptr = ptr->next ;
+	}
 }

@@ -138,6 +138,15 @@ twinBuffer* lexer_init (FILE *fp)
  
 	return twinBuf ;
 }
+
+void lexer_destroy (twinBuffer *twinBuf)
+{
+	free (twinBuf->buf1) ;
+	free (twinBuf->buf2) ;
+	fclose (twinBuf->fp) ;
+
+	free (twinBuf) ;
+}
  
 int getLexemeLineNumber (twinBuffer *twinBuf)
 {

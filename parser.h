@@ -73,5 +73,6 @@ void addRulesParseTree (treeNode *parent, Rule *allRules, int rule_index) ;
 treeNode * nextTreeNode(treeNode* current_node) ;
 
 treeNode* parse (FILE *fp) ;
+void deletePT (treeNode *node) ;
 
 #endif

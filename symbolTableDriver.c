@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 
 
 	astNode *astRoot = applyASTRule (root) ; 
+	deletePT (root) ;
 
 	if (argc == 4)
 	{

@@ -5,16 +5,6 @@
 #include "ast.h"
 #include "error.h"
 
-#define SIZE 200
-#define TNTLENGTH 40
-
-#define isTerminal(x) x>=TK_EPS && x<=TK_RNUM
-#define isNonTerminal(x) x>=program && x<=idL
-#define endl printf("\n")
-#define allRules rule
-
-twinBuffer *twinBuf ;
-
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
@@ -41,6 +31,8 @@ int main(int argc, char *argv[])
 
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
+	deletePT (root) ;
+
 	inorderAST (astRoot, 0) ;
 
 	return 0;
