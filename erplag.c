@@ -90,6 +90,8 @@ int main(int argc, char **argv)
 
 	astNode *astRoot ;
 	astRoot = applyASTRule (root) ;
+	deletePT (root) ;
+	
 	realBase = fillSymbolTable (astRoot,0);
 
 	if (!realBase->semanticError)
