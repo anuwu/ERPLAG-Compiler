@@ -74,7 +74,7 @@ IF "%1" == "-a" (
 	set str=!str:~0,1!
 
 	IF "!str!"=="-" (
-		echo Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable
+		echo Invalid option. Use -a to generate x86 assembly or use -o along with output name to generate executable. For more information, use -h
 		EXIT /B 1
 	) 
 

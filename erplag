@@ -119,7 +119,7 @@ while getopts ":a:o:h" opt; do
 			exit $status
 			;;
 		\?) errHead
-			echo "Invalid option. Use ${BOLD}${CYAN}-a ${RESET}to generate x86 assembly or use ${BOLD}${CYAN}-o ${RESET}along with output name to generate executable"
+			echo "Invalid option. Use ${BOLD}${CYAN}-a ${RESET}to generate x86 assembly or use ${BOLD}${CYAN}-o ${RESET}along with output name to generate executable. For more information, use ${BOLD}${CYAN}-h${RESET}"
 			exit 1
 			;;
 		:)  errHead
