@@ -1,0 +1,56 @@
+** Welcome to your first program on ERPLAG **
+
+** First off, any piece of text between two double asterisks is treated as a comment! **
+** This is a single line comment **
+
+**
+This is
+a multiline
+comment
+**
+
+**
+In this program, we will learn about the data types supported by ERPLAG -
+1. Integer
+2. Boolean
+3. Real (Floating Point)
+
+At the present stage, the compiler can process real variables upto the point of syntactic and semantic correctness.
+It has not been implemented for runtime yet.
+
+The main program is denoted as the "driver" module and is enclosed between a pair of 3 angular brackets
+**
+
+<<<driver program>>>
+start						** Scope begins with the "start" and finished with the "end" keyword **
+	declare i : integer ;			** Variables are declared with the "declare" keyword and **
+	declare j, k : integer ;		** Multiple variables can be declared in the same line with a comma separator **
+
+	get_value (i) ;				** Input from console **
+	get_value (j) ;
+	
+	k := i + j ;				** ERPLAG supports standard arithmetic operations of +,-,*,/ among integer data types only (as of now) **
+	print (k) ;				** Output result to the console **
+
+	declare b,c : boolean ;
+	get_value (b) ;				** Check the input format below **
+	c := true ;				** true/false (small letters) can be used as constant values in expressions **
+
+	b := b AND c ;				** Logical operators are denoted by AND/OR (in capitals) **
+	print (b) ;	
+end
+
+
+** 
+------------------------------------ Running on the Console ------------------------------------ 
+
+> erplag variables.erp
+> ./variables
+> Enter an integer : 4
+> Enter an integer : 7
+> Output : 11
+> Enter a boolean (1 for true, 0 for false) : 1
+> Output : true
+
+------------------------------------------------------------------------------------------------
+** 

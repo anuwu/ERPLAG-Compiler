@@ -1,0 +1,95 @@
+** In this program, we shall look at dynamic array declarations.
+   These are array declarations whose left and right limits can 
+   be variables. If either of the limits is a variable, then the
+   array is a dynamic array -
+	a) array [0 .. n]
+        b)  array [x .. 1000] 
+        c) array [i .. j]
+
+   are all valid dynamic declarations.
+
+   At the point of dynamic declaration, its bounds are checked. 
+   If the left limit is not <= the right limit, or if either of
+   the limits is negative, then a run-time error is thrown and the
+   program halts!
+**
+
+<<<driver program>>>
+start
+	declare i, j, k : integer ;
+	get_value (i) ;						** Obtaining the left limit **
+	get_value (j) ;						** Obtaining the right limit **
+
+	declare A : array [i .. j] of integer ;			** Declaring the dynamic array **
+	get_value (A) ;
+	print (A) ;
+
+	declare n, x : integer ;
+	get_value (n) ;
+	get_value (x) ;
+
+	declare B, C : array [x .. 1000] of boolean ;		** multiple array declaration works just like multiple primitive data type declarations **
+	declare dyn : array [0 .. n] of integer ;
+	declare stat : array [0 .. 5] of integer ;
+
+	
+	** Bound checks occur in the following situations -
+	1. A static array being accessed by a variable
+	   - stat[i]
+	   - stat[j]
+	2. A dynamic array being accessed by a static or dynamic variable
+	   - A[4]
+	   - A[i]
+	   - C[100]
+
+	These checks occur when such arrays accesses are found in
+	1. Expressions
+	2. Print statements
+	**
+
+
+	B[500] := false ;					** Bound check on dynamic array with static index **	
+	n := n - 1 ;
+	dyn[n] := 100 ;						** Bound check on dynamic array with dynamic index **
+
+	get_value(i) ;						** Enter 6 (out of bounds) **
+	stat[i] := 0 ;						** Bound check on static array with dynamic index **
+end
+
+
+
+** 
+------------------------------- Running on the Console - Run 1 --------------------------------- 
+
+> Enter an integer : 3
+> Enter an integer : 7
+> Enter 5 array elements of integer type for range 3 to 7
+> 1 2 3 4 5
+> Output : 1 2 3 4 5 
+> Enter an integer : 8
+> Enter an integer : 100
+> Enter an integer : 6
+> Runtime Error --> Array out of bounds. Halt!
+
+------------------------------------------------------------------------------------------------
+** 
+
+** 
+------------------------------- Running on the Console - Run 2 --------------------------------- 
+
+> Enter an integer : 4
+> Enter an integer : 1
+> Runtime Error --> Invalid order of bounds in dynamic array declaration. Halt!
+
+------------------------------------------------------------------------------------------------
+** 
+
+** 
+------------------------------- Running on the Console - Run 3 --------------------------------- 
+
+> Enter an integer : -1
+> Enter an integer : 5
+> Runtime Error --> Negative bound in dynamic array declaration. Halt!
+
+------------------------------------------------------------------------------------------------
+** 

@@ -406,7 +406,7 @@ void print (astNode *node, moduleST *lst)
 			codePrint ("\t\tMOV %s, %s\n", valReg, node->tok->lexeme) ;
 			codePrint ("\t\tCALL @printInteger\n\n") ;
 		}
-		else if (node->id == TK_BOOLEAN)
+		else if (node->id == TK_TRUE || node->id == TK_FALSE)
 		{
 			tf |= 1 << printBoolean ;
 			codePrint ("\t\tMOV %s, %d\n", valReg, node->tok->lexeme[0]=='t'?1:0) ;
@@ -2267,7 +2267,7 @@ void postamble()
 	if (isFlagSet (df, inputBoolPrompt))
 	{
 		codePrint ("\t\t@inputBoolPrompt : ") ;
-		codePrint ("db \"Enter a boolean (0 for false, non-zero for true) : \" , 0\n") ;
+		codePrint ("db \"Enter a boolean (1 for true, 0 for false) : \" , 0\n") ;
 	}
 
 	if (isFlagSet (df, inputIntArrPrompt))

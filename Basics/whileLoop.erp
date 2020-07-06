@@ -1,16 +1,61 @@
+** In this program, we shall demonstrate two simple while loops **
+
 <<<driver program>>>
 start
-	declare i, j : integer ;
-	get_value (j) ;
+	declare i, N : integer ;
+	get_value (N) ;
 
-	declare A : array [0 .. j] of integer ;
+	declare A : array [0 .. N] of integer ;
 	
-	i := 0 ;
-	while (i <= j)
+	i := 0 ;						** Loop initialisation **
+	while (i <= N)						** Loop condition **
 	start
 		A[i] := i ;
-		i := i + 1 ;
+		print (A[i]) ;
+		i := i + 1 ;					** Updating the loop **
 	end
 
-	print (A) ;
+	**
+	The code below checks whether the array input
+	by the user is sorted or not.
+
+	It demonstrates the power of the while guard
+	to handle complex boolean expressions
+	**
+
+	get_value (A) ;
+
+	declare curr,next : integer ;
+	declare sorted : boolean ;
+
+	curr := 0 ;
+	next := 1 ;
+	while (next <= N AND A[curr] <= A[next])
+	start
+		curr := curr + 1 ;
+		next := curr + 1 ;
+	end
+
+	sorted := (curr == N) ;
+	print (sorted) ;
 end
+
+
+** 
+------------------------------- Running on the Console ----------------------------------------- 
+
+> Enter an integer : 7
+> Output :  0
+> Output :  1
+> Output :  2
+> Output :  3
+> Output :  4
+> Output :  5
+> Output :  6
+> Output :  7
+> Enter 8 array elements of integer type for range 0 to 7
+> 1 2 3 4 5 6 8 7
+> Output : false
+
+------------------------------------------------------------------------------------------------
+** 

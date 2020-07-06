@@ -1,0 +1,55 @@
+** In this tutorial, we shall look at array declaration and some details of the I/O statements
+   Specifically we will look at get_value() and print() functions. They are used to do I/O with
+   variables, arrays and static data. print() does not allow expressions inside it
+
+   One major disadvantage of ERPLAG is that it does not support character variables or strings
+   Thus we cannot output custom messages to the user with ERPLAG. Only the language-generated
+   messages are possible **
+
+<<<driver program>>>
+start
+	declare A : array [1 .. 10] of integer ;		** Arrays in ERPLAG can start from a non-zero index **
+	declare i, j : integer ;
+
+	get_value (A) ;						** Inputs the entire array at once **
+
+	A[1] := A[1] + 1 ;					** Accessing an array with static index **
+	get_value (i) ;						** Ensure to enter a value with [1 .. 10] **
+	print (A[i]) ;						** Printing an element of the array **
+
+	** One difference to note between the
+	get_value() and print() functions is that
+	the former only accepts whole identifiers
+	such as A, i. It does not accept an array index
+	such as A[5] or A[j] 
+
+	On the other hand, print() accepts any legal
+	data as its argument. In other words, A[5] or 
+	A[j] would be allowed by it. It also accepts
+	static data of integer and boolean types **
+
+	print (true) ;
+	print (false) ;
+	print (100) ;
+	** print (-100) ; **					** The minus sign is not considered as part of a static integer value. It leads to a syntactical error **
+	print (A) ;						** This will print the entire array **
+	** get_value (A[10]) ; **				** Not allowed **
+	** get_value (A[j]) ; **				** Not allowed **
+end
+
+** 
+------------------------------------ Running on the Console ------------------------------------ 
+
+> erplag -o ario arrays_and_io.erp
+> ./ario
+> Enter 10 array elements of integer type for range 1 to 10
+> 1 2 3 4 5 6 7 8 9 10
+> Enter an integer : 9
+> Output :  9
+> Output : true
+> Output : false
+> Output :  100
+> Output : 2 2 3 4 5 6 7 8 9 10
+
+------------------------------------------------------------------------------------------------
+** 
