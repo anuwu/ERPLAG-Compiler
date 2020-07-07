@@ -1,0 +1,89 @@
+** In this program, we will look at the how to write for loops 
+   Loops in ERPLAG are counter loops from a lower to an upper
+   limit. The loop variable needs to be declared before its
+   use in the loop statement, and it must be of integer type.
+
+   ERPLAG enforces independence of the loop variable. Its value
+   cannot be changed by the programmer in its immediate scope -
+   1. It cannot occur in the LHS of expressions
+   2. Cannot occur inside a get_value() call
+   3. Cannot be reassigned by a function call (to be visited later)
+
+   These checks are placed in the compilation phase.
+**
+
+<<<driver program>>>
+start
+	declare i, j, sum : integer ;
+	declare A : array [1 .. 10] of integer ;
+
+	get_value (A) ;
+
+	sum := A[1] ;
+	for (i in 2 .. 10)					** Ranges of the loop can be static only **
+	start
+		sum := sum + A[i] ;	
+	end
+
+
+	for (i in 1 .. 10)					** The counter variable must be a primitive integer variable (not array element) **
+	start
+		for (j in 1 .. 2)
+		start
+			declare i : integer ;			** This "i" variable is independent from the i in the outer loop **
+			i := j + A[j] ;
+			print (i) ;
+		end
+		print (i) ;					** The loop variable is accessible in its immediate scope **
+	end
+
+	declare loopend : boolean ;
+	loopend := (i == 11) ;
+	print (loopend) ;						** Loop variable holds its terminating value just after the loop statement **
+end
+
+
+
+
+
+**
+------------------------------------ Running on the Console ------------------------------------ 
+
+> erplag forLoop1.erp
+> ./forLoop1
+> Enter 10 array elements of integer type for range 1 to 10
+> 10 9 8 7 6 5 4 3 2 1
+> Output :  11
+> Output :  11
+> Output :  1
+> Output :  11
+> Output :  11
+> Output :  2
+> Output :  11
+> Output :  11
+> Output :  3
+> Output :  11
+> Output :  11
+> Output :  4
+> Output :  11
+> Output :  11
+> Output :  5
+> Output :  11
+> Output :  11
+> Output :  6
+> Output :  11
+> Output :  11
+> Output :  7
+> Output :  11
+> Output :  11
+> Output :  8
+> Output :  11
+> Output :  11
+> Output :  9
+> Output :  11
+> Output :  11
+> Output :  10
+> Output : true
+
+------------------------------------------------------------------------------------------------
+**

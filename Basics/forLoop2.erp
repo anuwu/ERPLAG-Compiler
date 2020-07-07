@@ -1,0 +1,40 @@
+** In this program, we will look at some common errors
+   encountered in writing for loops
+**
+
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	declare b : boolean ;
+
+	for (k in 4 .. 10)				** k is not declared prior to the loop **
+	start
+		print (k) ;
+	end
+
+	for (b in 0 .. 8)
+	start
+		i := i + 1 ;				** An attempt to change the loop counter is illegal **
+		declare k : integer ;
+		for (k in 10 .. 0)
+		start
+			get_value (k) ;			** Attempt to change the loop counter **
+		end	
+	end
+end
+
+
+
+
+
+**
+------------------------------------ Running on the Console ------------------------------------ 
+
+> erplag ./forLoop2.erp
+> ERPLAG : Semantic Error --> In module Driver at line 40, loop variable k is undeclared
+> ERPLAG : Semantic Error --> In module Driver at line 40, loop variable b needs to be of integer type
+> ERPLAG : Semantic Error --> In module Driver at line 49, left loop limit must be <= right loop limit
+> ERPLAG : Semantic Error --> In module Driver at line 40, loop variable k cannot be modified
+
+------------------------------------------------------------------------------------------------
+**

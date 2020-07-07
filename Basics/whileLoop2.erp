@@ -1,0 +1,48 @@
+** In this program, we shall demonstrate some of the checks
+   that the compiler places on the while loop.
+   1. If there are variables participating in the guard condition,
+      and none of them are being changed in the loop body, then
+      the compiler will report a warning
+   2. If the guard condition is static, a warning will be reported as well
+   3. If the expression of the guard does not evaluate to a boolean type,
+      then an error is reported
+**
+
+<<<driver program>>>
+start
+	declare i, j : integer ;
+	
+	i := 4 ;
+	j := 5 ;
+
+	while (j > i)
+	start
+		print (i) ;
+		print (j) ;
+	end
+
+	while (true)
+	start
+		print (false) ;
+	end
+
+	while (2 + 3)
+	start
+		print (5) ;
+	end
+end
+
+
+** 
+------------------------------- Running on the Console ----------------------------------------- 
+
+> erplag whileLoop2.erp
+> ERPLAG : Warning --> In module Driver at line 32, none of the identifiers of the guard condition are being changed in the while loop body
+> ERPLAG : Warning --> In module Driver at line 117, guard condition of while loop is static
+> ERPLAG : Semantic Error --> In module Driver at line 32, the guard condition must be of type boolean
+> ERPLAG : Warning --> In module Driver at line 32, guard condition of while loop is static
+
+------------------------------------------------------------------------------------------------
+
+(Forgive the incorrect line numbers, looks like there is a bug that I haven't fixed)
+** 

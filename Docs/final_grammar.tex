@@ -1,0 +1,275 @@
+\documentclass[a4paper]{article}
+    \usepackage{fullpage}
+    \usepackage{amsmath}
+    \usepackage{verbatim}
+    \usepackage{graphicx}
+    \usepackage{amssymb}
+    \usepackage{hyperref}
+    \hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    }
+    \usepackage{ragged2e}
+    \usepackage{textcomp}
+    %\usepackage[utf8]{inputenc}
+    \usepackage{CormorantGaramond}
+    \usepackage[T1]{fontenc}
+    \usepackage[margin=1in]{geometry}
+    %\usepackage[bottom=1in,top=0.8in]{geometry}
+    \textheight=10in
+    \pagestyle{empty}
+    \raggedright
+
+\renewcommand{\baselinestretch}{1.25}
+
+\newcommand{\comment}[1]{}
+
+\newcommand{\nonTerm}[1]{$\left<\text{\textit{#1}}\right>$ \ }
+\newcommand{\terminal}[1]{\textbf{\uppercase{#1}} \ }
+\newcommand{\ra}[0]{$\rightarrow$ \ }
+\newcommand{\eps}[0]{\terminal{$\epsilon$}}
+\newcommand{\vertbar}[0]{| \ }
+\newcommand{\equals}[0]{$:=$ \ }
+\newcommand{\setopen}[0]{$\{$ \ }
+\newcommand{\setclose}[0]{$\}$}
+\newcommand{\dollar}[0]{\terminal{\$}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\program}[0]{\nonTerm{program}}
+\newcommand{\moduleDeclarations}[0]{\nonTerm{moduleDeclarations}}
+\newcommand{\otherModules}[0]{\nonTerm{otherModules}}
+\newcommand{\moduleDeclaration}[0]{\nonTerm{moduleDeclaration}}
+\newcommand{\driverModule}[0]{\nonTerm{driverModule}}
+\newcommand{\module}[0]{\nonTerm{module}}
+\newcommand{\moduleDef}[0]{\nonTerm{moduleDef}}
+\newcommand{\inputPlist}[0]{\nonTerm{input\_plist}}
+\newcommand{\IPL}[0]{\nonTerm{IPL}}
+\newcommand{\outputPlist}[0]{\nonTerm{output\_plist}}
+\newcommand{\OPL}[0]{\nonTerm{OPL}}
+\newcommand{\ret}[0]{\nonTerm{ret}}
+\newcommand{\dataType}[0]{\nonTerm{dataType}}
+\newcommand{\type}[0]{\nonTerm{type}}
+\newcommand{\range}[0]{\nonTerm{range}}
+\newcommand{\statements}[0]{\nonTerm{statements}}
+\newcommand{\statement}[0]{\nonTerm{statement}}
+\newcommand{\ioStmt}[0]{\nonTerm{ioStmt}}
+\newcommand{\printvar}[0]{\nonTerm{print\_var}}
+\newcommand{\simpleStmt}[0]{\nonTerm{simpleStmt}}
+\newcommand{\declareStmt}[0]{\nonTerm{declareStmt}}
+\newcommand{\conditionalStmt}[0]{\nonTerm{conditionalStmt}}
+\newcommand{\iterativeStmt}[0]{\nonTerm{iterativeStmt}}
+\newcommand{\var}[0]{\nonTerm{var}}
+\newcommand{\whichID}[0]{\nonTerm{whichID}}
+\newcommand{\assignmentStmt}[0]{\nonTerm{assignmentStmt}}
+\newcommand{\moduleReuseStmt}[0]{\nonTerm{moduleReuseStmt}}
+\newcommand{\whichStmt}[0]{\nonTerm{whichStmt}}
+\newcommand{\lvalueIDStmt}[0]{\nonTerm{lvalueIDStmt}}
+\newcommand{\lvalueARRStmt}[0]{\nonTerm{lvalueARRStmt}}
+
+\newcommand{\expression}[0]{\nonTerm{expression}}
+\newcommand{\expressionNew}[0]{\nonTerm{expression\_new}}
+\newcommand{\U}[0]{\nonTerm{U}}
+\newcommand{\boolTerm}[0]{\nonTerm{boolTerm}}
+\newcommand{\bT}[0]{\nonTerm{bT}}
+\newcommand{\arithmeticExpr}[0]{\nonTerm{arithmeticExpr}}
+\newcommand{\aE}[0]{\nonTerm{aE}}
+\newcommand{\aT}[0]{\nonTerm{aT}}
+\newcommand{\aF}[0]{\nonTerm{aF}}
+\newcommand{\term}[0]{\nonTerm{term}}
+\newcommand{\factor}[0]{\nonTerm{factor}}
+\newcommand{\factorNew}[0]{\nonTerm{factor\_new}}
+\newcommand{\logicalOp}[0]{\nonTerm{logicalOp}}
+\newcommand{\relationalOp}[0]{\nonTerm{relationalOp}}
+\newcommand{\pmop}[0]{\nonTerm{pmop}}
+\newcommand{\mdop}[0]{\nonTerm{mdop}}
+
+\newcommand{\indexNewTerm}[0]{\nonTerm{index\_new}}
+\newcommand{\rangeNew}[0]{\nonTerm{range\_new}}
+\newcommand{\optional}[0]{\nonTerm{optional}}
+\newcommand{\idList}[0]{\nonTerm{idList}}
+\newcommand{\idL}[0]{\nonTerm{idL}}
+\newcommand{\caseStmt}[0]{\nonTerm{caseStmt}}
+\newcommand{\valueTerm}[0]{\nonTerm{value}}
+\newcommand{\default}[0]{\nonTerm{default}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\programTerm}[0]{\terminal{program}}
+\newcommand{\id}[0]{\terminal{id}}
+\newcommand{\num}[0]{\terminal{num}}
+\newcommand{\rnum}[0]{\terminal{rnum}}
+\newcommand{\moduleTerm}[0]{\terminal{module}}
+\newcommand{\inputTerm}[0]{\terminal{input}}
+\newcommand{\driverDefTerm}[0]{\terminal{driverdef}}
+\newcommand{\driverEnddef}[0]{\terminal{driverenddef}}
+\newcommand{\integer}[0]{\terminal{integer}}
+\newcommand{\real}[0]{\terminal{real}}
+\newcommand{\boolean}[0]{\terminal{boolean}}
+\newcommand{\of}[0]{\terminal{of}}
+\newcommand{\arrayTerm}[0]{\terminal{array}}
+\newcommand{\start}[0]{\terminal{start}}
+\renewcommand{\endTerm}[0]{\terminal{end}}
+\newcommand{\declare}[0]{\terminal{declare}}
+\newcommand{\driver}[0]{\terminal{driver}}
+\newcommand{\getvalue}[0]{\terminal{get\_value}}
+\newcommand{\print}[0]{\terminal{print}}
+\newcommand{\use}[0]{\terminal{use}}
+\newcommand{\with}[0]{\terminal{with}}
+\newcommand{\true}[0]{\terminal{true}}
+\newcommand{\false}[0]{\terminal{false}}
+\newcommand{\takes}[0]{\terminal{takes}}
+\newcommand{\returns}[0]{\terminal{returns}}
+\newcommand{\andTerm}[0]{\terminal{and}}
+\newcommand{\orTerm}[0]{\terminal{or}}
+\newcommand{\for}[0]{\terminal{for}}
+\newcommand{\inTerm}[0]{\terminal{in}}
+\newcommand{\switch}[0]{\terminal{switch}}
+\newcommand{\case}[0]{\terminal{case}}
+\newcommand{\breakTerm}[0]{\terminal{break}}
+\newcommand{\defaultTerm}[0]{\terminal{default}}
+\newcommand{\while}[0]{\terminal{while}}
+\newcommand{\plus}[0]{\terminal{plus}}
+\newcommand{\minus}[0]{\terminal{minus}}
+\newcommand{\mul}[0]{\terminal{mul}}
+\newcommand{\divTerm}[0]{\terminal{div}}
+\newcommand{\lt}[0]{\terminal{lt}}
+\newcommand{\leTerm}[0]{\terminal{le}}
+\newcommand{\geTerm}[0]{\terminal{ge}}
+\newcommand{\gt}[0]{\terminal{gt}}
+\newcommand{\eqTerm}[0]{\terminal{eq}}
+\newcommand{\neTerm}[0]{\terminal{ne}}
+\newcommand{\defTerm}[0]{\terminal{def}}
+\renewcommand{\enddef}[0]{\terminal{enddef}}
+\newcommand{\parameters}[0]{\terminal{parameters}}
+\newcommand{\colonTerm}[0]{\terminal{colon}}
+\newcommand{\rangeop}[0]{\terminal{rangeop}}
+\newcommand{\semicol}[0]{\terminal{semicol}}
+\newcommand{\comma}[0]{\terminal{comma}}
+\newcommand{\assignop}[0]{\terminal{assignop}}
+\newcommand{\sqbo}[0]{\terminal{sqbo}}
+\newcommand{\sqbc}[0]{\terminal{sqbc}}
+\newcommand{\bo}[0]{\terminal{bo}}
+\newcommand{\bc}[0]{\terminal{bc}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\bull{\vrule height 0.8ex width .7ex depth -.1ex }
+
+\title{\textbf{ERPLAG - Grammar}}
+\date{}
+\begin{document}
+\maketitle
+
+\normalfont
+
+\justify
+
+\begin{enumerate}
+    \item \program \ra \moduleDeclarations \otherModules \driverModule \otherModules
+    
+    \begin{enumerate}
+        \item \moduleDeclarations \ra \moduleDeclaration \moduleDeclarations \vertbar \eps 
+    
+        \item \moduleDeclaration \ra \declare \moduleTerm \id \semicol
+        
+        \item \otherModules \ra \module \otherModules \vertbar \eps
+        
+        \item \driverModule \ra \driverDefTerm \driver \programTerm \driverEnddef \moduleDef
+        
+        \item \module \ra \defTerm \moduleTerm \id \enddef \takes \inputTerm \sqbo \inputPlist \sqbc \semicol \ret \moduleDef
+        
+        \item \moduleDef \ra \start \statements \endTerm
+        
+        \item \ret \ra \returns \sqbo \outputPlist \sqbc \semicol \vertbar \eps
+        
+        \item \inputPlist \ra \id \colonTerm \dataType \IPL
+        \item \IPL \ra \comma \id \colonTerm \dataType \IPL \vertbar \eps
+        
+        \item \outputPlist \ra \id \colonTerm \dataType \OPL
+        \item \OPL \ra \comma \id \colonTerm \dataType \OPL \vertbar \eps
+    \end{enumerate}
+    
+    \item \statements \ra \statement \statements \vertbar \eps
+    
+    \item \statement \ra \ioStmt \vertbar \simpleStmt \vertbar \conditionalStmt \vertbar \declareStmt \vertbar \iterativeStmt
+    
+    \begin{enumerate}
+        \item \ioStmt \ra \getvalue \bo \id \bc \semicol \vertbar \print \bo \printvar \bc \semicol
+        
+        \begin{enumerate}
+            \item \printvar \ra \var \vertbar \true \vertbar \false 
+        \end{enumerate}
+        
+        \item \simpleStmt \ra \assignmentStmt
+        \begin{enumerate}
+            \item \assignmentStmt \ra \id \whichStmt
+            \item \whichStmt \ra \lvalueIDStmt \vertbar \lvalueARRStmt
+            \item \lvalueIDStmt \ra \assignop \expressionNew \semicol
+            \item \lvalueARRStmt \ra \sqbo \ \sqbc \assignop \expressionNew \semicol
+        \end{enumerate}
+        
+        
+        \item \simpleStmt \ra \moduleReuseStmt
+        \begin{enumerate}
+            \item \moduleReuseStmt \ra \optional \use \moduleTerm \id \with \parameters \idList \semicol
+            \item \optional \ra \sqbo \idList \sqbc \assignop \vertbar \eps
+        \end{enumerate}
+        
+        \item \declareStmt \ra \declare \idList \colonTerm \dataType \semicol
+        
+        \item \iterativeStmt \ra \for \bo \inTerm \rangeNew \bc \start \statements \endTerm
+        \item \iterativeStmt \ra \while \bo \expression \bc \start \statements \endTerm
+        
+        \item \conditionalStmt \ra \switch \bo \id \bc \start \case \valueTerm \colonTerm \statements \breakTerm \semicol \caseStmt \default \endTerm
+        \begin{enumerate}
+            \item \caseStmt \ra \case \valueTerm \colonTerm \statements \breakTerm \semicol \caseStmt \vertbar \eps
+            
+            \item \default \ra \defaultTerm \colonTerm \statements \breakTerm \semicol \vertbar \eps
+        \end{enumerate}
+    \end{enumerate}
+    
+    \item \expressionNew \ra \expression \vertbar \U
+    \item \U \ra \plus \factorNew \vertbar \minus \factorNew
+    
+    \item \expression \ra \boolTerm \bT
+    \item \bT \ra \logicalOp \boolTerm \bT \vertbar \eps
+    
+    \begin{enumerate}
+        \item \boolTerm \ra \arithmeticExpr \aE \vertbar \true \vertbar \false
+        \item \aE \ra \relationalOp \arithmeticExpr \vertbar \eps
+        
+        \begin{enumerate}
+            \item \arithmeticExpr \ra \term \aT
+            \item \aT \ra \pmop \term \aT \vertbar \eps
+    
+            \begin{enumerate}
+                \item \term \ra \factor \aF
+                \item \aF \ra \mdop \factor \aF \vertbar \eps
+                
+                \item \factor \ra \bo \expression \bc \vertbar \var
+                \item \factorNew \ra \bo \arithmeticExpr \bc \vertbar \var
+            \end{enumerate}
+        \end{enumerate}
+    \end{enumerate}
+    
+    \item \logicalOp \ra \andTerm \vertbar \orTerm
+    \item \relationalOp \ra \lt \vertbar \leTerm \vertbar \gt \vertbar \geTerm \vertbar \eqTerm \vertbar \neTerm
+    \item \pmop \ra \plus \vertbar \minus
+    \item \mdop \ra \mul \vertbar \divTerm
+    \item \dataType \ra \integer \vertbar \real \vertbar \boolean \vertbar \arrayTerm \sqbo \range \sqbc \of \type
+    \item \type \ra \integer \vertbar \real \vertbar \boolean
+    \item \var \ra \id \whichID \vertbar \num \vertbar \rnum
+    \item \whichID \ra \sqbo \indexNewTerm \sqbc \vertbar \eps
+    \item \indexNewTerm \ra \num \vertbar \id
+    \item \valueTerm \ra \num \vertbar \true \vertbar \false
+    \item \range \ra \indexNewTerm \rangeop \indexNewTerm
+    \item \rangeNew \ra \num \rangeop \num
+    \item \idList \ra \id \idL
+    \item \idL \ra \comma \id \idL \vertbar \eps
+\end{enumerate}
+
+\end{document}
