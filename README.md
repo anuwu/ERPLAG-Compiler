@@ -1,11 +1,15 @@
-# ERPLAG
+![title](Docs/logo.png)
 
-Welcome to the ERPLAG compiler. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020. 
+Welcome to the ERPLAG compiler. This is a toy language that was given as a semester project from the Compilers Construction course at BITS Pilani, in the year 2020.
 
 ## Unique Features
-Although it's a toy language, there are features in ERPLAG which, in some sense, make it more powerful than C. 
+Although it's a toy language, there are features in ERPLAG which, in some sense, make it more powerful than C.
    - Abstraction of dynamic array declaration
    - Function returning multiple values
+
+Here's a screenshot of the compiler running an ERPLAG code to compute the binary representation of a decimal number (`./intBinary`) and the Sieve of Eratosthenes (`./sieve`). These codes can be found in the associated repository [here](https://github.com/anuwu/ERPLAG-Codes).
+
+![alt text](Docs/scrnsht.png)
 
 ## Pre-requisites
 
@@ -44,12 +48,12 @@ If the installation fails, or you wish to do it manually, you have to complete t
 ### In Windows
    Inside the repository, if there does not exist a batch file named 'erplag.bat', run in command prompt -
    - `rename .erplag erplag.bat`
-   
+
    Add the repository directory to the environment PATH variable.
-   
+
 ## Info
-   
-1. Create your own erplag files using an extension of .erp. 
+
+1. Create your own erplag files using an extension of .erp.
 2. Use erplag -h for help on using the compiler.
 3. Information regarding the language can be found in the /Docs folder
 4. The final grammar used by the compiler is written in a separate pdf in the folder
@@ -63,7 +67,7 @@ If the installation fails, or you wish to do it manually, you have to complete t
    - `openSUSE`
    - `Fedora`
    - `Manjaro`
-   
+
 2. Windows 7/10
 
 **It could occur that the compiler isn't able to process the .asm files to output the executable. This is due to an incompatible version of NASM being installed by the installation script. If this occurs, please install a version of NASM that is compatible with your machine architecture. Then run `erplag -a <filename>.erp`, and do the following -**
@@ -72,7 +76,7 @@ First assemble using nasm -
    - `nasm -felf64 <filename>.asm` for **Linux**
    - `nasm -fmacho64 <filename>.asm` for **macOS**
    - `nasm -fwin64 <filename>.asm` for **Windows**
-   
+
 Then link with gcc -
    - `gcc -no-pie <filename>.o -o <executable>` for **Linux/macOS**
    - `gcc <filename>.obj -o <executable>.exe` for **Windows**
@@ -82,7 +86,7 @@ To uninstall, open a terminal in the repository and execute -
    - `./uninstall` for **Linux/macOS**
    - `uninstall`for **Windows**
 
-Additionally, ensure to remove the repository from the environment PATH in **Windows**. 
+Additionally, ensure to remove the repository from the environment PATH in **Windows**.
 
 No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
 
