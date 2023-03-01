@@ -89,10 +89,3 @@ To uninstall, open a terminal in the repository and execute -
 Additionally, ensure to remove the repository from the environment PATH in **Windows**.
 
 No need to do this step for **Linux/macOS** unless you have installed it manually and added to path.
-
-## Issues
-
-   - Lexical/Parsing errors are not displayed in the best manner possible, but the compiler handles such errors well and doesn't crash
-   - I'm aware that the installation script doesn't handle Gentoo distributions (yet), which use the portage package manager. Please install the dependencies on your own. In any case, if you're not able to get ERPLAG compiler running on your system, feel free to leave me a message
-
-Thank you!
